@@ -1,5 +1,13 @@
 # DNF 动作参考素材
 
+2026-10-16 大崩专项：已观看用户指定的[《当年厄运九的大崩到底有多强呢？》约 19 秒](https://www.bilibili.com/video/BV1DakNYyEGb/?t=19)，[独立记录](motion-studies/warrior/skills/outrage-break/README.md)包含起跳、落刀地裂、延迟喷发和残留，注明装备强化场景；与普通崩山击分开，未把喷发数量或范围写成本游戏数值。
+
+2026-10-16 拔刀斩专项：已观看用户打开的[《DNF【技能进化】—35级/拔刀斩(剑魂)》](https://www.bilibili.com/video/BV17ZJZztE8W/)，[独立记录](motion-studies/warrior/skills/draw-slash/README.md)区分基础动作、拔刀奥义和冲击之刃，保存了基础起势、快速横扫与收招的时间对照。未把进化分支、字幕百分比或合集下一条技能当成本游戏已确认规则。
+
+后续统一从[战士动作参考索引](motion-studies/README.md)进入：普攻、十字斩、崩山击、拔刀斩和崩山裂地斩各自独立归档。2026-10-16 又观察了用户指定的[崩山击、十字斩、三段斩制作视频](https://www.bilibili.com/video/BV1Ke411v7GE/)，它属于作者自制演示；技能形态和视频时间已分别记录，视频中的三段斩不进入当前四技能组。
+
+2026-10-16 更新：用户已选择 [《DNF剑魂里鬼逐帧慢放》开头的光剑段](https://www.bilibili.com/video/BV1DW411L747/)作为新的普攻动作还原目标，已实际播放并对照前段连续出招与慢放画面。观察结果、抽样方法及与现有四阶段/六帧实现的差距见[光剑里鬼动作观察](motion-studies/warrior/basic-attack/light-sword/README.md)。下面此前混合双刀参考的描述保留为历史研究，不能视为这次新目标已经实现。
+
 本记录用于战斗动作研究。下面的 GIF 和视频只作内部动作参考，不作为 World-of-308 的成品美术资源。狂战士 GIF 保存在 `docs/art/references/dnf/berserker/`；该目录忽略 GIF 文件，避免将原作画面直接提交或推送。
 
 ## 狂战士（红眼）

@@ -21,6 +21,8 @@
 | [早期技术与内容蓝图](docs/game-technical-blueprint.md) | 历史参考；与当前规格冲突时以当前规格为准 |
 | [战士概念参考](docs/art/warrior-pixel-concept-v1.md) | 早期视觉探索，尚非生产动画资源 |
 | [战士动作小样美术 brief](docs/art/warrior-animation-sample-brief.md) | 给单角色动作样片的范围、交付物与手机验收要求 |
+| [战士动作参考索引](docs/art/motion-studies/README.md) | 普攻与四技能分别归档的来源、视频时间、动作拆解和待确认差异 |
+| [战士动作设计 v1](docs/art/motion-studies/warrior/DESIGN.md) | 三段普攻与四技能分镜、动作时序、衔接和首次接入方案；设计初稿、尚未实现 |
 
 ## 下一步
 
