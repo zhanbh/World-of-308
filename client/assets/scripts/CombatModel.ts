@@ -59,7 +59,9 @@ export class CombatModel {
         if (this.stage >= 0) {
             const oldElapsed = this.elapsed;
             this.elapsed += dt;
-            const impactAt = this.stage === 3 ? 0.43 : 0.31;
+            // Damage lands during the first visible stroke (one hit event per
+            // combo beat; the paired sword motions are for animation feel).
+            const impactAt = this.stage === 3 ? 0.30 : 0.20;
             if (!this.impactSent && oldElapsed < tuning.durations[this.stage] * impactAt
                 && this.elapsed >= tuning.durations[this.stage] * impactAt) {
                 this.impactSent = true;

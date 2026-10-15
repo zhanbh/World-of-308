@@ -1,12 +1,13 @@
 import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
     input, Input, EventTouch, EventKeyboard, KeyCode, Vec3, view, ResolutionPolicy, game, Game } from 'cc';
-import { CombatModel } from './CombatModel';
+import { CombatModel, tuning } from './CombatModel';
 import { WarriorView } from './WarriorView';
 import { EnemyModel } from './EnemyModel';
-import { SwordWaveModel, swordWaveTuning } from './SwordWaveModel';
+import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning } from './WarriorSkillsModel';
+import { WarriorSpriteSheetView } from './WarriorSpriteSheetView';
 
 const { ccclass } = _decorator;
-const stages = ['左砍', '右砍', '上挑', '双刀交叉横扫'];
+const stages = ['双刀交替斩', '反手交替斩', '双刀上挑', '交叉后反向展开'];
 
 @ccclass('Prototype')
 export class Prototype extends Component {
@@ -17,11 +18,12 @@ export class Prototype extends Component {
     private enemyVisuals: Graphics[] = [];
     private lastDepthOrder: Node[] = [];
     private warrior = new WarriorView();
-    private swordWave = new SwordWaveModel();
+    private warriorSprite!: WarriorSpriteSheetView;
+    private skills = new WarriorSkillsModel();
     private controls!: Graphics;
     private status!: Label;
     private healthStatus!: Label;
-    private skillLabel!: Label;
+    private skillLabels: Partial<Record<WarriorSkillId, Label>> = {};
     private stickId: number | null = null;
     private attackIds = new Set<number>();
     private axis = { x: 0, y: 0 };
@@ -41,15 +43,22 @@ export class Prototype extends Component {
         this.world = this.makeGraphics('World');
         this.world.node.setScale(2, 2, 1);
         this.actor = this.makeGraphics('Warrior');
+        this.warriorSprite = new WarriorSpriteSheetView(this.actor.node);
         this.controls = this.makeGraphics('Controls');
-        this.text('308 动作样板 v0.6 · 近战对抗', 0, 242, 22);
-        this.text('WASD / 方向键移动 · 空格普攻 · Q 剑气 · R 重置 · 1/3 敌人数', 0, 212, 16);
+        this.text('308 动作样板 v0.7 · 战士技能组', 0, 242, 22);
+        this.text('WASD移动 · 空格普攻 · E十字斩 · F崩山击 · Q拔刀斩 · G崩山裂地斩 · R重置 · 1/3敌人', 0, 212, 16);
         this.healthStatus = this.text('', -330, 178, 17);
         this.status = this.text('', 0, -242, 17);
         this.modeLabels = [this.text('单怪', 255, 168, 14, 70), this.text('三怪', 355, 168, 14, 70)];
         this.text('摇杆', -345, -218, 18);
         this.text('普攻', 345, -160, 22);
-        this.skillLabel = this.text('剑气 Q', 265, -65, 14, 76);
+        const skillButtons: { id: WarriorSkillId; x: number; label: string }[] = [
+            { id: 'cross', x: 150, label: '十字斩 E' },
+            { id: 'bengshan', x: 215, label: '崩山 F' },
+            { id: 'badao', x: 280, label: '拔刀 Q' },
+            { id: 'earth', x: 345, label: '大蹦 G' },
+        ];
+        for (const button of skillButtons) this.skillLabels[button.id] = this.text(button.label, button.x, -65, 11, 62);
         this.text('受击预警 · 走出红框躲避', 0, -208, 16);
         this.restartEncounter();
         input.on(Input.EventType.TOUCH_START, this.touchStart, this);
@@ -69,6 +78,7 @@ export class Prototype extends Component {
         input.off(Input.EventType.KEY_DOWN, this.keyDown, this);
         input.off(Input.EventType.KEY_UP, this.keyUp, this);
         game.off(Game.EVENT_HIDE, this.clearInput, this);
+        this.warriorSprite.dispose();
     }
 
     private makeGraphics(name: string): Graphics {
@@ -107,12 +117,12 @@ export class Prototype extends Component {
             this.mode = 1; this.restartEncounter();
         } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 355) < 40) {
             this.mode = 3; this.restartEncounter();
-        } else if (Math.hypot(p.x - 265, p.y + 65) < 38) {
-            this.castSwordWave();
+        } else if (this.touchSkillButton(p.x, p.y)) {
+            return;
         } else if (this.stickId === null && Math.hypot(p.x + 345, p.y + 150) < 95) {
             this.stickId = id;
             this.touchMove(e);
-        } else if (Math.hypot(p.x - 345, p.y + 150) < 68 && !this.swordWave.casting) {
+        } else if (Math.hypot(p.x - 345, p.y + 150) < 68 && !this.skills.casting) {
             this.attackIds.add(id);
             this.model.press();
         }
@@ -141,8 +151,11 @@ export class Prototype extends Component {
     private keyDown(e: EventKeyboard): void {
         if (this.keys.has(e.keyCode)) return;
         this.keys.add(e.keyCode);
-        if (e.keyCode === KeyCode.SPACE && !this.swordWave.casting) this.model.press();
-        if (e.keyCode === KeyCode.KEY_Q) this.castSwordWave();
+        if (e.keyCode === KeyCode.SPACE && !this.skills.casting) this.model.press();
+        if (e.keyCode === KeyCode.KEY_E) this.castSkill('cross');
+        if (e.keyCode === KeyCode.KEY_F) this.castSkill('bengshan');
+        if (e.keyCode === KeyCode.KEY_Q) this.castSkill('badao');
+        if (e.keyCode === KeyCode.KEY_G) this.castSkill('earth');
         if (e.keyCode === KeyCode.KEY_R) this.restartEncounter();
         if (e.keyCode === KeyCode.DIGIT_1) { this.mode = 1; this.restartEncounter(); }
         if (e.keyCode === KeyCode.DIGIT_3) { this.mode = 3; this.restartEncounter(); }
@@ -167,30 +180,31 @@ export class Prototype extends Component {
         this.accumulator += Math.min(dt, 0.1);
         while (this.accumulator >= 1 / 120) {
             const fixedDt = 1 / 120;
-            this.swordWave.update(fixedDt);
-            const skillWindup = this.swordWave.windupProgress;
-            this.model.update(fixedDt, skillWindup === null ? x : 0, skillWindup === null ? y : 0);
+            this.skills.update(fixedDt);
+            this.model.update(fixedDt, this.skills.casting ? 0 : x, this.skills.casting ? 0 : y);
+            this.model.x = Math.max(-218, Math.min(218, this.model.x + this.skills.motionDelta));
+            if (this.skills.lastImpact) this.resolveSkillImpact(this.skills.lastImpact);
             if (this.model.impactId !== this.lastImpactId) {
                 this.lastImpactId = this.model.impactId;
                 this.resolveMeleeHit();
             }
-            this.resolveSwordWaveHits();
+            const hpBeforeEnemies = this.model.hp;
             for (const enemy of this.enemies) enemy.update(fixedDt, this.model);
+            if (this.model.hp < hpBeforeEnemies) this.skills.cancel();
             this.accumulator -= fixedDt;
         }
         this.retryTimer = this.model.hp <= 0 || this.enemies.every(enemy => enemy.state === 'dead')
             ? this.retryTimer + Math.min(dt, 0.05) : 0;
         if (this.retryTimer > 2.2) this.restartEncounter();
         this.draw(dt);
-        this.healthStatus.string = `战士 ${this.healthBar(this.model.hp, 100)}     法力 ${this.swordWave.mana}/${swordWaveTuning.maxMana}     近战怪 ${this.mode} 只`;
+        this.healthStatus.string = `战士 ${this.healthBar(this.model.hp, 100)}     法力 ${this.skills.mana}/${this.skills.maxMana}     近战怪 ${this.mode} 只`;
         const state = this.model.hp <= 0 ? '受击倒下 · 即将重试' : this.enemies.every(enemy => enemy.state === 'dead')
             ? '清场 · 即将重试' : this.enemies.some(enemy => enemy.state === 'telegraph') ? '红色预警 · 离开锁定区域' : '攻击怪物，闪开预警';
-        const skillState = this.swordWave.waveProgress !== null ? '剑气扩散'
-            : this.swordWave.windupProgress !== null ? '双刀连挥'
-                : this.swordWave.cooldown > 0 ? `剑气冷却 ${this.swordWave.cooldown.toFixed(1)}s` : '剑气就绪';
+        const skillState = this.skills.activeId
+            ? `${warriorSkillNames[this.skills.activeId]}出招`
+            : '十字斩 / 崩山击 / 拔刀斩 / 崩山裂地斩';
         this.status.string = `${this.fps} FPS | ${state} | ${this.model.stage < 0 ? (this.model.moving ? (this.model.running ? '跑' : '走') : '待机') : stages[this.model.stage]} | ${skillState}`;
-        this.skillLabel.string = this.swordWave.ready ? '剑气 Q' : this.swordWave.mana < swordWaveTuning.manaCost
-            ? '魔法不足' : `${this.swordWave.cooldown.toFixed(1)}s`;
+        this.updateSkillLabels();
     }
 
     private rect(g: Graphics, x: number, y: number, w: number, h: number, color: string): void {
@@ -209,14 +223,23 @@ export class Prototype extends Component {
         for (let y = -42; y <= 93; y += 16) { g.moveTo(-232, y); g.lineTo(232, y); }
         g.stroke();
         const m = this.model;
-        this.drawSwordWave(g);
+        this.drawSkillEffect(g);
         this.drawEnemies(g);
         const x = Math.round(m.x), y = Math.round(m.y);
         g.fillColor = new Color(15, 24, 25, 150); g.ellipse(x, y, 14, 4.8); g.fill();
-        this.actor.node.setPosition(x * 2, y * 2);
+        this.actor.node.setPosition(x * 2, (y + this.skills.jumpLift) * 2);
         this.actor.node.setScale(2.4 * m.facing, 2.4 * (m.hitStun > 0 ? 0.88 : 1), 1);
         this.actor.node.active = m.invulnerable <= 0 || Math.floor(m.invulnerable * 16) % 2 === 0;
-        this.warrior.draw(this.actor, m, Math.min(dt, 0.05), this.swordWave.windupProgress);
+        const useSprite = m.stage >= 0
+            ? this.warriorSprite.showAttack(m.elapsed / tuning.durations[m.stage])
+            : this.warriorSprite.showReady();
+        this.actor.enabled = !useSprite;
+        if (!useSprite) {
+            this.warriorSprite.hide();
+            const skillProgress = this.skills.progress;
+            this.warrior.draw(this.actor, m, Math.min(dt, 0.05), this.skills.activeId && skillProgress !== null
+                ? { id: this.skills.activeId, progress: skillProgress } : null);
+        }
         this.sortActorsByDepth();
         this.drawHealthBar(-330, 154, m.hp, 100, '#65d6b2');
         this.rect(this.controls, 220, 154, 70, 28, this.mode === 1 ? '#53757e' : '#293941');
@@ -225,14 +248,19 @@ export class Prototype extends Component {
         ui.fillColor = new Color(82, 111, 121, 155); ui.circle(-345, -150, 75); ui.fill();
         ui.fillColor = new Color(176, 207, 202, 210); ui.circle(-345 + this.axis.x * 55, -150 + this.axis.y * 55, 27); ui.fill();
         ui.fillColor = new Color(151, 81, 55, 210); ui.circle(345, -150, 61); ui.fill();
-        ui.fillColor = this.swordWave.ready ? new Color(67, 151, 158, 230) : new Color(67, 91, 96, 210);
-        ui.circle(265, -65, 38); ui.fill();
+        const skillButtons: { id: WarriorSkillId; x: number }[] = [
+            { id: 'cross', x: 150 }, { id: 'bengshan', x: 215 }, { id: 'badao', x: 280 }, { id: 'earth', x: 345 },
+        ];
+        for (const button of skillButtons) {
+            ui.fillColor = this.skills.ready(button.id) ? new Color(67, 151, 158, 230) : new Color(67, 91, 96, 210);
+            ui.circle(button.x, -65, 29); ui.fill();
+        }
     }
 
     private restartEncounter(): void {
         this.model.hp = 100; this.model.x = 0; this.model.y = 0;
         this.model.reset(); this.model.hitStun = this.model.invulnerable = this.model.knockX = 0;
-        this.swordWave.reset();
+        this.skills.reset();
         this.lastImpactId = this.model.impactId;
         this.retryTimer = 0;
         const starts = this.mode === 1 ? [[76, 2]] : [[76, -8], [-100, 16], [153, 25]];
@@ -251,45 +279,109 @@ export class Prototype extends Component {
         }
     }
 
-    private castSwordWave(): void {
-        if (!this.swordWave.cast()) return;
+    private castSkill(id: WarriorSkillId): void {
+        if (!this.skills.cast(id, this.model.facing)) return;
         this.model.reset();
+        this.model.release();
         this.attackIds.clear();
     }
 
-    private resolveSwordWaveHits(): void {
-        for (const enemy of this.enemies) {
-            if (enemy.state === 'dead' || enemy.state === 'stunned') continue;
-            if (this.swordWave.hitsTarget(enemy.id, enemy.x, enemy.y + 13,
-                this.model.x, this.model.y + 18, this.model.facing)) enemy.hit(this.model.x);
+    private touchSkillButton(x: number, y: number): boolean {
+        if (Math.abs(y + 65) > 34) return false;
+        const buttons: { id: WarriorSkillId; x: number }[] = [
+            { id: 'cross', x: 150 }, { id: 'bengshan', x: 215 }, { id: 'badao', x: 280 }, { id: 'earth', x: 345 },
+        ];
+        const button = buttons.find(item => Math.hypot(x - item.x, y + 65) < 31);
+        if (!button) return false;
+        this.castSkill(button.id);
+        return true;
+    }
+
+    private updateSkillLabels(): void {
+        const controls: { id: WarriorSkillId; key: string; short: string }[] = [
+            { id: 'cross', key: 'E', short: '十字' },
+            { id: 'bengshan', key: 'F', short: '崩山' },
+            { id: 'badao', key: 'Q', short: '拔刀' },
+            { id: 'earth', key: 'G', short: '大蹦' },
+        ];
+        for (const item of controls) {
+            const label = this.skillLabels[item.id];
+            if (!label) continue;
+            const cooldown = this.skills.cooldown(item.id);
+            label.string = cooldown > 0 ? `${item.short} ${cooldown.toFixed(1)}`
+                : this.skills.mana < warriorSkillTuning[item.id].manaCost ? `${item.short} 缺蓝`
+                    : `${item.short} ${item.key}`;
         }
     }
 
-    private drawSwordWave(g: Graphics): void {
-        const radius = this.swordWave.waveRadius;
-        if (radius === null) return;
-        const facing = this.model.facing;
-        const centerX = this.model.x, centerY = this.model.y + 18;
-        const inner = Math.max(0, radius - swordWaveTuning.thickness / 2);
-        const outer = radius + swordWaveTuning.thickness / 2;
-        const segments = 24;
-        const start = facing > 0 ? -swordWaveTuning.halfAngle : Math.PI - swordWaveTuning.halfAngle;
-        const end = facing > 0 ? swordWaveTuning.halfAngle : Math.PI + swordWaveTuning.halfAngle;
-        const alpha = Math.round(210 * (1 - (this.swordWave.waveProgress ?? 0) * 0.45));
-        g.fillColor = new Color(143, 232, 229, alpha);
-        for (let i = 0; i <= segments; i++) {
-            const angle = start + (end - start) * i / segments;
-            const x = centerX + Math.cos(angle) * outer;
-            const y = centerY + Math.sin(angle) * outer;
-            if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    private resolveSkillImpact(id: WarriorSkillId): void {
+        const config = warriorSkillTuning[id];
+        for (const enemy of this.enemies) {
+            if (enemy.state === 'dead' || enemy.state === 'stunned') continue;
+            const dx = (enemy.x - this.model.x) * this.skills.facing;
+            const dy = enemy.y - this.model.y;
+            let hit = false;
+            if (id === 'cross') hit = dx >= -8 && dx <= config.range && Math.abs(dy) <= 34;
+            else if (id === 'bengshan') hit = Math.hypot(dx, dy) <= config.range;
+            else if (id === 'badao') hit = dx >= 0 && dx <= config.range && Math.abs(dy) <= 24 + dx * 0.11;
+            else hit = Math.hypot(dx, dy) <= config.range;
+            if (hit) enemy.hit(this.model.x, config.damage, id === 'earth' ? 190 : id === 'bengshan' ? 145 : 120);
         }
-        for (let i = segments; i >= 0; i--) {
-            const angle = start + (end - start) * i / segments;
-            g.lineTo(centerX + Math.cos(angle) * inner, centerY + Math.sin(angle) * inner);
+    }
+
+    private drawSkillEffect(g: Graphics): void {
+        const id = this.skills.activeId, p = this.skills.progress;
+        if (!id || p === null) return;
+        const x = this.model.x, y = this.model.y + 18, facing = this.skills.facing;
+        if (id === 'cross' && p >= 0.24 && p <= 0.68) {
+            const fade = Math.sin((p - 0.24) / 0.44 * Math.PI);
+            this.slashBand(g, x + facing * 30, y + 1, 40, 8, Math.PI / 4, new Color(255, 224, 175, Math.round(220 * fade)), facing);
+            this.slashBand(g, x + facing * 30, y + 1, 40, 8, -Math.PI / 4, new Color(255, 242, 215, Math.round(235 * fade)), facing);
+        } else if (id === 'badao' && p >= 0.36 && p <= 0.82) {
+            const fade = Math.sin((p - 0.36) / 0.46 * Math.PI);
+            const start = x + facing * 12, end = x + facing * warriorSkillTuning.badao.range;
+            g.fillColor = new Color(174, 237, 236, Math.round(130 * fade));
+            g.moveTo(start, y + 14); g.lineTo(end, y + 7); g.lineTo(end, y - 2); g.lineTo(start, y - 8); g.close(); g.fill();
+            g.strokeColor = new Color(244, 255, 252, Math.round(230 * fade)); g.lineWidth = 3;
+            g.moveTo(start, y + 4); g.lineTo(end, y + 3); g.stroke();
+        } else if (id === 'bengshan' && p >= 0.70 && p <= 0.96) {
+            const fade = (0.96 - p) / 0.26;
+            g.strokeColor = new Color(255, 190, 120, Math.round(210 * fade)); g.lineWidth = 3;
+            g.circle(x, this.model.y, 48); g.stroke();
+            for (let i = 0; i < 8; i++) {
+                const a = i * Math.PI / 4;
+                g.moveTo(x + Math.cos(a) * 16, this.model.y + Math.sin(a) * 9);
+                g.lineTo(x + Math.cos(a) * 58, this.model.y + Math.sin(a) * 29);
+            }
+            g.stroke();
+        } else if (id === 'earth' && p >= 0.72 && p <= 0.98) {
+            const pulse = Math.min(1, (p - 0.72) / 0.24), fade = 1 - pulse * 0.65;
+            const radius = 24 + pulse * warriorSkillTuning.earth.range;
+            g.strokeColor = new Color(255, 129, 81, Math.round(230 * fade)); g.lineWidth = 6 * fade;
+            g.circle(x, this.model.y, radius); g.stroke();
+            g.strokeColor = new Color(255, 218, 150, Math.round(220 * fade)); g.lineWidth = 2;
+            for (let i = 0; i < 12; i++) {
+                const a = i * Math.PI / 6;
+                const inner = 14 + (i % 3) * 5;
+                g.moveTo(x + Math.cos(a) * inner, this.model.y + Math.sin(a) * inner * 0.65);
+                g.lineTo(x + Math.cos(a) * (radius + 10), this.model.y + Math.sin(a) * (radius + 10) * 0.65);
+            }
+            g.stroke();
         }
+    }
+
+    private slashBand(g: Graphics, centerX: number, centerY: number, length: number, width: number,
+        angle: number, color: Color, facing: number): void {
+        const direction = { x: Math.cos(angle) * facing, y: Math.sin(angle) };
+        const side = { x: -direction.y, y: direction.x };
+        const a = { x: centerX - direction.x * length / 2, y: centerY - direction.y * length / 2 };
+        const b = { x: centerX + direction.x * length / 2, y: centerY + direction.y * length / 2 };
+        g.fillColor = color;
+        g.moveTo(a.x + side.x * width / 2, a.y + side.y * width / 2);
+        g.lineTo(b.x + side.x * width / 2, b.y + side.y * width / 2);
+        g.lineTo(b.x - side.x * width / 2, b.y - side.y * width / 2);
+        g.lineTo(a.x - side.x * width / 2, a.y - side.y * width / 2);
         g.close(); g.fill();
-        g.strokeColor = new Color(223, 255, 251, alpha); g.lineWidth = 2;
-        g.stroke();
     }
 
     private drawEnemies(g: Graphics): void {

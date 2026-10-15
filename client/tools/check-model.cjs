@@ -5,6 +5,16 @@ const assert = require('node:assert/strict');
 const editor = process.argv[2];
 if (!editor) throw new Error('Pass Creator installation directory as the first argument');
 const ts = require(path.join(editor, 'resources/app.asar.unpacked/node_modules/typescript'));
+for (const name of ['CombatModel.ts', 'EnemyModel.ts', 'WarriorView.ts', 'WarriorSkillsModel.ts', 'Prototype.ts']) {
+    const file = path.join(__dirname, '../assets/scripts', name);
+    const checked = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
+        fileName: file,
+        reportDiagnostics: true,
+        compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
+    });
+    const errors = (checked.diagnostics || []).filter(item => item.category === ts.DiagnosticCategory.Error);
+    assert.equal(errors.length, 0, `${name} should transpile without syntax errors: ${errors.map(item => item.messageText).join('; ')}`);
+}
 const source = fs.readFileSync(path.join(__dirname, '../assets/scripts/CombatModel.ts'), 'utf8');
 const result = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
 const mod = { exports: {} };
@@ -44,25 +54,56 @@ advance(c, 0.1, -1, 0); const facing = c.facing;
 advance(c, 0.1, 0, 1); assert.equal(c.facing, facing, 'depth movement must retain facing');
 console.log('PASS: tap, timeout, buffer, hold loop, reset, axis speeds, diagonal and facing');
 
-const waveSource = fs.readFileSync(path.join(__dirname, '../assets/scripts/SwordWaveModel.ts'), 'utf8');
-const waveResult = ts.transpileModule(waveSource, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
-const waveMod = { exports: {} };
-new Function('module', 'exports', waveResult.outputText)(waveMod, waveMod.exports);
-const { SwordWaveModel, swordWaveTuning } = waveMod.exports;
-const wave = new SwordWaveModel();
-assert.equal(wave.cast(), true, 'ready skill must cast');
-assert.equal(wave.cast(), false, 'skill cannot recast during wind-up');
-assert.equal(wave.waveProgress, null, 'wind-up must not produce an early wave');
-wave.update(swordWaveTuning.windupDuration + swordWaveTuning.waveDuration * 0.4);
-const radius = wave.waveRadius;
-assert.ok(radius > swordWaveTuning.startRadius && radius < swordWaveTuning.maxRadius, 'wave radius must expand');
-assert.equal(wave.hitsTarget(1, radius, 0, 0, 0, 1), true, 'front target on the arc must be hit');
-assert.equal(wave.hitsTarget(2, radius, 1, 0, 0, 1), true, 'a second target on the same arc must also be hit');
-assert.equal(wave.hitsTarget(1, radius, 0, 0, 0, 1), false, 'one wave must not hit one target twice');
-assert.equal(wave.hitsTarget(3, -radius, 0, 0, 0, 1), false, 'wave must not hit behind the facing direction');
-assert.equal(wave.hitsTarget(4, radius * 1.8, 0, 0, 0, 1), false, 'targets outside the current arc band must not be hit');
-assert.equal(wave.mana, swordWaveTuning.maxMana - swordWaveTuning.manaCost, 'casting must spend temporary mana');
-assert.ok(wave.cooldown > 0, 'casting must start a cooldown');
-wave.reset();
-assert.equal(wave.ready, true, 'encounter reset restores the prototype skill');
-console.log('PASS: sword-wave wind-up, expansion, piercing hits, single-hit rule, mana and cooldown');
+const skillSource = fs.readFileSync(path.join(__dirname, '../assets/scripts/WarriorSkillsModel.ts'), 'utf8');
+const skillResult = ts.transpileModule(skillSource, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
+const skillMod = { exports: {} };
+new Function('module', 'exports', skillResult.outputText)(skillMod, skillMod.exports);
+const { WarriorSkillsModel, warriorSkillTuning } = skillMod.exports;
+const skills = new WarriorSkillsModel();
+assert.equal(skills.cast('cross', 1), true, 'ready 十字斩 must cast');
+assert.equal(skills.cast('badao', 1), false, 'only one skill can be active at a time');
+assert.equal(skills.mana, 92, 'skill must spend shared prototype mana');
+let crossImpacts = 0;
+for (let i = 0; i < Math.ceil(warriorSkillTuning.cross.duration * 1000); i++) {
+    skills.update(0.001);
+    if (skills.lastImpact === 'cross') crossImpacts++;
+}
+assert.equal(crossImpacts, 1, '十字斩 resolves one impact event per cast');
+assert.ok(skills.cooldown('cross') > 0, 'cast starts an independent cooldown');
+assert.equal(skills.cast('cross', 1), false, 'cooldown blocks immediate recast');
+
+skills.cancel();
+skills.reset();
+assert.equal(skills.cast('bengshan', 1), true, '崩山击 must cast');
+let travel = 0, peakLift = 0, bengshanImpacts = 0;
+for (let i = 0; i < Math.ceil(warriorSkillTuning.bengshan.duration * 1000); i++) {
+    skills.update(0.001);
+    travel += skills.motionDelta;
+    peakLift = Math.max(peakLift, skills.jumpLift);
+    if (skills.lastImpact === 'bengshan') bengshanImpacts++;
+}
+assert.ok(Math.abs(travel - 34) < 0.2, '崩山击 should use its short leap movement, not a generic dash');
+assert.ok(peakLift > 20, '崩山击 should show a visible hop');
+assert.equal(bengshanImpacts, 1, '崩山击 resolves one landing impact');
+
+skills.reset();
+assert.equal(skills.cast('badao', -1), true, '拔刀斩 must cast');
+assert.equal(skills.facing, -1, '拔刀斩 keeps the facing captured at cast start');
+assert.equal(skills.cast('earth', 1), false, 'ultimate cannot overlap an active skill');
+for (let i = 0; i < Math.ceil(warriorSkillTuning.badao.duration * 1000); i++) skills.update(0.001);
+assert.equal(skills.cast('earth', -1), true, '崩山裂地斩 must cast after the prior action ends');
+let earthImpacts = 0, earthPeakLift = 0, liftAtImpact = -1;
+for (let i = 0; i < Math.ceil(warriorSkillTuning.earth.duration * 1000); i++) {
+    skills.update(0.001);
+    earthPeakLift = Math.max(earthPeakLift, skills.jumpLift);
+    if (skills.lastImpact === 'earth') { earthImpacts++; liftAtImpact = skills.jumpLift; }
+}
+assert.equal(earthImpacts, 1, 'ultimate resolves one large impact');
+assert.ok(earthPeakLift > 45, 'ultimate has a clearly larger leap');
+assert.ok(liftAtImpact < 0.5, 'ultimate should land at the impact moment');
+assert.ok(warriorSkillTuning.earth.damage > warriorSkillTuning.cross.damage, 'ultimate has a stronger temporary damage value');
+assert.equal(skills.mana, 44, 'all skills use the same temporary mana pool');
+skills.reset();
+assert.equal(skills.mana, skills.maxMana, 'encounter reset restores skill mana and cooldowns');
+assert.equal(skills.ready('earth'), true, 'encounter reset restores ultimate readiness');
+console.log('PASS: four warrior skills, shared mana, independent cooldowns, one impact, lunge/jump motion and reset');

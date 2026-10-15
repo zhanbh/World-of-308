@@ -56,12 +56,12 @@ export class EnemyModel {
         this.y += Math.sign(dy) * Math.min(Math.abs(dy), 25 * dt);
     }
 
-    hit(fromX: number): void {
+    hit(fromX: number, damage = 1, knockback = 88): void {
         if (this.state === 'dead' || this.state === 'stunned') return;
-        this.hp--;
+        this.hp = Math.max(0, this.hp - damage);
         this.flash = 0.12;
         this.state = this.hp <= 0 ? 'dead' : 'stunned';
         this.timer = 0.28;
-        this.knockX = this.x >= fromX ? 88 : -88;
+        this.knockX = this.x >= fromX ? knockback : -knockback;
     }
 }
