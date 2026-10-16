@@ -5,18 +5,19 @@
 </style>
 <h1>战士四技能 · 命中反馈</h1><p>30血耐打靶：僵直 / 击倒 / 起身 · 5秒流血红色心跳脉冲；命中顿帧与像素火花起调版。拔刀斩保留单刀蓄力v2。<a href="/">返回普攻评审</a></p>
 <canvas width="960" height="440" aria-label="战士四技能动画"></canvas>
-<div class="controls"><button data-skill="cross">十字斩 E</button><button data-skill="bengshan">崩山击 F</button><button data-skill="badao">拔刀斩 Q</button><button data-skill="earth">崩山裂地斩 G</button><button id="attack">接一段普攻</button></div>
+<div class="controls"><button data-skill="cross">十字斩 E</button><button data-skill="bengshan">崩山击 F</button><button data-skill="badao">拔刀斩 Q</button><button data-skill="earth">崩山裂地斩 G</button><button id="attack">接一段普攻</button><button id="hold-attack" aria-pressed="false">持续普攻：关</button></div>
 <div class="controls"><select id="speed" aria-label="播放速度"><option value="1">1× 正常速度</option><option value="0.25">0.25× 慢放</option></select><select id="zoom" aria-label="角色显示大小"><option value="1">游戏显示尺寸</option><option value="2" selected>2× 放大检查</option></select><button id="pause">暂停</button><button id="step">前进 10ms</button><button id="step100">前进100ms</button><button id="face">转身</button><button id="interrupt">模拟受击打断</button><button id="reset">重置</button></div>
 <div class="controls" aria-label="命中反馈对比"><button id="toggle-stop" aria-pressed="true">顿帧：开</button><button id="toggle-sparks" aria-pressed="true">火花：开</button><button id="toggle-numbers" aria-pressed="true">跳字：开</button><button id="toggle-shake" aria-pressed="true">震动：开</button><button id="replay">同条件重播</button></div>
 <p>比较方法：选一招 → 切换顿帧、火花、跳字或震动 → 同条件重播。重播恢复靶怪30血并清空残留，保留朝向、倍速与开关。先以1×判断手感，再慢放检查。所有时间均显示当前播放倍速下的评审时间。</p>
 <div class="controls"><button id="walk">步行动作</button><button id="run">跑动动作</button><button id="stop">停步动作</button><button id="hurt">受击动作</button></div>
+<div class="controls"><select id="attack-speed" aria-label="普攻攻速"><option value="1">1.0× 普攻攻速</option><option value="1.25">1.25× 普攻攻速</option><option value="1.5">1.5× 普攻攻速</option></select><select id="cancel-target" aria-label="取消后释放的技能"><option value="cross">十字斩</option><option value="bengshan">崩山击</option><option value="badao">拔刀斩</option><option value="earth">崩山裂地斩</option></select><select id="earth-distance" aria-label="大崩起手方向"><option value="0">大崩：默认前跳</option><option value="1">大崩：按前远跳</option><option value="-1">大崩：按后对照</option></select><button id="cancel-skill">取消普攻接技能</button></div><output id="cancel-status">技能可用时立即取消普攻；冷却、缺蓝或受击硬直时保留当前动作。</output>
 <output id="feedback-status"></output>
 <output id="status">加载图集…</output><output id="target-status">靶怪状态</output><p>每次点击技能从头播放并恢复蓝量/CD，靶怪归位但保留受击和流血状态，可连续命中检查刷新5秒。重置清除全部状态。按 ←/→ 可在后摇开放后走开，观察地面残留。十字2段、崩山3段、拔刀1段、大崩4段；每招总伤害暂保持不变，平均分配到各段。十字飞行速度与穿透暂用于评审，可调整。</p><p>与游戏共用敌人、命中、技能时序和效果寿命模型；Canvas特效为示意。流血本轮先展示红色脉冲，是否持续扣血已确认，数值与伤害接入待完成。实际战斗和手机触控需Cocos构建复评。</p>
 <script type="module">
 import { CombatModel } from '/CombatModel.js';
 import { basicAttacks, attackAtlas, attackFrame, attackVisibleRect } from '/WarriorAttackAnimation.js';
 import { skillAnimations, skillAtlas, skillFrame, skillCuePixels, bodyAtlas, bodyVisibleRect, WarriorBodyAnimation } from '/WarriorSkillAnimation.js';
-import { WarriorSkillsModel, warriorSkillNames, warriorSkillTuning } from '/WarriorSkillsModel.js';
+import { WarriorSkillsModel, warriorSkillNames, warriorSkillTuning, tryCastWarriorSkill } from '/WarriorSkillsModel.js';
 import { WarriorSkillEffects } from '/WarriorSkillEffects.js';
 import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText } from '/EnemyModel.js';
 const model=new CombatModel(),skills=new WarriorSkillsModel(),effects=new WarriorSkillEffects();
@@ -28,7 +29,7 @@ try { await Promise.all([load('attack','/atlas.png'),load('body','/warrior-body-
 catch(error) { document.querySelector('#status').textContent='技能图集加载失败，请刷新页面；持续失败时检查预览服务。'; throw error; }
 let paused=false,facing=1,accumulator=0,previous=performance.now(),travel=0,hits=0,axis=0,motionMode='walk',lastSkill='bengshan',reviewTime=0,combatTime=0;
 const state={model,skills,effects,ready:true,frame:0,speed:1,zoom:2,tick,cast};window.skillPreview=state;
-function cast(id){axis=0;model.hp=100;model.hitStun=model.invulnerable=model.knockX=0;body.reset();lastSkill=id;reviewTime=combatTime=accumulator=0;feedback.clear([target]);model.reset();skills.reset();travel=0;hits=0;if(target.state==='dead')target=new EnemyModel(45,0,0,30);target.x=facing*45;target.y=0;skills.cast(id,facing);draw();}
+function cast(id){axis=0;model.hp=100;model.x=model.y=0;model.hitStun=model.invulnerable=model.knockX=0;body.reset();lastSkill=id;reviewTime=combatTime=accumulator=0;feedback.clear([target]);model.reset();skills.reset();travel=0;hits=0;if(target.state==='dead')target=new EnemyModel(45,0,0,30);target.x=facing*45;target.y=0;skills.cast(id,facing,id==='earth'?Number(document.querySelector('#earth-distance').value)*facing:axis);draw();}
 function tick(dt){accumulator+=dt;while(accumulator>=1/120){
  reviewTime+=1/120;
  if(feedback.update(1/120)){accumulator-=1/120;continue;}
@@ -36,10 +37,10 @@ function tick(dt){accumulator+=dt;while(accumulator>=1/120){
  target.update(1/120,model,true);
  effects.update(1/120);skills.update(1/120);
  if(skills.casting&&skills.canMove&&axis)skills.cancel();
- travel+=skills.motionDelta;
+ travel=Math.max(-218,Math.min(218,travel+skills.motionDelta));
  hits+=skills.resolveHits([target],travel,0);
  if(skills.lastImpact){effects.impact(skills.lastImpact,travel,0,skills.facing);feedback.groundImpact(skills.lastImpact);}
- const priorContact=model.impactId;model.update(1/120,0,0);
+ const priorContact=model.impactId;model.update(1/120,0,0);travel=Math.max(-218,Math.min(218,travel+model.attackMotionDelta));
  if(model.impactId!==priorContact&&target.state!=='dead'&&Math.abs(target.x-travel)<=52&&(target.x-travel)*facing>=-8&&Math.abs(target.y)<=23){target.hit(travel);hits++;}
  if(!skills.casting)travel=Math.max(-160,Math.min(160,travel+axis*(motionMode==='run'?100:50)/120));
  body.update(1/120,axis!==0,motionMode==='run',model.hitStun,skills.casting||model.stage>=0,model.hp<=0);
@@ -67,7 +68,8 @@ function targetArt(){
  if(target.state!=='dead'){ctx.fillStyle='#10181b';ctx.fillRect(-23,-62,46,6);ctx.fillStyle='#ff967c';ctx.fillRect(-22,-61,44*target.hp/target.maxHp,4);}ctx.restore();
 }
 function draw(){
- document.querySelector('#feedback-status').textContent=`顿帧${feedback.hitStopEnabled?'开':'关'} · 火花${feedback.sparksEnabled?'开':'关'} · 评审时间 ${Math.round(reviewTime*1000)}ms · 战斗时间 ${Math.round(combatTime*1000)}ms · 当前停顿 ${Math.round(feedback.stopLeft*1000)}ms · 跳字${feedback.numbersEnabled?'开':'关'} · 震动 ${feedback.shakeOffset.x},${feedback.shakeOffset.y}`;
+ document.querySelector('#hold-attack').textContent=`持续普攻：${model.held?'开':'关'}`;document.querySelector('#hold-attack').setAttribute('aria-pressed',String(model.held));
+ document.querySelector('#feedback-status').textContent=`顿帧${feedback.hitStopEnabled?'开':'关'} · 火花${feedback.sparksEnabled?'开':'关'} · 评审时间 ${Math.round(reviewTime*1000)}ms · 战斗时间 ${Math.round(combatTime*1000)}ms · 当前停顿 ${Math.round(feedback.stopLeft*1000)}ms · 普攻本段${model.stageAttackSpeed.toFixed(2)}× / 后续${model.attackSpeedMultiplier.toFixed(2)}× · 跳字${feedback.numbersEnabled?'开':'关'} · 震动 ${feedback.shakeOffset.x},${feedback.shakeOffset.y}`;
 
  const id=skills.activeId;let key=id||'attack',frame=0,atlas=id?skillAtlas:attackAtlas;
  if(id)frame=skillFrame(id,skills.elapsed);else if(model.stage>=0){key='attack';frame=attackFrame(model.stage,model.elapsed);atlas=attackAtlas;}
@@ -94,10 +96,17 @@ function draw(){
  for(const number of feedback.numbers){const p=number.age/hitFeedbackTuning.numberLife;ctx.globalAlpha=Math.min(1,(1-p)*2);ctx.fillStyle=number.heavy?'#ffbc63':'#ffefd2';ctx.fillText(damageText(number.damage),number.x*2,-(number.y+p*12)*2);}
  ctx.restore();
  const charge=id==='badao'&&skills.elapsed>=skillAnimations.badao.chargeStart&&skills.elapsed<skillAnimations.badao.chargeEnd;
- document.querySelector('#status').textContent=`${id?warriorSkillNames[id]:body.frame===5||body.frame===6?'受击':body.frame===4?'急停':axis?motionMode==='run'?'跑动':'步行':model.stage<0?'待机':basicAttacks[model.stage].name}${charge?' · 收腰蓄力':''} · 帧 ${frame+1} · ${Math.round((id?skills.elapsed:model.elapsed)*1000)}ms · 命中 ${hits} · 残留 ${effects.items.length} · 高度 ${skills.jumpLift.toFixed(1)}`;
+ document.querySelector('#status').textContent=`${id?warriorSkillNames[id]:body.frame===5||body.frame===6?'受击':body.frame===4?'急停':axis?motionMode==='run'?'跑动':'步行':model.stage<0?'待机':basicAttacks[model.stage].name}${charge?' · 收腰蓄力':''} · 帧 ${frame+1} · ${Math.round((id?skills.elapsed:model.elapsed)*1000)}ms · 命中 ${hits} · 残留 ${effects.items.length} · 高度 ${skills.jumpLift.toFixed(1)} · 地面X ${travel.toFixed(1)} · 大崩距离 ${skills.leapDistance}`;
  const states={approach:'站立',stunned:'僵直',knockedDown:'倒地',gettingUp:'起身',dead:'死亡',telegraph:'预警',attack:'攻击',recover:'恢复'};
  document.querySelector('#target-status').textContent=`靶怪 ${Number(target.hp.toFixed(2))}/${target.maxHp} · ${states[target.state]} ${target.timer>0?target.timer.toFixed(2)+'s':''} · 流血 ${target.bleedLeft.toFixed(2)}s · 红色脉冲 ${target.bleedPulse.toFixed(2)}`;
 }
+document.querySelector('#attack-speed').onchange=e=>{model.setAttackSpeedBonuses({buff:Number(e.target.value)-1});draw();};
+document.querySelector('#cancel-skill').onclick=()=>{
+ model.facing=facing;const wasAttacking=model.stage>=0;
+ const ok=tryCastWarriorSkill(model,skills,document.querySelector('#cancel-target').value,feedback,axis);
+ document.querySelector('#cancel-status').textContent=ok?(wasAttacking?'已立即取消普攻，释放技能；普攻缓存已清空。':'已释放技能。'):'技能未释放：冷却、缺蓝、受击硬直或已有技能；普攻状态保留。';
+ if(ok){body.reset();axis=0;}draw();
+};
 document.querySelector('#walk').onclick=()=>{skills.cancel();model.reset();axis=facing;motionMode='walk';draw();};
 document.querySelector('#run').onclick=()=>{skills.cancel();model.reset();axis=facing;motionMode='run';draw();};
 document.querySelector('#stop').onclick=()=>{axis=0;draw();};
@@ -116,8 +125,9 @@ document.querySelector('#toggle-shake').onclick=e=>{
 };
 document.querySelector('#replay').onclick=()=>{effects.clear();target=new EnemyModel(facing*45,0,0,30);cast(lastSkill);};
 document.querySelectorAll('[data-skill]').forEach(button=>button.onclick=()=>cast(button.dataset.skill));
+document.querySelector('#hold-attack').onclick=e=>{if(skills.casting)return;if(model.held){model.release();}else{model.press();}e.currentTarget.setAttribute('aria-pressed',String(model.held));e.currentTarget.textContent=`持续普攻：${model.held?'开':'关'}`;};
 document.querySelector('#attack').onclick=()=>{if(!skills.casting){model.press();model.release();}};
-document.querySelector('#reset').onclick=()=>{feedback.clear();body.reset();model.reset();skills.reset();effects.clear();target=new EnemyModel(facing*45,0,0,30);axis=0;model.hp=100;model.hitStun=model.invulnerable=model.knockX=0;travel=hits=accumulator=reviewTime=combatTime=0;draw();};
+document.querySelector('#reset').onclick=()=>{feedback.clear();body.reset();model.reset();skills.reset();effects.clear();target=new EnemyModel(facing*45,0,0,30);axis=0;model.hp=100;model.x=model.y=0;model.hitStun=model.invulnerable=model.knockX=0;travel=hits=accumulator=reviewTime=combatTime=0;draw();};
 document.querySelector('#interrupt').onclick=()=>{skills.cancel();model.takeHit(1);draw();};
 document.querySelector('#speed').onchange=e=>state.speed=Number(e.target.value);
 document.querySelector('#zoom').onchange=e=>{state.zoom=Number(e.target.value);draw();};

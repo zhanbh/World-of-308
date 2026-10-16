@@ -3,11 +3,27 @@ import { basicAttacks } from './WarriorAttackAnimation';
 /** Movement and three-beat combo timing. Units are source pixels/seconds. */
 export const tuning = {
     deadZone: 0.15, horizontalSpeed: 100, depthSpeed: 45,
-    comboWindow: 0.3, bufferWindow: 0.12,
+    comboWindow: 0.3, bufferWindow: 0.12, basicForwardStep: 1.2,
     durations: basicAttacks.map(action => action.duration),
 };
 
+export interface AttackSpeedBonuses { attributes: number; equipment: number; passive: number; buff: number; }
+/** Prototype guardrails only; final stat conversion/limits belong to numeric design. */
+export const attackSpeedTuning = { minMultiplier: .25, maxMultiplier: 3, presets: [1, 1.25, 1.5] };
 export class CombatModel {
+    private speedBonuses: AttackSpeedBonuses = { attributes: 0, equipment: 0, passive: 0, buff: 0 };
+    stageAttackSpeed = 1;
+    get attackSpeedMultiplier(): number {
+        const bonus = this.speedBonuses.attributes + this.speedBonuses.equipment + this.speedBonuses.passive + this.speedBonuses.buff;
+        return Math.max(attackSpeedTuning.minMultiplier, Math.min(attackSpeedTuning.maxMultiplier, 1 + bonus));
+    }
+    setAttackSpeedBonuses(bonuses: Partial<AttackSpeedBonuses>): void {
+        for (const key of Object.keys(bonuses) as (keyof AttackSpeedBonuses)[]) {
+            const value = bonuses[key];
+            if (value !== undefined && Number.isFinite(value)) this.speedBonuses[key] = value;
+        }
+    }
+
     x = 0;
     y = 0;
     facing = 1;
@@ -24,19 +40,20 @@ export class CombatModel {
     invulnerable = 0;
     knockX = 0;
     impactId = 0;
+    attackMotionDelta = 0;
     private impactSent = false;
 
     press(): void {
         if (this.hp <= 0 || this.hitStun > 0) return;
         this.held = true;
         if (this.stage < 0) this.begin();
-        else if (tuning.durations[this.stage] - this.elapsed <= tuning.bufferWindow) this.buffered = true;
+        else if ((tuning.durations[this.stage] - this.elapsed) / this.stageAttackSpeed <= tuning.bufferWindow) this.buffered = true;
     }
 
     release(): void { this.held = false; }
 
     reset(): void {
-        this.elapsed = 0;
+        this.attackMotionDelta = 0;        this.elapsed = 0;
         this.stage = -1;
         this.nextStage = 0;
         this.windowLeft = 0;
@@ -46,6 +63,7 @@ export class CombatModel {
 
     private begin(): void {
         this.stage = this.nextStage;
+        this.stageAttackSpeed = this.attackSpeedMultiplier;
         this.elapsed = 0;
         this.windowLeft = 0;
         this.buffered = false;
@@ -53,6 +71,7 @@ export class CombatModel {
     }
 
     update(dt: number, axisX: number, axisY: number): void {
+        this.attackMotionDelta = 0;
         // The application advances in small fixed steps, independent of render FPS.
         if (this.hp <= 0) {
             this.moving = false;
@@ -61,7 +80,12 @@ export class CombatModel {
         }
         if (this.stage >= 0) {
             const oldElapsed = this.elapsed;
-            this.elapsed += dt;
+            this.elapsed += dt * this.stageAttackSpeed;
+            if (this.held && this.hitStun <= 0 && Math.abs(axisX) <= tuning.deadZone && Math.abs(axisY) <= tuning.deadZone) {
+                const duration = basicAttacks[this.stage].duration;
+                const progress = (time: number) => Math.max(0, Math.min(1, (time / duration - .2) / .45));
+                this.attackMotionDelta = (progress(this.elapsed) - progress(oldElapsed)) * tuning.basicForwardStep * this.facing;
+            }
             // Damage lands during the first visible stroke (one hit event per
             // combo beat; the paired sword motions are for animation feel).
             const impactAt = basicAttacks[this.stage].impact;
@@ -70,13 +94,13 @@ export class CombatModel {
                 this.impactId++;
             }
             if (this.elapsed >= tuning.durations[this.stage]) {
-                const overflow = this.elapsed - tuning.durations[this.stage];
+                const overflow = (this.elapsed - tuning.durations[this.stage]) / this.stageAttackSpeed;
                 this.nextStage = (this.stage + 1) % basicAttacks.length;
                 this.stage = -1;
                 this.windowLeft = tuning.comboWindow;
                 if (this.buffered || this.held) {
                     this.begin();
-                    this.elapsed = overflow;
+                    this.elapsed = overflow * this.stageAttackSpeed;
                 } else this.windowLeft = Math.max(0, this.windowLeft - overflow);
             }
         } else {
@@ -96,6 +120,7 @@ export class CombatModel {
             this.running = false;
             return;
         }
+        this.x = Math.max(-218, Math.min(218, this.x + this.attackMotionDelta));
         const locked = this.stage >= 0 && this.elapsed < basicAttacks[this.stage].moveAt;
         this.moving = !locked && (x !== 0 || y !== 0);
         this.running = this.moving && Math.abs(x) > 0.6;

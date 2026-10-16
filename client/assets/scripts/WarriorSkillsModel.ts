@@ -1,4 +1,6 @@
 /** Prototype-only skill timings, costs, damage and geometry (source pixels / seconds). */
+import { tuning } from './CombatModel';
+import type { CombatModel } from './CombatModel';
 import { skillAnimations, skillLift } from './WarriorSkillAnimation';
 import type { WarriorSkillId } from './WarriorSkillAnimation';
 import { EnemyModel, enemyFeedbackTuning, SkillHitLedger } from './EnemyModel';
@@ -44,6 +46,7 @@ export const skillHitStages: Record<WarriorSkillId, number[]> = {
     cross: [0.29, 0.34], bengshan: [0.24, 0.48, 0.68],
     badao: [0.44], earth: [0.88, 1.28, 1.50, 1.72],
 };
+export const earthLeapTuning = { defaultDistance: 64, forwardDistance: 100, takeoffAt: .28 };
 export const crossProjectile = { speed: 260, lifetime: 0.33, halfWidth: 22, halfDepth: 34 };
 interface SkillCast {
     id: WarriorSkillId; age: number; previous: number; facing: number;
@@ -64,6 +67,7 @@ export class WarriorSkillsModel {
     impactId = 0;
     lastImpact: WarriorSkillId | null = null;
     motionDelta = 0;
+    leapDistance = earthLeapTuning.defaultDistance;
     private impactSent = false;
     private movementFraction = 0;
     private cooldowns: Record<WarriorSkillId, number> = { cross: 0, bengshan: 0, badao: 0, earth: 0 };
@@ -83,7 +87,7 @@ export class WarriorSkillsModel {
         return !this.casting && this.cooldowns[id] <= 0 && this.mana >= warriorSkillTuning[id].manaCost;
     }
 
-    cast(id: WarriorSkillId, facing: number): boolean {
+    cast(id: WarriorSkillId, facing: number, axisX = 0): boolean {
         if (!this.ready(id)) return false;
         const config = warriorSkillTuning[id];
         this.hitLedger = new SkillHitLedger();
@@ -95,6 +99,7 @@ export class WarriorSkillsModel {
         this.activeId = id;
         this.elapsed = 0;
         this.facing = facing < 0 ? -1 : 1;
+        this.leapDistance = axisX * this.facing > tuning.deadZone ? earthLeapTuning.forwardDistance : earthLeapTuning.defaultDistance;
         this.impactSent = false;
         this.movementFraction = 0;
         this.motionDelta = 0;
@@ -118,6 +123,12 @@ export class WarriorSkillsModel {
             const easedProgress = 1 - (1 - movementProgress) * (1 - movementProgress);
             this.motionDelta = (easedProgress - this.movementFraction) * 34 * this.facing;
             this.movementFraction = easedProgress;
+        }
+        if (id === 'earth') {
+            const p = Math.max(0, Math.min(1, (this.elapsed - earthLeapTuning.takeoffAt) / (skillAnimations.earth.impactAt - earthLeapTuning.takeoffAt)));
+            const eased = p * p * (3 - 2 * p);
+            this.motionDelta = (eased - this.movementFraction) * this.leapDistance * this.facing;
+            this.movementFraction = eased;
         }
         if (!this.impactSent && oldElapsed < warriorSkillTuning[id].impactAt
             && this.elapsed >= warriorSkillTuning[id].impactAt) {
@@ -184,4 +195,12 @@ export class WarriorSkillsModel {
         this.movementFraction = 0;
         this.impactId = 0;
     }
+}
+
+/** Successful skill input atomically cancels the basic combo; rejected input changes nothing. */
+export function tryCastWarriorSkill(player: CombatModel, skills: WarriorSkillsModel, id: WarriorSkillId, feedback?: { stopLeft: number }, axisX = 0): boolean {
+    if (player.hp <= 0 || player.hitStun > 0 || !skills.cast(id, player.facing, axisX)) return false;
+    player.reset();
+    if (feedback) feedback.stopLeft = 0; // A deliberate cancel must not wait for the old contact stop.
+    return true;
 }

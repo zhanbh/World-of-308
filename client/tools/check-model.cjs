@@ -43,26 +43,28 @@ m.reset(); m.press(); m.release(); advance(m, tuning.durations[0] + 0.29);
 m.press(); m.release(); assert.equal(m.stage, 1, '290ms after action end must continue');
 m.reset(); m.press(); m.release(); advance(m, tuning.durations[0] + 0.31);
 m.press(); m.release(); assert.equal(m.stage, 0, '310ms after action end must restart');
-m.reset(); m.press(); m.release(); advance(m, 0.10); m.press(); m.release(); advance(m, 0.11);
-assert.equal(m.stage, 1, 'late tap must buffer exactly one next stage, even after key-up');
-advance(m, 0.23); assert.equal(m.stage, -1, 'buffer must be consumed once');
-m.reset(); m.press(); m.release(); advance(m, 0.02); m.press(); m.release(); advance(m, 0.20);
-assert.equal(m.stage, -1, 'early released tap must not buffer');
-m.reset(); m.press(); advance(m, 0.43);
-assert.equal(m.stage, 2, 'hold must advance to downward finisher');
-advance(m, 0.30); assert.equal(m.stage, 2, 'finisher recovery must finish before looping');
-advance(m, 0.06); assert.equal(m.stage, 0, 'hold loops after 780ms without an extra idle window');
-m.reset(); m.press(); advance(m, 0.43); m.release();
-advance(m, 0.30); assert.equal(m.windowLeft, 0, 'window must not start during finisher recovery');
-advance(m, 0.06); assert.ok(m.windowLeft > 0.28, 'window starts after finisher ends');
-const hits = new CombatModel(); hits.press();
-advance(hits, 0.079); assert.equal(hits.impactId, 0);
-advance(hits, 0.002); assert.equal(hits.impactId, 1, 'A contact is 80ms');
-advance(hits, 0.218); assert.equal(hits.impactId, 1);
-advance(hits, 0.002); assert.equal(hits.impactId, 2, 'B contact is 100ms after B start');
-advance(hits, 0.258); assert.equal(hits.impactId, 2);
-advance(hits, 0.002); assert.equal(hits.impactId, 3, 'C contact is 140ms after C start');
-advance(hits, 0.22); assert.equal(hits.impactId, 3, 'only one damage event per beat');
+m.reset(); m.press(); m.release(); advance(m, .17); m.press(); m.release(); advance(m, .12);
+assert.equal(m.stage, 1, 'late tap buffers one next stage');
+advance(m, .31); assert.equal(m.stage, -1, 'buffer is consumed once');
+m.reset(); m.press(); m.release(); advance(m, .02); m.press(); m.release(); advance(m, .27);
+assert.equal(m.stage, -1, 'early released tap does not buffer');
+const cycle=basicAttacks.reduce((sum,attack)=>sum+attack.duration,0);
+assert.equal(cycle,1,'new baseline is one second per combo');
+m.reset(); m.press(); advance(m,.59);assert.equal(m.stage,2);
+advance(m,.40);assert.equal(m.stage,2,'finisher recovery must finish');
+advance(m,.02);assert.equal(m.stage,0,'hold loops after 1000ms');
+m.reset(); m.press(); advance(m,.59);m.release();
+advance(m,.40);assert.equal(m.windowLeft,0);
+advance(m,.02);assert.ok(m.windowLeft>.28,'window begins after recovery');
+const hits = new CombatModel();hits.press();
+let total=0;
+for(let stage=0;stage<3;stage++){
+ const contact=basicAttacks.slice(0,stage).reduce((sum,a)=>sum+a.duration,0)+basicAttacks[stage].impact;
+ advance(hits,contact-total-.001);total=contact-.001;
+ assert.equal(hits.impactId,stage);
+ advance(hits,.002);total+=.002;assert.equal(hits.impactId,stage+1);
+}
+advance(hits,1-total-.001);assert.equal(hits.impactId,3,'one event per stage');
 assert.equal(hits.takeHit(10), true); assert.equal(hits.stage, -1); assert.equal(hits.nextStage, 0);
 assert.equal(hits.held, false, 'getting hit stops automatic continuation');
 for (let stage = 0; stage < basicAttacks.length; stage++) {
@@ -453,3 +455,81 @@ bodyMotion.update(.01,false,false,0,false,true);assert.equal(bodyMotion.frame,6,
 bodyMotion.reset();assert.equal(bodyMotion.frame,null);
 assert.equal(bodyAtlas.cellSize,416);assert.equal(bodyVisibleRect(8).left+bodyVisibleRect(8).width,416);
 console.log('PASS: four-pose gait, brake release, two-stage hurt priority, action locks, death/reset and body atlas geometry');
+
+const {tryCastWarriorSkill}=load('WarriorSkillsModel');
+for(const rate of [1,1.25,1.5]){
+ const actor=new CombatModel();actor.setAttackSpeedBonuses({attributes:.1,equipment:.1,passive:.05,buff:rate-1-.25});
+ assert.ok(Math.abs(actor.attackSpeedMultiplier-rate)<1e-10,'normal bonuses add before speed conversion');
+ actor.press();const observed=[];
+ for(let time=0;time<1/rate+.005;time+=.001){const before=actor.impactId;actor.update(.001,0,0);if(actor.impactId!==before)observed.push(time+.001);}
+ assert.equal(actor.impactId,3,'all three attacks land exactly once at '+rate);
+ for(let i=0;i<3;i++){
+  const expected=(basicAttacks.slice(0,i).reduce((sum,a)=>sum+a.duration,0)+basicAttacks[i].impact)/rate;
+  assert.ok(Math.abs(observed[i]-expected)<.003,'contact follows animation clock');
+ }
+ const tap=new CombatModel();tap.setAttackSpeedBonuses({buff:rate-1});tap.press();tap.release();
+ advance(tap,.28/rate+.29);tap.press();tap.release();assert.equal(tap.stage,1,'300ms continuation independent of speed');
+ const timeout=new CombatModel();timeout.setAttackSpeedBonuses({buff:rate-1});timeout.press();timeout.release();
+ advance(timeout,.28/rate+.31);timeout.press();assert.equal(timeout.stage,0);
+ const moving=new CombatModel();moving.setAttackSpeedBonuses({buff:rate-1});moving.press();moving.release();
+ advance(moving,.238/rate-.003,1,0);assert.equal(moving.x,0,'movement remains locked until scaled moveAt');
+ advance(moving,.006,1,0);assert.ok(moving.x>0);
+}
+const changed=new CombatModel();changed.press();advance(changed,.10);changed.setAttackSpeedBonuses({buff:.5});
+assert.equal(changed.stageAttackSpeed,1);advance(changed,.181);assert.equal(changed.stage,1);assert.equal(changed.stageAttackSpeed,1.5);
+const realBuffer=new CombatModel();realBuffer.setAttackSpeedBonuses({buff:.5});realBuffer.press();realBuffer.release();advance(realBuffer,.08);realBuffer.press();realBuffer.release();advance(realBuffer,.11);assert.equal(realBuffer.stage,1,'input buffer is 120ms of real combat time');
+for(const stage of [0,1,2])for(const id of ['cross','bengshan','badao','earth'])for(const afterContact of [false,true]){
+ const player=new CombatModel(),skillSet=new WarriorSkillsModel();player.nextStage=stage;player.press();
+ advance(player,afterContact?basicAttacks[stage].impact+.002:.01);
+ const damageBefore=player.impactId;
+ assert.equal(tryCastWarriorSkill(player,skillSet,id),true);
+ assert.equal(player.stage,-1);assert.equal(player.held,false);assert.equal(player.buffered,false);assert.equal(player.nextStage,0);
+ advance(player,1.5);assert.equal(player.impactId,damageBefore,'cancel preserves resolved hit and discards future contacts');assert.equal(player.stage,-1,'no automatic basic after skill');
+}
+for(const reason of ['mana','cooldown','hurt','dead','casting']){
+ const player=new CombatModel(),skillSet=new WarriorSkillsModel();player.press();advance(player,.02);
+ if(reason==='mana')skillSet.mana=0;
+ if(reason==='cooldown'){skillSet.cast('cross',1);skillSet.cancel();}
+ if(reason==='hurt')player.hitStun=.1;
+ if(reason==='dead')player.hp=0;
+ if(reason==='casting')skillSet.cast('badao',1);
+ const snapshot=JSON.stringify([player.stage,player.elapsed,player.nextStage,player.held,player.buffered,skillSet.mana]);
+ assert.equal(tryCastWarriorSkill(player,skillSet,'cross'),false,reason+' blocks cancellation');
+ assert.equal(JSON.stringify([player.stage,player.elapsed,player.nextStage,player.held,player.buffered,skillSet.mana]),snapshot,'failed cast is atomic');
+}
+console.log('PASS: additive attack-speed sources, 1/1.25/1.5 timings, stage snapshot, scaled movement, fixed combo/buffer and atomic basic-to-skill cancellation');
+
+const cancellingPlayer=new CombatModel(), cancellingSkills=new WarriorSkillsModel(), cancellingFeedback=new CombatFeedback();
+cancellingPlayer.press();cancellingFeedback.stopLeft=.05;
+assert.equal(tryCastWarriorSkill(cancellingPlayer,cancellingSkills,'cross',cancellingFeedback),true);
+assert.equal(cancellingFeedback.stopLeft,0,'successful cancel releases old basic hit-stop immediately');
+cancellingFeedback.stopLeft=.03;
+assert.equal(tryCastWarriorSkill(cancellingPlayer,cancellingSkills,'badao',cancellingFeedback),false);
+assert.equal(cancellingFeedback.stopLeft,.03,'rejected input does not clear combat feedback');
+console.log('PASS: immediate skill cancellation releases previous hit-stop only on success');
+
+const {earthLeapTuning}=load('WarriorSkillsModel');
+for(const dt of [1/120,1/60,1/30])for(const facing of [-1,1])for(const axis of [0,facing,-facing,.1*facing]){
+ const leap=new WarriorSkillsModel();leap.cast('earth',facing,axis);let moved=0;
+ for(let t=0;t<1.5;t+=dt){leap.update(dt);moved+=leap.motionDelta;if(t+dt<.28-1e-8)assert.equal(moved,0,'no movement before takeoff');}
+ const expected=axis===facing?earthLeapTuning.forwardDistance:earthLeapTuning.defaultDistance;
+ assert.ok(Math.abs(moved-expected*facing)<1e-8,'default/forward/reverse/deadzone jump distance is stable');
+ assert.equal(leap.jumpLift,0);
+}
+const cancelLeap=new WarriorSkillsModel();cancelLeap.cast('earth',1,1);cancelLeap.update(.4);const initialMotion=cancelLeap.motionDelta;assert.ok(initialMotion>0);cancelLeap.cancel();cancelLeap.update(.5);assert.equal(cancelLeap.motionDelta,0);
+const boundedLeap=new WarriorSkillsModel();boundedLeap.cast('earth',1,1);let roomX=200;
+for(let i=0;i<120;i++){boundedLeap.update(1/120);roomX=Math.min(218,Math.max(-218,roomX+boundedLeap.motionDelta));}
+assert.equal(roomX,218,'wall bounds constrain the actual landing center');
+const landingHits=new WarriorSkillsModel(),oldPositionTarget=new EnemyModel(-100,0,1000,100),landingTarget=new EnemyModel(100,0,1001,100);
+landingHits.cast('earth',1,1);let leapX=0;
+for(let i=0;i<300;i++){landingHits.update(.01);leapX+=landingHits.motionDelta;landingHits.resolveHits([oldPositionTarget,landingTarget],leapX,0);}
+assert.equal(oldPositionTarget.hp,100,'ground effect uses landing origin rather than launch origin');assert.equal(landingTarget.hp,97);
+for(const facing of [-1,1])for(const rate of [1,1.25,1.5]){
+ const stationary=new CombatModel();stationary.facing=facing;stationary.setAttackSpeedBonuses({buff:rate-1});stationary.press();advance(stationary,1/rate+.005);
+ assert.ok(Math.abs(stationary.x-3*tuning.basicForwardStep*facing)<1e-8,'one held cycle nudges equally at each attack speed');assert.equal(stationary.y,0);
+ stationary.release();const stoppedX=stationary.x;advance(stationary,1);assert.equal(stationary.x,stoppedX,'release stops forward nudge');
+}
+const tapped=new CombatModel();tapped.press();tapped.release();advance(tapped,.5);assert.equal(tapped.x,0,'single released tap does not auto walk');
+const depthAttack=new CombatModel();depthAttack.press();advance(depthAttack,.2,0,1);assert.equal(depthAttack.attackMotionDelta,0,'directional input suppresses automatic nudge');assert.equal(depthAttack.x,0);
+const interruptedWalk=new CombatModel();interruptedWalk.press();advance(interruptedWalk,.1);const interruptedX=interruptedWalk.x;assert.equal(tryCastWarriorSkill(interruptedWalk,new WarriorSkillsModel(),'cross'),true);advance(interruptedWalk,.5);assert.equal(interruptedWalk.x,interruptedX,'skill cancellation removes remaining basic nudge');
+console.log('PASS: default/forward earth leaps, facing/deadzone/FPS/bounds, landing-origin damage, cancellation and held-basic microstep');

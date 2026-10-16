@@ -3,10 +3,10 @@
 <style>
 *{box-sizing:border-box}body{margin:0;background:#101a22;color:#e2ebef;font:16px system-ui;max-width:1050px;padding:36px;margin:auto}h1{font-size:28px;margin-bottom:6px}p{color:#9db0bd;line-height:1.7}canvas{width:100%;background:#182934;border:1px solid #38505e;border-radius:12px;image-rendering:pixelated}button,select{font:inherit;color:inherit;background:#294252;border:1px solid #5b7c8e;padding:10px 16px;border-radius:7px;cursor:pointer}button:active{background:#4b736d}.controls{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}output{display:block;min-height:30px;color:#86dfc6;font-variant-numeric:tabular-nums}.track{display:flex;gap:4px;margin-top:16px}.beat{padding:12px;background:#23343f;border-radius:5px}.active{background:#397264}small{color:#9db0bd}
 </style>
-<h1>战士 · 三段普攻</h1><p>交叉斩 → 反手上挑 → 下劈收势 · 780ms 循环 · 连续动画草稿 v2 · <a href="/skills" style="color:#86dfc6">四技能动画评审</a></p>
+<h1>战士 · 三段普攻</h1><p>交叉斩 → 反手上挑 → 下劈收势 · 基础1000ms循环 · 连续动画草稿 v2 · <a href="/skills" style="color:#86dfc6">四技能动画评审</a></p>
 <canvas width="960" height="400" aria-label="战士三段普攻动画"></canvas>
 <div class="controls"><button id="loop">停止循环</button><button id="attack">点按 / 按住普攻</button><button id="reset">重置</button><select id="speed" aria-label="播放速度"><option value="1">1× 正常速度</option><option value="0.25">0.25× 慢放</option></select><button id="pause">暂停</button><button id="step">前进 10ms</button><button id="face">转身</button></div>
-<div class="controls"><button id="crop" aria-pressed="true">残片裁帧：开</button><select id="inspect" aria-label="逐帧检查"><option value="">选择问题帧</option><option value="4">A5 左侧残片</option><option value="5">A6 左侧残片</option><option value="9">B2 左侧残片</option><option value="11">B4 左侧残片</option></select></div><output id="status">加载帧组…</output><div class="track"><span class="beat">A 交叉斩 · 200ms</span><span class="beat">B 反手上挑 · 220ms</span><span class="beat">C 下劈收势 · 360ms</span></div>
+<div class="controls"><button id="crop" aria-pressed="true">残片裁帧：开</button><select id="inspect" aria-label="逐帧检查"><option value="">选择问题帧</option><option value="4">A5 左侧残片</option><option value="5">A6 左侧残片</option><option value="9">B2 左侧残片</option><option value="11">B4 左侧残片</option></select></div><div class="controls"><select id="attack-speed" aria-label="普攻攻速"><option value="1">1.0× 普攻攻速</option><option value="1.25">1.25× 普攻攻速</option><option value="1.5">1.5× 普攻攻速</option></select></div><output id="status">加载帧组…</output><div class="track"><span class="beat">A 交叉斩 · 280ms</span><span class="beat">B 反手上挑 · 300ms</span><span class="beat">C 下劈收势 · 420ms</span></div>
 <p>关闭循环后，点按只出一段，300ms 内再次点按接下一段；按住连续出招，松开在本段结束后停下。空格也可操作。慢放只影响播放速度，不改变动作时序。</p><small>与游戏共用 CombatModel 和逐帧时序。此页检查动画与输入，碰撞、技能和手机触控请在 Cocos 场景中评审。</small>
 <script type="module">
 import { CombatModel } from '/CombatModel.js';
@@ -25,12 +25,12 @@ function draw() {
  const frame=inspection===null?attackFrame(model.stage,model.elapsed):inspection; state.frame=frame;
  const w=image.width/attackAtlas.columns,h=image.height/attackAtlas.rows;
  ctx.clearRect(0,0,960,400); ctx.strokeStyle='#456172'; ctx.beginPath();ctx.moveTo(80,330);ctx.lineTo(880,330);ctx.stroke();
- ctx.save();ctx.translate(480,330);ctx.scale(facing,1);ctx.imageSmoothingEnabled=false;
+ ctx.save();ctx.translate(480+model.x*2,330);ctx.scale(facing,1);ctx.imageSmoothingEnabled=false;
  const corrected=frame===9&&cleaned;const activeImage=corrected?bodyImage:image;const cell=corrected?416:w;const crop=corrected?bodyVisibleRect(8):attackVisibleRect(frame,cleaned);
  const sx=corrected?2*416:frame%8*w,sy=corrected?2*416:Math.floor(frame/8)*h;
  const drawSize=corrected?400*416/320:400,anchorY=corrected?bodyAtlas.anchorY:attackAtlas.anchorY;
  ctx.drawImage(activeImage,sx+crop.left,sy,crop.width,cell,-drawSize/2+crop.left/cell*drawSize,-drawSize*(1-anchorY),crop.width/cell*drawSize,drawSize);ctx.restore();
- document.querySelector('#status').textContent=`${inspection!==null?'逐帧检查 '+basicAttacks[Math.floor(frame/8)].name:model.stage<0?'待机':basicAttacks[model.stage].name} · 帧 ${frame+1}/24 · 本段 ${Math.round(model.elapsed*1000)}ms · 命中 ${model.impactId}`;
+ document.querySelector('#status').textContent=`${inspection!==null?'逐帧检查 '+basicAttacks[Math.floor(frame/8)].name:model.stage<0?'待机':basicAttacks[model.stage].name} · 本段攻速 ${model.stageAttackSpeed.toFixed(2)}× / 后续 ${model.attackSpeedMultiplier.toFixed(2)}× · 帧 ${frame+1}/24 · 本段 ${Math.round(model.elapsed*1000)}ms · 命中 ${model.impactId} · 地面X ${model.x.toFixed(1)}`;
  document.querySelectorAll('.beat').forEach((el,i)=>el.classList.toggle('active',(inspection===null?model.stage:Math.floor(frame/8))===i));
 }
 document.querySelector('#crop').onclick=e=>{cleaned=!cleaned;e.currentTarget.textContent=`残片裁帧：${cleaned?'开':'关'}`;e.currentTarget.setAttribute('aria-pressed',String(cleaned));draw();};
@@ -40,7 +40,8 @@ const attack=document.querySelector('#attack');
 attack.onpointerdown=e=>{e.preventDefault();attack.setPointerCapture(e.pointerId);manual();model.press();};
 attack.onpointerup=()=>model.release();attack.onpointercancel=()=>{model.release();model.buffered=false;};
 document.querySelector('#loop').onclick=()=>{inspection=null;document.querySelector('#inspect').value='';paused=false;document.querySelector('#pause').textContent='暂停';loop=!loop;loop?model.press():model.release();document.querySelector('#loop').textContent=loop?'停止循环':'开始循环';};
-document.querySelector('#reset').onclick=()=>{model.reset();inspection=null;document.querySelector('#inspect').value='';accumulator=0;if(loop)model.press();draw();};
+document.querySelector('#reset').onclick=()=>{model.reset();model.x=model.y=0;inspection=null;document.querySelector('#inspect').value='';accumulator=0;if(loop)model.press();draw();};
+document.querySelector('#attack-speed').onchange=e=>{model.setAttackSpeedBonuses({buff:Number(e.target.value)-1});draw();};
 document.querySelector('#speed').onchange=e=>state.speed=Number(e.target.value);
 document.querySelector('#pause').onclick=e=>{inspection=null;document.querySelector('#inspect').value='';paused=!paused;e.target.textContent=paused?'继续':'暂停';draw();};
 document.querySelector('#step').onclick=()=>{paused=true;document.querySelector('#pause').textContent='继续';tick(.01);};

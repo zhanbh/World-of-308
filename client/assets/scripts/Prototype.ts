@@ -1,9 +1,9 @@
 import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
     input, Input, EventTouch, EventKeyboard, KeyCode, Vec3, view, ResolutionPolicy, game, Game } from 'cc';
-import { CombatModel, tuning } from './CombatModel';
+import { CombatModel, tuning, attackSpeedTuning } from './CombatModel';
 import { WarriorView } from './WarriorView';
 import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText } from './EnemyModel';
-import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning } from './WarriorSkillsModel';
+import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning, tryCastWarriorSkill } from './WarriorSkillsModel';
 import { WarriorSpriteSheetView } from './WarriorSpriteSheetView';
 import { WarriorSkillEffects } from './WarriorSkillEffects';
 import { skillCuePixels, WarriorBodyAnimation } from './WarriorSkillAnimation';
@@ -39,6 +39,7 @@ export class Prototype extends Component {
     private feedback = new CombatFeedback();
     private damageLabels: Label[] = [];
     private bodyAnimation = new WarriorBodyAnimation();
+    private speedLabels: Label[] = [];
     private lastImpactId = 0;
     private mode: 1 | 3 = 1;
     private retryTimer = 0;
@@ -66,6 +67,7 @@ export class Prototype extends Component {
         ];
         for (const button of skillButtons) this.skillLabels[button.id] = this.text(button.label, button.x, -65, 11, 62);
         this.text('受击预警 · 走出红框躲避', 0, -208, 16);
+        this.speedLabels = attackSpeedTuning.presets.map((rate, index) => this.text(`${rate}×`, -360 + index * 70, 126, 12, 64));
         this.restartEncounter();
         input.on(Input.EventType.TOUCH_START, this.touchStart, this);
         input.on(Input.EventType.TOUCH_MOVE, this.touchMove, this);
@@ -119,6 +121,11 @@ export class Prototype extends Component {
         const id = e.getID();
         if (id === null) return;
         const p = this.point(e);
+        if (p.y >= 110 && p.y <= 142 && p.x >= -394 && p.x <= -186) {
+            const index = Math.max(0, Math.min(2, Math.floor((p.x + 395) / 70)));
+            this.model.setAttackSpeedBonuses({ buff: attackSpeedTuning.presets[index] - 1 });
+            return;
+        }
         if (p.y > 145 && p.y < 190 && Math.abs(p.x - 255) < 40) {
             this.mode = 1; this.restartEncounter();
         } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 355) < 40) {
@@ -181,7 +188,7 @@ export class Prototype extends Component {
         this.frames++; this.fpsTime += dt;
         if (this.fpsTime >= 0.5) { this.fps = Math.round(this.frames / this.fpsTime); this.frames = this.fpsTime = 0; }
         const has = (a: KeyCode, b: KeyCode) => Number(this.keys.has(a) || this.keys.has(b));
-        const x = this.stickId !== null ? this.axis.x : has(KeyCode.KEY_D, KeyCode.ARROW_RIGHT) - has(KeyCode.KEY_A, KeyCode.ARROW_LEFT);
+        const x = this.horizontalInput();
         const y = this.stickId !== null ? this.axis.y : has(KeyCode.KEY_W, KeyCode.ARROW_UP) - has(KeyCode.KEY_S, KeyCode.ARROW_DOWN);
         this.accumulator += Math.min(dt, 0.1);
         while (this.accumulator >= 1 / 120) {
@@ -217,7 +224,9 @@ export class Prototype extends Component {
         const skillState = this.skills.activeId
             ? `${warriorSkillNames[this.skills.activeId]}出招`
             : '十字斩 / 崩山击 / 拔刀斩 / 崩山裂地斩';
-        this.status.string = `${this.fps} FPS | ${state} | ${this.model.stage < 0 ? (this.model.moving ? (this.model.running ? '跑' : '走') : '待机') : stages[this.model.stage]} | ${skillState}`;
+        this.status.string = `${this.fps} FPS | 攻速${this.model.attackSpeedMultiplier.toFixed(2)}× | ${state} | ${this.model.stage < 0 ? (this.model.moving ? (this.model.running ? '跑' : '走') : '待机') : stages[this.model.stage]} | ${skillState}`;
+        this.speedLabels.forEach((label, index) => label.color = new Color().fromHEX(
+            this.model.attackSpeedMultiplier === attackSpeedTuning.presets[index] ? '#a5ffcf' : '#d0dadd'));
         this.updateSkillLabels();
     }
 
@@ -285,6 +294,10 @@ export class Prototype extends Component {
                 Math.round(255 * Math.min(1, (1 - progress) * 2)));
             label.node.setPosition((number.x + shake.x) * 2, (number.y + progress * 12 + shake.y) * 2);
         });
+        for (let index = 0; index < attackSpeedTuning.presets.length; index++) {
+            this.rect(ui, -392 + index * 70, 112, 64, 28,
+                m.attackSpeedMultiplier === attackSpeedTuning.presets[index] ? '#376554' : '#293941');
+        }
         this.sortActorsByDepth();
         this.drawHealthBar(-330, 154, m.hp, 100, '#65d6b2');
         this.rect(this.controls, 220, 154, 70, 28, this.mode === 1 ? '#53757e' : '#293941');
@@ -327,10 +340,14 @@ export class Prototype extends Component {
         }
     }
 
+    private horizontalInput(): number {
+        return this.stickId !== null ? this.axis.x
+            : Number(this.keys.has(KeyCode.KEY_D) || this.keys.has(KeyCode.ARROW_RIGHT))
+                - Number(this.keys.has(KeyCode.KEY_A) || this.keys.has(KeyCode.ARROW_LEFT));
+    }
+
     private castSkill(id: WarriorSkillId): void {
-        if (this.model.hp <= 0 || this.model.hitStun > 0) return;
-        if (!this.skills.cast(id, this.model.facing)) return;
-        this.model.reset();
+        if (!tryCastWarriorSkill(this.model, this.skills, id, this.feedback, this.horizontalInput())) return;
         this.model.release();
         this.attackIds.clear();
     }
