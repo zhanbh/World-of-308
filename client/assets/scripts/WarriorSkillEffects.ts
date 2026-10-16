@@ -2,7 +2,7 @@ import type { WarriorSkillId } from './WarriorSkillAnimation';
 
 /** Seconds after contact. Also the minimum ultimate knockdown before standing up. */
 export const skillEffectLifetimes: Record<WarriorSkillId, number> = {
-    cross: 0.33, bengshan: 0.42, badao: 0.22, earth: 1.52,
+    cross: 0.38, bengshan: 0.42, badao: 0.22, earth: 1.52,
 };
 
 export interface SkillEffect {

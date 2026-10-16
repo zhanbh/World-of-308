@@ -1,7 +1,7 @@
 /** Prototype-only skill timings, costs, damage and geometry (source pixels / seconds). */
 import { skillAnimations, skillLift } from './WarriorSkillAnimation';
 import type { WarriorSkillId } from './WarriorSkillAnimation';
-import { EnemyModel, enemyFeedbackTuning } from './EnemyModel';
+import { EnemyModel, enemyFeedbackTuning, SkillHitLedger } from './EnemyModel';
 import { skillEffectLifetimes } from './WarriorSkillEffects';
 export type { WarriorSkillId } from './WarriorSkillAnimation';
 
@@ -24,7 +24,7 @@ export const warriorSkillNames: Record<WarriorSkillId, string> = {
 };
 
 /** Shared by the real encounter and the durable feedback review target. */
-export function applyWarriorSkillHit(id: WarriorSkillId, enemy: EnemyModel, x: number, y: number, facing: number): boolean {
+export function applyWarriorSkillHit(id: WarriorSkillId, enemy: EnemyModel, x: number, y: number, facing: number, ledger = new SkillHitLedger()): boolean {
     if (enemy.state === 'dead') return false;
     const config = warriorSkillTuning[id];
     const dx = (enemy.x - x) * facing, dy = enemy.y - y;
@@ -32,16 +32,30 @@ export function applyWarriorSkillHit(id: WarriorSkillId, enemy: EnemyModel, x: n
         : id === 'badao' ? dx >= 0 && dx <= config.range && Math.abs(dy) <= 24 + dx * 0.11
             : Math.hypot(dx, dy) <= config.range;
     if (!hit) return false;
-    enemy.hit(x, config.damage, id === 'earth' ? 110 : id === 'bengshan' ? 95 : 60, {
+    return ledger.hit(enemy, 0, x, config.damage, id === 'earth' ? 110 : id === 'bengshan' ? 95 : 60, {
         bleedFor: enemyFeedbackTuning.bleedDuration,
         knockdownFor: id === 'earth' ? skillEffectLifetimes.earth
             : id === 'bengshan' ? enemyFeedbackTuning.smallKnockdown : undefined,
     });
-    return true;
+}
+
+/** Provisional review timings and equal weights; whole-cast damage stays unchanged. */
+export const skillHitStages: Record<WarriorSkillId, number[]> = {
+    cross: [0.29, 0.34], bengshan: [0.24, 0.48, 0.68],
+    badao: [0.44], earth: [0.88, 1.28, 1.50, 1.72],
+};
+export const crossProjectile = { speed: 260, lifetime: 0.33, halfWidth: 22, halfDepth: 34 };
+interface SkillCast {
+    id: WarriorSkillId; age: number; previous: number; facing: number;
+    ledger: SkillHitLedger; done: Set<number>; origin?: { x: number; y: number };
+    launched: boolean; cancelled: boolean;
 }
 
 /** One local mana pool, four independently cooled-down moves and one active action. */
 export class WarriorSkillsModel {
+    hitLedger = new SkillHitLedger();
+    private casts: SkillCast[] = [];
+    private currentCast: SkillCast | null = null;
     readonly maxMana = 100;
     mana = this.maxMana;
     activeId: WarriorSkillId | null = null;
@@ -72,6 +86,10 @@ export class WarriorSkillsModel {
     cast(id: WarriorSkillId, facing: number): boolean {
         if (!this.ready(id)) return false;
         const config = warriorSkillTuning[id];
+        this.hitLedger = new SkillHitLedger();
+        this.currentCast = { id, age: 0, previous: 0, facing: facing < 0 ? -1 : 1,
+            ledger: this.hitLedger, done: new Set(), launched: false, cancelled: false };
+        this.casts.push(this.currentCast);
         this.mana -= config.manaCost;
         this.cooldowns[id] = config.cooldown;
         this.activeId = id;
@@ -87,6 +105,7 @@ export class WarriorSkillsModel {
     update(dt: number): void {
         this.lastImpact = null;
         this.motionDelta = 0;
+        for (const cast of this.casts) { cast.previous = cast.age; cast.age += dt; }
         for (const id of Object.keys(this.cooldowns) as WarriorSkillId[]) {
             this.cooldowns[id] = Math.max(0, this.cooldowns[id] - dt);
         }
@@ -109,7 +128,47 @@ export class WarriorSkillsModel {
         if (this.elapsed >= warriorSkillTuning[id].duration) this.activeId = null;
     }
 
+    /** Evaluate against current ground coordinates; emitted effects retain their own cast. */
+    resolveHits(enemies: EnemyModel[], x: number, y: number): number {
+        let hits = 0;
+        for (const cast of this.casts) {
+            const { id, facing, age, previous } = cast;
+            const times = skillHitStages[id];
+            if (!cast.cancelled && !cast.launched && age >= (id === 'cross' ? times[1] : times[0])) {
+                cast.origin = { x, y }; cast.launched = true;
+            }
+            for (let stage = 0; stage < times.length; stage++) {
+                const projectile = id === 'cross' && stage === 1;
+                const persistent = (id === 'earth' || projectile) && cast.launched;
+                if (cast.cancelled && !persistent) continue;
+                if (projectile ? !cast.launched || previous > times[stage] + crossProjectile.lifetime
+                    : cast.done.has(stage) || age + 1e-9 < times[stage]) continue;
+                if (!projectile) cast.done.add(stage);
+                const origin = persistent ? cast.origin! : { x, y };
+                for (const enemy of enemies) {
+                    const dx = (enemy.x - origin.x) * facing, dy = enemy.y - origin.y;
+                    const start = 29 + Math.max(0, previous - times[stage]) * crossProjectile.speed;
+                    const end = 29 + Math.min(crossProjectile.lifetime, Math.max(0, age - times[stage])) * crossProjectile.speed;
+                    const inside = projectile ? dx >= start - crossProjectile.halfWidth && dx <= end + crossProjectile.halfWidth && Math.abs(dy) <= crossProjectile.halfDepth
+                        : id === 'cross' ? dx >= -8 && dx <= warriorSkillTuning.cross.range && Math.abs(dy) <= 34
+                        : id === 'badao' ? dx >= 0 && dx <= warriorSkillTuning.badao.range && Math.abs(dy) <= 24 + dx * .11
+                        : Math.hypot(dx, dy) <= warriorSkillTuning[id].range;
+                    if (!inside) continue;
+                    const knockdownFor = id === 'earth' && stage === 0 ? Math.max(0, 2.4 - age)
+                        : id === 'bengshan' && stage === 2 ? enemyFeedbackTuning.smallKnockdown : undefined;
+                    if (cast.ledger.hit(enemy, stage, origin.x, warriorSkillTuning[id].damage / times.length,
+                        id === 'earth' ? 110 : id === 'bengshan' ? 95 : 60,
+                        { bleedFor: enemyFeedbackTuning.bleedDuration, knockdownFor })) hits++;
+                }
+            }
+        }
+        this.casts = this.casts.filter(cast => cast.age < (cast.id === 'cross' ? .67 : skillHitStages[cast.id].slice(-1)[0])
+            && (!cast.cancelled || cast.launched && (cast.id === 'cross' || cast.id === 'earth')));
+        return hits;
+    }
+
     cancel(): void {
+        if (this.currentCast && this.activeId) this.currentCast.cancelled = true;
         this.activeId = null;
         this.elapsed = 0;
         this.motionDelta = 0;
@@ -118,6 +177,7 @@ export class WarriorSkillsModel {
 
     reset(): void {
         this.cancel();
+        this.casts = []; this.currentCast = null;
         this.mana = this.maxMana;
         this.cooldowns = { cross: 0, bengshan: 0, badao: 0, earth: 0 };
         this.impactSent = false;

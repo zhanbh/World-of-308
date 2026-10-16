@@ -253,3 +253,85 @@ assert.equal(killed.state, 'dead', 'death takes precedence over knockdown');
 assert.equal(killed.bleedLeft, 0); assert.equal(killed.bleedPulse, 0);
 assert.equal(killed.timer, 0, 'dead enemies do not stand up later');
 console.log('PASS: skill-specific stun/knockdown, ultimate recovery, 5s refresh-only bleeding, heartbeat and death/miss cleanup');
+
+const { SkillHitLedger, enemyKnockdownPolicies } = load('EnemyModel');
+const normal = new EnemyModel(0, 0, 100, 100);
+const ledger = new SkillHitLedger();
+ledger.hit(normal, 0, 0, 10);
+ledger.hit(normal, 1, 0, 10);
+assert.equal(normal.state, 'stunned');
+assert.equal(ledger.hit(normal, 1, 0, 10), false, 'same stage cannot damage twice');
+ledger.hit(normal, 2, 0, 10);
+assert.equal(normal.state, 'knockedDown', '30 percent boundary includes equality');
+advanceEnemy(normal, 2);
+ledger.hit(normal, 3, 0, 1);
+assert.equal(normal.state, 'stunned', 'one cast does not knock down twice');
+new SkillHitLedger().hit(normal, 0, 0, 29);
+assert.equal(normal.state, 'stunned', 'new cast does not inherit previous damage');
+const elite = new EnemyModel(0, 0, 101, 100, enemyKnockdownPolicies.elite);
+new SkillHitLedger().hit(elite, 0, 0, 20);
+assert.equal(elite.state, 'knockedDown');
+const boss = new EnemyModel(0, 0, 102, 100, enemyKnockdownPolicies.boss);
+new SkillHitLedger().hit(boss, 0, 0, 40, 60, {knockdownFor: 2});
+assert.equal(boss.state, 'stunned', 'immunity also blocks forced knockdown');
+const other = new EnemyModel(0, 0, 103, 100);
+ledger.hit(other, 0, 0, 10);
+assert.equal(other.state, 'stunned', 'each target has its own total');
+const dying = new EnemyModel(0, 0, 104, 10);
+dying.hit(0, 1, 0, {knockdownFor: 1});
+dying.hit(0, 9);
+assert.equal(dying.downPose, 1, 'death preserves the downed silhouette');
+assert.equal(dying.deathOpacity, 1);
+advanceEnemy(dying, .18);
+assert.equal(dying.deathWhite, 1);
+assert.ok(dying.deathOpacity > .99);
+advanceEnemy(dying, .33);
+assert.equal(dying.deathOpacity, 0);
+dying.hit(0, 1); assert.equal(dying.hp, 0);
+console.log('PASS: per-cast/target/stage knockdown ledger, normal/elite boundaries, boss immunity and death fade');
+
+// Exercise the same multi-hit runner used by Cocos and Canvas, including residuals.
+for (const [id, count] of [['cross',2],['bengshan',3],['badao',1],['earth',4]]) {
+    const runner = new WarriorSkillsModel(), victim = new EnemyModel(40,0,200,100);
+    runner.cast(id,1);
+    let contacts=0;
+    for(let i=0;i<300;i++) {
+        runner.update(.01); contacts+=runner.resolveHits([victim],0,0);
+    }
+    assert.equal(contacts,count,id+' has the specified number of distinct hits');
+    assert.ok(Math.abs(victim.hp-(100-warriorSkillTuning[id].damage))<1e-8,'whole-cast damage is preserved');
+}
+const residual = new WarriorSkillsModel(), residualTarget = new EnemyModel(40,0,201,100);
+residual.cast('earth',1);
+for(let i=0;i<100;i++){residual.update(.01);residual.resolveHits([residualTarget],0,0);}
+residual.cancel();
+for(let i=0;i<150;i++){residual.update(.01);residual.resolveHits([residualTarget],-200,100);}
+assert.ok(Math.abs(residualTarget.hp-97)<1e-8,'emitted ground phases keep frozen origin after cancellation');
+const interrupted = new WarriorSkillsModel(), unhurt = new EnemyModel(40,0,202,100);
+interrupted.cast('earth',1);interrupted.update(.5);interrupted.resolveHits([unhurt],0,0);interrupted.cancel();
+interrupted.update(2);interrupted.resolveHits([unhurt],0,0);assert.equal(unhurt.hp,100,'pre-impact interruption emits nothing');
+const flying = new WarriorSkillsModel(), farA = new EnemyModel(105,0,203,100), farB = new EnemyModel(105,0,204,100);
+flying.cast('cross',1);
+let flightHits=0;
+for(let i=0;i<100;i++){flying.update(.01);flightHits+=flying.resolveHits([farA,farB],0,0);}
+assert.equal(flightHits,2,'projectile reaches distant targets, pierces, and hits each once');
+assert.equal(farA.hp,99.5);
+const resetRunner = new WarriorSkillsModel(), resetTarget = new EnemyModel(40,0,205,100);
+resetRunner.cast('earth',1);resetRunner.update(1);resetRunner.resolveHits([resetTarget],0,0);resetRunner.reset();
+const resetHp=resetTarget.hp;resetRunner.update(2);resetRunner.resolveHits([resetTarget],0,0);assert.equal(resetTarget.hp,resetHp,'reset clears residual damage');
+console.log('PASS: 2/3/1/4 phases, preserved damage, independent ground origin, interruption, piercing projectile and reset');
+
+for(const dt of [1/120,1/60,1/30]) {
+ for(const [id,count] of [['cross',2],['bengshan',3],['badao',1],['earth',4]]) {
+    const runner=new WarriorSkillsModel(), moving=new EnemyModel(40,0,300,100);
+    runner.cast(id,1);let x=0,contacts=0;
+    for(let t=0;t<3;t+=dt){runner.update(dt);x+=runner.motionDelta;contacts+=runner.resolveHits([moving],x,0);moving.update(dt,reviewPlayer,true);}
+    assert.equal(contacts,count,id+' retains all hits with knockback at dt='+dt);
+ }
+}
+const fractionDeath = new EnemyModel(40,0,301,2), fractionalCast = new WarriorSkillsModel();
+fractionalCast.cast('bengshan',1);
+for(let i=0;i<100;i++){fractionalCast.update(.01);fractionalCast.resolveHits([fractionDeath],0,0);}
+assert.equal(fractionDeath.hp,0,'fractional damage cannot leave a floating-point ghost alive');
+assert.equal(fractionDeath.state,'dead');
+console.log('PASS: moving/knockback targets at 30/60/120Hz and fractional lethal damage');

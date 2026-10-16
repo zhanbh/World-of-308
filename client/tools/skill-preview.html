@@ -7,7 +7,7 @@
 <canvas width="960" height="440" aria-label="战士四技能动画"></canvas>
 <div class="controls"><button data-skill="cross">十字斩 E</button><button data-skill="bengshan">崩山击 F</button><button data-skill="badao">拔刀斩 Q</button><button data-skill="earth">崩山裂地斩 G</button><button id="attack">接一段普攻</button></div>
 <div class="controls"><select id="speed" aria-label="播放速度"><option value="1">1× 正常速度</option><option value="0.25">0.25× 慢放</option></select><select id="zoom" aria-label="角色显示大小"><option value="1">游戏显示尺寸</option><option value="2" selected>2× 放大检查</option></select><button id="pause">暂停</button><button id="step">前进 10ms</button><button id="step100">前进100ms</button><button id="face">转身</button><button id="interrupt">模拟受击打断</button><button id="reset">重置</button></div>
-<output id="status">加载图集…</output><output id="target-status">靶怪状态</output><p>每次点击技能从头播放并恢复蓝量/CD，靶怪归位但保留受击和流血状态，可连续命中检查刷新5秒。重置清除全部状态。按 ←/→ 可在后摇开放后走开，观察地面残留。大崩喷发不追加伤害。</p><p>与游戏共用敌人、命中、技能时序和效果寿命模型；Canvas特效为示意。流血本轮先展示红色脉冲，是否持续扣血已确认，数值与伤害接入待完成。实际战斗和手机触控需Cocos构建复评。</p>
+<output id="status">加载图集…</output><output id="target-status">靶怪状态</output><p>每次点击技能从头播放并恢复蓝量/CD，靶怪归位但保留受击和流血状态，可连续命中检查刷新5秒。重置清除全部状态。按 ←/→ 可在后摇开放后走开，观察地面残留。十字2段、崩山3段、拔刀1段、大崩4段；每招总伤害暂保持不变，平均分配到各段。十字飞行速度与穿透暂用于评审，可调整。</p><p>与游戏共用敌人、命中、技能时序和效果寿命模型；Canvas特效为示意。流血本轮先展示红色脉冲，是否持续扣血已确认，数值与伤害接入待完成。实际战斗和手机触控需Cocos构建复评。</p>
 <script type="module">
 import { CombatModel } from '/CombatModel.js';
 import { basicAttacks, attackAtlas, attackFrame } from '/WarriorAttackAnimation.js';
@@ -28,7 +28,8 @@ function tick(dt){accumulator+=dt;while(accumulator>=1/120){
  effects.update(1/120);skills.update(1/120);
  if(skills.casting&&skills.canMove&&axis)skills.cancel();
  travel+=skills.motionDelta;
- if(skills.lastImpact){effects.impact(skills.lastImpact,travel,0,skills.facing);if(applyWarriorSkillHit(skills.lastImpact,target,travel,0,skills.facing))hits++;}
+ hits+=skills.resolveHits([target],travel,0);
+ if(skills.lastImpact)effects.impact(skills.lastImpact,travel,0,skills.facing);
  const priorContact=model.impactId;model.update(1/120,0,0);
  if(model.impactId!==priorContact&&target.state!=='dead'&&Math.abs(target.x-travel)<=52&&(target.x-travel)*facing>=-8&&Math.abs(target.y)<=23){target.hit(travel);hits++;}
  if(!skills.casting)travel=Math.max(-160,Math.min(160,travel+axis*100/120));
@@ -37,7 +38,7 @@ function tick(dt){accumulator+=dt;while(accumulator>=1/120){
 function effectArt(e){
  const fade=1-e.age/e.lifetime,r=warriorSkillTuning[e.id].range;
  ctx.save();ctx.translate(e.x*2,0);ctx.scale(e.facing,1);ctx.globalAlpha=fade;ctx.strokeStyle=e.id==='earth'?'#ff9a62':'#b8f0ff';ctx.lineWidth=3;
- if(e.id==='cross'){const x=58+e.age/e.lifetime*24;ctx.beginPath();ctx.moveTo(x-43,-44);ctx.lineTo(x+43,-44);ctx.moveTo(x,-88);ctx.lineTo(x,0);ctx.stroke();}
+ if(e.id==='cross'){const x=58+Math.max(0,e.age-.05)*520;ctx.beginPath();ctx.moveTo(x-43,-44);ctx.lineTo(x+43,-44);ctx.moveTo(x,-88);ctx.lineTo(x,0);ctx.stroke();}
  else if(e.id==='badao'){ctx.lineWidth=6;ctx.beginPath();ctx.ellipse(0,-44,(85+Math.min(1,e.age/.1)*57)*2,68,0,-Math.PI/2,Math.PI/2);ctx.stroke();}
  else{const grow=Math.min(1,e.age/(e.id==='earth'?.18:.16));ctx.beginPath();ctx.ellipse(0,0,r*2*grow,r*2*grow,0,0,Math.PI*2);ctx.stroke();
   for(let i=0;i<9;i++){const a=i*2.39996;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(a)*r*grow*1.4,Math.sin(a)*r*grow*1.4);ctx.stroke();}
@@ -45,14 +46,14 @@ function effectArt(e){
  }ctx.restore();
 }
 function targetArt(){
- if(target.state==='dead')return;
- ctx.save();ctx.translate(target.x*2,-target.y*2);ctx.fillStyle='#0d191e';ctx.beginPath();ctx.ellipse(0,0,24,8,0,0,Math.PI*2);ctx.fill();
+ if(target.deathOpacity<=0)return;
+ ctx.save();ctx.globalAlpha=target.deathOpacity;ctx.translate(target.x*2,-target.y*2);ctx.fillStyle='#0d191e';ctx.beginPath();ctx.ellipse(0,0,24,8,0,0,Math.PI*2);ctx.fill();
  ctx.save();ctx.translate(0,-8);ctx.rotate(Math.PI/2*target.downPose*target.fallDirection);ctx.translate(0,8);
  const p=target.bleedPulse;
- const tint=(r,g,b)=>target.flash>0?'#f5ddd0':`rgb(${Math.round(r+(235-r)*p*.65)},${Math.round(g*(1-p*.52))},${Math.round(b*(1-p*.455))})`;
+ const tint=(r,g,b)=>target.state==='dead'?`rgb(${r+(255-r)*target.deathWhite},${g+(255-g)*target.deathWhite},${b+(255-b)*target.deathWhite})`:target.flash>0?'#f5ddd0':`rgb(${Math.round(r+(235-r)*p*.65)},${Math.round(g*(1-p*.52))},${Math.round(b*(1-p*.455))})`;
  if(p>0){ctx.fillStyle=`rgba(244,45,62,${p*.3})`;ctx.fillRect(-15,-35,30,34);ctx.fillRect(-13,-51,26,24);}
- ctx.fillStyle=tint(128,99,72);ctx.fillRect(-12,-32,24,28);ctx.fillStyle=tint(187,137,96);ctx.fillRect(-10,-48,20,18);ctx.fillStyle=tint(68,61,55);ctx.fillRect(-12,-50,24,8);ctx.fillStyle='#251f1b';ctx.fillRect(-7,-38,4,4);ctx.restore();
- ctx.fillStyle='#10181b';ctx.fillRect(-23,-62,46,6);ctx.fillStyle='#ff967c';ctx.fillRect(-22,-61,44*target.hp/target.maxHp,4);ctx.restore();
+ ctx.fillStyle=tint(128,99,72);ctx.fillRect(-12,-32,24,28);ctx.fillStyle=tint(187,137,96);ctx.fillRect(-10,-48,20,18);ctx.fillStyle=tint(68,61,55);ctx.fillRect(-12,-50,24,8);ctx.fillStyle=tint(37,31,27);ctx.fillRect(-7,-38,4,4);ctx.restore();
+ if(target.state!=='dead'){ctx.fillStyle='#10181b';ctx.fillRect(-23,-62,46,6);ctx.fillStyle='#ff967c';ctx.fillRect(-22,-61,44*target.hp/target.maxHp,4);}ctx.restore();
 }
 function draw(){
  const id=skills.activeId;let key=id||'cross',frame=0,atlas=skillAtlas;
@@ -70,7 +71,7 @@ function draw(){
  const charge=id==='badao'&&skills.elapsed>=skillAnimations.badao.chargeStart&&skills.elapsed<skillAnimations.badao.chargeEnd;
  document.querySelector('#status').textContent=`${id?warriorSkillNames[id]:model.stage<0?'待机':basicAttacks[model.stage].name}${charge?' · 收腰蓄力':''} · 帧 ${frame+1} · ${Math.round((id?skills.elapsed:model.elapsed)*1000)}ms · 命中 ${hits} · 残留 ${effects.items.length} · 高度 ${skills.jumpLift.toFixed(1)}`;
  const states={approach:'站立',stunned:'僵直',knockedDown:'倒地',gettingUp:'起身',dead:'死亡',telegraph:'预警',attack:'攻击',recover:'恢复'};
- document.querySelector('#target-status').textContent=`靶怪 ${target.hp}/${target.maxHp} · ${states[target.state]} ${target.timer>0?target.timer.toFixed(2)+'s':''} · 流血 ${target.bleedLeft.toFixed(2)}s · 红色脉冲 ${target.bleedPulse.toFixed(2)}`;
+ document.querySelector('#target-status').textContent=`靶怪 ${Number(target.hp.toFixed(2))}/${target.maxHp} · ${states[target.state]} ${target.timer>0?target.timer.toFixed(2)+'s':''} · 流血 ${target.bleedLeft.toFixed(2)}s · 红色脉冲 ${target.bleedPulse.toFixed(2)}`;
 }
 document.querySelectorAll('[data-skill]').forEach(button=>button.onclick=()=>cast(button.dataset.skill));
 document.querySelector('#attack').onclick=()=>{if(!skills.casting){model.press();model.release();}};

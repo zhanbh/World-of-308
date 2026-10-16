@@ -187,6 +187,7 @@ export class Prototype extends Component {
             if (this.skills.casting && this.skills.canMove && (x !== 0 || y !== 0)) this.skills.cancel();
             this.model.update(fixedDt, this.skills.casting ? 0 : x, this.skills.casting ? 0 : y);
             this.model.x = Math.max(-218, Math.min(218, this.model.x + this.skills.motionDelta));
+            this.skills.resolveHits(this.enemies, this.model.x, this.model.y);
             if (this.skills.lastImpact) this.resolveSkillImpact(this.skills.lastImpact, fixedDt);
             if (this.model.impactId !== this.lastImpactId) {
                 this.lastImpactId = this.model.impactId;
@@ -327,9 +328,7 @@ export class Prototype extends Component {
         // Enemies consume this same simulation step below. Age the new effect by
         // the same amount so ultimate knockdown cannot end a frame before it.
         this.skillEffects.impact(id, this.model.x, this.model.y, this.skills.facing, step);
-        for (const enemy of this.enemies) {
-            applyWarriorSkillHit(id, enemy, this.model.x, this.model.y, this.skills.facing);
-        }
+
     }
 
     private drawSkillEffect(g: Graphics): void {
@@ -342,7 +341,7 @@ export class Prototype extends Component {
             const { id, x, y, facing, age, lifetime } = effect;
             const fade = Math.max(0, 1 - age / lifetime);
             if (id === 'cross') {
-                const cx = x + facing * (29 + age / lifetime * 12);
+                const cx = x + facing * (29 + Math.max(0, age - 0.05) * 260);
                 this.slashBand(g, cx, y + 22, 43, 3 * fade, 0, new Color(177, 237, 255, Math.round(210 * fade)), facing);
                 this.slashBand(g, cx, y + 22, 45, 4 * fade, Math.PI / 2, new Color(240, 253, 255, Math.round(240 * fade)), facing);
             } else if (id === 'badao') {
@@ -410,7 +409,7 @@ export class Prototype extends Component {
             visual.node.setScale(2, 2, 1);
             visual.node.setPosition(enemy.x * 2, enemy.y * 2);
             const eg = visual; eg.clear();
-            if (enemy.state === 'dead') continue;
+            if (enemy.deathOpacity <= 0) continue;
             if (enemy.state === 'telegraph') {
                 g.fillColor = new Color(224, 67, 57, 75);
                 g.rect(enemy.lockedX - 40, enemy.lockedY - 18, 80, 36); g.fill();
@@ -418,14 +417,14 @@ export class Prototype extends Component {
                 g.rect(enemy.lockedX - 40, enemy.lockedY - 18, 80, 36); g.stroke();
             }
             const x = 0, y = 0;
-            eg.fillColor = new Color(13, 19, 23, 140); eg.ellipse(x, y, 11, 4); eg.fill();
+            eg.fillColor = new Color(13, 19, 23, Math.round(140 * enemy.deathOpacity)); eg.ellipse(x, y, 11, 4); eg.fill();
             const facing = Math.sign(this.model.x - enemy.x) || 1;
             this.drawEnemyBody(eg, enemy, facing);
             if (enemy.state === 'telegraph') {
                 eg.strokeColor = new Color(255, 136, 98); eg.lineWidth = 3;
                 eg.moveTo(-7, 25); eg.lineTo(facing * 13, 13); eg.stroke();
             }
-            this.drawHealthBar(enemy.x * 2 - 18, enemy.y * 2 + 54, enemy.hp, enemy.maxHp, '#ff967c');
+            if (enemy.state !== 'dead') this.drawHealthBar(enemy.x * 2 - 18, enemy.y * 2 + 54, enemy.hp, enemy.maxHp, '#ff967c');
         }
     }
 
@@ -433,7 +432,10 @@ export class Prototype extends Component {
         const angle = -Math.PI / 2 * enemy.downPose * enemy.fallDirection;
         const c = Math.cos(angle), s = Math.sin(angle), pulse = enemy.bleedPulse;
         const quad = (x: number, y: number, w: number, h: number, color: Color): void => {
-            g.fillColor = color;
+            const white = enemy.deathWhite;
+            g.fillColor = new Color(Math.round(color.r + (255 - color.r) * white),
+                Math.round(color.g + (255 - color.g) * white), Math.round(color.b + (255 - color.b) * white),
+                Math.round(color.a * enemy.deathOpacity));
             [[x, y], [x + w, y], [x + w, y + h], [x, y + h]].forEach(([px, py], i) => {
                 const tx = px * c - (py - 4) * s, ty = px * s + (py - 4) * c + 4;
                 if (i === 0) g.moveTo(tx, ty); else g.lineTo(tx, ty);
