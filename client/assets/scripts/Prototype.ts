@@ -2,7 +2,7 @@ import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
     input, Input, EventTouch, EventKeyboard, KeyCode, Vec3, view, ResolutionPolicy, game, Game } from 'cc';
 import { CombatModel, tuning, attackSpeedTuning } from './CombatModel';
 import { WarriorView } from './WarriorView';
-import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText } from './EnemyModel';
+import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText, EncounterModel } from './EnemyModel';
 import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning, tryCastWarriorSkill } from './WarriorSkillsModel';
 import { WarriorSpriteSheetView } from './WarriorSpriteSheetView';
 import { WarriorSkillEffects } from './WarriorSkillEffects';
@@ -42,7 +42,8 @@ export class Prototype extends Component {
     private speedLabels: Label[] = [];
     private lastImpactId = 0;
     private mode: 1 | 3 = 1;
-    private retryTimer = 0;
+    private encounter = new EncounterModel();
+    private roundLabel!: Label;
 
     onLoad(): void {
         view.setDesignResolutionSize(960, 540, ResolutionPolicy.SHOW_ALL);
@@ -56,6 +57,7 @@ export class Prototype extends Component {
         this.text('WASD移动 · 空格普攻 · E十字斩 · F崩山击 · Q拔刀斩 · G崩山裂地斩 · R重置 · 1/3敌人', 0, 212, 16);
         this.healthStatus = this.text('', -330, 178, 17);
         this.status = this.text('', 0, -242, 17);
+        this.roundLabel = this.text('', 0, 75, 20, 850);
         this.modeLabels = [this.text('单怪', 255, 168, 14, 70), this.text('三怪', 355, 168, 14, 70)];
         this.text('摇杆', -345, -218, 18);
         this.text('普攻', 345, -160, 22);
@@ -121,6 +123,11 @@ export class Prototype extends Component {
         const id = e.getID();
         if (id === null) return;
         const p = this.point(e);
+        if (Math.abs(p.x) < 410 && p.y > 45 && p.y < 105 && this.encounter.state !== 'fighting') {
+            if (this.encounter.state !== 'ready') this.restartEncounter();
+            this.encounter.start();
+            return;
+        }
         if (p.y >= 110 && p.y <= 142 && p.x >= -394 && p.x <= -186) {
             const index = Math.max(0, Math.min(2, Math.floor((p.x + 395) / 70)));
             this.model.setAttackSpeedBonuses({ buff: attackSpeedTuning.presets[index] - 1 });
@@ -130,6 +137,8 @@ export class Prototype extends Component {
             this.mode = 1; this.restartEncounter();
         } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 355) < 40) {
             this.mode = 3; this.restartEncounter();
+        } else if (this.encounter.state !== 'fighting') {
+            return;
         } else if (this.touchSkillButton(p.x, p.y)) {
             return;
         } else if (this.stickId === null && Math.hypot(p.x + 345, p.y + 150) < 95) {
@@ -162,6 +171,15 @@ export class Prototype extends Component {
     }
 
     private keyDown(e: EventKeyboard): void {
+        if (e.keyCode === KeyCode.ENTER && this.encounter.state !== 'fighting') {
+            if (this.encounter.state !== 'ready') this.restartEncounter();
+            this.encounter.start(); return;
+        }
+        if (e.keyCode === KeyCode.KEY_R) { this.restartEncounter(); return; }
+        if (e.keyCode === KeyCode.DIGIT_1 || e.keyCode === KeyCode.DIGIT_3) {
+            this.mode = e.keyCode === KeyCode.DIGIT_1 ? 1 : 3; this.restartEncounter(); return;
+        }
+        if (this.encounter.state !== 'fighting') return;
         if (this.keys.has(e.keyCode)) return;
         this.keys.add(e.keyCode);
         if (e.keyCode === KeyCode.SPACE && !this.skills.casting) this.model.press();
@@ -169,9 +187,6 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.KEY_F) this.castSkill('bengshan');
         if (e.keyCode === KeyCode.KEY_Q) this.castSkill('badao');
         if (e.keyCode === KeyCode.KEY_G) this.castSkill('earth');
-        if (e.keyCode === KeyCode.KEY_R) this.restartEncounter();
-        if (e.keyCode === KeyCode.DIGIT_1) { this.mode = 1; this.restartEncounter(); }
-        if (e.keyCode === KeyCode.DIGIT_3) { this.mode = 3; this.restartEncounter(); }
     }
 
     private keyUp(e: EventKeyboard): void {
@@ -193,6 +208,11 @@ export class Prototype extends Component {
         this.accumulator += Math.min(dt, 0.1);
         while (this.accumulator >= 1 / 120) {
             const fixedDt = 1 / 120;
+            if (this.encounter.state !== 'fighting') {
+                this.feedback.update(fixedDt);
+                for (const enemy of this.enemies) if (enemy.state === 'dead') enemy.update(fixedDt, this.model, true);
+                this.accumulator -= fixedDt; continue;
+            }
             if (this.feedback.update(fixedDt)) { this.accumulator -= fixedDt; continue; }
             this.skillEffects.update(fixedDt);
             this.skills.update(fixedDt);
@@ -212,15 +232,19 @@ export class Prototype extends Component {
             if (this.model.hp <= 0) this.skillEffects.clear();
             this.bodyAnimation.update(fixedDt, this.model.moving, this.model.running, this.model.hitStun,
                 this.skills.casting || this.model.stage >= 0, this.model.hp <= 0);
+            this.encounter.update(fixedDt, this.model.hp, this.enemies);
+            if (this.encounter.state !== 'fighting') {
+                this.clearInput(); this.model.reset(); this.model.moving = this.model.running = false;
+                this.skills.cancel(); this.skillEffects.clear();
+            }
             this.accumulator -= fixedDt;
         }
-        this.retryTimer = this.model.hp <= 0 || this.enemies.every(enemy => enemy.state === 'dead')
-            ? this.retryTimer + Math.min(dt, 0.05) : 0;
-        if (this.retryTimer > 2.2) this.restartEncounter();
+        const round = this.encounter.state;
+        this.roundLabel.string = round === 'fighting' ? '' : round === 'ready' ? '点击开始战斗 / Enter'
+            : `${round === 'victory' ? '胜利 · 清场' : '战败'} · ${this.encounter.elapsed.toFixed(1)}秒 · 点击再挑战 / Enter`;
         this.draw(dt);
         this.healthStatus.string = `战士 ${this.healthBar(this.model.hp, 100)}     法力 ${this.skills.mana}/${this.skills.maxMana}     近战怪 ${this.mode} 只`;
-        const state = this.model.hp <= 0 ? '受击倒下 · 即将重试' : this.enemies.every(enemy => enemy.state === 'dead')
-            ? '清场 · 即将重试' : this.enemies.some(enemy => enemy.state === 'telegraph') ? '红色预警 · 离开锁定区域' : '攻击怪物，闪开预警';
+        const state = round !== 'fighting' ? '点击场地上方文字开始 / 再挑战' : this.enemies.some(enemy => enemy.state === 'telegraph') ? '红色预警 · 离开锁定区域' : '攻击怪物，闪开预警';
         const skillState = this.skills.activeId
             ? `${warriorSkillNames[this.skills.activeId]}出招`
             : '十字斩 / 崩山击 / 拔刀斩 / 崩山裂地斩';
@@ -316,6 +340,7 @@ export class Prototype extends Component {
     }
 
     private restartEncounter(): void {
+        this.clearInput(); this.encounter.reset(); this.accumulator = 0;
         this.model.hp = 100; this.model.x = 0; this.model.y = 0;
         this.model.reset(); this.model.hitStun = this.model.invulnerable = this.model.knockX = 0;
         this.skills.reset();
@@ -323,7 +348,6 @@ export class Prototype extends Component {
         this.feedback.clear();
         this.bodyAnimation.reset();
         this.lastImpactId = this.model.impactId;
-        this.retryTimer = 0;
         const starts = this.mode === 1 ? [[76, 2]] : [[76, -8], [-100, 16], [153, 25]];
         this.enemies = starts.map(([x, y], index) => new EnemyModel(x, y, index));
         while (this.enemyVisuals.length < this.enemies.length) {
@@ -347,6 +371,7 @@ export class Prototype extends Component {
     }
 
     private castSkill(id: WarriorSkillId): void {
+        if (this.encounter.state !== 'fighting') return;
         if (!tryCastWarriorSkill(this.model, this.skills, id, this.feedback, this.horizontalInput())) return;
         this.model.release();
         this.attackIds.clear();

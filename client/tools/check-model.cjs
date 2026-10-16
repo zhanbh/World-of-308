@@ -197,7 +197,7 @@ for (const id of ['cross', 'badao']) {
     assert.equal(enemy.state, 'approach');
     assert.ok(enemy.x > 40 && enemy.x < 50, 'flat slash knockback stays small');
     assert.equal(reviewPlayer.hp, 100, 'interrupted telegraph cannot still attack');
-    assert.equal(enemy.hp, hp, 'bleed damage awaits numeric tuning; this build keeps visual-only bleeding');
+    assert.equal(enemy.hp, hp, 'bleeding must not deal a tick before one second');
 }
 const smallDown = new EnemyModel(40, 0, 0, 30);
 applyWarriorSkillHit('bengshan', smallDown, 0, 0, 1);
@@ -533,3 +533,38 @@ const tapped=new CombatModel();tapped.press();tapped.release();advance(tapped,.5
 const depthAttack=new CombatModel();depthAttack.press();advance(depthAttack,.2,0,1);assert.equal(depthAttack.attackMotionDelta,0,'directional input suppresses automatic nudge');assert.equal(depthAttack.x,0);
 const interruptedWalk=new CombatModel();interruptedWalk.press();advance(interruptedWalk,.1);const interruptedX=interruptedWalk.x;assert.equal(tryCastWarriorSkill(interruptedWalk,new WarriorSkillsModel(),'cross'),true);advance(interruptedWalk,.5);assert.equal(interruptedWalk.x,interruptedX,'skill cancellation removes remaining basic nudge');
 console.log('PASS: default/forward earth leaps, facing/deadzone/FPS/bounds, landing-origin damage, cancellation and held-basic microstep');
+
+// Bleed is one refreshable clock: no hit reaction, hit-stop or threshold credit.
+const { bleedTuning, EncounterModel } = load('EnemyModel');
+for (const hz of [30, 60, 120]) {
+    const target = new EnemyModel(0, 0, 100, 30);
+    target.hit(-10, 1, 0, { bleedFor: 5 });
+    for (let i = 0; i < hz * 5; i++) target.update(1 / hz, reviewPlayer, true);
+    assert.ok(Math.abs(target.hp - (29 - 5 * bleedTuning.damagePerTick)) < 1e-8);
+    assert.ok(target.bleedLeft < 1e-8);
+    const periodic = target.hitEvents.filter(event => event.periodic);
+    assert.equal(periodic.length, 5, 'five ticks including expiry boundary');
+    const feedback = new CombatFeedback(); feedback.clear([target]);
+    target.hit(-10, .1, 0, { bleedFor: 5 }); feedback.clear([target]);
+    target.update(1, reviewPlayer, true); feedback.observe([target]);
+    assert.equal(feedback.stopLeft, 0); assert.equal(feedback.sparks.length, 0);
+    assert.equal(feedback.numbers.length, 1);
+}
+const refreshed = new EnemyModel(0, 0, 101, 30);
+refreshed.hit(-1, 1, 0, { bleedFor: 5 }); refreshed.update(.9, reviewPlayer, true);
+refreshed.hit(-1, 1, 0, { bleedFor: 5 }); refreshed.update(.1, reviewPlayer, true);
+assert.equal(refreshed.hitEvents.filter(event => event.periodic).length, 1, 'refresh preserves tick progress');
+assert.ok(Math.abs(refreshed.bleedLeft - 4.9) < 1e-8);
+const dotDeath = new EnemyModel(0, 0, 102, 1.1);
+dotDeath.hit(-1, 1, 0, { bleedFor: 5 }); dotDeath.update(1, reviewPlayer, true);
+assert.equal(dotDeath.state, 'dead'); assert.equal(dotDeath.bleedLeft, 0);
+const deathSerial = dotDeath.hitSerial; dotDeath.update(10, reviewPlayer, true);
+assert.equal(dotDeath.hitSerial, deathSerial); assert.equal(dotDeath.deathOpacity, 0);
+const round = new EncounterModel(); const foe = new EnemyModel(0, 0, 103);
+round.update(1, 100, [foe]); assert.equal(round.elapsed, 0);
+round.start(); round.update(2, 100, [foe]); assert.equal(round.state, 'fighting');
+foe.hit(0, 99); round.update(.1, 100, [foe]); assert.equal(round.state, 'victory');
+const finishTime = round.elapsed; round.update(10, 0, [foe]); assert.equal(round.elapsed, finishTime);
+round.reset(); round.start(); round.update(.1, 0, [foe]); assert.equal(round.state, 'defeat', 'death wins simultaneous finish');
+round.reset(); assert.equal(round.state, 'ready'); assert.equal(round.elapsed, 0);
+console.log('PASS: bleed cadence/expiry/refresh/FPS/periodic feedback/death and ready/fighting/result/retry rounds');

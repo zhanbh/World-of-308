@@ -3,6 +3,21 @@ import { CombatModel } from './CombatModel';
 export type EnemyState = 'approach' | 'telegraph' | 'attack' | 'recover' | 'stunned' | 'knockedDown' | 'gettingUp' | 'dead';
 
 export const enemyFeedbackTuning = { bleedDuration: 5, stunDuration: 0.28, smallKnockdown: 0.8, riseDuration: 0.24, deathWhiten: 0.18, deathFade: 0.32 };
+/** Temporary flat damage in prototype HP units; independent of attack speed. */
+export const bleedTuning = { tickInterval: 1, damagePerTick: 0.2 };
+/** Local prototype round only; no rewards or persistent assets. */
+export class EncounterModel {
+    state: 'ready' | 'fighting' | 'victory' | 'defeat' = 'ready';
+    elapsed = 0;
+    reset(): void { this.state = 'ready'; this.elapsed = 0; }
+    start(): void { if (this.state === 'ready') this.state = 'fighting'; }
+    update(dt: number, playerHp: number, enemies: EnemyModel[]): void {
+        if (this.state !== 'fighting') return;
+        this.elapsed += dt;
+        if (playerHp <= 0) this.state = 'defeat';
+        else if (enemies.length > 0 && enemies.every(enemy => enemy.state === 'dead')) this.state = 'victory';
+    }
+}
 export interface EnemyHitOptions { knockdownFor?: number; bleedFor?: number; }
 export interface EnemyKnockdownPolicy { allowed: boolean; damageRatio?: number; }
 export const enemyKnockdownPolicies: Record<'normal' | 'elite' | 'boss', EnemyKnockdownPolicy> = {
@@ -37,7 +52,7 @@ export class SkillHitLedger {
 export class EnemyModel {
     hitSerial = 0;
     lastHitHeavy = false;
-    readonly hitEvents: { serial: number; damage: number; heavy: boolean; x: number; y: number }[] = [];
+    readonly hitEvents: { serial: number; damage: number; heavy: boolean; x: number; y: number; periodic?: boolean }[] = [];
     hp: number;
     state: EnemyState = 'approach';
     timer = 0;
@@ -48,6 +63,7 @@ export class EnemyModel {
     impactId = 0;
     bleedLeft = 0;
     private bleedAge = 0;
+    private bleedTick = 0;
     fallDirection = 1;
     deathAge = 0;
     private deathPose = 0;
@@ -84,8 +100,21 @@ export class EnemyModel {
         this.flash = Math.max(0, this.flash - dt);
         if (this.state === 'dead') { this.deathAge += dt; return; }
         if (this.bleedLeft > 0) {
-            this.bleedAge += dt;
+            const activeTime = Math.min(dt, this.bleedLeft);
+            this.bleedAge += activeTime;
+            this.bleedTick += activeTime;
             this.bleedLeft = Math.max(0, this.bleedLeft - dt);
+            while (this.bleedTick + 1e-9 >= bleedTuning.tickInterval && this.hp > 0) {
+                this.bleedTick -= bleedTuning.tickInterval;
+                const damage = Math.min(this.hp, bleedTuning.damagePerTick);
+                this.hp = Math.max(0, this.hp - damage);
+                if (this.hp < Math.max(1, this.maxHp) * 1e-10) this.hp = 0;
+                this.hitSerial++;
+                this.hitEvents.push({ serial: this.hitSerial, damage, heavy: false, x: this.x, y: this.y, periodic: true });
+                if (this.hitEvents.length > 32) this.hitEvents.shift();
+            }
+            if (this.hp <= 0) { this.die(); return; }
+            if (this.bleedLeft <= 0) this.bleedTick = 0;
         }
         if (this.state === 'stunned' || this.state === 'knockedDown' || this.state === 'gettingUp') {
             const oldTimer = this.timer;
@@ -145,14 +174,11 @@ export class EnemyModel {
         if (this.hp < Math.max(1, this.maxHp) * 1e-10) this.hp = 0;
         this.flash = 0.12;
         if (this.hp <= 0) {
-            this.deathPose = this.downPose;
-            this.deathAge = this.flash = 0;
-            this.state = 'dead';
-            this.bleedLeft = this.bleedAge = this.timer = this.knockX = 0;
+            this.die();
             return;
         }
         if (options.bleedFor && options.bleedFor > 0) {
-            if (this.bleedLeft <= 0) this.bleedAge = 0;
+            if (this.bleedLeft <= 0) this.bleedAge = this.bleedTick = 0;
             this.bleedLeft = options.bleedFor; // Refresh one status; never add stacks/duration.
         }
         if (this.knockdownPolicy.allowed && options.knockdownFor && options.knockdownFor > 0) {
@@ -164,6 +190,13 @@ export class EnemyModel {
             this.timer = enemyFeedbackTuning.stunDuration;
         }
         this.knockX = this.x >= fromX ? knockback : -knockback;
+    }
+
+    private die(): void {
+        this.deathPose = this.downPose;
+        this.deathAge = this.flash = 0;
+        this.state = 'dead';
+        this.bleedLeft = this.bleedAge = this.bleedTick = this.timer = this.knockX = 0;
     }
 }
 
@@ -208,8 +241,8 @@ export class CombatFeedback {
             this.seen.set(enemy, enemy.hitSerial);
             for (const event of enemy.hitEvents) {
                 if (event.serial <= prior) continue;
-                if (this.hitStopEnabled) this.stopLeft = Math.max(this.stopLeft, event.heavy ? hitFeedbackTuning.heavyStop : hitFeedbackTuning.lightStop);
-                if (this.sparksEnabled) this.sparks.push({ x: event.x, y: event.y + 15, age: 0, heavy: event.heavy });
+                if (!event.periodic && this.hitStopEnabled) this.stopLeft = Math.max(this.stopLeft, event.heavy ? hitFeedbackTuning.heavyStop : hitFeedbackTuning.lightStop);
+                if (!event.periodic && this.sparksEnabled) this.sparks.push({ x: event.x, y: event.y + 15, age: 0, heavy: event.heavy });
                 if (this.numbersEnabled) this.numbers.push({ x: event.x + (event.serial % 3 - 1) * 6,
                     y: event.y + 34, age: 0, damage: event.damage, heavy: event.heavy });
             }
