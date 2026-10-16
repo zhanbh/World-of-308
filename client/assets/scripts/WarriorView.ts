@@ -24,45 +24,21 @@ const mix = (a: Pose, b: Pose, t: number): Pose => {
 };
 const smooth = (t: number) => { const x = Math.max(0, Math.min(1, t)); return x * x * (3 - 2 * x); };
 
-// The first three combo beats are paired, alternating cuts: rear hand then
-// lead hand. The fourth remains the deliberate two-sword cross-and-open finish.
-// Coordinates face right; mirroring the whole visual keeps both hands aligned.
-const cuts: { windup: Pose; first: Pose; second: Pose; reopen: Pose; finish: Pose;
-    firstHand: 'front' | 'back' | 'both'; secondHand: 'front' | 'back' | 'both' }[] = [
-    {
-        firstHand: 'back', secondHand: 'front',
-        windup: pose({ lean: -3, crouch: 2, twist: -6, backX: -13, backY: 24, backAngle: 2.35, frontX: -4, frontY: 19, frontAngle: 2.0 }),
-        first: pose({ lean: 4, crouch: 1, twist: 8, backX: 18, backY: 20, backAngle: -0.35, frontX: -1, frontY: 19, frontAngle: 2.0 }),
-        second: pose({ lean: 5, crouch: 1, twist: -6, backX: 8, backY: 17, backAngle: -0.35, frontX: 20, frontY: 23, frontAngle: 0.35 }),
-        reopen: pose({ lean: 2, crouch: 1, twist: 1, backX: 1, backY: 18, backAngle: 0.15, frontX: 9, frontY: 18, frontAngle: -0.35 }),
-        finish: pose({ lean: 0, twist: 0, backX: -7, backY: 17, backAngle: -0.8, frontX: 10, frontY: 17, frontAngle: -0.6 }),
-    },
-    {
-        firstHand: 'front', secondHand: 'back',
-        windup: pose({ lean: -3, crouch: 2, twist: 7, frontX: -13, frontY: 22, frontAngle: -2.5, backX: -5, backY: 19, backAngle: -2.0 }),
-        first: pose({ lean: 4, crouch: 1, twist: -8, frontX: 19, frontY: 21, frontAngle: 0.45, backX: -1, backY: 19, backAngle: -2.0 }),
-        second: pose({ lean: 5, crouch: 1, twist: 7, frontX: 8, frontY: 17, frontAngle: 0.45, backX: 20, backY: 23, backAngle: -0.35 }),
-        reopen: pose({ lean: 2, crouch: 1, twist: -1, frontX: 1, frontY: 18, frontAngle: 2.9, backX: 9, backY: 18, backAngle: 0.2 }),
-        finish: pose({ lean: 0, twist: 0, frontX: 10, frontY: 18, frontAngle: 0.1, backX: -7, backY: 17, backAngle: -0.6 }),
-    },
-    {
-        firstHand: 'back', secondHand: 'front',
-        windup: pose({ lean: -2, crouch: 6, twist: -5, backX: -12, backY: 13, backAngle: -1.2, frontX: 4, frontY: 12, frontAngle: -1.5 }),
-        first: pose({ lean: 3, crouch: -1, twist: 5, backX: 12, backY: 31, backAngle: 1.15, frontX: 4, frontY: 15, frontAngle: -1.4 }),
-        second: pose({ lean: 4, crouch: -2, twist: -5, backX: 9, backY: 23, backAngle: 1.05, frontX: 17, frontY: 32, frontAngle: 1.25 }),
-        reopen: pose({ lean: 2, crouch: -1, twist: 0, frontX: 10, frontY: 28, frontAngle: 1.3, backX: 3, backY: 23, backAngle: 1.0 }),
-        finish: pose({ lean: 0, crouch: 0, frontX: 9, frontY: 23, frontAngle: 1.0, backX: -5, backY: 19, backAngle: 0.1 }),
-    },
-    {
-        firstHand: 'both', secondHand: 'both',
-        // Back arm represents the left hand; front arm the right hand.
-        // Open guard -> cross inward -> reverse outward -> recover.
-        windup: pose({ lean: -1, crouch: 2, twist: -1, backX: -12, backY: 23, backAngle: 2.9, frontX: 14, frontY: 19, frontAngle: 0.25 }),
-        first: pose({ lean: 3, crouch: 3, twist: 1, backX: 13, backY: 22, backAngle: 0.2, frontX: -11, frontY: 19, frontAngle: 2.95 }),
-        second: pose({ lean: 2, crouch: 2, twist: -1, backX: -15, backY: 23, backAngle: 2.95, frontX: 17, frontY: 19, frontAngle: 0.15 }),
-        reopen: pose({ lean: 1, crouch: 1, twist: 0, backX: -8, backY: 18, backAngle: 2.9, frontX: 10, frontY: 17, frontAngle: 0.2 }),
-        finish: pose({ lean: 0, crouch: 1, backX: -10, backY: 17, backAngle: 3.65, frontX: 12, frontY: 16, frontAngle: -0.5 }),
-    },
+// Original procedural fallback follows the same three-beat silhouette as the atlas.
+const cross = pose({ lean: 5, crouch: 2, twist: 7, backX: 13, backY: 24, backAngle: -0.55,
+    frontX: 17, frontY: 16, frontAngle: 0.6 });
+const high = pose({ lean: 1, crouch: -2, twist: -3, backX: -6, backY: 34, backAngle: 2.1,
+    frontX: 13, frontY: 35, frontAngle: 1.2 });
+const low = pose({ lean: 7, crouch: 8, twist: 5, backX: -9, backY: 30, backAngle: 2.1,
+    frontX: 20, frontY: 12, frontAngle: -0.35 });
+const cuts = [
+    { windup: pose({ lean: -3, twist: -6, backAngle: 2.3 }), first: cross, second: cross,
+        finish: pose({ lean: 2, backY: 23, frontY: 25, frontAngle: 0.8 }),
+        firstHand: 'both', secondHand: 'both' },
+    { windup: cross, first: high, second: high, finish: high,
+        firstHand: 'both', secondHand: 'both' },
+    { windup: high, first: low, second: low, finish: rest,
+        firstHand: 'both', secondHand: 'both' },
 ];
 
 const skillPoses: Record<WarriorSkillId, { windup: Pose; strike: Pose; follow: Pose; finish: Pose }> = {
@@ -121,13 +97,11 @@ export class WarriorView {
         } else if (m.stage >= 0) {
             this.lastSkill = null;
             const cut = cuts[m.stage];
-            if (p < 0.10) this.current = mix(this.entry, cut.windup, smooth(p / 0.10));
-            else if (p < 0.29) this.current = mix(cut.windup, cut.first, smooth((p - 0.10) / 0.19));
-            else if (p < 0.35) this.current = mix(cut.first, cut.reopen, smooth((p - 0.29) / 0.06));
-            else if (p < 0.55) this.current = mix(cut.reopen, cut.second, smooth((p - 0.35) / 0.20));
-            else if (p < 0.64) this.current = cut.second;
-            else if (p < 0.76) this.current = mix(cut.second, cut.finish, smooth((p - 0.64) / 0.12));
-            else this.current = mix(cut.finish, rest, smooth((p - 0.76) / 0.24));
+            const contact = m.stage === 0 ? 0.4 : m.stage === 1 ? 0.10 / 0.22 : 0.14 / 0.36;
+            if (p < 0.16) this.current = mix(this.entry, cut.windup, smooth(p / 0.16));
+            else if (p < contact) this.current = mix(cut.windup, cut.first, smooth((p - 0.16) / (contact - 0.16)));
+            else if (p < 0.65) this.current = cut.first;
+            else this.current = mix(cut.first, cut.finish, smooth((p - 0.65) / 0.35));
         } else {
             this.lastSkill = null;
             const pace = m.running ? 18 : 10;
@@ -151,8 +125,8 @@ export class WarriorView {
         this.box(g, -8 - this.stride, 0, 7, 3, '#17232e');
         this.box(g, 3 + this.stride, 0, 8, 3, '#17232e');
         const comboCut = m.stage >= 0 ? cuts[m.stage] : null;
-        const firstSwing = !!comboCut && p >= 0.10 && p < 0.29;
-        const secondSwing = !!comboCut && p >= 0.44 && p < 0.64;
+        const firstSwing = !!comboCut && p >= 0.16 && p < 0.65;
+        const secondSwing = !!comboCut && false;
         const skillSweep = !!skill && ((skill.progress >= 0.20 && skill.progress < 0.61));
         this.arm(g, q, false, skillHandActive
             || (!!comboCut && ((firstSwing && (comboCut.firstHand === 'back' || comboCut.firstHand === 'both'))

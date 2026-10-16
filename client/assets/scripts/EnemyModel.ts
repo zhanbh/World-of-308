@@ -57,7 +57,7 @@ export class EnemyModel {
     }
 
     hit(fromX: number, damage = 1, knockback = 88): void {
-        if (this.state === 'dead' || this.state === 'stunned') return;
+        if (this.state === 'dead') return;
         this.hp = Math.max(0, this.hp - damage);
         this.flash = 0.12;
         this.state = this.hp <= 0 ? 'dead' : 'stunned';

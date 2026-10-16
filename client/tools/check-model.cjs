@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const editor = process.argv[2];
 if (!editor) throw new Error('Pass Creator installation directory as the first argument');
 const ts = require(path.join(editor, 'resources/app.asar.unpacked/node_modules/typescript'));
-for (const name of ['CombatModel.ts', 'EnemyModel.ts', 'WarriorView.ts', 'WarriorSkillsModel.ts', 'Prototype.ts']) {
+for (const name of ['WarriorAttackAnimation.ts', 'WarriorSpriteSheetView.ts', 'CombatModel.ts', 'EnemyModel.ts', 'WarriorView.ts', 'WarriorSkillsModel.ts', 'Prototype.ts']) {
     const file = path.join(__dirname, '../assets/scripts', name);
     const checked = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
         fileName: file,
@@ -15,11 +15,20 @@ for (const name of ['CombatModel.ts', 'EnemyModel.ts', 'WarriorView.ts', 'Warrio
     const errors = (checked.diagnostics || []).filter(item => item.category === ts.DiagnosticCategory.Error);
     assert.equal(errors.length, 0, `${name} should transpile without syntax errors: ${errors.map(item => item.messageText).join('; ')}`);
 }
-const source = fs.readFileSync(path.join(__dirname, '../assets/scripts/CombatModel.ts'), 'utf8');
-const result = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
-const mod = { exports: {} };
-new Function('module', 'exports', result.outputText)(mod, mod.exports);
-const { CombatModel, tuning } = mod.exports;
+const cache = new Map();
+function load(name) {
+    if (cache.has(name)) return cache.get(name).exports;
+    const file = path.join(__dirname, '../assets/scripts', name + '.ts');
+    const compiled = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
+        compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
+    });
+    const mod = { exports: {} }; cache.set(name, mod);
+    new Function('module', 'exports', 'require', compiled.outputText)(mod, mod.exports,
+        dependency => load(dependency.replace('./', '')));
+    return mod.exports;
+}
+const { CombatModel, tuning } = load('CombatModel');
+const { basicAttacks, attackFrame } = load('WarriorAttackAnimation');
 const advance = (m, duration, x = 0, y = 0) => {
     for (let i = 0; i < Math.round(duration * 1000); i++) m.update(0.001, x, y);
 };
@@ -34,15 +43,37 @@ m.reset(); m.press(); m.release(); advance(m, tuning.durations[0] + 0.29);
 m.press(); m.release(); assert.equal(m.stage, 1, '290ms after action end must continue');
 m.reset(); m.press(); m.release(); advance(m, tuning.durations[0] + 0.31);
 m.press(); m.release(); assert.equal(m.stage, 0, '310ms after action end must restart');
-m.reset(); m.press(); m.release(); advance(m, 0.25); m.press(); m.release(); advance(m, 0.08);
-assert.equal(m.stage, 1, 'late action input must buffer the next stage');
-m.reset(); m.press(); advance(m, 1.08);
-assert.equal(m.stage, 3, 'hold must advance to finisher');
-advance(m, 0.46); assert.equal(m.stage, 3, 'finisher recovery must not restart the combo early');
-advance(m, 0.30); assert.equal(m.stage, 0, 'hold must loop after full finisher recovery');
-m.reset(); m.press(); advance(m, 1.08); m.release();
-advance(m, 0.46); assert.equal(m.windowLeft, 0, 'combo window must not start during finisher recovery');
-advance(m, 0.30); assert.ok(m.windowLeft > 0.2, 'combo window starts after the finisher ends');
+m.reset(); m.press(); m.release(); advance(m, 0.10); m.press(); m.release(); advance(m, 0.11);
+assert.equal(m.stage, 1, 'late tap must buffer exactly one next stage, even after key-up');
+advance(m, 0.23); assert.equal(m.stage, -1, 'buffer must be consumed once');
+m.reset(); m.press(); m.release(); advance(m, 0.02); m.press(); m.release(); advance(m, 0.20);
+assert.equal(m.stage, -1, 'early released tap must not buffer');
+m.reset(); m.press(); advance(m, 0.43);
+assert.equal(m.stage, 2, 'hold must advance to downward finisher');
+advance(m, 0.30); assert.equal(m.stage, 2, 'finisher recovery must finish before looping');
+advance(m, 0.06); assert.equal(m.stage, 0, 'hold loops after 780ms without an extra idle window');
+m.reset(); m.press(); advance(m, 0.43); m.release();
+advance(m, 0.30); assert.equal(m.windowLeft, 0, 'window must not start during finisher recovery');
+advance(m, 0.06); assert.ok(m.windowLeft > 0.28, 'window starts after finisher ends');
+const hits = new CombatModel(); hits.press();
+advance(hits, 0.079); assert.equal(hits.impactId, 0);
+advance(hits, 0.002); assert.equal(hits.impactId, 1, 'A contact is 80ms');
+advance(hits, 0.218); assert.equal(hits.impactId, 1);
+advance(hits, 0.002); assert.equal(hits.impactId, 2, 'B contact is 100ms after B start');
+advance(hits, 0.258); assert.equal(hits.impactId, 2);
+advance(hits, 0.002); assert.equal(hits.impactId, 3, 'C contact is 140ms after C start');
+advance(hits, 0.22); assert.equal(hits.impactId, 3, 'only one damage event per beat');
+assert.equal(hits.takeHit(10), true); assert.equal(hits.stage, -1); assert.equal(hits.nextStage, 0);
+assert.equal(hits.held, false, 'getting hit stops automatic continuation');
+for (let stage = 0; stage < basicAttacks.length; stage++) {
+    const action = basicAttacks[stage];
+    action.times.forEach((time, i) => assert.equal(attackFrame(stage, time), action.frames[i]));
+    assert.equal(attackFrame(stage, action.duration), action.frames[7]);
+    assert.equal(attackFrame(stage, action.impact), stage * 8 + 3, 'contact selects contact art');
+}
+const target = new (load('EnemyModel').EnemyModel)(20, 0, 0);
+target.hit(0); target.hit(0); target.hit(0);
+assert.equal(target.hp, 0, 'separate combo contacts can hit an already stunned enemy');
 m.reset(); assert.equal(m.nextStage, 0); assert.equal(m.held, false);
 const a = new CombatModel(), b = new CombatModel();
 advance(a, 0.5, 0.25, 0.3); advance(b, 0.5, 0.9, 0.9);

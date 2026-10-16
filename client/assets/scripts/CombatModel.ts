@@ -1,8 +1,10 @@
-/** First slice only: movement and combo timing. Units are source pixels/seconds. */
+import { basicAttacks } from './WarriorAttackAnimation';
+
+/** Movement and three-beat combo timing. Units are source pixels/seconds. */
 export const tuning = {
     deadZone: 0.15, horizontalSpeed: 100, depthSpeed: 45,
-    comboWindow: 0.3, bufferWindow: 0.18,
-    durations: [0.32, 0.32, 0.4, 0.76],
+    comboWindow: 0.3, bufferWindow: 0.12,
+    durations: basicAttacks.map(action => action.duration),
 };
 
 export class CombatModel {
@@ -34,6 +36,7 @@ export class CombatModel {
     release(): void { this.held = false; }
 
     reset(): void {
+        this.elapsed = 0;
         this.stage = -1;
         this.nextStage = 0;
         this.windowLeft = 0;
@@ -61,17 +64,20 @@ export class CombatModel {
             this.elapsed += dt;
             // Damage lands during the first visible stroke (one hit event per
             // combo beat; the paired sword motions are for animation feel).
-            const impactAt = this.stage === 3 ? 0.30 : 0.20;
-            if (!this.impactSent && oldElapsed < tuning.durations[this.stage] * impactAt
-                && this.elapsed >= tuning.durations[this.stage] * impactAt) {
+            const impactAt = basicAttacks[this.stage].impact;
+            if (!this.impactSent && oldElapsed < impactAt && this.elapsed >= impactAt) {
                 this.impactSent = true;
                 this.impactId++;
             }
             if (this.elapsed >= tuning.durations[this.stage]) {
-                this.nextStage = (this.stage + 1) % 4;
+                const overflow = this.elapsed - tuning.durations[this.stage];
+                this.nextStage = (this.stage + 1) % basicAttacks.length;
                 this.stage = -1;
                 this.windowLeft = tuning.comboWindow;
-                if (this.buffered || this.held) this.begin();
+                if (this.buffered || this.held) {
+                    this.begin();
+                    this.elapsed = overflow;
+                } else this.windowLeft = Math.max(0, this.windowLeft - overflow);
             }
         } else {
             this.windowLeft = Math.max(0, this.windowLeft - dt);
@@ -90,7 +96,7 @@ export class CombatModel {
             this.running = false;
             return;
         }
-        const locked = this.stage >= 0 && this.elapsed < tuning.durations[this.stage] * 0.78;
+        const locked = this.stage >= 0 && this.elapsed < basicAttacks[this.stage].moveAt;
         this.moving = !locked && (x !== 0 || y !== 0);
         this.running = this.moving && Math.abs(x) > 0.6;
         if (!locked) {

@@ -1,11 +1,11 @@
 import { ImageAsset, Node, Rect, resources, Size, Sprite, SpriteFrame, Texture2D, UITransform, Vec2 } from 'cc';
 
-const assetPath = 'warrior-dual-slash-sprite-draft-v1';
-const frameSize = 512;
-const columns = 3;
-const rows = 2;
+import { attackAtlas, attackFrame } from './WarriorAttackAnimation';
 
-/** Runtime pixel character with a six-frame normal-attack sample. */
+const { columns, rows } = attackAtlas;
+const assetPath = attackAtlas.resource;
+
+/** Runtime pixel character with a three-beat, 24-frame normal attack. */
 export class WarriorSpriteSheetView {
     private readonly node: Node;
     private readonly sprite: Sprite;
@@ -20,7 +20,7 @@ export class WarriorSpriteSheetView {
         parent.addChild(this.node);
         this.transform = this.node.addComponent(UITransform);
         this.transform.setContentSize(58, 58);
-        this.transform.setAnchorPoint(0.5, 0.08);
+        this.transform.setAnchorPoint(attackAtlas.anchorX, attackAtlas.anchorY);
         this.sprite = this.node.addComponent(Sprite);
         this.sprite.sizeMode = Sprite.SizeMode.CUSTOM;
         this.node.active = false;
@@ -37,15 +37,15 @@ export class WarriorSpriteSheetView {
             texture.setFilters(Texture2D.Filter.NEAREST, Texture2D.Filter.NEAREST);
             this.texture = texture;
 
-            // Creator's texture rect origin is at the lower-left; the source
-            // PNG is authored from its upper-left, so the row index is inverted.
+            const width = image.width / columns, height = image.height / rows;
+            // SpriteFrame rects use image coordinates (top-left), just like PNG.
             for (let index = 0; index < columns * rows; index++) {
                 const column = index % columns;
                 const row = Math.floor(index / columns);
                 const frame = new SpriteFrame();
                 frame.texture = texture;
-                frame.rect = new Rect(column * frameSize, (rows - 1 - row) * frameSize, frameSize, frameSize);
-                frame.originalSize = new Size(frameSize, frameSize);
+                frame.rect = new Rect(column * width, row * height, width, height);
+                frame.originalSize = new Size(width, height);
                 frame.offset = new Vec2(0, 0);
                 this.frames.push(frame);
             }
@@ -53,15 +53,8 @@ export class WarriorSpriteSheetView {
     }
 
     /** Show one timed attack pose; return false while the asset is still loading. */
-    showAttack(progress: number): boolean {
-        if (this.disposed || this.frames.length !== columns * rows) return false;
-        const p = Math.max(0, Math.min(1, progress));
-        const frameIndex = p < 0.06 ? 0
-            : p < 0.16 ? 1
-                : p < 0.32 ? 2
-                    : p < 0.43 ? 3
-                        : p < 0.62 ? 4 : 5;
-        return this.showFrame(frameIndex);
+    showAttack(stage: number, elapsed: number): boolean {
+        return this.showFrame(attackFrame(stage, elapsed));
     }
 
     /** Keep one consistent pixel-art silhouette outside the attack animation. */

@@ -7,7 +7,7 @@ import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuni
 import { WarriorSpriteSheetView } from './WarriorSpriteSheetView';
 
 const { ccclass } = _decorator;
-const stages = ['双刀交替斩', '反手交替斩', '双刀上挑', '交叉后反向展开'];
+const stages = ['交叉斩', '反手上挑', '下劈收势'];
 
 @ccclass('Prototype')
 export class Prototype extends Component {
@@ -45,7 +45,7 @@ export class Prototype extends Component {
         this.actor = this.makeGraphics('Warrior');
         this.warriorSprite = new WarriorSpriteSheetView(this.actor.node);
         this.controls = this.makeGraphics('Controls');
-        this.text('308 动作样板 v0.7 · 战士技能组', 0, 242, 22);
+        this.text('308 动作样板 v0.8 · 战士技能组', 0, 242, 22);
         this.text('WASD移动 · 空格普攻 · E十字斩 · F崩山击 · Q拔刀斩 · G崩山裂地斩 · R重置 · 1/3敌人', 0, 212, 16);
         this.healthStatus = this.text('', -330, 178, 17);
         this.status = this.text('', 0, -242, 17);
@@ -230,9 +230,9 @@ export class Prototype extends Component {
         this.actor.node.setPosition(x * 2, (y + this.skills.jumpLift) * 2);
         this.actor.node.setScale(2.4 * m.facing, 2.4 * (m.hitStun > 0 ? 0.88 : 1), 1);
         this.actor.node.active = m.invulnerable <= 0 || Math.floor(m.invulnerable * 16) % 2 === 0;
-        const useSprite = m.stage >= 0
-            ? this.warriorSprite.showAttack(m.elapsed / tuning.durations[m.stage])
-            : this.warriorSprite.showReady();
+        const useSprite = !this.skills.activeId && (m.stage >= 0
+            ? this.warriorSprite.showAttack(m.stage, m.elapsed)
+            : this.warriorSprite.showReady());
         this.actor.enabled = !useSprite;
         if (!useSprite) {
             this.warriorSprite.hide();
@@ -273,7 +273,7 @@ export class Prototype extends Component {
 
     private resolveMeleeHit(): void {
         for (const enemy of this.enemies) {
-            if (enemy.state === 'dead' || enemy.state === 'stunned') continue;
+            if (enemy.state === 'dead') continue;
             const dx = enemy.x - this.model.x, dy = enemy.y - this.model.y;
             if (Math.abs(dx) <= 52 && Math.abs(dy) <= 23 && dx * this.model.facing >= -8) enemy.hit(this.model.x);
         }
@@ -317,7 +317,7 @@ export class Prototype extends Component {
     private resolveSkillImpact(id: WarriorSkillId): void {
         const config = warriorSkillTuning[id];
         for (const enemy of this.enemies) {
-            if (enemy.state === 'dead' || enemy.state === 'stunned') continue;
+            if (enemy.state === 'dead') continue;
             const dx = (enemy.x - this.model.x) * this.skills.facing;
             const dy = enemy.y - this.model.y;
             let hit = false;
