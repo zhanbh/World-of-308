@@ -3,7 +3,7 @@
 <style>
 *{box-sizing:border-box}body{margin:0;background:#101a22;color:#e2ebef;font:16px system-ui;max-width:1050px;padding:36px;margin:auto}h1{font-size:28px;margin-bottom:6px}p{color:#9db0bd;line-height:1.7}canvas{width:100%;background:#182934;border:1px solid #38505e;border-radius:12px;image-rendering:pixelated}button,select{font:inherit;color:inherit;background:#294252;border:1px solid #5b7c8e;padding:10px 16px;border-radius:7px;cursor:pointer}button:active{background:#4b736d}.controls{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}output{display:block;min-height:30px;color:#86dfc6;font-variant-numeric:tabular-nums}.track{display:flex;gap:4px;margin-top:16px}.beat{padding:12px;background:#23343f;border-radius:5px}.active{background:#397264}small{color:#9db0bd}
 </style>
-<h1>战士 · 三段普攻</h1><p>交叉斩 → 反手上挑 → 下劈收势 · 780ms 循环 · 连续动画草稿 v2</p>
+<h1>战士 · 三段普攻</h1><p>交叉斩 → 反手上挑 → 下劈收势 · 780ms 循环 · 连续动画草稿 v2 · <a href="/skills" style="color:#86dfc6">四技能动画评审</a></p>
 <canvas width="960" height="400" aria-label="战士三段普攻动画"></canvas>
 <div class="controls"><button id="loop">停止循环</button><button id="attack">点按 / 按住普攻</button><button id="reset">重置</button><select id="speed" aria-label="播放速度"><option value="1">1× 正常速度</option><option value="0.25">0.25× 慢放</option></select><button id="pause">暂停</button><button id="step">前进 10ms</button><button id="face">转身</button></div>
 <output id="status">加载帧组…</output><div class="track"><span class="beat">A 交叉斩 · 200ms</span><span class="beat">B 反手上挑 · 220ms</span><span class="beat">C 下劈收势 · 360ms</span></div>

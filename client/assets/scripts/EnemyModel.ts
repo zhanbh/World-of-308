@@ -1,10 +1,13 @@
 import { CombatModel } from './CombatModel';
 
-export type EnemyState = 'approach' | 'telegraph' | 'attack' | 'recover' | 'stunned' | 'dead';
+export type EnemyState = 'approach' | 'telegraph' | 'attack' | 'recover' | 'stunned' | 'knockedDown' | 'gettingUp' | 'dead';
+
+export const enemyFeedbackTuning = { bleedDuration: 5, stunDuration: 0.28, smallKnockdown: 0.8, riseDuration: 0.24 };
+export interface EnemyHitOptions { knockdownFor?: number; bleedFor?: number; }
 
 /** One readable melee enemy. All attack damage is checked against the locked area. */
 export class EnemyModel {
-    hp = 3;
+    hp: number;
     state: EnemyState = 'approach';
     timer = 0;
     flash = 0;
@@ -12,19 +15,53 @@ export class EnemyModel {
     lockedX = 0;
     lockedY = 0;
     impactId = 0;
+    bleedLeft = 0;
+    private bleedAge = 0;
+    fallDirection = 1;
 
-    constructor(public x: number, public y: number, public readonly id: number) {}
+    constructor(public x: number, public y: number, public readonly id: number, public readonly maxHp = 3) {
+        this.hp = maxHp;
+    }
 
-    update(dt: number, player: CombatModel): void {
+    /** Two soft pulses per heartbeat; refreshing duration does not restart the beat. */
+    get bleedPulse(): number {
+        if (this.state === 'dead' || this.bleedLeft <= 0) return 0;
+        const phase = this.bleedAge % 0.9;
+        const first = Math.exp(-Math.pow((phase - 0.12) / 0.065, 2));
+        const second = 0.65 * Math.exp(-Math.pow((phase - 0.30) / 0.085, 2));
+        return Math.min(1, 0.12 + first + second);
+    }
+
+    /** 0 = standing, 1 = fully down. Getting up blends the same body back upright. */
+    get downPose(): number {
+        if (this.state === 'knockedDown') return 1;
+        if (this.state === 'gettingUp') return Math.max(0, this.timer / enemyFeedbackTuning.riseDuration);
+        return 0;
+    }
+
+    update(dt: number, player: CombatModel, passive = false): void {
         this.flash = Math.max(0, this.flash - dt);
         if (this.state === 'dead') return;
-        if (this.state === 'stunned') {
+        if (this.bleedLeft > 0) {
+            this.bleedAge += dt;
+            this.bleedLeft = Math.max(0, this.bleedLeft - dt);
+        }
+        if (this.state === 'stunned' || this.state === 'knockedDown' || this.state === 'gettingUp') {
+            const oldTimer = this.timer;
             this.timer -= dt;
-            this.x += this.knockX * dt;
-            this.knockX *= Math.exp(-dt * 7);
-            if (this.timer <= 0) this.state = this.hp <= 0 ? 'dead' : 'approach';
+            const decay = Math.exp(-dt * 7);
+            this.x += this.knockX * (1 - decay) / 7;
+            this.knockX *= decay;
+            if (this.timer <= 0) {
+                if (this.state === 'knockedDown') {
+                    this.state = 'gettingUp';
+                    this.timer = Math.max(0, enemyFeedbackTuning.riseDuration - (dt - oldTimer));
+                    if (this.timer <= 0) this.state = 'approach';
+                } else this.state = 'approach';
+            }
             return;
         }
+        if (passive) return; // Review targets still advance statuses but do not attack/move by AI.
         if (this.state === 'telegraph') {
             this.timer -= dt;
             if (this.timer <= 0) {
@@ -56,12 +93,27 @@ export class EnemyModel {
         this.y += Math.sign(dy) * Math.min(Math.abs(dy), 25 * dt);
     }
 
-    hit(fromX: number, damage = 1, knockback = 88): void {
+    hit(fromX: number, damage = 1, knockback = 88, options: EnemyHitOptions = {}): void {
         if (this.state === 'dead') return;
         this.hp = Math.max(0, this.hp - damage);
         this.flash = 0.12;
-        this.state = this.hp <= 0 ? 'dead' : 'stunned';
-        this.timer = 0.28;
+        if (this.hp <= 0) {
+            this.state = 'dead';
+            this.bleedLeft = this.bleedAge = this.timer = this.knockX = 0;
+            return;
+        }
+        if (options.bleedFor && options.bleedFor > 0) {
+            if (this.bleedLeft <= 0) this.bleedAge = 0;
+            this.bleedLeft = options.bleedFor; // Refresh one status; never add stacks/duration.
+        }
+        if (options.knockdownFor && options.knockdownFor > 0) {
+            this.timer = this.state === 'knockedDown' ? Math.max(this.timer, options.knockdownFor) : options.knockdownFor;
+            this.state = 'knockedDown';
+            this.fallDirection = this.x >= fromX ? 1 : -1;
+        } else if (this.state !== 'knockedDown' && this.state !== 'gettingUp') {
+            this.state = 'stunned';
+            this.timer = enemyFeedbackTuning.stunDuration;
+        }
         this.knockX = this.x >= fromX ? knockback : -knockback;
     }
 }

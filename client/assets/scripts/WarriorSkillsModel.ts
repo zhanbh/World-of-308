@@ -1,5 +1,9 @@
 /** Prototype-only skill timings, costs, damage and geometry (source pixels / seconds). */
-export type WarriorSkillId = 'cross' | 'bengshan' | 'badao' | 'earth';
+import { skillAnimations, skillLift } from './WarriorSkillAnimation';
+import type { WarriorSkillId } from './WarriorSkillAnimation';
+import { EnemyModel, enemyFeedbackTuning } from './EnemyModel';
+import { skillEffectLifetimes } from './WarriorSkillEffects';
+export type { WarriorSkillId } from './WarriorSkillAnimation';
 
 export const warriorSkillTuning: Record<WarriorSkillId, {
     manaCost: number;
@@ -9,15 +13,32 @@ export const warriorSkillTuning: Record<WarriorSkillId, {
     damage: number;
     range: number;
 }> = {
-    cross:   { manaCost: 8,  cooldown: 1.1, duration: 0.48, impactAt: 0.23, damage: 1, range: 58 },
-    bengshan:{ manaCost: 18, cooldown: 3.4, duration: 0.88, impactAt: 0.64, damage: 2, range: 54 },
-    badao:   { manaCost: 16, cooldown: 2.4, duration: 0.54, impactAt: 0.25, damage: 2, range: 142 },
-    earth:   { manaCost: 40, cooldown: 8.0, duration: 1.50, impactAt: 1.08, damage: 3, range: 145 },
+    cross:   { manaCost: 8,  cooldown: 1.1, ...skillAnimations.cross, damage: 1, range: 58 },
+    bengshan:{ manaCost: 18, cooldown: 3.4, ...skillAnimations.bengshan, damage: 2, range: 54 },
+    badao:   { manaCost: 16, cooldown: 2.4, ...skillAnimations.badao, damage: 2, range: 142 },
+    earth:   { manaCost: 40, cooldown: 8.0, ...skillAnimations.earth, damage: 3, range: 145 },
 };
 
 export const warriorSkillNames: Record<WarriorSkillId, string> = {
     cross: '十字斩', bengshan: '崩山击', badao: '拔刀斩', earth: '崩山裂地斩',
 };
+
+/** Shared by the real encounter and the durable feedback review target. */
+export function applyWarriorSkillHit(id: WarriorSkillId, enemy: EnemyModel, x: number, y: number, facing: number): boolean {
+    if (enemy.state === 'dead') return false;
+    const config = warriorSkillTuning[id];
+    const dx = (enemy.x - x) * facing, dy = enemy.y - y;
+    const hit = id === 'cross' ? dx >= -8 && dx <= config.range && Math.abs(dy) <= 34
+        : id === 'badao' ? dx >= 0 && dx <= config.range && Math.abs(dy) <= 24 + dx * 0.11
+            : Math.hypot(dx, dy) <= config.range;
+    if (!hit) return false;
+    enemy.hit(x, config.damage, id === 'earth' ? 110 : id === 'bengshan' ? 95 : 60, {
+        bleedFor: enemyFeedbackTuning.bleedDuration,
+        knockdownFor: id === 'earth' ? skillEffectLifetimes.earth
+            : id === 'bengshan' ? enemyFeedbackTuning.smallKnockdown : undefined,
+    });
+    return true;
+}
 
 /** One local mana pool, four independently cooled-down moves and one active action. */
 export class WarriorSkillsModel {
@@ -34,21 +55,13 @@ export class WarriorSkillsModel {
     private cooldowns: Record<WarriorSkillId, number> = { cross: 0, bengshan: 0, badao: 0, earth: 0 };
 
     get casting(): boolean { return this.activeId !== null; }
+    get canMove(): boolean { return !this.activeId || this.elapsed >= skillAnimations[this.activeId].moveAt; }
     get progress(): number | null {
         if (!this.activeId) return null;
         return Math.min(1, this.elapsed / warriorSkillTuning[this.activeId].duration);
     }
     get jumpLift(): number {
-        const p = this.progress;
-        if (p === null) return 0;
-        if (this.activeId === 'bengshan') return Math.sin(Math.min(1, this.elapsed / warriorSkillTuning.bengshan.impactAt) * Math.PI) * 25;
-        if (this.activeId === 'earth') {
-            const impactProgress = warriorSkillTuning.earth.impactAt / warriorSkillTuning.earth.duration;
-            return p < 0.35
-                ? Math.sin(p / 0.35 * Math.PI / 2) * 52
-                : Math.cos(Math.min(1, (p - 0.35) / (impactProgress - 0.35)) * Math.PI / 2) * 52;
-        }
-        return 0;
+        return this.activeId ? skillLift(this.activeId, this.elapsed) : 0;
     }
 
     cooldown(id: WarriorSkillId): number { return this.cooldowns[id]; }
@@ -82,7 +95,7 @@ export class WarriorSkillsModel {
         const oldElapsed = this.elapsed;
         this.elapsed = Math.min(warriorSkillTuning[id].duration, this.elapsed + dt);
         if (id === 'bengshan') {
-            const movementProgress = Math.min(1, this.elapsed / 0.42);
+            const movementProgress = Math.max(0, Math.min(1, (this.elapsed - 0.12) / (warriorSkillTuning.bengshan.impactAt - 0.12)));
             const easedProgress = 1 - (1 - movementProgress) * (1 - movementProgress);
             this.motionDelta = (easedProgress - this.movementFraction) * 34 * this.facing;
             this.movementFraction = easedProgress;

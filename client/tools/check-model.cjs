@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const editor = process.argv[2];
 if (!editor) throw new Error('Pass Creator installation directory as the first argument');
 const ts = require(path.join(editor, 'resources/app.asar.unpacked/node_modules/typescript'));
-for (const name of ['WarriorAttackAnimation.ts', 'WarriorSpriteSheetView.ts', 'CombatModel.ts', 'EnemyModel.ts', 'WarriorView.ts', 'WarriorSkillsModel.ts', 'Prototype.ts']) {
+for (const name of ['WarriorSkillAnimation.ts', 'WarriorSkillEffects.ts', 'WarriorAttackAnimation.ts', 'WarriorSpriteSheetView.ts', 'CombatModel.ts', 'EnemyModel.ts', 'WarriorView.ts', 'WarriorSkillsModel.ts', 'Prototype.ts']) {
     const file = path.join(__dirname, '../assets/scripts', name);
     const checked = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
         fileName: file,
@@ -85,11 +85,7 @@ advance(c, 0.1, -1, 0); const facing = c.facing;
 advance(c, 0.1, 0, 1); assert.equal(c.facing, facing, 'depth movement must retain facing');
 console.log('PASS: tap, timeout, buffer, hold loop, reset, axis speeds, diagonal and facing');
 
-const skillSource = fs.readFileSync(path.join(__dirname, '../assets/scripts/WarriorSkillsModel.ts'), 'utf8');
-const skillResult = ts.transpileModule(skillSource, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
-const skillMod = { exports: {} };
-new Function('module', 'exports', skillResult.outputText)(skillMod, skillMod.exports);
-const { WarriorSkillsModel, warriorSkillTuning } = skillMod.exports;
+const { WarriorSkillsModel, warriorSkillTuning } = load('WarriorSkillsModel');
 const skills = new WarriorSkillsModel();
 assert.equal(skills.cast('cross', 1), true, 'ready 十字斩 must cast');
 assert.equal(skills.cast('badao', 1), false, 'only one skill can be active at a time');
@@ -138,3 +134,122 @@ skills.reset();
 assert.equal(skills.mana, skills.maxMana, 'encounter reset restores skill mana and cooldowns');
 assert.equal(skills.ready('earth'), true, 'encounter reset restores ultimate readiness');
 console.log('PASS: four warrior skills, shared mana, independent cooldowns, one impact, lunge/jump motion and reset');
+
+const { skillAnimations, skillFrame, skillLift } = load('WarriorSkillAnimation');
+const { WarriorSkillEffects } = load('WarriorSkillEffects');
+assert.ok(Math.abs(skillAnimations.badao.chargeEnd - skillAnimations.badao.chargeStart - 0.2) < 1e-9,
+    'draw slash holds the waist-coiled pose for 200ms');
+for (const elapsed of [0.14, 0.20, 0.30, 0.339]) {
+    assert.equal(skillFrame('badao', elapsed), 2, 'charge must visibly hold one coiled pose');
+}
+assert.equal(skillFrame('badao', 0.34), 3, 'draw slash releases its charge hold at 340ms');
+for (const id of Object.keys(skillAnimations)) {
+    const anim = skillAnimations[id];
+    anim.times.forEach((time, index) => assert.equal(skillFrame(id, time), index));
+    assert.equal(warriorSkillTuning[id].impactAt, anim.impactAt, 'body and damage share contact time');
+    assert.equal(skillFrame(id, anim.impactAt), id === 'cross' || id === 'badao' ? 6 : 7);
+    skills.reset(); skills.cast(id, 1);
+    advance(skills, anim.impactAt - 0.01);
+    assert.equal(skills.impactId, 0, 'no damage before contact');
+    skills.cancel(); advance(skills, 3);
+    assert.equal(skills.impactId, 0, 'interruption cannot create ghost contact');
+    assert.equal(skills.jumpLift, 0, 'cancel clears visual height');
+    skills.reset(); skills.cast(id, 1);
+    skills.update(anim.duration + 1);
+    assert.equal(skills.impactId, 1, 'large dt traversal still produces one contact');
+    skills.reset(); skills.cast(id, 1);
+    advance(skills, anim.moveAt - 0.01);
+    assert.equal(skills.canMove, false, 'pre-recovery movement remains locked');
+    advance(skills, 0.02);
+    assert.equal(skills.canMove, true, 'movement opens at the configured recovery time');
+}
+assert.equal(skillLift('bengshan', 0.1), 0, 'small jump waits for takeoff');
+assert.equal(skillLift('earth', 0.2), 0, 'ultimate stays grounded during anticipation');
+const effects = new WarriorSkillEffects();
+effects.impact('earth', 10, 20, -1);
+effects.update(0.45); // Body action already ended at 1320ms, 440ms after impact.
+assert.equal(effects.items.length, 1, 'ultimate eruption outlives the body action');
+assert.equal(effects.items[0].x, 10); assert.equal(effects.items[0].y, 20);
+assert.equal(effects.items[0].facing, -1, 'effect freezes its ground anchor and facing');
+assert.ok(effects.items[0].age >= 0.4, 'delayed eruption begins after contact');
+effects.update(1.08); assert.equal(effects.items.length, 0, 'residual expires after 2400ms total');
+effects.impact('earth', 5, 8, 1); effects.clear(); effects.update(4);
+assert.equal(effects.items.length, 0, 'room reset clears delayed eruption');
+console.log('PASS: skill frame/contact alignment, takeoff, pre-impact interruption and persistent effect cleanup');
+
+const { EnemyModel, enemyFeedbackTuning } = load('EnemyModel');
+const { applyWarriorSkillHit } = load('WarriorSkillsModel');
+const { skillEffectLifetimes } = load('WarriorSkillEffects');
+const reviewPlayer = new CombatModel();
+const advanceEnemy = (enemy, seconds) => {
+    for (let i = 0; i < Math.round(seconds * 1000); i++) enemy.update(0.001, reviewPlayer, true);
+};
+for (const id of ['cross', 'badao']) {
+    const enemy = new EnemyModel(40, 0, 0, 30);
+    enemy.state = 'telegraph'; enemy.timer = 0.01;
+    assert.equal(applyWarriorSkillHit(id, enemy, 0, 0, 1), true);
+    assert.equal(enemy.state, 'stunned', 'flat slashes interrupt windup with a brief stun');
+    assert.equal(enemy.bleedLeft, 5);
+    const hp = enemy.hp;
+    advanceEnemy(enemy, 0.29);
+    assert.equal(enemy.state, 'approach');
+    assert.ok(enemy.x > 40 && enemy.x < 50, 'flat slash knockback stays small');
+    assert.equal(reviewPlayer.hp, 100, 'interrupted telegraph cannot still attack');
+    assert.equal(enemy.hp, hp, 'bleed damage awaits numeric tuning; this build keeps visual-only bleeding');
+}
+const smallDown = new EnemyModel(40, 0, 0, 30);
+applyWarriorSkillHit('bengshan', smallDown, 0, 0, 1);
+assert.equal(smallDown.state, 'knockedDown');
+advanceEnemy(smallDown, 0.79); assert.equal(smallDown.state, 'knockedDown');
+advanceEnemy(smallDown, 0.02); assert.equal(smallDown.state, 'gettingUp');
+advanceEnemy(smallDown, 0.25); assert.equal(smallDown.state, 'approach');
+assert.ok(smallDown.bleedLeft > 3.9, 'bleed keeps ticking while down and getting up');
+
+const largeDown = new EnemyModel(40, 0, 0, 30);
+applyWarriorSkillHit('earth', largeDown, 0, 0, 1);
+assert.equal(largeDown.timer, skillEffectLifetimes.earth);
+assert.ok(Math.abs(skillAnimations.earth.impactAt + largeDown.timer - 2.4) < 1e-9,
+    'ultimate recovery waits for all 2400ms of its animation, including residual');
+advanceEnemy(largeDown, 0.4);
+const downTime = largeDown.timer;
+applyWarriorSkillHit('cross', largeDown, 0, 0, 1);
+assert.equal(largeDown.state, 'knockedDown', 'a slash cannot pull a downed enemy upright');
+assert.equal(largeDown.timer, downTime, 'stun cannot shorten the ultimate knockdown');
+applyWarriorSkillHit('bengshan', largeDown, 0, 0, 1);
+assert.equal(largeDown.timer, downTime, 'a shorter knockdown cannot shorten an existing one');
+advanceEnemy(largeDown, 1.119); assert.equal(largeDown.state, 'knockedDown');
+advanceEnemy(largeDown, 0.002); assert.equal(largeDown.state, 'gettingUp');
+
+// The actual encounter updates hit enemies after spawning effects in each step.
+const sceneTarget = new EnemyModel(40, 0, 0, 30), sceneEffects = new WarriorSkillEffects();
+const sceneStep = 1 / 120;
+applyWarriorSkillHit('earth', sceneTarget, 0, 0, 1);
+sceneEffects.impact('earth', 0, 0, 1, sceneStep);
+sceneTarget.update(sceneStep, reviewPlayer, true);
+assert.ok(Math.abs(sceneTarget.timer - (sceneEffects.items[0].lifetime - sceneEffects.items[0].age)) < 1e-9,
+    'encounter update order keeps remaining knockdown equal to remaining effect lifetime');
+
+const bleeding = new EnemyModel(40, 0, 0, 30);
+applyWarriorSkillHit('cross', bleeding, 0, 0, 1);
+advanceEnemy(bleeding, 1);
+const pulse = bleeding.bleedPulse;
+applyWarriorSkillHit('badao', bleeding, 0, 0, 1);
+assert.equal(bleeding.bleedLeft, 5, 'another bleeding skill refreshes to 5s, not 9s');
+assert.equal(bleeding.bleedPulse, pulse, 'refresh does not restart the heartbeat animation');
+advanceEnemy(bleeding, 4.999); assert.ok(bleeding.bleedLeft > 0);
+advanceEnemy(bleeding, 0.002); assert.equal(bleeding.bleedLeft, 0); assert.equal(bleeding.bleedPulse, 0);
+const pulseTarget = new EnemyModel(40, 0, 0, 30);
+applyWarriorSkillHit('cross', pulseTarget, 0, 0, 1);
+advanceEnemy(pulseTarget, 0.12); const pulse1 = pulseTarget.bleedPulse;
+advanceEnemy(pulseTarget, 0.10); const valley = pulseTarget.bleedPulse;
+advanceEnemy(pulseTarget, 0.08); const pulse2 = pulseTarget.bleedPulse;
+assert.ok(pulse1 > valley && pulse2 > valley, 'bleeding has two soft heartbeat peaks');
+const miss = new EnemyModel(300, 0, 0, 30);
+assert.equal(applyWarriorSkillHit('cross', miss, 0, 0, 1), false);
+assert.equal(miss.bleedLeft, 0); assert.equal(miss.state, 'approach');
+const killed = new EnemyModel(40, 0, 0);
+applyWarriorSkillHit('earth', killed, 0, 0, 1);
+assert.equal(killed.state, 'dead', 'death takes precedence over knockdown');
+assert.equal(killed.bleedLeft, 0); assert.equal(killed.bleedPulse, 0);
+assert.equal(killed.timer, 0, 'dead enemies do not stand up later');
+console.log('PASS: skill-specific stun/knockdown, ultimate recovery, 5s refresh-only bleeding, heartbeat and death/miss cleanup');

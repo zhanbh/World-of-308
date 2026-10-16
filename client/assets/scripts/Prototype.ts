@@ -3,8 +3,9 @@ import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
 import { CombatModel, tuning } from './CombatModel';
 import { WarriorView } from './WarriorView';
 import { EnemyModel } from './EnemyModel';
-import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning } from './WarriorSkillsModel';
+import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning, applyWarriorSkillHit } from './WarriorSkillsModel';
 import { WarriorSpriteSheetView } from './WarriorSpriteSheetView';
+import { WarriorSkillEffects } from './WarriorSkillEffects';
 
 const { ccclass } = _decorator;
 const stages = ['交叉斩', '反手上挑', '下劈收势'];
@@ -20,6 +21,7 @@ export class Prototype extends Component {
     private warrior = new WarriorView();
     private warriorSprite!: WarriorSpriteSheetView;
     private skills = new WarriorSkillsModel();
+    private skillEffects = new WarriorSkillEffects();
     private controls!: Graphics;
     private status!: Label;
     private healthStatus!: Label;
@@ -45,7 +47,7 @@ export class Prototype extends Component {
         this.actor = this.makeGraphics('Warrior');
         this.warriorSprite = new WarriorSpriteSheetView(this.actor.node);
         this.controls = this.makeGraphics('Controls');
-        this.text('308 动作样板 v0.8 · 战士技能组', 0, 242, 22);
+        this.text('308 动作样板 v0.9 · 战士技能动画', 0, 242, 22);
         this.text('WASD移动 · 空格普攻 · E十字斩 · F崩山击 · Q拔刀斩 · G崩山裂地斩 · R重置 · 1/3敌人', 0, 212, 16);
         this.healthStatus = this.text('', -330, 178, 17);
         this.status = this.text('', 0, -242, 17);
@@ -180,10 +182,12 @@ export class Prototype extends Component {
         this.accumulator += Math.min(dt, 0.1);
         while (this.accumulator >= 1 / 120) {
             const fixedDt = 1 / 120;
+            this.skillEffects.update(fixedDt);
             this.skills.update(fixedDt);
+            if (this.skills.casting && this.skills.canMove && (x !== 0 || y !== 0)) this.skills.cancel();
             this.model.update(fixedDt, this.skills.casting ? 0 : x, this.skills.casting ? 0 : y);
             this.model.x = Math.max(-218, Math.min(218, this.model.x + this.skills.motionDelta));
-            if (this.skills.lastImpact) this.resolveSkillImpact(this.skills.lastImpact);
+            if (this.skills.lastImpact) this.resolveSkillImpact(this.skills.lastImpact, fixedDt);
             if (this.model.impactId !== this.lastImpactId) {
                 this.lastImpactId = this.model.impactId;
                 this.resolveMeleeHit();
@@ -191,6 +195,7 @@ export class Prototype extends Component {
             const hpBeforeEnemies = this.model.hp;
             for (const enemy of this.enemies) enemy.update(fixedDt, this.model);
             if (this.model.hp < hpBeforeEnemies) this.skills.cancel();
+            if (this.model.hp <= 0) this.skillEffects.clear();
             this.accumulator -= fixedDt;
         }
         this.retryTimer = this.model.hp <= 0 || this.enemies.every(enemy => enemy.state === 'dead')
@@ -230,7 +235,9 @@ export class Prototype extends Component {
         this.actor.node.setPosition(x * 2, (y + this.skills.jumpLift) * 2);
         this.actor.node.setScale(2.4 * m.facing, 2.4 * (m.hitStun > 0 ? 0.88 : 1), 1);
         this.actor.node.active = m.invulnerable <= 0 || Math.floor(m.invulnerable * 16) % 2 === 0;
-        const useSprite = !this.skills.activeId && (m.stage >= 0
+        const useSprite = this.skills.activeId
+            ? this.warriorSprite.showSkill(this.skills.activeId, this.skills.elapsed)
+            : (m.stage >= 0
             ? this.warriorSprite.showAttack(m.stage, m.elapsed)
             : this.warriorSprite.showReady());
         this.actor.enabled = !useSprite;
@@ -261,6 +268,7 @@ export class Prototype extends Component {
         this.model.hp = 100; this.model.x = 0; this.model.y = 0;
         this.model.reset(); this.model.hitStun = this.model.invulnerable = this.model.knockX = 0;
         this.skills.reset();
+        this.skillEffects.clear();
         this.lastImpactId = this.model.impactId;
         this.retryTimer = 0;
         const starts = this.mode === 1 ? [[76, 2]] : [[76, -8], [-100, 16], [153, 25]];
@@ -280,6 +288,7 @@ export class Prototype extends Component {
     }
 
     private castSkill(id: WarriorSkillId): void {
+        if (this.model.hp <= 0 || this.model.hitStun > 0) return;
         if (!this.skills.cast(id, this.model.facing)) return;
         this.model.reset();
         this.model.release();
@@ -314,59 +323,69 @@ export class Prototype extends Component {
         }
     }
 
-    private resolveSkillImpact(id: WarriorSkillId): void {
-        const config = warriorSkillTuning[id];
+    private resolveSkillImpact(id: WarriorSkillId, step: number): void {
+        // Enemies consume this same simulation step below. Age the new effect by
+        // the same amount so ultimate knockdown cannot end a frame before it.
+        this.skillEffects.impact(id, this.model.x, this.model.y, this.skills.facing, step);
         for (const enemy of this.enemies) {
-            if (enemy.state === 'dead') continue;
-            const dx = (enemy.x - this.model.x) * this.skills.facing;
-            const dy = enemy.y - this.model.y;
-            let hit = false;
-            if (id === 'cross') hit = dx >= -8 && dx <= config.range && Math.abs(dy) <= 34;
-            else if (id === 'bengshan') hit = Math.hypot(dx, dy) <= config.range;
-            else if (id === 'badao') hit = dx >= 0 && dx <= config.range && Math.abs(dy) <= 24 + dx * 0.11;
-            else hit = Math.hypot(dx, dy) <= config.range;
-            if (hit) enemy.hit(this.model.x, config.damage, id === 'earth' ? 190 : id === 'bengshan' ? 145 : 120);
+            applyWarriorSkillHit(id, enemy, this.model.x, this.model.y, this.skills.facing);
         }
     }
 
     private drawSkillEffect(g: Graphics): void {
-        const id = this.skills.activeId, p = this.skills.progress;
-        if (!id || p === null) return;
-        const x = this.model.x, y = this.model.y + 18, facing = this.skills.facing;
-        if (id === 'cross' && p >= 0.24 && p <= 0.68) {
-            const fade = Math.sin((p - 0.24) / 0.44 * Math.PI);
-            this.slashBand(g, x + facing * 30, y + 1, 40, 8, Math.PI / 4, new Color(255, 224, 175, Math.round(220 * fade)), facing);
-            this.slashBand(g, x + facing * 30, y + 1, 40, 8, -Math.PI / 4, new Color(255, 242, 215, Math.round(235 * fade)), facing);
-        } else if (id === 'badao' && p >= 0.36 && p <= 0.82) {
-            const fade = Math.sin((p - 0.36) / 0.46 * Math.PI);
-            const start = x + facing * 12, end = x + facing * warriorSkillTuning.badao.range;
-            g.fillColor = new Color(174, 237, 236, Math.round(130 * fade));
-            g.moveTo(start, y + 14); g.lineTo(end, y + 7); g.lineTo(end, y - 2); g.lineTo(start, y - 8); g.close(); g.fill();
-            g.strokeColor = new Color(244, 255, 252, Math.round(230 * fade)); g.lineWidth = 3;
-            g.moveTo(start, y + 4); g.lineTo(end, y + 3); g.stroke();
-        } else if (id === 'bengshan' && p >= 0.70 && p <= 0.96) {
-            const fade = (0.96 - p) / 0.26;
-            g.strokeColor = new Color(255, 190, 120, Math.round(210 * fade)); g.lineWidth = 3;
-            g.circle(x, this.model.y, 48); g.stroke();
-            for (let i = 0; i < 8; i++) {
-                const a = i * Math.PI / 4;
-                g.moveTo(x + Math.cos(a) * 16, this.model.y + Math.sin(a) * 9);
-                g.lineTo(x + Math.cos(a) * 58, this.model.y + Math.sin(a) * 29);
+        // First cross stroke precedes the single contact event at 290ms.
+        if (this.skills.activeId === 'cross' && this.skills.elapsed >= 0.17 && this.skills.elapsed < 0.29) {
+            this.slashBand(g, this.model.x + this.skills.facing * 29, this.model.y + 22,
+                43, 3, 0, new Color(179, 241, 255, 210), this.skills.facing);
+        }
+        for (const effect of this.skillEffects.items) {
+            const { id, x, y, facing, age, lifetime } = effect;
+            const fade = Math.max(0, 1 - age / lifetime);
+            if (id === 'cross') {
+                const cx = x + facing * (29 + age / lifetime * 12);
+                this.slashBand(g, cx, y + 22, 43, 3 * fade, 0, new Color(177, 237, 255, Math.round(210 * fade)), facing);
+                this.slashBand(g, cx, y + 22, 45, 4 * fade, Math.PI / 2, new Color(240, 253, 255, Math.round(240 * fade)), facing);
+            } else if (id === 'badao') {
+                // Front-only elliptical crescent; no misleading full 360-degree ring.
+                const radius = 85 + Math.min(1, age / 0.1) * 57;
+                for (const [thickness, opacity] of [[7, 100], [2.3, 240]]) {
+                    g.strokeColor = new Color(194, 248, 255, Math.round(opacity * fade)); g.lineWidth = thickness * fade;
+                    for (let i = 0; i <= 24; i++) {
+                        const a = -Math.PI / 2 + i / 24 * Math.PI;
+                        const px = x + facing * Math.cos(a) * radius;
+                        const py = y + 22 + Math.sin(a) * 34;
+                        if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+                    }
+                    g.stroke();
+                }
+            } else {
+                const large = id === 'earth';
+                const radius = warriorSkillTuning[id].range;
+                const grow = Math.min(1, age / (large ? 0.18 : 0.16));
+                g.strokeColor = new Color(255, large ? 124 : 203, 112, Math.round(190 * fade));
+                g.lineWidth = large ? 2.5 : 1.5;
+                g.ellipse(x, y, radius * grow, radius * grow); g.stroke();
+                for (let i = 0; i < (large ? 12 : 7); i++) {
+                    const a = i * Math.PI * 2 / (large ? 12 : 7);
+                    const length = radius * grow * (0.72 + (i % 3) * 0.12);
+                    g.moveTo(x, y);
+                    g.lineTo(x + Math.cos(a + 0.09) * length * 0.48, y + Math.sin(a + 0.09) * length * 0.48);
+                    g.lineTo(x + Math.cos(a) * length, y + Math.sin(a) * length);
+                }
+                g.stroke();
+                if (large && age >= 0.4 && age < 1.12) {
+                    const pulse = Math.sin((age - 0.4) / 0.72 * Math.PI);
+                    for (let i = 0; i < 9; i++) {
+                        const a = i * 2.39996;
+                        const px = x + Math.cos(a) * radius * 0.68;
+                        const py = y + Math.sin(a) * radius * 0.55;
+                        const height = (26 + i % 3 * 9) * pulse;
+                        g.fillColor = new Color(255, 135 + i % 3 * 24, 65, Math.round(115 * pulse));
+                        g.moveTo(px - 5, py); g.lineTo(px - 2, py + height * 0.58);
+                        g.lineTo(px + 2, py + height); g.lineTo(px + 6, py); g.close(); g.fill();
+                    }
+                }
             }
-            g.stroke();
-        } else if (id === 'earth' && p >= 0.72 && p <= 0.98) {
-            const pulse = Math.min(1, (p - 0.72) / 0.24), fade = 1 - pulse * 0.65;
-            const radius = 24 + pulse * warriorSkillTuning.earth.range;
-            g.strokeColor = new Color(255, 129, 81, Math.round(230 * fade)); g.lineWidth = 6 * fade;
-            g.circle(x, this.model.y, radius); g.stroke();
-            g.strokeColor = new Color(255, 218, 150, Math.round(220 * fade)); g.lineWidth = 2;
-            for (let i = 0; i < 12; i++) {
-                const a = i * Math.PI / 6;
-                const inner = 14 + (i % 3) * 5;
-                g.moveTo(x + Math.cos(a) * inner, this.model.y + Math.sin(a) * inner * 0.65);
-                g.lineTo(x + Math.cos(a) * (radius + 10), this.model.y + Math.sin(a) * (radius + 10) * 0.65);
-            }
-            g.stroke();
         }
     }
 
@@ -400,17 +419,40 @@ export class Prototype extends Component {
             }
             const x = 0, y = 0;
             eg.fillColor = new Color(13, 19, 23, 140); eg.ellipse(x, y, 11, 4); eg.fill();
-            this.rect(eg, x - 6, y + 2, 12, 14, enemy.flash > 0 ? '#f5ddd0' : '#806348');
-            this.rect(eg, x - 5, y + 15, 10, 9, enemy.flash > 0 ? '#f5ddd0' : '#bb8960');
-            this.rect(eg, x - 6, y + 21, 12, 4, '#443d37');
             const facing = Math.sign(this.model.x - enemy.x) || 1;
-            this.rect(eg, facing * 3, y + 17, 2, 2, '#251f1b');
+            this.drawEnemyBody(eg, enemy, facing);
             if (enemy.state === 'telegraph') {
                 eg.strokeColor = new Color(255, 136, 98); eg.lineWidth = 3;
                 eg.moveTo(-7, 25); eg.lineTo(facing * 13, 13); eg.stroke();
             }
-            this.drawHealthBar(enemy.x * 2 - 18, enemy.y * 2 + 54, enemy.hp, 3, '#ff967c');
+            this.drawHealthBar(enemy.x * 2 - 18, enemy.y * 2 + 54, enemy.hp, enemy.maxHp, '#ff967c');
         }
+    }
+
+    private drawEnemyBody(g: Graphics, enemy: EnemyModel, facing: number): void {
+        const angle = -Math.PI / 2 * enemy.downPose * enemy.fallDirection;
+        const c = Math.cos(angle), s = Math.sin(angle), pulse = enemy.bleedPulse;
+        const quad = (x: number, y: number, w: number, h: number, color: Color): void => {
+            g.fillColor = color;
+            [[x, y], [x + w, y], [x + w, y + h], [x, y + h]].forEach(([px, py], i) => {
+                const tx = px * c - (py - 4) * s, ty = px * s + (py - 4) * c + 4;
+                if (i === 0) g.moveTo(tx, ty); else g.lineTo(tx, ty);
+            });
+            g.close(); g.fill();
+        };
+        const tint = (r: number, green: number, b: number): Color => {
+            if (enemy.flash > 0) return new Color(245, 221, 208);
+            const t = pulse * 0.65;
+            return new Color(Math.round(r + (235 - r) * t), Math.round(green * (1 - t * 0.8)), Math.round(b * (1 - t * 0.7)));
+        };
+        if (pulse > 0) {
+            quad(-7.5, 0.5, 15, 17, new Color(224, 43, 53, Math.round(70 * pulse)));
+            quad(-6.5, 13.5, 13, 12, new Color(244, 50, 62, Math.round(60 * pulse)));
+        }
+        quad(-6, 2, 12, 14, tint(128, 99, 72));
+        quad(-5, 15, 10, 9, tint(187, 137, 96));
+        quad(-6, 21, 12, 4, tint(68, 61, 55));
+        quad(facing * 3, 17, 2, 2, new Color(37, 31, 27));
     }
 
     private sortActorsByDepth(): void {
