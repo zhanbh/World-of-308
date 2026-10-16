@@ -41,3 +41,13 @@ node client/tools/check-model.cjs 'C:\ProgramData\cocos\editors\Creator\3.8.8'
 已有 Web Mobile 构建产物时，可在仓库根目录运行 `node client/tools/serve.cjs`，默认读取 `client/build/web-mobile-001` 并在 `http://127.0.0.1:8765` 提供桌面本机预览。参数依次为构建目录名、监听地址和端口；手机与电脑在同一局域网时，把监听地址设为电脑当前 WLAN IPv4（例如 `node client/tools/serve.cjs web-mobile-001 10.200.4.231 8766`），再在手机打开该 IP 和端口（`http://10.200.4.231:8766/`）。服务只绑定指定接口；测试结束后关闭服务。构建刷新需在 Creator 3.8.8 中打开 `client` 并重新构建 Web Mobile。
 
 微信开发者工具路径：`D:\Program Files (x86)\Tencent\微信web开发者工具`。微信构建、AppID 配置、真机多点触摸、刘海/胶囊安全区和 60 FPS 均不能由逻辑检查证明。暂不编造 AppID 或创建云环境。
+
+## 命中反馈对比
+
+独立 `/skills` 评审页可分别开关顿帧、像素火花、伤害跳字、落地震动，点击“同条件重播”恢复相同靶怪与施放起点。建议先1×比较力度和拖沓感，再用慢放/步进观察各段。评审时间与战斗时间之差包含顿帧；游戏Cocos默认开启，需重建Web Mobile才能更新，独立页刷新即可。
+
+图集替换前可用只读 `tools/check-atlas.py reference.png candidate.png` 检查尺寸、网格和透明区域（需已有Pillow环境），结构通过不代表美术验收通过。失败的清理候选未用于游戏。
+
+普攻独立评审页增加“逐帧检查”与“残片裁帧”对比，针对v2 A5/A6/B2/B4左侧邻帧残片；Cocos已共用无损显示裁切，PNG源图和脚底锚点不变。拔刀蓄力与十字发射增加微弱像素提示，具体动作图集未重绘。本轮整体取舍与未完成美术项见[可靠度优化记录](../docs/reviews/reliability-first-polish-v1.md)。
+
+身体动作v1已接入：4帧步行/跑动（不同步频）、100ms急停、2帧受击、崩山落地吸震和上挑准备修正。`/skills`新增动作按钮，`/`可检查B2新旧对比。待机使用普攻守势；技能角色按统一标尺调整显示大小，碰撞与移动速度不变。重建后按[统一验收记录](../docs/reviews/body-motion-review-v1.md)一次试玩即可。

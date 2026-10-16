@@ -335,3 +335,121 @@ for(let i=0;i<100;i++){fractionalCast.update(.01);fractionalCast.resolveHits([fr
 assert.equal(fractionDeath.hp,0,'fractional damage cannot leave a floating-point ghost alive');
 assert.equal(fractionDeath.state,'dead');
 console.log('PASS: moving/knockback targets at 30/60/120Hz and fractional lethal damage');
+
+const { CombatFeedback, hitFeedbackTuning, hitSparkPixels } = load('EnemyModel');
+const feedback = new CombatFeedback(), crowd = [0,1,2].map(id=>new EnemyModel(40,0,400+id,100));
+feedback.observe(crowd);assert.equal(feedback.stopLeft,0,'misses/idle never freeze');
+for(const target of crowd)target.hit(0);
+feedback.observe(crowd);
+assert.equal(feedback.stopLeft,hitFeedbackTuning.lightStop,'crowd hits coalesce instead of adding freeze');
+assert.equal(feedback.sparks.length,3);
+feedback.update(.01);const remaining=feedback.stopLeft;
+feedback.observe(crowd);assert.equal(feedback.stopLeft,remaining,'same hit cannot retrigger every frame');
+crowd[0].hit(0,1,0,{knockdownFor:.8});feedback.observe(crowd);
+assert.equal(feedback.stopLeft,hitFeedbackTuning.heavyStop);
+for(let i=0;i<30;i++)feedback.update(1/120);
+assert.equal(feedback.stopLeft,0);assert.equal(feedback.sparks.length,0);
+for(const block of hitSparkPixels(.05,true))assert.ok(Number.isInteger(block.x)&&Number.isInteger(block.y)&&Number.isInteger(block.size));
+feedback.clear();feedback.observe(crowd.map((_,id)=>new EnemyModel(0,0,id,100)));assert.equal(feedback.stopLeft,0);
+// Advance the encounter only when the presentation clock permits it.
+const runnerFeedback=new CombatFeedback(), runnerSkill=new WarriorSkillsModel(), runnerEnemy=new EnemyModel(40,0,500,100);
+runnerSkill.cast('earth',1);let realTime=0,contactCount=0;
+while(realTime<3){const dt=1/120;realTime+=dt;if(runnerFeedback.update(dt))continue;
+ runnerSkill.update(dt);contactCount+=runnerSkill.resolveHits([runnerEnemy],0,0);runnerEnemy.update(dt,reviewPlayer,true);runnerFeedback.observe([runnerEnemy]);}
+assert.equal(contactCount,4,'hit-stop must not skip/duplicate ground damage stages');
+assert.equal(runnerEnemy.state,'approach','ultimate get-up and effect clock resume together');
+console.log('PASS: hit-stop coalescing, no idle retriggers, heavy/light timing, pixel sparks, cleanup and multi-hit integration');
+
+const comparison = new CombatFeedback(), comparisonEnemy = new EnemyModel(40,0,600,100);
+comparison.configure({hitStop:false,sparks:false});comparisonEnemy.hit(0);comparison.observe([comparisonEnemy]);
+assert.equal(comparison.stopLeft,0);assert.equal(comparison.sparks.length,0);
+comparison.configure({hitStop:true,sparks:true});comparison.observe([comparisonEnemy]);
+assert.equal(comparison.stopLeft,0,'re-enabling cannot replay old damage');
+comparisonEnemy.hit(0);comparison.observe([comparisonEnemy]);assert.ok(comparison.stopLeft>0);
+comparison.configure({hitStop:false});assert.equal(comparison.stopLeft,0,'disabling releases an active freeze immediately');
+assert.ok(comparison.sparks.length>0,'stop and sparks have independent switches');
+comparison.configure({sparks:false});assert.equal(comparison.sparks.length,0);
+comparison.clear();assert.equal(comparison.hitStopEnabled,false,'encounter reset preserves comparison settings');
+console.log('PASS: independent feedback A/B controls, immediate release, no retroactive hits and reset retention');
+
+const { damageText } = load('EnemyModel');
+const eventTarget=new EnemyModel(0,0,700,10), numberFeedback=new CombatFeedback();
+eventTarget.hit(0,1/3);eventTarget.hit(0,2/3);numberFeedback.observe([eventTarget]);
+assert.equal(numberFeedback.numbers.length,2,'two hits in one simulation step remain separate popups');
+assert.equal(numberFeedback.sparks.length,2,'same-step impacts keep both sparks');
+assert.ok(Math.abs(numberFeedback.numbers.reduce((sum,n)=>sum+n.damage,0)-1)<1e-10);
+numberFeedback.observe([eventTarget]);assert.equal(numberFeedback.numbers.length,2,'no duplicate popups');
+assert.equal(damageText(2/3),'0.67');assert.equal(damageText(.001),'<0.01');
+const overkill=new EnemyModel(0,0,701,1);overkill.hit(0,10);numberFeedback.observe([overkill]);
+assert.equal(numberFeedback.numbers.at(-1).damage,1,'display actual HP removed, not nominal overkill');
+for(let i=0;i<100;i++)numberFeedback.update(.01);
+assert.equal(numberFeedback.numbers.length,0,'all numbers expire');
+numberFeedback.configure({numbers:false});eventTarget.hit(0);numberFeedback.observe([eventTarget]);
+assert.equal(numberFeedback.numbers.length,0);assert.ok(numberFeedback.sparks.length>0,'numbers can be disabled without hiding sparks');
+for(let i=0;i<40;i++){eventTarget.hp=100;eventTarget.state='approach';eventTarget.hit(0);numberFeedback.observe([eventTarget]);}
+assert.ok(numberFeedback.sparks.length<=24,'presentation has a bounded pool');assert.ok(eventTarget.hitEvents.length<=32);
+numberFeedback.clear();assert.equal(numberFeedback.numbers.length,0);
+console.log('PASS: per-hit damage popups, simultaneous events, overkill amount, formatting, bounded pools, independent toggle and cleanup');
+
+const retained=new EnemyModel(0,0,800,100), retainedFeedback=new CombatFeedback();
+retained.hit(0);retainedFeedback.observe([retained]);retainedFeedback.clear([retained]);retainedFeedback.observe([retained]);
+assert.equal(retainedFeedback.numbers.length,0,'replaying with the same target must not replay its historical damage');
+assert.equal(retainedFeedback.stopLeft,0);
+retained.hit(0);retainedFeedback.observe([retained]);assert.equal(retainedFeedback.numbers.length,1);
+console.log('PASS: retained preview targets do not replay old hit feedback after cast/reset');
+
+const shakeFeedback=new CombatFeedback();
+shakeFeedback.groundImpact('cross');assert.deepEqual(shakeFeedback.shakeOffset,{x:0,y:0},'ordinary slashes do not shake');
+shakeFeedback.groundImpact('bengshan');assert.deepEqual(shakeFeedback.shakeOffset,{x:2,y:0});
+shakeFeedback.groundImpact('earth');shakeFeedback.groundImpact('earth');
+assert.equal(shakeFeedback.shakeOffset.x,3,'repeated impacts do not add unbounded amplitude');
+for(let i=0;i<30;i++){
+ const offset=shakeFeedback.shakeOffset;
+ assert.ok(Number.isInteger(offset.x)&&Number.isInteger(offset.y));
+ assert.ok(Math.abs(offset.x)<=3&&Math.abs(offset.y)<=2);
+ shakeFeedback.update(1/120);
+}
+assert.deepEqual(shakeFeedback.shakeOffset,{x:0,y:0},'shake settles to exact origin');
+shakeFeedback.groundImpact('earth');shakeFeedback.configure({shake:false});
+assert.deepEqual(shakeFeedback.shakeOffset,{x:0,y:0});shakeFeedback.groundImpact('earth');
+assert.deepEqual(shakeFeedback.shakeOffset,{x:0,y:0},'disabled shake ignores new ground impacts');
+shakeFeedback.configure({shake:true});shakeFeedback.groundImpact('earth');shakeFeedback.clear();
+assert.deepEqual(shakeFeedback.shakeOffset,{x:0,y:0},'reset clears all residual camera movement');
+const shakeVictim=new EnemyModel(20,5,900,100), beforeGround={x:shakeVictim.x,y:shakeVictim.y,hp:shakeVictim.hp};
+shakeFeedback.groundImpact('earth');shakeFeedback.update(.01);
+assert.deepEqual({x:shakeVictim.x,y:shakeVictim.y,hp:shakeVictim.hp},beforeGround,'shake is presentation only');
+console.log('PASS: ground-impact-only shake, bounded integer offsets, independent disable/reset and unchanged ground coordinates');
+
+const { attackVisibleRect }=load('WarriorAttackAnimation');
+for(let frame=0;frame<24;frame++){
+ const crop=attackVisibleRect(frame);assert.equal(crop.left+crop.width,320);assert.equal(crop.height,320);
+ const anchor=(160-crop.left)/crop.width;
+ // Source foot at x=160 maps to local zero for both facings, without resizing the body.
+ for(const facing of [-1,1])assert.ok(Math.abs(((160-crop.left)/320*58-anchor*(crop.width/320*58))*facing)<1e-10);
+ assert.equal(attackVisibleRect(frame,false).width,320);
+}
+assert.deepEqual([4,5,9,11].map(i=>attackVisibleRect(i).left),[70,64,48,40]);
+console.log('PASS: versioned fragment crop preserves source scale and shared foot anchor for both facings');
+
+const { skillCuePixels }=load('WarriorSkillAnimation');
+assert.equal(skillCuePixels('badao',.13).length,0);assert.equal(skillCuePixels('badao',.34).length,0);
+assert.ok(skillCuePixels('badao',.24).length>0);assert.equal(skillCuePixels('cross',.34).length,0);
+assert.ok(skillCuePixels('cross',.30).length>0);assert.equal(skillCuePixels(null,0).length,0);
+assert.equal(skillAnimations.badao.chargeEnd-skillAnimations.badao.chargeStart,.2);
+console.log('PASS: bounded charge/emission cues with unchanged 200ms charge and hit schedules');
+
+const { WarriorBodyAnimation, bodyVisibleRect, bodyAtlas }=load('WarriorSkillAnimation');
+const bodyMotion=new WarriorBodyAnimation();const gaitFrames=new Set();
+for(let i=0;i<60;i++){bodyMotion.update(.01,true,true,0,false);gaitFrames.add(bodyMotion.frame);}
+assert.deepEqual([...gaitFrames].sort(),[0,1,2,3],'run has four real poses');
+bodyMotion.update(.01,false,false,0,false);assert.equal(bodyMotion.frame,4,'release enters dedicated brake pose');
+for(let i=0;i<12;i++)bodyMotion.update(.01,false,false,0,false);
+assert.equal(bodyMotion.frame,null,'brake finishes at shared guard');
+bodyMotion.update(.01,true,true,.24,false);assert.equal(bodyMotion.frame,5,'hurt wins over locomotion');
+bodyMotion.update(.01,false,false,.1,false);assert.equal(bodyMotion.frame,6,'hurt recovers with second pose');
+bodyMotion.update(.01,true,true,0,true);assert.equal(bodyMotion.frame,null,'attack/skill does not play run underneath');
+bodyMotion.update(.01,false,false,0,false);assert.equal(bodyMotion.frame,null,'action exit does not invent braking');
+bodyMotion.update(.01,false,false,0,false,true);assert.equal(bodyMotion.frame,6,'dead player stays hurt instead of standing');
+bodyMotion.reset();assert.equal(bodyMotion.frame,null);
+assert.equal(bodyAtlas.cellSize,416);assert.equal(bodyVisibleRect(8).left+bodyVisibleRect(8).width,416);
+console.log('PASS: four-pose gait, brake release, two-stage hurt priority, action locks, death/reset and body atlas geometry');

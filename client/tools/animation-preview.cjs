@@ -21,7 +21,7 @@ http.createServer((req, res) => {
     const file = url.pathname === '/' ? path.join(__dirname, 'animation-preview.html')
         : url.pathname === '/skills' ? path.join(__dirname, 'skill-preview.html')
         : url.pathname === '/atlas.png' ? path.join(root, 'assets/resources/warrior-basic-attack-v2.png')
-        : /^\/warrior-((cross|bengshan|badao|earth)-v1|badao-v2)\.png$/.test(url.pathname)
+        : /^\/warrior-((cross|bengshan|badao|earth|body)-v1|badao-v2)\.png$/.test(url.pathname)
             ? path.join(root, 'assets/resources', url.pathname.slice(1)) : null;
     if (!file) { res.writeHead(404).end(); return; }
     fs.readFile(file, (error, data) => {

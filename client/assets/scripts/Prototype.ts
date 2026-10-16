@@ -2,10 +2,11 @@ import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
     input, Input, EventTouch, EventKeyboard, KeyCode, Vec3, view, ResolutionPolicy, game, Game } from 'cc';
 import { CombatModel, tuning } from './CombatModel';
 import { WarriorView } from './WarriorView';
-import { EnemyModel } from './EnemyModel';
-import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning, applyWarriorSkillHit } from './WarriorSkillsModel';
+import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText } from './EnemyModel';
+import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning } from './WarriorSkillsModel';
 import { WarriorSpriteSheetView } from './WarriorSpriteSheetView';
 import { WarriorSkillEffects } from './WarriorSkillEffects';
+import { skillCuePixels, WarriorBodyAnimation } from './WarriorSkillAnimation';
 
 const { ccclass } = _decorator;
 const stages = ['交叉斩', '反手上挑', '下劈收势'];
@@ -35,6 +36,9 @@ export class Prototype extends Component {
     private frames = 0;
     private fps = 0;
     private enemies: EnemyModel[] = [];
+    private feedback = new CombatFeedback();
+    private damageLabels: Label[] = [];
+    private bodyAnimation = new WarriorBodyAnimation();
     private lastImpactId = 0;
     private mode: 1 | 3 = 1;
     private retryTimer = 0;
@@ -182,6 +186,7 @@ export class Prototype extends Component {
         this.accumulator += Math.min(dt, 0.1);
         while (this.accumulator >= 1 / 120) {
             const fixedDt = 1 / 120;
+            if (this.feedback.update(fixedDt)) { this.accumulator -= fixedDt; continue; }
             this.skillEffects.update(fixedDt);
             this.skills.update(fixedDt);
             if (this.skills.casting && this.skills.canMove && (x !== 0 || y !== 0)) this.skills.cancel();
@@ -195,8 +200,11 @@ export class Prototype extends Component {
             }
             const hpBeforeEnemies = this.model.hp;
             for (const enemy of this.enemies) enemy.update(fixedDt, this.model);
+            this.feedback.observe(this.enemies);
             if (this.model.hp < hpBeforeEnemies) this.skills.cancel();
             if (this.model.hp <= 0) this.skillEffects.clear();
+            this.bodyAnimation.update(fixedDt, this.model.moving, this.model.running, this.model.hitStun,
+                this.skills.casting || this.model.stage >= 0, this.model.hp <= 0);
             this.accumulator -= fixedDt;
         }
         this.retryTimer = this.model.hp <= 0 || this.enemies.every(enemy => enemy.state === 'dead')
@@ -221,6 +229,8 @@ export class Prototype extends Component {
         const ui = this.controls;
         ui.clear();
         const g = this.world;
+        const shake = this.feedback.shakeOffset;
+        g.node.setPosition(shake.x * 2, shake.y * 2);
         g.clear();
         this.rect(g, -240, -135, 480, 270, '#18252d');
         this.rect(g, -232, -42, 464, 135, '#34433d');
@@ -233,14 +243,16 @@ export class Prototype extends Component {
         this.drawEnemies(g);
         const x = Math.round(m.x), y = Math.round(m.y);
         g.fillColor = new Color(15, 24, 25, 150); g.ellipse(x, y, 14, 4.8); g.fill();
-        this.actor.node.setPosition(x * 2, (y + this.skills.jumpLift) * 2);
-        this.actor.node.setScale(2.4 * m.facing, 2.4 * (m.hitStun > 0 ? 0.88 : 1), 1);
-        this.actor.node.active = m.invulnerable <= 0 || Math.floor(m.invulnerable * 16) % 2 === 0;
-        const useSprite = this.skills.activeId
+        this.actor.node.setPosition((x + shake.x) * 2, (y + this.skills.jumpLift + shake.y) * 2);
+        this.actor.node.setScale(2.4 * m.facing, 2.4, 1);
+        this.actor.node.active = m.hitStun > 0 || m.invulnerable <= 0 || Math.floor(m.invulnerable * 16) % 2 === 0;
+        const useSprite = this.bodyAnimation.frame !== null && (m.hitStun > 0 || m.hp <= 0)
+            ? this.warriorSprite.showBody(this.bodyAnimation.frame) || this.warriorSprite.showReady()
+            : this.skills.activeId
             ? this.warriorSprite.showSkill(this.skills.activeId, this.skills.elapsed)
             : (m.stage >= 0
             ? this.warriorSprite.showAttack(m.stage, m.elapsed)
-            : this.warriorSprite.showReady());
+            : this.bodyAnimation.frame !== null ? this.warriorSprite.showBody(this.bodyAnimation.frame) || this.warriorSprite.showReady() : this.warriorSprite.showReady());
         this.actor.enabled = !useSprite;
         if (!useSprite) {
             this.warriorSprite.hide();
@@ -248,6 +260,31 @@ export class Prototype extends Component {
             this.warrior.draw(this.actor, m, Math.min(dt, 0.05), this.skills.activeId && skillProgress !== null
                 ? { id: this.skills.activeId, progress: skillProgress } : null);
         }
+        for (const cue of skillCuePixels(this.skills.activeId, this.skills.elapsed)) {
+            ui.fillColor = new Color(206, 246, 255, Math.round(cue.alpha * 255));
+            ui.rect(Math.round(m.x + cue.x * this.skills.facing + shake.x) * 2,
+                Math.round(m.y + cue.y + shake.y) * 2, cue.size * 2, cue.size * 2); ui.fill();
+        }
+        for (const spark of this.feedback.sparks) {
+            for (const pixel of hitSparkPixels(spark.age, spark.heavy)) {
+                ui.fillColor = pixel.core ? new Color(255, 250, 222) : new Color(255, 191, 83,
+                    Math.round(255 * (1 - spark.age / hitFeedbackTuning.sparkLife)));
+                ui.rect(Math.round(spark.x + pixel.x + shake.x) * 2, Math.round(spark.y + pixel.y + shake.y) * 2, pixel.size * 2, pixel.size * 2); ui.fill();
+            }
+        }
+        while (this.damageLabels.length < this.feedback.numbers.length) {
+            this.damageLabels.push(this.text('', 0, 0, 16, 64));
+        }
+        this.damageLabels.forEach((label, index) => {
+            const number = this.feedback.numbers[index];
+            label.node.active = !!number;
+            if (!number) return;
+            const progress = number.age / hitFeedbackTuning.numberLife;
+            label.string = damageText(number.damage);
+            label.color = new Color(255, number.heavy ? 188 : 239, number.heavy ? 99 : 210,
+                Math.round(255 * Math.min(1, (1 - progress) * 2)));
+            label.node.setPosition((number.x + shake.x) * 2, (number.y + progress * 12 + shake.y) * 2);
+        });
         this.sortActorsByDepth();
         this.drawHealthBar(-330, 154, m.hp, 100, '#65d6b2');
         this.rect(this.controls, 220, 154, 70, 28, this.mode === 1 ? '#53757e' : '#293941');
@@ -270,6 +307,8 @@ export class Prototype extends Component {
         this.model.reset(); this.model.hitStun = this.model.invulnerable = this.model.knockX = 0;
         this.skills.reset();
         this.skillEffects.clear();
+        this.feedback.clear();
+        this.bodyAnimation.reset();
         this.lastImpactId = this.model.impactId;
         this.retryTimer = 0;
         const starts = this.mode === 1 ? [[76, 2]] : [[76, -8], [-100, 16], [153, 25]];
@@ -325,6 +364,7 @@ export class Prototype extends Component {
     }
 
     private resolveSkillImpact(id: WarriorSkillId, step: number): void {
+        this.feedback.groundImpact(id);
         // Enemies consume this same simulation step below. Age the new effect by
         // the same amount so ultimate knockdown cannot end a frame before it.
         this.skillEffects.impact(id, this.model.x, this.model.y, this.skills.facing, step);
@@ -407,7 +447,7 @@ export class Prototype extends Component {
             const visual = this.enemyVisuals[enemy.id];
             if (!visual) continue;
             visual.node.setScale(2, 2, 1);
-            visual.node.setPosition(enemy.x * 2, enemy.y * 2);
+            visual.node.setPosition((enemy.x + this.feedback.shakeOffset.x) * 2, (enemy.y + this.feedback.shakeOffset.y) * 2);
             const eg = visual; eg.clear();
             if (enemy.deathOpacity <= 0) continue;
             if (enemy.state === 'telegraph') {
@@ -424,7 +464,7 @@ export class Prototype extends Component {
                 eg.strokeColor = new Color(255, 136, 98); eg.lineWidth = 3;
                 eg.moveTo(-7, 25); eg.lineTo(facing * 13, 13); eg.stroke();
             }
-            if (enemy.state !== 'dead') this.drawHealthBar(enemy.x * 2 - 18, enemy.y * 2 + 54, enemy.hp, enemy.maxHp, '#ff967c');
+            if (enemy.state !== 'dead') this.drawHealthBar((enemy.x + this.feedback.shakeOffset.x) * 2 - 18, (enemy.y + this.feedback.shakeOffset.y) * 2 + 54, enemy.hp, enemy.maxHp, '#ff967c');
         }
     }
 

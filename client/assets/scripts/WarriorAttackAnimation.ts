@@ -18,3 +18,13 @@ export function attackFrame(stage: number, elapsed: number): number {
     while (index + 1 < action.times.length && elapsed >= action.times[index + 1]) index++;
     return action.frames[index];
 }
+
+const attackCropLeft: Readonly<Record<number, number>> = { 4: 70, 5: 64, 9: 48, 11: 40 };
+
+/** Version-v2-specific crop of verified neighboring-frame fragments, not a rescale.
+ * Cell coordinates and boot anchor stay fixed. Ambiguous attached trails are kept.
+ */
+export function attackVisibleRect(index: number, cleaned = true): { left: number; top: number; width: number; height: number } {
+    const left = cleaned ? attackCropLeft[index] || 0 : 0;
+    return { left, top: 0, width: 320 - left, height: 320 };
+}

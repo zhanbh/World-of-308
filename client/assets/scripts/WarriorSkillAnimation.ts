@@ -1,7 +1,7 @@
 /** Shared seconds-based body animation and contact schedule. */
 export type WarriorSkillId = 'cross' | 'bengshan' | 'badao' | 'earth';
 
-export const skillAtlas = { columns: 4, rows: 3, anchorX: 0.5, anchorY: 64 / 416, displaySize: 58 * 416 / 320 };
+export const skillAtlas = { columns: 4, rows: 3, anchorX: 0.5, anchorY: 64 / 416, displaySize: 58 * 416 / 320 * 1.24 };
 export const skillAnimations = {
     cross: { resource: 'warrior-cross-v1', duration: 0.56, impactAt: 0.29, moveAt: 0.46,
         times: [0, 0.055, 0.12, 0.17, 0.20, 0.24, 0.29, 0.34, 0.39, 0.43, 0.48, 0.52] },
@@ -32,4 +32,54 @@ export function skillLift(id: WarriorSkillId, elapsed: number): number {
     if (elapsed < apex) return Math.sin((elapsed - start) / (apex - start) * Math.PI / 2) * height;
     if (elapsed < fall) return height;
     return Math.cos((elapsed - fall) / (skillAnimations[id].impactAt - fall) * Math.PI / 2) * height;
+}
+
+/** Tiny pixel cues only: they never shift poses, contact times or collision. */
+export function skillCuePixels(id: WarriorSkillId | null, elapsed: number): { x: number; y: number; size: number; alpha: number }[] {
+    if (id === 'badao' && elapsed >= skillAnimations.badao.chargeStart && elapsed < skillAnimations.badao.chargeEnd) {
+        const p = (elapsed - skillAnimations.badao.chargeStart) / (skillAnimations.badao.chargeEnd - skillAnimations.badao.chargeStart);
+        const x = Math.round(-18 - p * 9), alpha = Math.sin(p * Math.PI) * .8;
+        return [{ x, y: 16, size: 2, alpha }, { x: x - 1, y: 17, size: 1, alpha: alpha * .6 }];
+    }
+    if (id === 'cross' && elapsed >= .29 && elapsed < .34) {
+        const p = (elapsed - .29) / .05;
+        return [{ x: 28, y: 21, size: 2, alpha: 1 - p },
+            { x: 26, y: 23, size: 1, alpha: 1 - p }, { x: 31, y: 20, size: 1, alpha: 1 - p }];
+    }
+    return [];
+}
+
+/** Body-only review poses: run0..3, brake4, hurt5..6, landing7, uppercut-prep8. */
+export const bodyAtlas = { resource: 'warrior-body-v1', columns: 3, rows: 3,
+    cellSize: 416, anchorX: .5, anchorY: 64 / 416, displaySize: 58 * 416 / 320 };
+export class WarriorBodyAnimation {
+    frame: number | null = null;
+    private gait = 0;
+    private wasMoving = false;
+    private brakeLeft = 0;
+    update(dt: number, moving: boolean, running: boolean, hitStun: number, locked: boolean, dead = false): void {
+        if (hitStun > 0 || dead) {
+            this.frame = hitStun > .12 ? 5 : 6;
+            this.wasMoving = false; this.brakeLeft = 0; this.gait = 0;
+            return;
+        }
+        if (locked) { this.reset(); return; }
+        if (moving) {
+            this.gait += dt * (running ? 1 : .65);
+            this.frame = Math.floor(this.gait / .10) % 4;
+            this.wasMoving = true; this.brakeLeft = 0;
+            return;
+        }
+        if (this.wasMoving) { this.brakeLeft = .10; this.wasMoving = false; this.gait = 0; }
+        if (this.brakeLeft > 0) {
+            this.frame = 4; this.brakeLeft = Math.max(0, this.brakeLeft - dt);
+        } else this.frame = null;
+    }
+    reset(): void { this.frame = null; this.gait = 0; this.wasMoving = false; this.brakeLeft = 0; }
+}
+
+export function bodyVisibleRect(frame: number): { left: number; top: number; width: number; height: number } {
+    // Expanded source blade is retained; exclude the neighbor's boot at far left of prep8.
+    const left = frame === 8 ? 82 : 0;
+    return { left, top: 0, width: 416 - left, height: 416 };
 }

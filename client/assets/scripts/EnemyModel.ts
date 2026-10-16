@@ -35,6 +35,9 @@ export class SkillHitLedger {
 
 /** One readable melee enemy. All attack damage is checked against the locked area. */
 export class EnemyModel {
+    hitSerial = 0;
+    lastHitHeavy = false;
+    readonly hitEvents: { serial: number; damage: number; heavy: boolean; x: number; y: number }[] = [];
     hp: number;
     state: EnemyState = 'approach';
     timer = 0;
@@ -133,6 +136,11 @@ export class EnemyModel {
 
     hit(fromX: number, damage = 1, knockback = 88, options: EnemyHitOptions = {}): void {
         if (this.state === 'dead') return;
+        if (damage <= 0) return;
+        this.hitSerial++;
+        this.lastHitHeavy = !!options.knockdownFor;
+        this.hitEvents.push({ serial: this.hitSerial, damage: Math.min(this.hp, damage), heavy: this.lastHitHeavy, x: this.x, y: this.y });
+        if (this.hitEvents.length > 32) this.hitEvents.shift();
         this.hp = Math.max(0, this.hp - Math.max(0, damage));
         if (this.hp < Math.max(1, this.maxHp) * 1e-10) this.hp = 0;
         this.flash = 0.12;
@@ -157,4 +165,87 @@ export class EnemyModel {
         }
         this.knockX = this.x >= fromX ? knockback : -knockback;
     }
+}
+
+/** Presentation clock: simultaneous targets request the longest stop, never a sum. */
+export const hitFeedbackTuning = { lightStop: 1 / 30, heavyStop: .05, sparkLife: .14, numberLife: .55, shakeLife: .15 };
+export class CombatFeedback {
+    hitStopEnabled = true;
+    sparksEnabled = true;
+    numbersEnabled = true;
+    shakeEnabled = true;
+    private shakeAge = hitFeedbackTuning.shakeLife;
+    private shakeStrength = 0;
+    configure(options: { hitStop?: boolean; sparks?: boolean; numbers?: boolean; shake?: boolean }): void {
+        if (options.hitStop !== undefined) this.hitStopEnabled = options.hitStop;
+        if (options.sparks !== undefined) this.sparksEnabled = options.sparks;
+        if (options.numbers !== undefined) this.numbersEnabled = options.numbers;
+        if (options.shake !== undefined) this.shakeEnabled = options.shake;
+        if (!this.shakeEnabled) { this.shakeStrength = 0; this.shakeAge = hitFeedbackTuning.shakeLife; }
+        if (!this.numbersEnabled) this.numbers = [];
+        if (!this.hitStopEnabled) this.stopLeft = 0;
+        if (!this.sparksEnabled) this.sparks = [];
+    }
+    groundImpact(id: string): void {
+        if (!this.shakeEnabled || (id !== 'bengshan' && id !== 'earth')) return;
+        const strength = id === 'earth' ? 3 : 2;
+        this.shakeStrength = Math.max(strength, this.shakeStrength * Math.max(0, 1 - this.shakeAge / hitFeedbackTuning.shakeLife));
+        this.shakeAge = 0;
+    }
+    get shakeOffset(): { x: number; y: number } {
+        const p = Math.min(1, this.shakeAge / hitFeedbackTuning.shakeLife);
+        const envelope = (1 - p) * (1 - p) * this.shakeStrength;
+        return { x: Math.round(Math.cos(p * Math.PI * 6) * envelope) || 0,
+            y: Math.round(Math.sin(p * Math.PI * 5) * envelope * .5) || 0 };
+    }
+    stopLeft = 0;
+    sparks: { x: number; y: number; age: number; heavy: boolean }[] = [];
+    numbers: { x: number; y: number; age: number; damage: number; heavy: boolean }[] = [];
+    private seen = new WeakMap<EnemyModel, number>();
+    observe(enemies: EnemyModel[]): void {
+        for (const enemy of enemies) {
+            const prior = this.seen.get(enemy) || 0;
+            this.seen.set(enemy, enemy.hitSerial);
+            for (const event of enemy.hitEvents) {
+                if (event.serial <= prior) continue;
+                if (this.hitStopEnabled) this.stopLeft = Math.max(this.stopLeft, event.heavy ? hitFeedbackTuning.heavyStop : hitFeedbackTuning.lightStop);
+                if (this.sparksEnabled) this.sparks.push({ x: event.x, y: event.y + 15, age: 0, heavy: event.heavy });
+                if (this.numbersEnabled) this.numbers.push({ x: event.x + (event.serial % 3 - 1) * 6,
+                    y: event.y + 34, age: 0, damage: event.damage, heavy: event.heavy });
+            }
+            this.numbers = this.numbers.slice(-24);
+            this.sparks = this.sparks.slice(-24);
+        }
+    }
+    /** Called on fixed wall-clock steps; true consumes this step as hit-stop. */
+    update(dt: number): boolean {
+        this.shakeAge = Math.min(hitFeedbackTuning.shakeLife, this.shakeAge + dt);
+        for (const number of this.numbers) number.age += dt;
+        this.numbers = this.numbers.filter(number => number.age < hitFeedbackTuning.numberLife);
+        for (const spark of this.sparks) spark.age += dt;
+        this.sparks = this.sparks.filter(spark => spark.age < hitFeedbackTuning.sparkLife);
+        const stopped = this.stopLeft > 1e-9;
+        this.stopLeft = Math.max(0, this.stopLeft - dt);
+        return stopped;
+    }
+    clear(enemies: EnemyModel[] = []): void {
+        this.shakeAge = hitFeedbackTuning.shakeLife; this.shakeStrength = 0;
+        this.stopLeft = 0; this.sparks = []; this.numbers = []; this.seen = new WeakMap();
+        for (const enemy of enemies) this.seen.set(enemy, enemy.hitSerial);
+    }
+}
+/** Integer source-pixel blocks, reused by Cocos and the Canvas review. */
+export function hitSparkPixels(age: number, heavy: boolean): { x: number; y: number; size: number; core: boolean }[] {
+    const phase = Math.min(1, age / hitFeedbackTuning.sparkLife);
+    const reach = Math.round((heavy ? 6 : 4) + phase * (heavy ? 9 : 6));
+    const size = phase < .55 ? 2 : 1;
+    return [{ x: -1, y: -1, size: phase < .5 ? 3 : 1, core: true },
+        ...[[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,-.7]].map(([x,y]) => ({
+            x: Math.round(x * reach), y: Math.round(y * reach), size, core: false,
+        }))];
+}
+
+/** Round only display text, never the combat damage itself. */
+export function damageText(damage: number): string {
+    return damage > 0 && damage < .01 ? '<0.01' : String(Number(damage.toFixed(2)));
 }

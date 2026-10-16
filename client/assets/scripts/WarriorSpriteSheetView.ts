@@ -1,7 +1,7 @@
 import { ImageAsset, Node, Rect, resources, Size, Sprite, SpriteFrame, Texture2D, UITransform, Vec2 } from 'cc';
 
-import { attackAtlas, attackFrame } from './WarriorAttackAnimation';
-import { skillAnimations, skillAtlas, skillFrame } from './WarriorSkillAnimation';
+import { attackAtlas, attackFrame, attackVisibleRect } from './WarriorAttackAnimation';
+import { skillAnimations, skillAtlas, skillFrame, bodyAtlas, bodyVisibleRect } from './WarriorSkillAnimation';
 import type { WarriorSkillId } from './WarriorSkillAnimation';
 
 /** Runtime pixel character with a three-beat, 24-frame normal attack. */
@@ -12,6 +12,8 @@ export class WarriorSpriteSheetView {
     private readonly atlases = new Map<string, SpriteFrame[]>();
     private readonly textures: Texture2D[] = [];
     private disposed = false;
+    private currentAsset = '';
+    private currentIndex = -1;
 
     constructor(parent: Node) {
         this.node = new Node('WarriorSlashSprite');
@@ -25,6 +27,7 @@ export class WarriorSpriteSheetView {
         this.node.active = false;
 
         this.loadAtlas(attackAtlas.resource, attackAtlas.columns, attackAtlas.rows);
+        this.loadAtlas(bodyAtlas.resource, bodyAtlas.columns, bodyAtlas.rows);
         for (const id of Object.keys(skillAnimations) as WarriorSkillId[]) {
             this.loadAtlas(skillAnimations[id].resource, skillAtlas.columns, skillAtlas.rows);
         }
@@ -38,6 +41,11 @@ export class WarriorSpriteSheetView {
                 return;
             }
 
+            const expectedCell = assetPath === attackAtlas.resource ? 320 : 416;
+            if (image.width !== columns * expectedCell || image.height !== rows * expectedCell) {
+                console.error(`[WarriorSpriteSheetView] Reject atlas dimensions: ${assetPath} ${image.width}x${image.height}`);
+                return;
+            }
             const texture = new Texture2D();
             texture.image = image;
             texture.setFilters(Texture2D.Filter.NEAREST, Texture2D.Filter.NEAREST);
@@ -51,8 +59,10 @@ export class WarriorSpriteSheetView {
                 const row = Math.floor(index / columns);
                 const frame = new SpriteFrame();
                 frame.texture = texture;
-                frame.rect = new Rect(column * width, row * height, width, height);
-                frame.originalSize = new Size(width, height);
+                const crop = assetPath === attackAtlas.resource ? attackVisibleRect(index)
+                    : assetPath === bodyAtlas.resource ? bodyVisibleRect(index) : { left: 0, top: 0, width, height };
+                frame.rect = new Rect(column * width + crop.left, row * height + crop.top, crop.width, crop.height);
+                frame.originalSize = new Size(crop.width, crop.height);
                 frame.offset = new Vec2(0, 0);
                 frames.push(frame);
             }
@@ -62,26 +72,35 @@ export class WarriorSpriteSheetView {
 
     /** Show one timed attack pose; return false while the asset is still loading. */
     showAttack(stage: number, elapsed: number): boolean {
-        return this.showFrame(attackAtlas.resource, attackFrame(stage, elapsed));
+        const frame = attackFrame(stage, elapsed);
+        if (frame === 9 && this.showBody(8)) return true;
+        return this.showFrame(attackAtlas.resource, frame);
     }
 
+    showBody(frame: number): boolean { return this.showFrame(bodyAtlas.resource, frame); }
+
     showSkill(id: WarriorSkillId, elapsed: number): boolean {
+        if (id === 'bengshan' && elapsed >= .58 && elapsed < .68 && this.showBody(7)) return true;
         return this.showFrame(skillAnimations[id].resource, skillFrame(id, elapsed)) || this.showReady();
     }
 
     /** Keep one consistent pixel-art silhouette outside the attack animation. */
     showReady(): boolean {
-        return this.showFrame(skillAnimations.cross.resource, 0) || this.showFrame(attackAtlas.resource, 0);
+        return this.showFrame(attackAtlas.resource, 0) || this.showFrame(skillAnimations.cross.resource, 0);
     }
 
     private showFrame(assetPath: string, index: number): boolean {
         const frames = this.atlases.get(assetPath);
         if (this.disposed || !frames || !frames[index]) return false;
+        if (this.node.active && this.currentAsset === assetPath && this.currentIndex === index) return true;
         const isAttack = assetPath === attackAtlas.resource;
-        const size = isAttack ? 58 : skillAtlas.displaySize;
-        this.transform.setContentSize(size, size);
-        this.transform.setAnchorPoint(0.5, isAttack ? attackAtlas.anchorY : skillAtlas.anchorY);
+        const size = isAttack ? 58 : assetPath === bodyAtlas.resource ? bodyAtlas.displaySize : skillAtlas.displaySize;
+        const cell = isAttack ? 320 : 416;
+        const crop = isAttack ? attackVisibleRect(index) : assetPath === bodyAtlas.resource ? bodyVisibleRect(index) : { left: 0, width: cell };
+        this.transform.setContentSize(size * crop.width / cell, size);
+        this.transform.setAnchorPoint((cell / 2 - crop.left) / crop.width, isAttack ? attackAtlas.anchorY : skillAtlas.anchorY);
         this.sprite.spriteFrame = frames[index];
+        this.currentAsset = assetPath; this.currentIndex = index;
         this.node.active = true;
         return true;
     }

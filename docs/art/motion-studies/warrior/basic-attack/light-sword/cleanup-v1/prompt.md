@@ -1,0 +1,6 @@
+# 普攻图集清理候选提示词
+
+模式：内置imagegen，局部图像编辑，transparent_background=true。
+输入：client/assets/resources/warrior-basic-attack-v2.png。
+
+Use case: precise-object-edit. Edit target: supplied 2560x960 RGBA game sprite atlas, exactly 8 columns x 3 rows, each cell 320x320. This is technical cleanup, NOT redesign. Preserve the exact 24 animation poses, their order, position, scale, facial identity, red headband, gold armor, two silver swords, and attached cyan sword trails. Keep foot anchors and spacing unchanged. Remove ONLY disconnected fragments imported from neighboring frames near cell edges: stray cyan/white slivers on row1 col5 left/right boundaries, row1 col6 left boundary, row2 col2 left boundary, row2 col4 left boundary, and row3 col4/5 edge fragments unrelated to the local swords. Preserve local attached sword trails. Remove residual rectangular gray/brown background panels surrounding individual sprites, leaving genuine alpha transparency throughout the background and gutters. Do not add text, borders, shadows, new poses, new glows or new details. Maintain pixel-art edges. Output same 2560x960 dimensions and exact 8x3 cell alignment, with transparent background. Highest priority is preserve all character pixels and frame geometry; if uncertain whether a pixel belongs to the local character/sword, preserve it.

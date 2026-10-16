@@ -1,0 +1,22 @@
+{
+  "reference": "client\\assets\\resources\\warrior-basic-attack-v2.png",
+  "candidate": "docs\\art\\motion-studies\\warrior\\basic-attack\\light-sword\\cleanup-v1\\candidate.png",
+  "grid": [
+    8,
+    3
+  ],
+  "reference_size": [
+    2560,
+    960
+  ],
+  "candidate_size": [
+    2048,
+    768
+  ],
+  "accepted_structure": false,
+  "errors": [
+    "Dimensions changed: (2560, 960) -> (2048, 768); existing frame coordinates are invalid"
+  ],
+  "warnings": [],
+  "visual_approval_required": true
+}
