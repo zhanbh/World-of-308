@@ -1,0 +1,66 @@
+{
+  "name": "world-of-308-action-prototype",
+  "server": "",
+  "engineModulesConfigKey": "defaultConfig",
+  "platform": "wechatgame",
+  "buildPath": "project://build",
+  "debug": false,
+  "buildMode": "normal",
+  "mangleProperties": false,
+  "md5Cache": false,
+  "skipCompressTexture": false,
+  "sourceMaps": false,
+  "overwriteProjectSettings": {
+    "macroConfig": {
+      "cleanupImageCache": "on"
+    },
+    "includeModules": {
+      "physics": "inherit-project-setting",
+      "physics-2d": "inherit-project-setting",
+      "gfx-webgl2": "off"
+    }
+  },
+  "nativeCodeBundleMode": "wasm",
+  "polyfills": {
+    "asyncFunctions": false
+  },
+  "experimentalEraseModules": false,
+  "startSceneAssetBundle": false,
+  "bundleConfigs": [],
+  "inlineEnum": true,
+  "useBuiltinServer": false,
+  "md5CacheOptions": {
+    "excludes": [],
+    "includes": [],
+    "replaceOnly": [],
+    "handleTemplateMd5Link": true
+  },
+  "mainBundleIsRemote": false,
+  "mainBundleCompressionType": "subpackage",
+  "useSplashScreen": true,
+  "bundleCommonChunk": false,
+  "packAutoAtlas": true,
+  "startScene": "8627f424-97ac-47b3-82fa-cd7a692188a3",
+  "outputName": "wechatgame",
+  "taskName": "wechatgame",
+  "scenes": [
+    {
+      "url": "db://assets/scenes/Prototype.scene",
+      "uuid": "8627f424-97ac-47b3-82fa-cd7a692188a3"
+    }
+  ],
+  "wasmCompressionMode": false,
+  "binGroupConfig": {
+    "threshold": 16,
+    "enable": false
+  },
+  "packages": {
+    "wechatgame": {
+      "orientation": "landscapeRight",
+      "appid": "wxa68f1165ec1284fa",
+      "separateEngine": false,
+      "highPerformanceMode": false
+    }
+  },
+  "__version__": "1.3.9"
+}

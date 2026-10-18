@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-18",
+  "generator": "built-in imagegen",
+  "stage": "design-study",
+  "assets": [
+    {
+      "file": "generated-source-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "bytes": 1878771
+    },
+    {
+      "file": "hunter-gameplay-study-v1.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "bytes": 1919495
+    }
+  ]
+}

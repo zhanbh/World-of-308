@@ -1,0 +1,139 @@
+{
+  "version": 3,
+  "stage": "art-review-revision",
+  "cellSize": 416,
+  "anchorX": 208,
+  "anchorY": 352,
+  "clips": [
+    {
+      "name": "run",
+      "source": "run-near-source.png",
+      "columns": 2,
+      "rows": 2,
+      "output": "run-atlas.png",
+      "gif": "run-preview.gif",
+      "slowGif": "run-slow.gif",
+      "scale": 0.36,
+      "sourceScales": {
+        "run-far-rebuilt.png": 0.338
+      },
+      "baselineByRow": [
+        606,
+        582
+      ],
+      "frames": [
+        {
+          "sourceIndex": 0,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 1,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 2,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 3,
+          "durationMs": 80
+        },
+        {
+          "source": "run-far-rebuilt.png",
+          "sourceIndex": 0,
+          "sourceBaseline": 603,
+          "durationMs": 80
+        },
+        {
+          "source": "run-far-rebuilt.png",
+          "sourceIndex": 2,
+          "sourceBaseline": 590,
+          "durationMs": 80
+        },
+        {
+          "source": "run-far-rebuilt.png",
+          "sourceIndex": 3,
+          "sourceBaseline": 590,
+          "durationMs": 80
+        }
+      ]
+    },
+    {
+      "name": "attack",
+      "source": "attack-source-v2.png",
+      "output": "attack-atlas.png",
+      "gif": "attack-preview.gif",
+      "slowGif": "attack-slow.gif",
+      "columns": 4,
+      "rows": 2,
+      "scale": 0.48,
+      "baselineByRow": [
+        433,
+        432
+      ],
+      "frames": [
+        {
+          "sourceIndex": 0,
+          "durationMs": 100,
+          "offsetX": -2.04
+        },
+        {
+          "sourceIndex": 1,
+          "durationMs": 90,
+          "offsetX": -1.08
+        },
+        {
+          "sourceIndex": 2,
+          "durationMs": 80,
+          "offsetX": -3.96
+        },
+        {
+          "sourceIndex": 3,
+          "durationMs": 80,
+          "offsetX": 9.96
+        },
+        {
+          "sourceIndex": 4,
+          "durationMs": 120,
+          "offsetX": 1.8
+        },
+        {
+          "sourceIndex": 5,
+          "durationMs": 60,
+          "trimLeft": 16,
+          "offsetX": 1.56
+        },
+        {
+          "sourceIndex": 6,
+          "durationMs": 90,
+          "offsetX": 1.08
+        },
+        {
+          "sourceIndex": 7,
+          "durationMs": 100,
+          "offsetX": -2.52
+        }
+      ],
+      "stationaryFootCenters": [
+        246.0,
+        244.0,
+        250.0,
+        221.0,
+        238.0,
+        238.5,
+        239.5,
+        247.0
+      ]
+    }
+  ],
+  "attackRelease": {
+    "frameIndex": 5,
+    "atMs": 470,
+    "projectile": "separate-preview-only"
+  },
+  "notes": [
+    "Lower rear-foot recovery; left anatomical thigh owns the single ornament in every pose.",
+    "7 selected run keys; source cell 1 of far sheet remains excluded.",
+    "Attack inherited unchanged from v2. High-resolution key art unchanged."
+  ]
+}

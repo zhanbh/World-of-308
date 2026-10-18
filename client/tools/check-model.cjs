@@ -440,10 +440,10 @@ assert.ok(skillCuePixels('cross',.30).length>0);assert.equal(skillCuePixels(null
 assert.equal(skillAnimations.badao.chargeEnd-skillAnimations.badao.chargeStart,.2);
 console.log('PASS: bounded charge/emission cues with unchanged 200ms charge and hit schedules');
 
-const { WarriorBodyAnimation, bodyVisibleRect, bodyAtlas }=load('WarriorSkillAnimation');
+const { WarriorBodyAnimation, bodyVisibleRect, bodyAtlas, gaitAtlas }=load('WarriorSkillAnimation');
 const bodyMotion=new WarriorBodyAnimation();const gaitFrames=new Set();
 for(let i=0;i<60;i++){bodyMotion.update(.01,true,true,0,false);gaitFrames.add(bodyMotion.frame);}
-assert.deepEqual([...gaitFrames].sort(),[0,1,2,3],'run has four real poses');
+assert.deepEqual([...gaitFrames].sort(),[0,1,2,3],'legacy fallback pose indices remain valid');
 bodyMotion.update(.01,false,false,0,false);assert.equal(bodyMotion.frame,4,'release enters dedicated brake pose');
 for(let i=0;i<12;i++)bodyMotion.update(.01,false,false,0,false);
 assert.equal(bodyMotion.frame,null,'brake finishes at shared guard');
@@ -454,7 +454,21 @@ bodyMotion.update(.01,false,false,0,false);assert.equal(bodyMotion.frame,null,'a
 bodyMotion.update(.01,false,false,0,false,true);assert.equal(bodyMotion.frame,6,'dead player stays hurt instead of standing');
 bodyMotion.reset();assert.equal(bodyMotion.frame,null);
 assert.equal(bodyAtlas.cellSize,416);assert.equal(bodyVisibleRect(8).left+bodyVisibleRect(8).width,416);
-console.log('PASS: four-pose gait, brake release, two-stage hurt priority, action locks, death/reset and body atlas geometry');
+for (const hz of [30,60,120]) {
+ const cycle=new WarriorBodyAnimation(),seen=new Set();
+ for(let i=0;i<hz;i++){cycle.update(1/hz,true,true,0,false);seen.add(cycle.gaitFrame);}
+ assert.deepEqual([...seen].sort(),[0,1,2,3,4,5,6,7], 'both half-strides play at '+hz+'Hz');
+ cycle.update(.01,false,false,0,false);assert.equal(cycle.gaitFrame,null,'stopping clears locomotion sprite');
+ cycle.update(.01,true,true,.24,false);assert.equal(cycle.gaitFrame,null,'hurt clears locomotion sprite');
+ cycle.update(.01,true,true,0,true);assert.equal(cycle.gaitFrame,null,'actions clear locomotion sprite');
+ cycle.reset();assert.equal(cycle.gaitFrame,null);
+}
+const slowGait=new WarriorBodyAnimation(),fastGait=new WarriorBodyAnimation();
+slowGait.update(.21,true,false,0,false);fastGait.update(.21,true,true,0,false);
+assert.equal(slowGait.gaitFrame,2);assert.equal(fastGait.gaitFrame,4,'half-cycle reaches opposite-leg contact');
+assert.equal(gaitAtlas.columns*gaitAtlas.rows,gaitAtlas.frameCount);
+assert.equal(gaitAtlas.frameDuration*gaitAtlas.frameCount,.4,'eight poses preserve the 400ms run stride');
+console.log('PASS: eight-slot two-half stride playback, walk/run cadence, brake, hurt/action priorities and reset (art requires visual review)');
 
 const {tryCastWarriorSkill}=load('WarriorSkillsModel');
 for(const rate of [1,1.25,1.5]){

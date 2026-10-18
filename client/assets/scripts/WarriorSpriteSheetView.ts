@@ -1,7 +1,7 @@
 import { ImageAsset, Node, Rect, resources, Size, Sprite, SpriteFrame, Texture2D, UITransform, Vec2 } from 'cc';
 
 import { attackAtlas, attackFrame, attackVisibleRect } from './WarriorAttackAnimation';
-import { skillAnimations, skillAtlas, skillFrame, bodyAtlas, bodyVisibleRect } from './WarriorSkillAnimation';
+import { skillAnimations, skillAtlas, skillFrame, bodyAtlas, bodyVisibleRect, gaitAtlas } from './WarriorSkillAnimation';
 import type { WarriorSkillId } from './WarriorSkillAnimation';
 
 /** Runtime pixel character with a three-beat, 24-frame normal attack. */
@@ -28,6 +28,7 @@ export class WarriorSpriteSheetView {
 
         this.loadAtlas(attackAtlas.resource, attackAtlas.columns, attackAtlas.rows);
         this.loadAtlas(bodyAtlas.resource, bodyAtlas.columns, bodyAtlas.rows);
+        this.loadAtlas(gaitAtlas.resource, gaitAtlas.columns, gaitAtlas.rows);
         for (const id of Object.keys(skillAnimations) as WarriorSkillId[]) {
             this.loadAtlas(skillAnimations[id].resource, skillAtlas.columns, skillAtlas.rows);
         }
@@ -77,7 +78,10 @@ export class WarriorSpriteSheetView {
         return this.showFrame(attackAtlas.resource, frame);
     }
 
-    showBody(frame: number): boolean { return this.showFrame(bodyAtlas.resource, frame); }
+    showBody(frame: number, gaitFrame: number | null = null): boolean {
+        return gaitFrame !== null && this.showFrame(gaitAtlas.resource, gaitFrame)
+            || this.showFrame(bodyAtlas.resource, frame);
+    }
 
     showSkill(id: WarriorSkillId, elapsed: number): boolean {
         if (id === 'bengshan' && elapsed >= .58 && elapsed < .68 && this.showBody(7)) return true;
@@ -94,7 +98,8 @@ export class WarriorSpriteSheetView {
         if (this.disposed || !frames || !frames[index]) return false;
         if (this.node.active && this.currentAsset === assetPath && this.currentIndex === index) return true;
         const isAttack = assetPath === attackAtlas.resource;
-        const size = isAttack ? 58 : assetPath === bodyAtlas.resource ? bodyAtlas.displaySize : skillAtlas.displaySize;
+        const size = isAttack ? 58 : assetPath === bodyAtlas.resource || assetPath === gaitAtlas.resource
+            ? bodyAtlas.displaySize : skillAtlas.displaySize;
         const cell = isAttack ? 320 : 416;
         const crop = isAttack ? attackVisibleRect(index) : assetPath === bodyAtlas.resource ? bodyVisibleRect(index) : { left: 0, width: cell };
         this.transform.setContentSize(size * crop.width / cell, size);

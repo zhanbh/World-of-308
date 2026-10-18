@@ -1,0 +1,369 @@
+{
+  "version": 2,
+  "stage": "athletic-stride-revision",
+  "facing": "right",
+  "left": {
+    "color": "#58caff",
+    "depth": "near",
+    "ornamentOwner": true
+  },
+  "right": {
+    "color": "#ffad66",
+    "depth": "far",
+    "ornamentOwner": false
+  },
+  "groundY": 320,
+  "thighLength": 60,
+  "shinLength": 65,
+  "frames": [
+    {
+      "index": 0,
+      "label": "左脚接触",
+      "durationMs": 70,
+      "hip": [
+        200,
+        194
+      ],
+      "left": {
+        "hip": [
+          204,
+          194
+        ],
+        "knee": [
+          235.5311542249657,
+          245.0469030719928
+        ],
+        "ankle": [
+          238,
+          310
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "right": {
+        "hip": [
+          196,
+          194
+        ],
+        "knee": [
+          217.6423834581863,
+          249.9607651685431
+        ],
+        "ankle": [
+          160,
+          280
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "grounded": true,
+      "support": "left"
+    },
+    {
+      "index": 1,
+      "label": "左腿承重",
+      "durationMs": 70,
+      "hip": [
+        200,
+        198
+      ],
+      "left": {
+        "hip": [
+          204,
+          198
+        ],
+        "knee": [
+          234.37481723897997,
+          249.7433133621975
+        ],
+        "ankle": [
+          210,
+          310
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "right": {
+        "hip": [
+          196,
+          198
+        ],
+        "knee": [
+          239.25285460124655,
+          239.58353723342236
+        ],
+        "ankle": [
+          190,
+          282
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "grounded": true,
+      "support": "left"
+    },
+    {
+      "index": 2,
+      "label": "左腿蹬离",
+      "durationMs": 70,
+      "hip": [
+        200,
+        187
+      ],
+      "left": {
+        "hip": [
+          204,
+          187
+        ],
+        "knee": [
+          197.45070139951017,
+          246.64148462137425
+        ],
+        "ankle": [
+          176,
+          308
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "right": {
+        "hip": [
+          196,
+          187
+        ],
+        "knee": [
+          240.5252363133797,
+          227.2181965189601
+        ],
+        "ankle": [
+          228,
+          291
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "grounded": true,
+      "support": "left"
+    },
+    {
+      "index": 3,
+      "label": "腾空 / 右脚前送",
+      "durationMs": 70,
+      "hip": [
+        200,
+        183
+      ],
+      "left": {
+        "hip": [
+          204,
+          183
+        ],
+        "knee": [
+          182.91357986486443,
+          239.17261686876043
+        ],
+        "ankle": [
+          148,
+          294
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "right": {
+        "hip": [
+          196,
+          183
+        ],
+        "knee": [
+          229.80817400475686,
+          232.56820927231564
+        ],
+        "ankle": [
+          244,
+          296
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "grounded": false,
+      "support": null
+    },
+    {
+      "index": 4,
+      "label": "右脚接触",
+      "durationMs": 70,
+      "hip": [
+        200,
+        194
+      ],
+      "left": {
+        "hip": [
+          204,
+          194
+        ],
+        "knee": [
+          218.737089870052,
+          252.1619994683987
+        ],
+        "ankle": [
+          160,
+          280
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "right": {
+        "hip": [
+          196,
+          194
+        ],
+        "knee": [
+          225.59111684378487,
+          246.1954576944917
+        ],
+        "ankle": [
+          238,
+          310
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "grounded": true,
+      "support": "right"
+    },
+    {
+      "index": 5,
+      "label": "右腿承重",
+      "durationMs": 70,
+      "hip": [
+        200,
+        198
+      ],
+      "left": {
+        "hip": [
+          204,
+          198
+        ],
+        "knee": [
+          242.65496986777015,
+          243.88892354939023
+        ],
+        "ankle": [
+          190,
+          282
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "right": {
+        "hip": [
+          196,
+          198
+        ],
+        "knee": [
+          229.27914577578605,
+          247.9249282065982
+        ],
+        "ankle": [
+          210,
+          310
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "grounded": true,
+      "support": "right"
+    },
+    {
+      "index": 6,
+      "label": "右腿蹬离",
+      "durationMs": 70,
+      "hip": [
+        200,
+        187
+      ],
+      "left": {
+        "hip": [
+          204,
+          187
+        ],
+        "knee": [
+          247.0045244679033,
+          228.84030204586844
+        ],
+        "ankle": [
+          228,
+          291
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "right": {
+        "hip": [
+          196,
+          187
+        ],
+        "knee": [
+          198.3269146373936,
+          246.95486192353616
+        ],
+        "ankle": [
+          176,
+          308
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "grounded": true,
+      "support": "right"
+    },
+    {
+      "index": 7,
+      "label": "腾空 / 左脚前送",
+      "durationMs": 70,
+      "hip": [
+        200,
+        183
+      ],
+      "left": {
+        "hip": [
+          204,
+          183
+        ],
+        "knee": [
+          239.81989968261584,
+          231.13454878491473
+        ],
+        "ankle": [
+          244,
+          296
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "right": {
+        "hip": [
+          196,
+          183
+        ],
+        "knee": [
+          187.52582579401195,
+          242.3985552983115
+        ],
+        "ankle": [
+          148,
+          294
+        ],
+        "thigh": 60,
+        "shin": 65
+      },
+      "grounded": false,
+      "support": null
+    }
+  ],
+  "notes": [
+    "Revises approved skeleton after user rejected dressed motion as sneaking.",
+    "Pelvis raised, less persistent knee compression, extended push-off.",
+    "Identity and 60/65 bone lengths preserved."
+  ]
+}

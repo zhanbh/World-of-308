@@ -1,0 +1,151 @@
+{
+  "date": "2026-10-18",
+  "generator": "built-in imagegen",
+  "encoder": "CoreGraphics/ImageIO, deterministic packing only",
+  "stage": "animation-draft",
+  "assets": [
+    {
+      "file": "attack-atlas.png",
+      "size": [
+        1664,
+        832
+      ],
+      "mode": "RGBA",
+      "bytes": 548711
+    },
+    {
+      "file": "attack-preview.gif",
+      "size": [
+        416,
+        416
+      ],
+      "mode": "P",
+      "bytes": 136982,
+      "frames": 8,
+      "durationsMs": [
+        100,
+        90,
+        80,
+        80,
+        120,
+        60,
+        90,
+        100
+      ]
+    },
+    {
+      "file": "attack-slow.gif",
+      "size": [
+        416,
+        416
+      ],
+      "mode": "P",
+      "bytes": 136982,
+      "frames": 8,
+      "durationsMs": [
+        400,
+        360,
+        320,
+        320,
+        480,
+        240,
+        360,
+        400
+      ]
+    },
+    {
+      "file": "attack-source-v1.png",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "bytes": 1932925
+    },
+    {
+      "file": "browser-review.png",
+      "size": [
+        1188,
+        907
+      ],
+      "mode": "RGB",
+      "bytes": 193595
+    },
+    {
+      "file": "run-atlas.png",
+      "size": [
+        1664,
+        832
+      ],
+      "mode": "RGBA",
+      "bytes": 546353
+    },
+    {
+      "file": "run-correction-v2.png",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "bytes": 2087679
+    },
+    {
+      "file": "run-generated-v1.png",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "bytes": 1919594
+    },
+    {
+      "file": "run-preview.gif",
+      "size": [
+        416,
+        416
+      ],
+      "mode": "P",
+      "bytes": 132411,
+      "frames": 8,
+      "durationsMs": [
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70,
+        70
+      ]
+    },
+    {
+      "file": "run-slow.gif",
+      "size": [
+        416,
+        416
+      ],
+      "mode": "P",
+      "bytes": 132411,
+      "frames": 8,
+      "durationsMs": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ]
+    },
+    {
+      "file": "run-source-v3.png",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "bytes": 1824085
+    }
+  ]
+}

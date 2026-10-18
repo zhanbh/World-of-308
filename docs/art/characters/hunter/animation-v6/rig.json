@@ -1,0 +1,200 @@
+{
+  "skeleton": "motion.json",
+  "parts": {
+    "torso": {
+      "source": "upper",
+      "rect": [
+        120,
+        0,
+        620,
+        724
+      ],
+      "anchor": [
+        400,
+        675
+      ],
+      "scale": 0.22,
+      "angle": -0.15
+    },
+    "bowArm": {
+      "source": "upper",
+      "rect": [
+        940,
+        0,
+        570,
+        720
+      ],
+      "anchor": [
+        1010,
+        275
+      ],
+      "scale": 0.17
+    },
+    "freeArm": {
+      "source": "upper",
+      "rect": [
+        1680,
+        210,
+        480,
+        430
+      ],
+      "anchor": [
+        1760,
+        270
+      ],
+      "scale": 0.17
+    },
+    "hair": {
+      "rect": [
+        550,
+        0,
+        340,
+        450
+      ],
+      "anchor": [
+        825,
+        55
+      ],
+      "scale": 0.19
+    },
+    "skirt": {
+      "rect": [
+        890,
+        25,
+        500,
+        420
+      ],
+      "anchor": [
+        1240,
+        80
+      ],
+      "scale": 0.2
+    },
+    "leftThigh": {
+      "rect": [
+        1490,
+        10,
+        250,
+        435
+      ],
+      "a": [
+        1590,
+        48
+      ],
+      "b": [
+        1645,
+        419
+      ],
+      "widthScale": 0.72
+    },
+    "rightThigh": {
+      "rect": [
+        100,
+        460,
+        215,
+        405
+      ],
+      "a": [
+        225,
+        485
+      ],
+      "b": [
+        155,
+        835
+      ],
+      "widthScale": 0.72
+    },
+    "leftShin": {
+      "rect": [
+        590,
+        450,
+        220,
+        270
+      ],
+      "a": [
+        656,
+        470
+      ],
+      "b": [
+        660,
+        816
+      ],
+      "widthScale": 0.84
+    },
+    "rightShin": {
+      "rect": [
+        1040,
+        450,
+        225,
+        270
+      ],
+      "a": [
+        1107,
+        470
+      ],
+      "b": [
+        1113,
+        816
+      ],
+      "widthScale": 0.84
+    },
+    "leftBoot": {
+      "rect": [
+        590,
+        665,
+        220,
+        215
+      ],
+      "anchor": [
+        660,
+        816
+      ],
+      "scale": 0.18784871913909051
+    },
+    "rightBoot": {
+      "rect": [
+        1040,
+        665,
+        225,
+        215
+      ],
+      "anchor": [
+        1113,
+        816
+      ],
+      "scale": 0.18783303200542814
+    },
+    "shorts": {
+      "rect": [
+        1400,
+        555,
+        345,
+        195
+      ],
+      "anchor": [
+        1555,
+        594
+      ],
+      "scale": 0.14
+    }
+  },
+  "drawOrder": [
+    "hair",
+    "skirt",
+    "rightShin",
+    "rightBoot",
+    "rightThigh",
+    "leftShin",
+    "leftBoot",
+    "leftThigh",
+    "bowArm",
+    "torso",
+    "freeArm"
+  ],
+  "ornamentOwner": "leftThigh",
+  "notes": [
+    "Part anchors use full source image pixels.",
+    "Skinning follows v6 athletic stride joint positions; no independently generated frame poses.",
+    "Boots have separate ankle rotation to keep support soles horizontal."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "version": 5,
+  "stage": "cutout-animation-review",
+  "cellSize": 416,
+  "anchorX": 208,
+  "anchorY": 352,
+  "clips": [
+    {
+      "name": "run",
+      "source": "rig-rendered.png",
+      "columns": 4,
+      "rows": 2,
+      "output": "run-atlas.png",
+      "gif": "run-preview.gif",
+      "slowGif": "run-slow.gif",
+      "scale": 1,
+      "baselineByRow": [
+        352,
+        352
+      ],
+      "frames": [
+        {
+          "sourceIndex": 0,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 1,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 2,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 3,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 4,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 5,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 6,
+          "durationMs": 80
+        },
+        {
+          "sourceIndex": 7,
+          "durationMs": 80
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Uses exact approved eight-frame joint coordinates.",
+    "Ornament exists only in reusable left thigh texture.",
+    "Upper-body/bow assembly is currently rigid; hair and cloth secondary motion."
+  ]
+}

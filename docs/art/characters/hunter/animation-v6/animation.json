@@ -1,0 +1,62 @@
+{
+  "version": 6,
+  "stage": "cutout-animation-review",
+  "cellSize": 416,
+  "anchorX": 208,
+  "anchorY": 352,
+  "clips": [
+    {
+      "name": "run",
+      "source": "rig-rendered.png",
+      "columns": 4,
+      "rows": 2,
+      "output": "run-atlas.png",
+      "gif": "run-preview.gif",
+      "slowGif": "run-slow.gif",
+      "scale": 1,
+      "baselineByRow": [
+        352,
+        352
+      ],
+      "frames": [
+        {
+          "sourceIndex": 0,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 1,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 2,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 3,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 4,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 5,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 6,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 7,
+          "durationMs": 70
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Athletic stride revision: same fixed bone lengths, raised pelvis and extended push-off.",
+    "Ornament exists only in reusable left thigh texture.",
+    "Separate free-arm swing and small bow-arm swing; torso counter-rotation."
+  ]
+}

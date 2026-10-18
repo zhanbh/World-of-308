@@ -1,0 +1,10 @@
+{
+  "name": "world-of-308-backend-core",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node tools/check-types.cjs"
+  }
+}

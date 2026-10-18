@@ -52,12 +52,18 @@ export function skillCuePixels(id: WarriorSkillId | null, elapsed: number): { x:
 /** Body-only review poses: run0..3, brake4, hurt5..6, landing7, uppercut-prep8. */
 export const bodyAtlas = { resource: 'warrior-body-v1', columns: 3, rows: 3,
     cellSize: 416, anchorX: .5, anchorY: 64 / 416, displaySize: 58 * 416 / 320 };
+/** One full stride: near-leg contact at 0, opposite-leg contact at 4. */
+export const gaitAtlas = { resource: 'warrior-gait-v2', columns: 4, rows: 2,
+    cellSize: 416, frameDuration: .05, frameCount: 8,
+    anchorX: .5, anchorY: 64 / 416, displaySize: bodyAtlas.displaySize };
 export class WarriorBodyAnimation {
     frame: number | null = null;
+    gaitFrame: number | null = null;
     private gait = 0;
     private wasMoving = false;
     private brakeLeft = 0;
     update(dt: number, moving: boolean, running: boolean, hitStun: number, locked: boolean, dead = false): void {
+        this.gaitFrame = null;
         if (hitStun > 0 || dead) {
             this.frame = hitStun > .12 ? 5 : 6;
             this.wasMoving = false; this.brakeLeft = 0; this.gait = 0;
@@ -67,6 +73,7 @@ export class WarriorBodyAnimation {
         if (moving) {
             this.gait += dt * (running ? 1 : .65);
             this.frame = Math.floor(this.gait / .10) % 4;
+            this.gaitFrame = Math.floor(this.gait / gaitAtlas.frameDuration) % gaitAtlas.frameCount;
             this.wasMoving = true; this.brakeLeft = 0;
             return;
         }
@@ -75,7 +82,7 @@ export class WarriorBodyAnimation {
             this.frame = 4; this.brakeLeft = Math.max(0, this.brakeLeft - dt);
         } else this.frame = null;
     }
-    reset(): void { this.frame = null; this.gait = 0; this.wasMoving = false; this.brakeLeft = 0; }
+    reset(): void { this.frame = null; this.gaitFrame = null; this.gait = 0; this.wasMoving = false; this.brakeLeft = 0; }
 }
 
 export function bodyVisibleRect(frame: number): { left: number; top: number; width: number; height: number } {

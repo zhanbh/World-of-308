@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-10-17",
+  "tool": "built-in imagegen",
+  "stage": "concept-proposal",
+  "assets": [
+    {
+      "file": "hunter-key-art-source-v1.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "bytes": 1991270,
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1022762
+    },
+    {
+      "file": "hunter-key-art-v1.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "bytes": 2067008,
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "transparentPixels": 1043119
+    },
+    {
+      "file": "hunter-design-board-v1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "bytes": 1832356
+    }
+  ]
+}

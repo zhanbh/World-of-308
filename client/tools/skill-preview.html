@@ -9,14 +9,14 @@
 <div class="controls"><select id="speed" aria-label="播放速度"><option value="1">1× 正常速度</option><option value="0.25">0.25× 慢放</option></select><select id="zoom" aria-label="角色显示大小"><option value="1">游戏显示尺寸</option><option value="2" selected>2× 放大检查</option></select><button id="pause">暂停</button><button id="step">前进 10ms</button><button id="step100">前进100ms</button><button id="face">转身</button><button id="interrupt">模拟受击打断</button><button id="reset">重置</button></div>
 <div class="controls" aria-label="命中反馈对比"><button id="toggle-stop" aria-pressed="true">顿帧：开</button><button id="toggle-sparks" aria-pressed="true">火花：开</button><button id="toggle-numbers" aria-pressed="true">跳字：开</button><button id="toggle-shake" aria-pressed="true">震动：开</button><button id="replay">同条件重播</button></div>
 <p>比较方法：选一招 → 切换顿帧、火花、跳字或震动 → 同条件重播。重播恢复靶怪30血并清空残留，保留朝向、倍速与开关。先以1×判断手感，再慢放检查。所有时间均显示当前播放倍速下的评审时间。</p>
-<div class="controls"><button id="walk">步行动作</button><button id="run">跑动动作</button><button id="stop">停步动作</button><button id="hurt">受击动作</button></div>
+<div class="controls"><button id="walk">步行动作</button><button id="run">跑动动作</button><button id="stop">停步动作</button><button id="hurt">受击动作</button><select id="gait-inspect" aria-label="步态逐帧"><option value="">跟随动作</option><option value="0">1 · 近侧腿前伸落地</option><option value="1">2 · 近侧腿支撑</option><option value="2">3 · 远侧腿抬膝</option><option value="3">4 · 远侧腿落地过渡</option><option value="4">5 · 远侧腿前伸落地</option><option value="5">6 · 远侧腿支撑</option><option value="6">7 · 近侧腿抬膝</option><option value="7">8 · 近侧腿前伸</option></select></div>
 <div class="controls"><select id="attack-speed" aria-label="普攻攻速"><option value="1">1.0× 普攻攻速</option><option value="1.25">1.25× 普攻攻速</option><option value="1.5">1.5× 普攻攻速</option></select><select id="cancel-target" aria-label="取消后释放的技能"><option value="cross">十字斩</option><option value="bengshan">崩山击</option><option value="badao">拔刀斩</option><option value="earth">崩山裂地斩</option></select><select id="earth-distance" aria-label="大崩起手方向"><option value="0">大崩：默认前跳</option><option value="1">大崩：按前远跳</option><option value="-1">大崩：按后对照</option></select><button id="cancel-skill">取消普攻接技能</button></div><output id="cancel-status">技能可用时立即取消普攻；冷却、缺蓝或受击硬直时保留当前动作。</output>
 <output id="feedback-status"></output>
 <output id="status">加载图集…</output><output id="target-status">靶怪状态</output><p>每次点击技能从头播放并恢复蓝量/CD，靶怪归位但保留受击和流血状态，可连续命中检查刷新5秒。重置清除全部状态。按 ←/→ 可在后摇开放后走开，观察地面残留。十字2段、崩山3段、拔刀1段、大崩4段；每招总伤害暂保持不变，平均分配到各段。十字飞行速度与穿透暂用于评审，可调整。</p><p>与游戏共用敌人、命中、技能时序和效果寿命模型；Canvas特效为示意。流血本轮先展示红色脉冲，是否持续扣血已确认，数值与伤害接入待完成。实际战斗和手机触控需Cocos构建复评。</p>
 <script type="module">
 import { CombatModel } from '/CombatModel.js';
 import { basicAttacks, attackAtlas, attackFrame, attackVisibleRect } from '/WarriorAttackAnimation.js';
-import { skillAnimations, skillAtlas, skillFrame, skillCuePixels, bodyAtlas, bodyVisibleRect, WarriorBodyAnimation } from '/WarriorSkillAnimation.js';
+import { skillAnimations, skillAtlas, skillFrame, skillCuePixels, bodyAtlas, gaitAtlas, bodyVisibleRect, WarriorBodyAnimation } from '/WarriorSkillAnimation.js';
 import { WarriorSkillsModel, warriorSkillNames, warriorSkillTuning, tryCastWarriorSkill } from '/WarriorSkillsModel.js';
 import { WarriorSkillEffects } from '/WarriorSkillEffects.js';
 import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText } from '/EnemyModel.js';
@@ -25,11 +25,12 @@ const feedback=new CombatFeedback(),body=new WarriorBodyAnimation();
 let target=new EnemyModel(45,0,0,30);
 const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),images={};
 async function load(name,url){const im=new Image();im.src=url;await im.decode();images[name]=im;}
-try { await Promise.all([load('attack','/atlas.png'),load('body','/warrior-body-v1.png'),...Object.keys(skillAnimations).map(id=>load(id,'/'+skillAnimations[id].resource+'.png'))]); }
+try { await Promise.all([load('attack','/atlas.png'),load('body','/warrior-body-v1.png'),load('gait','/'+gaitAtlas.resource+'.png'),...Object.keys(skillAnimations).map(id=>load(id,'/'+skillAnimations[id].resource+'.png'))]); }
 catch(error) { document.querySelector('#status').textContent='技能图集加载失败，请刷新页面；持续失败时检查预览服务。'; throw error; }
+let gaitInspection=null;
 let paused=false,facing=1,accumulator=0,previous=performance.now(),travel=0,hits=0,axis=0,motionMode='walk',lastSkill='bengshan',reviewTime=0,combatTime=0;
-const state={model,skills,effects,ready:true,frame:0,speed:1,zoom:2,tick,cast};window.skillPreview=state;
-function cast(id){axis=0;model.hp=100;model.x=model.y=0;model.hitStun=model.invulnerable=model.knockX=0;body.reset();lastSkill=id;reviewTime=combatTime=accumulator=0;feedback.clear([target]);model.reset();skills.reset();travel=0;hits=0;if(target.state==='dead')target=new EnemyModel(45,0,0,30);target.x=facing*45;target.y=0;skills.cast(id,facing,id==='earth'?Number(document.querySelector('#earth-distance').value)*facing:axis);draw();}
+const state={model,skills,effects,ready:true,frame:0,atlas:null,speed:1,zoom:2,tick,cast};window.skillPreview=state;
+function cast(id){gaitInspection=null;document.querySelector('#gait-inspect').value='';axis=0;model.hp=100;model.x=model.y=0;model.hitStun=model.invulnerable=model.knockX=0;body.reset();lastSkill=id;reviewTime=combatTime=accumulator=0;feedback.clear([target]);model.reset();skills.reset();travel=0;hits=0;if(target.state==='dead')target=new EnemyModel(45,0,0,30);target.x=facing*45;target.y=0;skills.cast(id,facing,id==='earth'?Number(document.querySelector('#earth-distance').value)*facing:axis);draw();}
 function tick(dt){accumulator+=dt;while(accumulator>=1/120){
  reviewTime+=1/120;
  if(feedback.update(1/120)){accumulator-=1/120;continue;}
@@ -75,8 +76,9 @@ function draw(){
  if(id)frame=skillFrame(id,skills.elapsed);else if(model.stage>=0){key='attack';frame=attackFrame(model.stage,model.elapsed);atlas=attackAtlas;}
  if(id==='bengshan'&&skills.elapsed>=.58&&skills.elapsed<.68){key='body';frame=7;atlas=bodyAtlas;}
  else if(!id&&model.stage>=0&&frame===9){key='body';frame=8;atlas=bodyAtlas;}
- else if(body.frame!==null&&(model.hitStun>0||!id&&model.stage<0)){key='body';frame=body.frame;atlas=bodyAtlas;}
- state.frame=frame;const im=images[key],w=im.width/atlas.columns,h=im.height/atlas.rows;
+ else if(body.frame!==null&&(model.hitStun>0||!id&&model.stage<0)){key=body.gaitFrame===null?'body':'gait';frame=body.gaitFrame??body.frame;atlas=body.gaitFrame===null?bodyAtlas:gaitAtlas;}
+ if(gaitInspection!==null){key='gait';frame=gaitInspection;atlas=gaitAtlas;}
+ state.frame=frame;state.atlas=key;const im=images[key],w=im.width/atlas.columns,h=im.height/atlas.rows;
  ctx.clearRect(0,0,960,440);ctx.save();ctx.translate(480,330);ctx.scale(state.zoom,state.zoom);ctx.translate(feedback.shakeOffset.x*2,-feedback.shakeOffset.y*2);
  ctx.strokeStyle='#456172';ctx.beginPath();ctx.moveTo(-500,0);ctx.lineTo(500,0);ctx.stroke();
  for(const effect of effects.items)effectArt(effect);
@@ -107,8 +109,9 @@ document.querySelector('#cancel-skill').onclick=()=>{
  document.querySelector('#cancel-status').textContent=ok?(wasAttacking?'已立即取消普攻，释放技能；普攻缓存已清空。':'已释放技能。'):'技能未释放：冷却、缺蓝、受击硬直或已有技能；普攻状态保留。';
  if(ok){body.reset();axis=0;}draw();
 };
-document.querySelector('#walk').onclick=()=>{skills.cancel();model.reset();axis=facing;motionMode='walk';draw();};
-document.querySelector('#run').onclick=()=>{skills.cancel();model.reset();axis=facing;motionMode='run';draw();};
+document.querySelector('#gait-inspect').onchange=e=>{gaitInspection=e.target.value===''?null:Number(e.target.value);paused=gaitInspection!==null;document.querySelector('#pause').textContent=paused?'继续':'暂停';draw();};
+document.querySelector('#walk').onclick=()=>{skills.cancel();model.reset();axis=facing;motionMode='walk';gaitInspection=null;document.querySelector('#gait-inspect').value='';paused=false;document.querySelector('#pause').textContent='暂停';draw();};
+document.querySelector('#run').onclick=()=>{skills.cancel();model.reset();axis=facing;motionMode='run';gaitInspection=null;document.querySelector('#gait-inspect').value='';paused=false;document.querySelector('#pause').textContent='暂停';draw();};
 document.querySelector('#stop').onclick=()=>{axis=0;draw();};
 document.querySelector('#hurt').onclick=()=>{axis=0;skills.cancel();model.invulnerable=0;model.takeHit(facing);body.update(0,false,false,model.hitStun,false);draw();};
 document.querySelector('#toggle-stop').onclick=e=>{
@@ -127,7 +130,7 @@ document.querySelector('#replay').onclick=()=>{effects.clear();target=new EnemyM
 document.querySelectorAll('[data-skill]').forEach(button=>button.onclick=()=>cast(button.dataset.skill));
 document.querySelector('#hold-attack').onclick=e=>{if(skills.casting)return;if(model.held){model.release();}else{model.press();}e.currentTarget.setAttribute('aria-pressed',String(model.held));e.currentTarget.textContent=`持续普攻：${model.held?'开':'关'}`;};
 document.querySelector('#attack').onclick=()=>{if(!skills.casting){model.press();model.release();}};
-document.querySelector('#reset').onclick=()=>{feedback.clear();body.reset();model.reset();skills.reset();effects.clear();target=new EnemyModel(facing*45,0,0,30);axis=0;model.hp=100;model.x=model.y=0;model.hitStun=model.invulnerable=model.knockX=0;travel=hits=accumulator=reviewTime=combatTime=0;draw();};
+document.querySelector('#reset').onclick=()=>{gaitInspection=null;document.querySelector('#gait-inspect').value='';feedback.clear();body.reset();model.reset();skills.reset();effects.clear();target=new EnemyModel(facing*45,0,0,30);axis=0;model.hp=100;model.x=model.y=0;model.hitStun=model.invulnerable=model.knockX=0;travel=hits=accumulator=reviewTime=combatTime=0;draw();};
 document.querySelector('#interrupt').onclick=()=>{skills.cancel();model.takeHit(1);draw();};
 document.querySelector('#speed').onchange=e=>state.speed=Number(e.target.value);
 document.querySelector('#zoom').onchange=e=>{state.zoom=Number(e.target.value);draw();};

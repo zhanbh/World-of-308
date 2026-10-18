@@ -1,3 +1,5 @@
+> 2026-10-16后续修复：旧四帧跑步未能清楚交替两腿，已由[步态v2](../gait-v2/README.md)替换移动显示；本图集保留急停、受击、落地和上挑准备。下文为v1历史记录。
+
 # 战士身体动作 v1
 
 2026-10-16，用户要求直接接入后统一验收。内置imagegen根据原创战士概念与现有十字斩图集生成9个姿势；模式及完整提示词见[prompt.md](prompt.md)，原始RGBA见[generated-source.png](generated-source.png)。运行图集为client/assets/resources/warrior-body-v1.png，1248×1248、3×3、416单元，脚底纵向锚点352。打包脚本client/tools/pack-body-atlas.py仅做统一最近邻缩放与位置对齐，不绘制/修色；上挑源图刀尖跨原网格16像素，因此扩展取样并在显示时排除相邻脚部残片。

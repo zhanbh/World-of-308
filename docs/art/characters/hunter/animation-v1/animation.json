@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "stage": "animation-draft",
+  "cellSize": 416,
+  "anchorX": 208,
+  "anchorY": 352,
+  "clips": [
+    {
+      "name": "run",
+      "source": "run-source-v3.png",
+      "output": "run-atlas.png",
+      "gif": "run-preview.gif",
+      "slowGif": "run-slow.gif",
+      "columns": 4,
+      "rows": 2,
+      "scale": 0.48,
+      "baselineByRow": [
+        427,
+        420
+      ],
+      "frames": [
+        {
+          "sourceIndex": 0,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 1,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 2,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 3,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 4,
+          "durationMs": 70
+        },
+        {
+          "sourceIndex": 5,
+          "durationMs": 70,
+          "trimLeft": 16,
+          "offsetY": 2
+        },
+        {
+          "sourceIndex": 6,
+          "durationMs": 70,
+          "trimLeft": 16,
+          "offsetY": 2
+        },
+        {
+          "sourceIndex": 7,
+          "durationMs": 70
+        }
+      ]
+    },
+    {
+      "name": "attack",
+      "source": "attack-source-v1.png",
+      "output": "attack-atlas.png",
+      "gif": "attack-preview.gif",
+      "slowGif": "attack-slow.gif",
+      "columns": 4,
+      "rows": 2,
+      "scale": 0.48,
+      "baselineByRow": [
+        431,
+        430
+      ],
+      "frames": [
+        {
+          "sourceIndex": 0,
+          "durationMs": 100,
+          "offsetX": -2.16
+        },
+        {
+          "sourceIndex": 1,
+          "durationMs": 90,
+          "offsetX": -0.96
+        },
+        {
+          "sourceIndex": 2,
+          "durationMs": 80,
+          "offsetX": -3.6
+        },
+        {
+          "sourceIndex": 3,
+          "durationMs": 80,
+          "offsetX": 9.84
+        },
+        {
+          "sourceIndex": 4,
+          "durationMs": 120,
+          "offsetX": 1.44
+        },
+        {
+          "sourceIndex": 5,
+          "durationMs": 60,
+          "trimLeft": 16,
+          "offsetX": 1.2
+        },
+        {
+          "sourceIndex": 6,
+          "durationMs": 90,
+          "offsetX": 0.96
+        },
+        {
+          "sourceIndex": 7,
+          "durationMs": 100,
+          "offsetX": -2.4
+        }
+      ],
+      "stationaryFootCenters": [
+        246.5,
+        244.0,
+        249.5,
+        221.5,
+        239.0,
+        239.5,
+        240.0,
+        247.0
+      ]
+    }
+  ],
+  "attackRelease": {
+    "frameIndex": 5,
+    "atMs": 470,
+    "projectile": "separate-preview-only"
+  },
+  "notes": [
+    "Uniform scale per clip; no per-frame resizing or limb warps.",
+    "Timings are art-review proposals, not game balance."
+  ]
+}

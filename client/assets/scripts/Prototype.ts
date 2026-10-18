@@ -55,8 +55,13 @@ export class Prototype extends Component {
         this.controls = this.makeGraphics('Controls');
         this.text('308 动作样板 v0.9 · 战士技能动画', 0, 242, 22);
         this.text('WASD移动 · 空格普攻 · E十字斩 · F崩山击 · Q拔刀斩 · G崩山裂地斩 · R重置 · 1/3敌人', 0, 212, 16);
-        this.healthStatus = this.text('', -330, 178, 17);
+        this.healthStatus = this.text('', -130, 178, 17, 660);
+        this.healthStatus.horizontalAlign = Label.HorizontalAlign.LEFT;
+        this.healthStatus.overflow = Label.Overflow.SHRINK;
+        this.healthStatus.enableWrapText = false;
         this.status = this.text('', 0, -242, 17);
+        this.status.overflow = Label.Overflow.SHRINK;
+        this.status.enableWrapText = false;
         this.roundLabel = this.text('', 0, 75, 20, 850);
         this.modeLabels = [this.text('单怪', 255, 168, 14, 70), this.text('三怪', 355, 168, 14, 70)];
         this.text('摇杆', -345, -218, 18);
@@ -285,7 +290,7 @@ export class Prototype extends Component {
             ? this.warriorSprite.showSkill(this.skills.activeId, this.skills.elapsed)
             : (m.stage >= 0
             ? this.warriorSprite.showAttack(m.stage, m.elapsed)
-            : this.bodyAnimation.frame !== null ? this.warriorSprite.showBody(this.bodyAnimation.frame) || this.warriorSprite.showReady() : this.warriorSprite.showReady());
+            : this.bodyAnimation.frame !== null ? this.warriorSprite.showBody(this.bodyAnimation.frame, this.bodyAnimation.gaitFrame) || this.warriorSprite.showReady() : this.warriorSprite.showReady());
         this.actor.enabled = !useSprite;
         if (!useSprite) {
             this.warriorSprite.hide();

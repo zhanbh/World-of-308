@@ -1,0 +1,9 @@
+# 内置 imagegen 提示词
+
+## 1
+
+Use case precise-object-edit. Edit this exact transparent 2x2 sprite sheet. Keep top left, top right and bottom right poses unchanged. Redraw ONLY BOTTOM LEFT legs into a natural low running PASSING pose: support thigh slopes slightly backward, support knee softly bent, supporting boot under pelvis. Swing thigh points diagonally DOWN forward (not horizontal); swing knee well BELOW pelvis, swing foot passing close beside support calf. No high knee to chest, no standing one-leg balance, no sitting pose. Keep slender long legs and identical body size, torso, face, hair, bow, costume. Keep gold thigh ring on the same supporting leg as original bottom-left, do not put on swing leg. Match neighboring low running poses. Single ornament. Transparent background. Exact 2x2 layout.
+
+## 2
+
+Use case precise-object-edit. Edit this exact transparent 2x2 sprite sheet with TWO targeted corrections. BOTTOM RIGHT: the gold buckle/jade thigh strap is currently on the forward extended leg, but the user rejects this placement. REMOVE the ornament entirely from that forward extended thigh, leaving plain sheer black tights. Put the single identical black strap/gold circular buckle/jade charm on the BACKWARD trailing thigh leading toward the boot at left, below skirt hem. Keep actual legs, all upperbody, face, costume and pose unchanged here; make the trailing leg identity clear in hip overlap. BOTTOM LEFT: replace unnatural horizontal high-raised knee with a LOW natural running passing pose; swing thigh angles DOWN forward, knee BELOW hips, boot passes by supporting calf, support knee gently flexed, no one-leg standing high-knee pose. Preserve ring on that same swing thigh. Top row unchanged, heels remain low. Preserve exact 2x2 grid and character sizes, thin long legs, transparency. No extra ornament.

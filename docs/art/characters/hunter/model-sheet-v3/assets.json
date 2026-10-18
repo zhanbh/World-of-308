@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-18",
+  "generator": "built-in imagegen",
+  "stage": "design-study",
+  "assets": [
+    {
+      "file": "hunter-turnaround-v3.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2256757
+    }
+  ]
+}

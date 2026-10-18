@@ -1,0 +1,139 @@
+{
+  "date": "2026-10-18",
+  "stage": "art-review-revision",
+  "assets": [
+    {
+      "file": "run-atlas.png",
+      "size": [
+        1664,
+        832
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "file": "attack-atlas.png",
+      "size": [
+        1664,
+        832
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "file": "run-preview.gif",
+      "size": [
+        416,
+        416
+      ],
+      "mode": "P",
+      "frames": 7,
+      "durations": [
+        80,
+        80,
+        80,
+        80,
+        80,
+        80,
+        80
+      ],
+      "disposals": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "file": "run-slow.gif",
+      "size": [
+        416,
+        416
+      ],
+      "mode": "P",
+      "frames": 7,
+      "durations": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "disposals": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "file": "attack-preview.gif",
+      "size": [
+        416,
+        416
+      ],
+      "mode": "P",
+      "frames": 8,
+      "durations": [
+        100,
+        90,
+        80,
+        80,
+        120,
+        60,
+        90,
+        100
+      ],
+      "disposals": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "file": "attack-slow.gif",
+      "size": [
+        416,
+        416
+      ],
+      "mode": "P",
+      "frames": 8,
+      "durations": [
+        400,
+        360,
+        320,
+        320,
+        480,
+        240,
+        360,
+        400
+      ],
+      "disposals": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    }
+  ],
+  "unchangedKeyArtSha256": {
+    "concept-v1/hunter-key-art-v1.png": "9d7369653d69d57d22e168c69727a8beb3b0ee1067d93c76349506355544755d",
+    "concept-v2/hunter-key-art-v2.png": "4ab6785ba3759943ec411b8df66867260afacdd6da6e1924602187aefc3eea98",
+    "concept-v3/hunter-key-art-v3.png": "dfb4b70797387703ce2802ef8772c83472e1559712d8b49ec6484a00250ef816"
+  }
+}
