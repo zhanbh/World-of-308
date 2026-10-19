@@ -18,8 +18,8 @@ Parent: [整体规划](../map.md)
 | [D01 战斗数值与成长](issues/01-combat-growth.md) | 已确认属性/技能规则 | proposal-ready：专题审阅中，已补战士数值表 | 审阅[数值试算](../../design/combat-numeric-proposal-v1.md)，再校准与验证 |
 | [D02 装备、套装与饰品模板](issues/02-equipment.md) | D01输出属性预算和公式 | proposal-ready：有13槽预算与配装算例 | 审阅[装备方案](../../design/equipment-proposal-v1.md)，联调D01旧预算 |
 | [D03 掉落、经济与补给](issues/03-economy.md) | D01成长、D02装备、D04单局时长互相校准 | proposal-ready：已给来源/消耗与示例账 | 审阅[经济方案](../../design/economy-proposal-v1.md)，联调局长和获得速度 |
-| [D04 地图、怪物与副本节奏](issues/04-dungeons.md) | D01伤害预算；与D03共同校准奖励 | needs-proposal：待方案 | 首个副本房间图和遭遇表 |
-| [D05 城镇与资产交互](issues/05-interactions.md) | 已确认容器规则；D02/D03提供内容 | needs-proposal：待方案 | 资产页面与失败/满包交互 |
+| [D04 地图、怪物与副本节奏](issues/04-dungeons.md) | D01伤害预算；与D03共同校准奖励 | proposal-ready：已给出首副本7房间方案 | 审阅[首副本方案](../../design/dungeon-first-proposal-v1.md)，联动D01/D03 |
+| [D05 城镇与资产交互](issues/05-interactions.md) | 已确认容器规则；D02/D03提供内容 | proposal-ready：已给出城镇/换装/修理方案 | 审阅[城镇交互方案](../../design/town-interactions-proposal-v1.md)，对齐UI流 |
 | [D06 规则迁移与最小在线切片](issues/06-online-slice.md) | 已确认规则可先列验收；正式配置依赖D01–D04 | scoped：边界已列，未实施 | 方案确认后切可交付任务 |
 
 状态约定：needs-proposal=尚无完整方案；proposal-ready=有待审阅方案，不表示已grill；resolved=关键决定确认且已同步规格。所有子票当前均未resolved。只有出现实质取舍才进行专题grill，工程字段/批量边界由实现方案承担。
