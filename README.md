@@ -15,6 +15,8 @@
 | [评审记录](docs/reviews/README.md) | 全项目独立评审报告、意见状态和后续复核入口 |
 | [核心机制补充基线](docs/wayfinder/core-rules-v2/SUMMARY.md) | Q24–Q119确认规则、冷却矩阵及后续数值/内容范围 |
 | [实现差异清单](docs/implementation-gaps-2026-10-19.md) | 已有本地核心与新基线之间的待迁移项 |
+| [MVP设计子需求](docs/wayfinder/mvp-design/map.md) | D01–D06专项设计票、依赖和验收标准；尚未全部grill |
+| [战斗数值与成长提案 v1](docs/design/combat-growth-proposal-v1.md) | 首版待审阅的公式结构、伤害预算和成长校准方向，不是正式配置 |
 | [整体规格](docs/spec.md) | 当前玩法基线、12 系统、首版边界、用户故事与验收标准 |
 | [动作原型规格](docs/action-prototype.md) | 双刀战士最小样板、摇杆规则、小人物画面与 Note20 Ultra 真机验收 |
 | [后台本地核心](backend/README.md) | 已实现范围、测试命令与云端接入前边界 |

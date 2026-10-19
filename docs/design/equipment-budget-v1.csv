@@ -1,0 +1,14 @@
+slot_id,slot_name,base_stat_types,base_values,primary_budget,secondary_1_type,secondary_1_rating,secondary_2_type,secondary_2_rating
+weapon,武器,AP,80,12,暴击,12,急速,12
+chest,上衣,HP/护甲,120/50,8,精通,8,暴击,8
+legs,下衣,HP/护甲,100/40,7,精通,7,暴击,7
+belt,腰,HP/护甲,60/20,4,急速,4,精通,4
+shoulder,肩,HP/护甲,80/25,5,暴击,5,急速,5
+boots,鞋,HP/护甲,80/15,4,急速,4,精通,4
+bracelet,手镯,MP,20,3,精通,3,暴击,3
+ring,戒指,MP,20,3,暴击,3,急速,3
+necklace,项链,MP,30,4,急速,4,精通,4
+support,辅助装备,AP/HP,4/40,3,急速,3,精通,3
+stone,魔法石,MP,40,3,精通,3,暴击,3
+earring,耳环,AP/HP,6/20,2,精通,2,暴击,2
+trinket,主动饰品,HP/MP,40/20,2,精通,2,暴击,2

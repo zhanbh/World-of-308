@@ -1,0 +1,390 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>女性猎人 · 8帧跑动与普攻动画修复版 v7</title>
+<style>
+:root{color-scheme:dark;font:15px/1.6 system-ui,-apple-system,sans-serif;background:#0f1718;color:#e6ece4}
+*{box-sizing:border-box}
+body{max-width:1160px;margin:auto;padding:28px 20px}
+h1{font-size:26px;font-weight:700;margin:0 0 8px;color:#f0f5ee;display:flex;align-items:center;gap:10px}
+.badge{font-size:12px;background:#2d6a4f;color:#d8f3dc;padding:3px 9px;border-radius:12px;font-weight:normal}
+p.desc{color:#a2b5af;margin:6px 0 20px;line-height:1.7}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:18px 0;background:#162324;padding:12px 16px;border-radius:10px;border:1px solid #283e3a}
+label{display:flex;align-items:center;gap:8px;font-size:14px;color:#c9d7d2}
+button,select,input{font:inherit}
+button,select{border:1px solid #3c594e;background:#1d382f;color:#e8f1e5;border-radius:7px;padding:6px 14px;transition:all .15s}
+button:hover{background:#2a4f43;border-color:#4e7467;cursor:pointer}
+button:active{transform:scale(0.98)}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:14px}
+article{background:#152022;border:1px solid #2d423e;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.35)}
+header{padding:16px 20px 10px;border-bottom:1px solid #203330;display:flex;justify-content:space-between;align-items:baseline}
+header h2{font-size:18px;margin:0;color:#eef4ec}
+header .sub{font-size:13px;color:#8fa89e}
+canvas{display:block;width:100%;height:auto;image-rendering:pixelated;background:repeating-conic-gradient(#141c1e 0% 25%,#182325 0% 50%) 0 0/24px 24px}
+.info{padding:16px 20px;background:#152022}
+.phase{font-variant-numeric:tabular-nums;color:#ebd090;font-weight:600;min-height:26px;font-size:15px}
+.frames{width:100%;margin:10px 0;accent-color:#48a97c;cursor:pointer}
+.links{display:flex;gap:16px;margin-top:8px}
+.links a{color:#80d4a8;text-decoration:none;font-size:13px;font-weight:500}
+.links a:hover{text-decoration:underline}
+.audit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+.audit-card{background:#152022;border:1px solid #2d423e;border-radius:10px;padding:12px;text-align:center}
+.audit-card h3{margin:0 0 8px;font-size:14px;color:#b4cebe}
+.audit-card canvas{border-radius:6px;margin:auto}
+.audit-card p{margin:8px 0 0;font-size:12px;color:#8fa89e}
+footer{margin-top:32px;padding-top:18px;border-top:1px solid #233533;color:#8aa098;font-size:13px}
+.diff-highlight{color:#7ce0ab;font-weight:bold}
+#error{color:#ff8a7a;margin-top:10px;white-space:pre-wrap}
+@media(max-width:760px){.cards,.audit-grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<h1>女性猎人 · 动作精修 v7 <span class="badge">完整8帧对称步态 · 腿环定位修复</span></h1>
+<p class="desc">
+针对上个版本反馈的三项问题全面重构：<br>
+<strong>1. 修复左右腿连贯性：</strong> 补齐被漏掉的「远腿下沉承重帧」，从7帧扩充为完整的8帧对称循环（4拍近腿+4拍远腿，各320ms，总长640ms），彻底消除跳动与跛脚感。<br>
+<strong>2. 修复左右腿交替不均：</strong> 严格遵循标准人行动作曲线（接触→下沉承重→经过支撑→抬升蹬离），两腿交替步态均质流畅。<br>
+<strong>3. 严格绑定腿环归属：</strong> 腿环（黑皮带+金菱扣+玉坠）100%固定于角色解剖左腿（近腿），远侧右腿为纯净质感薄黑丝袜，无论前伸、承重还是蹬离，绝不跳腿换位！
+</p>
+
+<div class="controls">
+  <button id="play">暂停</button>
+  <button id="reset">重置开头</button>
+  <label>版本对照
+    <select id="variant">
+      <option value="v7" selected>v7 修复版 (8帧完整对称)</option>
+      <option value="v4">v4 旧版 (7帧缺失/跳环对照)</option>
+    </select>
+  </label>
+  <label>播放倍速
+    <select id="speed">
+      <option value="1">1.0× (正常 80ms/帧)</option>
+      <option value="0.5">0.5× (慢放)</option>
+      <option value="0.25" selected>0.25× (超慢速逐帧核验)</option>
+    </select>
+  </label>
+  <label>视口缩放
+    <select id="zoom">
+      <option value="1">1.0×</option>
+      <option value="1.5" selected>1.5× 放大观察</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="arrow" checked> 普攻射击箭矢示意</label>
+</div>
+
+<div class="controls" style="background:#131c1d;border-color:#20312d;">
+  <span style="font-size:14px;color:#a4beaf;font-weight:600">关键帧速切检查：</span>
+  <button id="contact-near">近腿接触位 (帧 1)</button>
+  <button id="down-near">近腿下沉位 (帧 2)</button>
+  <button id="contact-far">远腿接触位 (帧 5)</button>
+  <button id="down-far">远腿下沉位 (帧 6 - 补齐帧)</button>
+  <span style="font-size:13px;color:#7e9a8f;margin-left:auto">绿色参考线为地面基准 Y=352</span>
+</div>
+
+<div class="cards">
+  <article>
+    <header>
+      <h2>跑动步态循环</h2>
+      <span class="sub" id="run-sub">8 帧 · 640ms 完整循环</span>
+    </header>
+    <canvas id="run" width="416" height="416"></canvas>
+    <div class="info">
+      <div class="phase" id="run-phase">1 / 8 · 近腿接触 · 80ms</div>
+      <input class="frames" id="run-frame" type="range" min="0" max="7" value="0" aria-label="跑动逐帧">
+      <div class="links">
+        <span style="color:#92aca1;font-size:13px">左右腿对称循环：前4帧近腿主导，后4帧远腿主导</span>
+      </div>
+    </div>
+  </article>
+
+  <article>
+    <header>
+      <h2>单箭普攻动作</h2>
+      <span class="sub">8 帧 · 720ms 取弓拉弦</span>
+    </header>
+    <canvas id="attack" width="416" height="416"></canvas>
+    <div class="info">
+      <div class="phase" id="attack-phase">1 / 8 · 准备取箭 · 100ms</div>
+      <input class="frames" id="attack-frame" type="range" min="0" max="7" value="0" aria-label="普攻逐帧">
+      <div class="links">
+        <span style="color:#92aca1;font-size:13px">保持原版优秀立绘与弓箭动作精度</span>
+      </div>
+    </div>
+  </article>
+</div>
+
+<h2 style="margin-top:28px;font-size:18px;color:#e8eee4">远腿承重修复关键帧对比 (截取腿部特写)</h2>
+<div class="audit-grid">
+  <div class="audit-card">
+    <h3>v4 旧版 · 远腿接触</h3>
+    <canvas id="proof-v4-0" width="240" height="180"></canvas>
+    <p>帧 5: 远腿着地</p>
+  </div>
+  <div class="audit-card" style="border-color:#5c2b29;background:#201717">
+    <h3 style="color:#ff9e8f">v4 旧版 · 缺失承重</h3>
+    <div style="height:180px;display:flex;align-items:center;justify-content:center;color:#e57373;font-size:14px;border:1px dashed #663333;border-radius:6px">
+      ❌ 下沉承重帧直接被删<br>导致步态突跳一瘸一拐
+    </div>
+    <p style="color:#e57373">直接跳至支撑，缺失25px缓冲</p>
+  </div>
+  <div class="audit-card">
+    <h3>v7 修复版 · 远腿接触</h3>
+    <canvas id="proof-v7-4" width="240" height="180"></canvas>
+    <p>帧 5: 远腿着地，近腿后摆带环</p>
+  </div>
+  <div class="audit-card" style="border-color:#2a5944;background:#152620">
+    <h3 style="color:#80e8b2">v7 修复版 · 远腿下沉承重</h3>
+    <canvas id="proof-v7-5" width="240" height="180"></canvas>
+    <p class="diff-highlight">✓ 成功复原下沉承重，落地平稳</p>
+  </div>
+</div>
+
+<footer>
+  <p>💡 提示：拖动滑块可暂停在任意单帧核查腿部明暗、腿环位置及靴子轮廓。点击上方倍速选择「0.25×」可清晰验证8帧循环的左右腿交替对称性。</p>
+  <div id="error" role="alert"></div>
+</footer>
+
+<script id="manifest-v7" type="application/json">
+{
+  "version": 7,
+  "stage": "production-rebuilt-8frames",
+  "cellSize": 416,
+  "anchorX": 208,
+  "anchorY": 352,
+  "clips": [
+    {
+      "name": "run",
+      "columns": 4,
+      "rows": 2,
+      "output": "run-atlas.png",
+      "scale": 0.36,
+      "baseline": 352,
+      "frames": [
+        { "sourceIndex": 0, "durationMs": 80, "phase": "近腿接触 (Near Contact)" },
+        { "sourceIndex": 1, "durationMs": 80, "phase": "近腿下沉承重 (Near Down)" },
+        { "sourceIndex": 2, "durationMs": 80, "phase": "近腿经过支撑 (Near Passing)" },
+        { "sourceIndex": 3, "durationMs": 80, "phase": "近腿蹬离抬升 (Near Push-off)" },
+        { "sourceIndex": 4, "durationMs": 80, "phase": "远腿接触 (Far Contact)" },
+        { "sourceIndex": 5, "durationMs": 80, "phase": "远腿下沉承重 (Far Down)" },
+        { "sourceIndex": 6, "durationMs": 80, "phase": "远腿经过支撑 (Far Passing)" },
+        { "sourceIndex": 7, "durationMs": 80, "phase": "远腿蹬离抬升 (Far Push-off)" }
+      ]
+    },
+    {
+      "name": "attack",
+      "output": "attack-atlas.png",
+      "columns": 4,
+      "rows": 2,
+      "scale": 0.48,
+      "frames": [
+        { "sourceIndex": 0, "durationMs": 100, "phase": "准备取箭" },
+        { "sourceIndex": 1, "durationMs": 90, "phase": "右手取箭" },
+        { "sourceIndex": 2, "durationMs": 80, "phase": "搭箭扣弦" },
+        { "sourceIndex": 3, "durationMs": 80, "phase": "半拉反曲长弓" },
+        { "sourceIndex": 4, "durationMs": 120, "phase": "充分拉弦蓄力" },
+        { "sourceIndex": 5, "durationMs": 60, "phase": "松弦释放箭矢" },
+        { "sourceIndex": 6, "durationMs": 90, "phase": "后座随动" },
+        { "sourceIndex": 7, "durationMs": 100, "phase": "持弓回收" }
+      ]
+    }
+  ]
+}
+</script>
+
+<script>
+const manifestV7 = JSON.parse(document.getElementById('manifest-v7').textContent);
+const manifestV4 = {
+  version: 4,
+  cellSize: 416, anchorX: 208, anchorY: 352,
+  clips: [
+    {
+      name: "run",
+      columns: 4, rows: 2, output: "run-atlas.png", scale: 0.36, baseline: 352,
+      frames: [
+        { sourceIndex: 0, durationMs: 80, phase: "近腿接触 (Near Contact)" },
+        { sourceIndex: 1, durationMs: 80, phase: "近腿下沉 (Near Down)" },
+        { sourceIndex: 2, durationMs: 80, phase: "近腿经过 (Near Passing)" },
+        { sourceIndex: 3, durationMs: 80, phase: "近腿蹬离 (Near Push-off)" },
+        { sourceIndex: 4, durationMs: 80, phase: "远腿接触 (Far Contact)" },
+        { sourceIndex: 5, durationMs: 80, phase: "远腿经过 (直接跳过承重!)" },
+        { sourceIndex: 6, durationMs: 80, phase: "远腿蹬离 (腿环错位在后腿)" }
+      ]
+    },
+    {
+      name: "attack",
+      output: "attack-atlas.png",
+      columns: 4, rows: 2, scale: 0.48,
+      frames: manifestV7.clips[1].frames
+    }
+  ]
+};
+
+const manifests = { v7: manifestV7, v4: manifestV4 };
+const state = {
+  variant: "v7",
+  playing: true,
+  speed: 0.25,
+  zoom: 1.5,
+  elapsed: 0,
+  ready: false,
+  frames: { run: 0, attack: 0 }
+};
+
+const images = { v7: {}, v4: {} };
+let lastTimestamp;
+
+function locate(clip, time) {
+  const duration = clip.frames.reduce((s, f) => s + f.durationMs, 0);
+  let t = ((time % duration) + duration) % duration;
+  for (let i = 0; i < clip.frames.length; i++) {
+    if (t < clip.frames[i].durationMs) return { i, cycle: time % duration, duration };
+    t -= clip.frames[i].durationMs;
+  }
+  return { i: 0, cycle: 0, duration };
+}
+
+function render(clip, index, cycle = 0) {
+  const c = document.getElementById(clip.name);
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 416, 416);
+  ctx.imageSmoothingEnabled = false;
+  ctx.save();
+  ctx.translate(208, 352);
+  ctx.scale(state.zoom, state.zoom);
+  ctx.translate(-208, -352);
+
+  // Ground baseline
+  ctx.strokeStyle = '#3e6353';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(10, 352.5);
+  ctx.lineTo(406, 352.5);
+  ctx.stroke();
+
+  const img = images[state.variant][clip.name];
+  if (img) {
+    const col = index % 4;
+    const row = Math.floor(index / 4);
+    ctx.drawImage(img, col * 416, row * 416, 416, 416, 0, 0, 416, 416);
+  }
+
+  // Attack projectile preview
+  if (clip.name === 'attack' && document.getElementById('arrow').checked && cycle >= 470 && cycle < 650) {
+    const x = 292 + (cycle - 470) * 1.3, y = 217;
+    ctx.strokeStyle = '#ebd090'; ctx.fillStyle = '#ebd090'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 28, y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 32, y); ctx.lineTo(x + 24, y - 3); ctx.lineTo(x + 24, y + 3); ctx.closePath(); ctx.fill();
+  }
+
+  ctx.restore();
+  state.frames[clip.name] = index;
+
+  const slider = document.getElementById(clip.name + '-frame');
+  slider.max = clip.frames.length - 1;
+  slider.value = index;
+
+  const phaseLabel = document.getElementById(clip.name + '-phase');
+  const frameInfo = clip.frames[index];
+  phaseLabel.textContent = `${index + 1} / ${clip.frames.length} · ${frameInfo.phase || frameInfo.label} · ${frameInfo.durationMs}ms`;
+}
+
+function drawProofs() {
+  // v4 contact (index 4)
+  if (images.v4.run) {
+    const ctx = document.getElementById('proof-v4-0').getContext('2d');
+    ctx.clearRect(0, 0, 240, 180);
+    ctx.drawImage(images.v4.run, 0 * 416 + 100, 1 * 416 + 190, 240, 180, 0, 0, 240, 180);
+  }
+  // v7 far contact (index 4)
+  if (images.v7.run) {
+    const ctx4 = document.getElementById('proof-v7-4').getContext('2d');
+    ctx4.clearRect(0, 0, 240, 180);
+    ctx4.drawImage(images.v7.run, 0 * 416 + 100, 1 * 416 + 190, 240, 180, 0, 0, 240, 180);
+
+    const ctx5 = document.getElementById('proof-v7-5').getContext('2d');
+    ctx5.clearRect(0, 0, 240, 180);
+    ctx5.drawImage(images.v7.run, 1 * 416 + 100, 1 * 416 + 190, 240, 180, 0, 0, 240, 180);
+  }
+}
+
+function redraw() {
+  if (!state.ready) return;
+  const activeManifest = manifests[state.variant];
+  for (const clip of activeManifest.clips) {
+    const pos = locate(clip, state.elapsed);
+    render(clip, pos.i, pos.cycle);
+  }
+}
+
+function tick(now) {
+  if (lastTimestamp !== undefined && state.playing) {
+    state.elapsed += Math.min(now - lastTimestamp, 100) * state.speed;
+  }
+  lastTimestamp = now;
+  redraw();
+  requestAnimationFrame(tick);
+}
+
+function setPlaying(val) {
+  state.playing = val;
+  document.getElementById('play').textContent = val ? '暂停' : '播放';
+}
+
+document.getElementById('play').onclick = () => setPlaying(!state.playing);
+document.getElementById('reset').onclick = () => { state.elapsed = 0; redraw(); };
+document.getElementById('speed').onchange = e => state.speed = Number(e.target.value);
+document.getElementById('zoom').onchange = e => { state.zoom = Number(e.target.value); redraw(); };
+document.getElementById('arrow').onchange = redraw;
+
+document.getElementById('variant').onchange = e => {
+  state.variant = e.target.value;
+  state.elapsed = 0;
+  document.getElementById('run-sub').textContent = state.variant === 'v7' ? '8 帧 · 640ms 完整循环' : '7 帧 · 560ms (旧版缺陷对照)';
+  redraw();
+};
+
+for (const clipName of ['run', 'attack']) {
+  document.getElementById(clipName + '-frame').oninput = e => {
+    setPlaying(false);
+    const i = Number(e.target.value);
+    const clip = manifests[state.variant].clips.find(c => c.name === clipName);
+    state.elapsed = clip.frames.slice(0, i).reduce((s, f) => s + f.durationMs, 0);
+    redraw();
+  };
+}
+
+function seekFrame(name, frameIndex) {
+  setPlaying(false);
+  const clip = manifests[state.variant].clips.find(c => c.name === name);
+  state.elapsed = clip.frames.slice(0, frameIndex).reduce((s, f) => s + f.durationMs, 0);
+  redraw();
+}
+
+document.getElementById('contact-near').onclick = () => seekFrame('run', 0);
+document.getElementById('down-near').onclick = () => seekFrame('run', 1);
+document.getElementById('contact-far').onclick = () => seekFrame('run', 4);
+document.getElementById('down-far').onclick = () => seekFrame('run', 5);
+
+// Asset loader
+const loadImg = src => new Promise((resolve, reject) => {
+  const img = new Image();
+  img.onload = () => resolve(img);
+  img.onerror = () => reject(new Error('无法加载资源: ' + src));
+  img.src = src;
+});
+
+const v4Base = location.pathname.startsWith('/v') ? '/v4/' : '../animation-v4/';
+const v7Base = location.pathname.startsWith('/v') ? '/v7/' : './';
+
+Promise.all([
+  loadImg(v7Base + 'run-atlas.png').then(img => images.v7.run = img),
+  loadImg(v7Base + 'attack-atlas.png').then(img => images.v7.attack = img),
+  loadImg(v4Base + 'run-atlas.png').then(img => images.v4.run = img).catch(() => console.warn('v4 run atlas not found for diff')),
+  loadImg(v4Base + 'attack-atlas.png').then(img => images.v4.attack = img).catch(() => console.warn('v4 attack atlas not found for diff'))
+]).then(() => {
+  state.ready = true;
+  drawProofs();
+  requestAnimationFrame(tick);
+}).catch(err => {
+  document.getElementById('error').textContent = '加载资源失败：' + err.message;
+});
+</script>
+</body></html>

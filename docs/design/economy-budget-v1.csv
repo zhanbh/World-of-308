@@ -1,0 +1,7 @@
+scenario,income,potion_replacement,repair,revive_count,net_before_crest_replacement,crest_replacement_equivalent,net_after_all_replacement
+starter_replacement,500,60,6,0,434,0,434
+special_normal,3000,300,252,0,2448,0,2448
+special_pots,3000,600,252,0,2148,0,2148
+special_one_revive,3000,600,462,1,1938,100000,-98062
+special_three_revives,3000,1200,882,3,918,300000,-299082
+special_failed,1600,900,1050,3,-350,300000,-300350

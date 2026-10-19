@@ -44,7 +44,7 @@ export function applyWarriorSkillHit(id: WarriorSkillId, enemy: EnemyModel, x: n
 /** Provisional review timings and equal weights; whole-cast damage stays unchanged. */
 export const skillHitStages: Record<WarriorSkillId, number[]> = {
     cross: [0.29, 0.34], bengshan: [0.24, 0.48, 0.68],
-    badao: [0.44], earth: [0.88, 1.28, 1.50, 1.72],
+    badao: [0.44], earth: [0.88, 1.00, 1.20, 1.40],
 };
 export const earthLeapTuning = { defaultDistance: 64, forwardDistance: 100, takeoffAt: .28 };
 export const crossProjectile = { speed: 260, lifetime: 0.33, halfWidth: 22, halfDepth: 34 };

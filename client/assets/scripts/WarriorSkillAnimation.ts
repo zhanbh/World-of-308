@@ -86,7 +86,5 @@ export class WarriorBodyAnimation {
 }
 
 export function bodyVisibleRect(frame: number): { left: number; top: number; width: number; height: number } {
-    // Expanded source blade is retained; exclude the neighbor's boot at far left of prep8.
-    const left = frame === 8 ? 82 : 0;
-    return { left, top: 0, width: 416 - left, height: 416 };
+    return { left: 0, top: 0, width: 416, height: 416 };
 }

@@ -1,0 +1,138 @@
+{
+  "version": 7,
+  "stage": "production-rebuilt-8frames",
+  "cellSize": 416,
+  "anchorX": 208,
+  "anchorY": 352,
+  "clips": [
+    {
+      "name": "run",
+      "columns": 4,
+      "rows": 2,
+      "output": "run-atlas.png",
+      "gif": "run-preview.gif",
+      "slowGif": "run-slow.gif",
+      "scale": 0.36,
+      "baseline": 352,
+      "frames": [
+        {
+          "sourceIndex": 0,
+          "durationMs": 80,
+          "phase": "近腿接触 (Near Contact)"
+        },
+        {
+          "sourceIndex": 1,
+          "durationMs": 80,
+          "phase": "近腿下沉 (Near Down)"
+        },
+        {
+          "sourceIndex": 2,
+          "durationMs": 80,
+          "phase": "近腿经过 (Near Passing)"
+        },
+        {
+          "sourceIndex": 3,
+          "durationMs": 80,
+          "phase": "近腿蹬离 (Near Push-off)"
+        },
+        {
+          "sourceIndex": 4,
+          "durationMs": 80,
+          "phase": "远腿接触 (Far Contact)"
+        },
+        {
+          "sourceIndex": 5,
+          "durationMs": 80,
+          "phase": "远腿下沉 (Far Down)"
+        },
+        {
+          "sourceIndex": 6,
+          "durationMs": 80,
+          "phase": "远腿经过 (Far Passing)"
+        },
+        {
+          "sourceIndex": 7,
+          "durationMs": 80,
+          "phase": "远腿蹬离 (Far Push-off)"
+        }
+      ]
+    },
+    {
+      "name": "attack",
+      "source": "attack-source-v2.png",
+      "output": "attack-atlas.png",
+      "gif": "attack-preview.gif",
+      "slowGif": "attack-slow.gif",
+      "columns": 4,
+      "rows": 2,
+      "scale": 0.48,
+      "baselineByRow": [
+        433,
+        432
+      ],
+      "frames": [
+        {
+          "sourceIndex": 0,
+          "durationMs": 100,
+          "offsetX": -2.04
+        },
+        {
+          "sourceIndex": 1,
+          "durationMs": 90,
+          "offsetX": -1.08
+        },
+        {
+          "sourceIndex": 2,
+          "durationMs": 80,
+          "offsetX": -3.96
+        },
+        {
+          "sourceIndex": 3,
+          "durationMs": 80,
+          "offsetX": 9.96
+        },
+        {
+          "sourceIndex": 4,
+          "durationMs": 120,
+          "offsetX": 1.8
+        },
+        {
+          "sourceIndex": 5,
+          "durationMs": 60,
+          "trimLeft": 16,
+          "offsetX": 1.56
+        },
+        {
+          "sourceIndex": 6,
+          "durationMs": 90,
+          "offsetX": 1.08
+        },
+        {
+          "sourceIndex": 7,
+          "durationMs": 100,
+          "offsetX": -2.52
+        }
+      ],
+      "stationaryFootCenters": [
+        246.0,
+        244.0,
+        250.0,
+        221.0,
+        238.0,
+        238.5,
+        239.5,
+        247.0
+      ]
+    }
+  ],
+  "attackRelease": {
+    "frameIndex": 5,
+    "atMs": 470,
+    "projectile": "separate-preview-only"
+  },
+  "notes": [
+    "8-frame symmetrical run cycle (4 near leg frames + 4 far leg frames, 80ms each, 640ms total).",
+    "Restored missing Far Down frame to eliminate limping/stutter.",
+    "Thigh ring strictly owned by left leg across all frames; right leg is cleanly shaded black tights."
+  ]
+}

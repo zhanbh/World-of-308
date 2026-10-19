@@ -414,8 +414,8 @@ export class Prototype extends Component {
         this.feedback.groundImpact(id);
         // Enemies consume this same simulation step below. Age the new effect by
         // the same amount so ultimate knockdown cannot end a frame before it.
-        this.skillEffects.impact(id, this.model.x, this.model.y, this.skills.facing, step);
-
+        const offsetX = id === 'earth' ? this.skills.facing * 64 : 0;
+        this.skillEffects.impact(id, this.model.x + offsetX, this.model.y, this.skills.facing, step);
     }
 
     private drawSkillEffect(g: Graphics): void {
@@ -446,7 +446,7 @@ export class Prototype extends Component {
                 }
             } else {
                 const large = id === 'earth';
-                const radius = warriorSkillTuning[id].range;
+                const radius = large ? 82 : warriorSkillTuning[id].range;
                 const grow = Math.min(1, age / (large ? 0.18 : 0.16));
                 g.strokeColor = new Color(255, large ? 124 : 203, 112, Math.round(190 * fade));
                 g.lineWidth = large ? 2.5 : 1.5;
@@ -459,8 +459,8 @@ export class Prototype extends Component {
                     g.lineTo(x + Math.cos(a) * length, y + Math.sin(a) * length);
                 }
                 g.stroke();
-                if (large && age >= 0.4 && age < 1.12) {
-                    const pulse = Math.sin((age - 0.4) / 0.72 * Math.PI);
+                if (large && age >= 0.12 && age < 0.60) {
+                    const pulse = Math.sin((age - 0.12) / 0.48 * Math.PI);
                     for (let i = 0; i < 9; i++) {
                         const a = i * 2.39996;
                         const px = x + Math.cos(a) * radius * 0.68;

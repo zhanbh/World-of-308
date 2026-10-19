@@ -20,8 +20,8 @@ http.createServer((req, res) => {
     });
     return;
   }
-  const match = pathname.match(/^\/(v[123456])(?:\/(.*))?$/);
-  const version = match ? match[1] : 'v4';
+  const match = pathname.match(/^\/(v[1234567])(?:\/(.*))?$/);
+  const version = match ? match[1] : 'v7';
   const file = match ? (match[2] || 'preview.html') : pathname === '/' ? 'preview.html' : pathname.slice(1);
   if (!allowed.has(file)) { res.writeHead(404).end(); return; }
   fs.readFile(path.join(root, 'animation-' + version, file), (error, body) => {

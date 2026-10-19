@@ -1,22 +1,62 @@
-// Uses the same TypeScript model and frame schedule as Creator, without a build.
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
-const editor = process.argv[2];
-const host = process.argv[3] || '127.0.0.1';
-const port = Number(process.argv[4] || 8767);
-if (!editor) throw new Error('Pass Creator installation directory (Contents on macOS)');
-const ts = require(path.join(editor, 'resources/app.asar.unpacked/node_modules/typescript'));
+const { execFileSync } = require('node:child_process');
+
+let editor = process.argv[2];
+let host = process.argv[3] || '127.0.0.1';
+let port = Number(process.argv[4] || 8767);
+
+if (editor && (editor === '127.0.0.1' || editor === '0.0.0.0' || /^\d+$/.test(editor))) {
+    if (/^\d+$/.test(editor)) {
+        port = Number(editor);
+        host = process.argv[3] || '127.0.0.1';
+    } else {
+        host = editor;
+        port = Number(process.argv[3] || 8767);
+    }
+    editor = null;
+}
+
+let ts = null;
+if (editor) {
+    try {
+        ts = require(path.join(editor, 'resources/app.asar.unpacked/node_modules/typescript'));
+    } catch {
+        ts = null;
+    }
+}
+
 const root = path.resolve(__dirname, '..');
+const cache = new Map();
+
+function transpile(name, source) {
+    if (cache.has(name)) return cache.get(name);
+    let output = '';
+    if (ts) {
+        output = ts.transpileModule(source, { compilerOptions: {
+            target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.ES2020,
+        } }).outputText;
+    } else {
+        const esbuildCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+        output = execFileSync(esbuildCmd, ['esbuild', '--loader=ts', '--target=es2020', '--format=esm'], {
+            input: source,
+            encoding: 'utf8',
+            shell: true,
+            maxBuffer: 10 * 1024 * 1024,
+        });
+    }
+    cache.set(name, output);
+    return output;
+}
+
 http.createServer((req, res) => {
     const url = new URL(req.url, 'http://localhost');
     if (/^\/(CombatModel|EnemyModel|WarriorAttackAnimation|WarriorSkillAnimation|WarriorSkillsModel|WarriorSkillEffects)(\.js)?$/.test(url.pathname)) {
         const name = url.pathname.slice(1).replace('.js', '');
         const source = fs.readFileSync(path.join(root, 'assets/scripts', name + '.ts'), 'utf8');
-        const result = ts.transpileModule(source, { compilerOptions: {
-            target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.ES2020,
-        } });
-        res.writeHead(200, { 'Content-Type': 'text/javascript' }).end(result.outputText); return;
+        const output = transpile(name, source);
+        res.writeHead(200, { 'Content-Type': 'text/javascript' }).end(output); return;
     }
     const file = url.pathname === '/' ? path.join(__dirname, 'animation-preview.html')
         : url.pathname === '/skills' ? path.join(__dirname, 'skill-preview.html')
