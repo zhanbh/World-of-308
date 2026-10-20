@@ -6,6 +6,8 @@
 
 ## 范围与模块
 
+2026-10-20最新提案：[逻辑架构与模块依赖v2](logical-architecture-v2.md)、[S01–S04核心契约](core-contract-v2.md)、[客户端逻辑架构](../design/client-logical-architecture-v1.md)。本文早期模块表作为背景，冲突处以最新规格/提案明确口径为准；架构细化未完成eng-review，不启动coding。
+
 第一切片使用一个Node/TypeScript业务入口，内部按模块组织，不拆微服务。生产凭证和CloudBase SDK只进入平台适配器，领域逻辑不依赖Cocos或数据库SDK。
 
 | 模块 | 对外职责 | 持有的规则 |

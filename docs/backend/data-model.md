@@ -1,5 +1,7 @@
 # 后台数据模型与访问路径 v1
 
+2026-10-20：新增[核心契约v2](core-contract-v2.md)，三类容器、正式初始化、邮件与永久待领、挑战体力快照及回城一次结算以v2为准。以下集合名与字段仍是未部署候选，旧字段缺少新状态不表示可以省略迁移。
+
 > 2026-10-19：新机制已确认，见[基线摘要](../wayfinder/core-rules-v2/SUMMARY.md)和[实现差异](../implementation-gaps-2026-10-19.md)。本文现有本地切片/旧契约尚未全部迁移；测试通过不等于新背包、邮箱、冷却与奖励机制已实现。
 
 状态：工程规格，未建集合。约束来源：[挑战流程](../challenge-flow.md)、[后台入口](README.md)。所有金额/数量/等级为有界整数，时间统一UTC毫秒；客户端仅接收裁剪后的视图。字段名为初始契约，物理编码可由适配器调整。
@@ -19,7 +21,7 @@ ID由服务端产生或按业务唯一键确定；组合键使用规范编码后
 | sessions / sessionId | accountId, epoch, launchIdHash, status, openedAt, revokedAt? | 每次游戏进程启动一份，正常短暂恢复沿用；不是微信session_key |
 | characters / characterId | accountId, classId, level, xp, statsVersion, equipmentVersion, equippedItemIds, backpackId, stamina{value, refillWindow}, version | 等级经验权威；HP/MP的战斗镜像属挑战 |
 | wallets / accountId | gold, points, version | 账号共享，不能接受客户端余额覆盖 |
-| containers / H(owner, kind) | accountId, characterId?, kind, capacity, slots, version | 背包初始20格、至多100格，金库100格；槽记录itemId或道具堆叠，堆叠含绑定类别和归属 |
+| containers / H(owner, kind) | accountId, characterId?, kind, capacity, unlockStage, slots, version | 背包20→100、个人金库20→100按角色隔离，账号金库100全开共享；槽记录itemId或堆叠，含绑定及归属 |
 | equipment / itemId | accountId, ownerCharacterId?, templateId, itemLevel, quality, rolledStats, binding, location, sourceId, version | 唯一装备实体；location与容器/穿戴/待领一致变更 |
 | challenges / challengeId | accountId, characterId, sessionId, configVersion, dungeonId, difficultyId, lockedMonsterLevel, entryEquipment, attributeRevision, result, lifeState, deathIndex, deathDeadline?, paidRevives, currentRoomNo, sceneState, sceneEpoch, lastEventSeq, lastAcceptedBatch{firstSeq,lastSeq,hash}, controlSeq, lease, version | result为active/completed/failed；sceneState为combat/looting/closed；死亡序号避免旧复活请求复活第二次死亡 |
 | challengeRooms / H(challengeId, roomNo) | paidCost, paidAt, manifest, kills, drops, cleared, simulationCursor, version | 入口生成有限怪物清单；每个怪物有稳定spawnId，击杀账目及地面掉落按房间保存 |

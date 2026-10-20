@@ -6,6 +6,7 @@
 
 | 记录 | 来源 / 日期 | 状态 |
 | --- | --- | --- |
+| [MVP设计完整性审计](design-completeness-audit-2026-10-20.md) | 用户要求先收敛再eng-review / 2026-10-20 | 产品P01–P11、工程E01–E08及文档冲突已列；未做eng-review，不进入coding |
 | [规划与动画合并归档检查](planning-animation-checkpoint-review-v1.md) | 用户要求 / 2026-10-19 | 新规则/试算与战士、猎人v7动画归档；模型、类型及49项后台检查通过，实机未复验 |
 | [微信首次构建与导入](wechat-build-review-v1.md) | 用户授权 / 2026-10-17 | AppID和横屏已配置，主包超限已解决，模拟器启动及扫码预览成功；手机性能待验收 |
 | [双腿交替步态修复](../art/motion-studies/warrior/body/gait-v2/README.md) | 用户反馈 / 2026-10-16 | 两半周期换腿、左右跑动/急停/受击通过，H5已更新待用户复评 |

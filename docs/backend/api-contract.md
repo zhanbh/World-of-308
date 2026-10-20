@@ -1,5 +1,7 @@
 # 在线命令与查询契约 v1
 
+2026-10-20：S01–S04最新目标契约见[核心契约v2](core-contract-v2.md)，尚未写入协议代码。个人/账号金库、正式创角、满包原格换装与挑战体力快照以v2为准，以下冲突旧行不再作为实现依据。
+
 > 2026-10-19：新机制已确认，见[基线摘要](../wayfinder/core-rules-v2/SUMMARY.md)和[实现差异](../implementation-gaps-2026-10-19.md)。本文现有本地切片/旧契约尚未全部迁移；测试通过不等于新背包、邮箱、冷却与奖励机制已实现。
 
 状态：实现契约草案，非已部署API。[数据模型](data-model.md)、[事务协议](consistency.md)。首版入口拟为game-api云函数，由传输适配器接收平台已验证身份；不开放允许客户端自报身份的旁路HTTP接口。
@@ -43,7 +45,7 @@ type CommandResponse<T> = {
 | character.create | classId；当前只开放配置支持的职业 | 按职业占位创建角色/初始背包；每职业一个；无纹章或装备的隐式赠送，初始物品由版本化配置明确 |
 | character.get | characterId | 已授权角色、成长、穿戴和背包视图 |
 | inventory.get | characterId | 容量、槽、堆叠、绑定和装备展示数据 |
-| equipment.equip | characterId, itemId, slot；character/container/item版本 | 城镇中检查归属、职业、等级、槽位、绑定；交换旧装备需要容量；整个操作一次成功或一次失败 |
+| equipment.equip | characterId, itemId, slot；character/container/item版本 | 城镇检查归属、职业、等级、槽位、绑定；满包同部位替换原格交换，直接卸下才需空格；整次成功或失败 |
 | reward.list | characterId, cursor | 原角色待领列表与版本，有界分页 |
 | reward.claim | sourceId；container版本 | 仅原角色领取，满包保留pending，已领取返回原交付，不产生第二件 |
 | operation.get | operationId | 本账号持久结果，或notFound；当前会话可查询自己旧会话结果，但不能重放旧会话写操作 |
@@ -54,8 +56,8 @@ session.open以可信身份解析账号；外部身份校验先于数据库事�
 
 | 命令 | 必需payload与版本 | 成功结果/主要拒绝 |
 | --- | --- | --- |
-| challenge.start | characterId, dungeonId, difficultyId；character版本 | 分配challengeId、配置/等级/装备快照；不扣房间体力；已有active或未关闭旧拾取场景则拒绝 |
-| challenge.enterRoom | challengeId, roomNo；challenge版本 | 首房或上一房清场后合法下一房；刷新体力、只扣一次、生成manifest/roomToken；失败不扣费 |
+| challenge.start | characterId, dungeonId, difficultyId；character版本 | 至少1体力，分配challengeId及配置/等级/装备/体力快照，不额外扣入场费；已有active或未关闭旧拾取场景则拒绝 |
+| challenge.enterRoom | challengeId, roomNo；challenge版本 | 首房或上一房清场后合法下一房；只扣本局体力快照至最低0，耗尽可继续，不在副本刷新；实际或零扣费与manifest/roomToken一起去重 |
 | challenge.reportEvents | challengeId, roomToken, firstSeq, events；challenge版本 | 有序、完整接收或全部拒绝；返回acceptedThrough、版本、奖励/升级/复活指令；不接受任意资产增量 |
 | challenge.revive | challengeId, deathIndex；challenge版本 | 原子扣一枚纹章、次数+1、alive、满血蓝和保护/控制指令；不可跨死亡序号使用 |
 | challenge.leave | challengeId, reason:'abandon'或'finishLoot'；challenge版本 | active变failed或completed保持成功；关闭场景、清掉落、回城满状态 |
