@@ -8,6 +8,16 @@ Parent: [模块地图](../map.md)
 
 ## 交付与状态
 
+E08[工程评审准备包](../../../reviews/engineering-review-pack-v1.md)已产出；E01–E08现均有提案/材料，但完整设计收敛尚未完成，eng-review准入不满足。当前改为逐项关闭准备包收敛队列，不编码、不虚标resolved。
+
+E06/E07提案已补：[配置与迁移](../../../backend/configuration-and-migration-v1.md)、[平台安全运维](../../../backend/platform-security-operations-v1.md)。无环境操作或实际迁移；待决与验证要求保留，下一步E08评审材料及未决选择收敛，仍不编码。
+
+E04[全量接口v2](../../../backend/api-contract-v2.md)与[状态转换v2](../../../backend/state-transitions-v2.md)已产出草案；含待边界项，尚未冻结或实现。继续E06/E07方案收敛，再eng-review，当前不编码。
+
+E03[访问路径、索引与事务v2](../../../backend/access-and-transactions-v2.md)及[UI对齐检查](../../../reviews/ui-integration-alignment-review-v1.md)已产出；数据库/索引仍未验证，UI规则差异未关闭，后续继续E04协议状态整合，不开始编码。
+
+E02[数据字典与实体关系v2](../../../backend/data-dictionary-v2.md)已产出字段/约束/生命周期提案，下一步E03访问/索引/事务预算；尚未收敛、评审或建集合。
+
 E01/E05细化提案已产出：[后端逻辑架构与依赖](../../../backend/logical-architecture-v2.md)、[客户端逻辑架构](../../../design/client-logical-architecture-v1.md)。下一步补E02数据字典/关系及E03访问事务；不因架构文档产出跳过方案收敛或eng-review。
 
 2026-10-20用户确认流程纠正：本票不代表编码就绪，必须先完成[设计收敛清单](../../../reviews/design-completeness-audit-2026-10-20.md)，补齐逻辑架构/依赖、库表/索引、协议/事务等，经过eng-review并关闭问题后实施。后文切片顺序受此门禁约束。

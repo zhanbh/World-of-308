@@ -6,6 +6,18 @@
 
 ## 范围与模块
 
+排行榜专项：[懒加载与评分时间](leaderboard-loading-v1.md)提出“固定13槽维护个人评分事实，查看时索引查询/缓存”的工程方案，区分非实时榜单与实际达到时间；尚待工程评审及缓存/评分配置收敛。
+
+E08[工程评审准备包](../reviews/engineering-review-pack-v1.md)关联规则/模块/实体/接口/事务与验收，列正式评审门禁；当前仍需关闭待决项，不能视为工程评审通过或编码准入。
+
+E06/E07提案：[配置发布与数据迁移](configuration-and-migration-v1.md)、[平台身份/安全/运维](platform-security-operations-v1.md)。后者区分官方文档事实与未实测能力；小游戏登录核验、服务地点证明、药品/饰品状态校验和真实平台验收尚未关闭。
+
+E04入口：[全量接口契约v2](api-contract-v2.md)、[状态转换v2](state-transitions-v2.md)。已覆盖查询/命令目录及权限、版本、错误和终态，明确保留动作可信度/服务地点等待边界；不是已部署接口或已通过评审。
+
+E03访问设计入口：[访问路径、索引与事务v2](access-and-transactions-v2.md)，含Q01–Q14查询及T01–T16原子用例、符号预算与竞态；数据库/索引能力未验证，尚未创建或运行。
+
+E02数据设计入口：[完整数据字典与实体关系v2](data-dictionary-v2.md)，当前是逻辑实体设计，不是已落库或已评审的物理schema；下一步补访问路径、索引与事务预算。
+
 2026-10-20最新提案：[逻辑架构与模块依赖v2](logical-architecture-v2.md)、[S01–S04核心契约](core-contract-v2.md)、[客户端逻辑架构](../design/client-logical-architecture-v1.md)。本文早期模块表作为背景，冲突处以最新规格/提案明确口径为准；架构细化未完成eng-review，不启动coding。
 
 第一切片使用一个Node/TypeScript业务入口，内部按模块组织，不拆微服务。生产凭证和CloudBase SDK只进入平台适配器，领域逻辑不依赖Cocos或数据库SDK。
