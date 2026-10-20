@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>308世界 — UI 交互原型评审 (960×540)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0b1116;
+      color: #e2ebef;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    header {
+      width: 960px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: #141f27;
+      border: 1px solid #344654;
+      border-radius: 6px;
+    }
+    h1 { font-size: 16px; color: #ffca28; }
+    .nav-bar {
+      width: 960px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      background: #10181e;
+      padding: 8px;
+      border: 1px solid #2b3a46;
+      border-radius: 6px;
+    }
+    button.nav-btn {
+      background: #19252e;
+      color: #8fa2af;
+      border: 1px solid #344654;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    button.nav-btn:hover { background: #22323e; color: #e2ebef; border-color: #5b7c8e; }
+    button.nav-btn.active {
+      background: #2b4557;
+      color: #ffca28;
+      border-color: #ffca28;
+      font-weight: bold;
+    }
+    /* 960x540 固定基准画布容器 */
+    #viewport {
+      width: 960px;
+      height: 540px;
+      position: relative;
+      background: #10181e;
+      border: 2px solid #344654;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* 像素色彩基类 */
+    .bg-panel { background: #19252e; border: 1px solid #344654; }
+    .text-dim { color: #8fa2af; }
+    .text-gold { color: #fbc02d; }
+    .text-cyan { color: #00e5ff; }
+    .text-green { color: #69f0ae; }
+    .text-purple { color: #ab47bc; }
+    .text-blue { color: #42a5f5; }
+    .text-orange { color: #ffa726; }
+    .text-red { color: #ff5252; }
+
+    /* 通用面板容器 */
+    .modal-frame {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      width: 912px;
+      height: 500px;
+      background: #19252e;
+      border: 2px solid #5b7c8e;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+    .modal-header {
+      height: 40px;
+      background: #141f27;
+      border-bottom: 1px solid #344654;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffca28;
+    }
+    .modal-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* 角色信息与装备检视 (Interface 4) */
+    .profile-left {
+      width: 580px;
+      height: 100%;
+      border-right: 1px solid #2b3a46;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .paper-doll-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+    .doll-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 140px;
+      z-index: 2;
+    }
+    .gear-slot {
+      height: 52px;
+      background: #10181e;
+      border: 1px solid #344654;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding: 4px 6px;
+      gap: 8px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s;
+    }
+    .gear-slot:hover { border-color: #ffca28; background: #22323e; }
+    .gear-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      position: relative;
+      background: #19252e;
+    }
+    .gear-icon.purple { border: 2px solid #ab47bc; color: #ab47bc; }
+    .gear-icon.blue { border: 2px solid #42a5f5; color: #42a5f5; }
+    .gear-icon.green { border: 2px solid #66bb6a; color: #66bb6a; }
+    .gear-icon.white { border: 1px solid #b0bec5; color: #b0bec5; }
+    .enhance-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #ffca28;
+      color: #10181e;
+      font-size: 10px;
+      padding: 1px 3px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    .dura-bar {
+      position: absolute;
+      bottom: 1px;
+      left: 2px;
+      right: 2px;
+      height: 3px;
+      background: #2b3a46;
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .dura-fill { height: 100%; }
+    .dura-normal { background: #69f0ae; }
+    .dura-warn { background: #ffd740; }
+    .dura-broken { background: #ff5252; }
+    .gear-info { display: flex; flex-direction: column; overflow: hidden; }
+    .gear-name { font-size: 12px; font-weight: bold; white-space: nowrap; text-overflow: ellipsis; }
+    .gear-sub { font-size: 10px; color: #8fa2af; }
+
+    .doll-center {
+      position: absolute;
+      left: 170px;
+      right: 170px;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .avatar-box {
+      width: 180px;
+      height: 280px;
+      background: radial-gradient(circle, #253947 0%, rgba(16,24,30,0) 75%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #5b7c8e;
+      font-size: 13px;
+    }
+    .weapon-slot-wrap {
+      width: 140px;
+      margin-top: 10px;
+      pointer-events: auto;
+    }
+
+    /* 右侧属性面板 */
+    .profile-right {
+      width: 332px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #141f27;
+    }
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid #2b3a46;
+    }
+    .tab-btn {
+      flex: 1;
+      height: 36px;
+      background: #19252e;
+      color: #8fa2af;
+      border: none;
+      border-right: 1px solid #2b3a46;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .tab-btn.active { background: #141f27; color: #ffca28; font-weight: bold; }
+    .stats-content {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .stat-group {
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #22323e;
+    }
+    .stat-title {
+      color: #ffca28;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .stat-row { display: flex; justify-content: space-between; }
+
+    /* 装备细节卡片浮窗 (Tooltip) */
+    #tooltip-card {
+      position: absolute;
+      top: 40px;
+      right: 340px;
+      width: 250px;
+      background: #10181ecc;
+      backdrop-filter: blur(8px);
+      border: 2px solid #ab47bc;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    /* 背包界面 (Interface 5) */
+    .bag-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 54px);
+      gap: 6px;
+      padding: 8px;
+    }
+    .bag-cell {
+      width: 54px;
+      height: 54px;
+      background: #10181e;
+      border: 1px solid #344654;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      position: relative;
+    }
+    .bag-cell:hover { border-color: #ffca28; }
+    .bag-cell.locked { background: #0c1217; border-color: #1f2b34; color: #435460; }
+
+    /* 底部通用工具栏 */
+    .modal-footer {
+      height: 44px;
+      border-top: 1px solid #2b3a46;
+      background: #141f27;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 12px;
+    }
+    .btn-action {
+      background: #2b4557;
+      color: #e2ebef;
+      border: 1px solid #5b7c8e;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .btn-action:hover { background: #395c74; border-color: #ffca28; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>308世界 — UI 交互视觉原型 (960×540 基准分辨率)</h1>
+    <span class="text-dim" style="font-size: 12px;">严格遵循 D05 方案、13装备槽与验收清单规范</span>
+  </header>
+
+  <nav class="nav-bar">
+    <button class="nav-btn active" onclick="switchView('profile')">C键: 个人信息/装备检视 (M键)</button>
+    <button class="nav-btn" onclick="switchView('inventory')">B键: 背包与快速换装</button>
+    <button class="nav-btn" onclick="switchView('repair')">林纳克斯·装备修理 (UI08)</button>
+    <button class="nav-btn" onclick="switchView('enhance')">玛丽·装备强化 (UI09)</button>
+    <button class="nav-btn" onclick="switchView('merchant')">杂货商人·买卖 (UI10)</button>
+    <button class="nav-btn" onclick="switchView('vault')">银行金库·双页签 (UI04)</button>
+    <button class="nav-btn" onclick="switchView('mail')">信件与通关待领 (UI11/12)</button>
+    <button class="nav-btn" onclick="switchView('leaderboard')">战力排行榜 (含点击检视)</button>
+    <button class="nav-btn" onclick="switchView('townHud')">城镇安全区 HUD</button>
+    <button class="nav-btn" onclick="switchView('combatHud')">副本战斗 HUD</button>
+  </nav>
+
+  <!-- 960x540 画布 -->
+  <div id="viewport">
+
+    <!-- 界面 4：个人信息与装备检视界面 (Character Profile) -->
+    <div id="panel-profile" class="modal-frame">
+      <div class="modal-header">
+        <span id="profile-title">[角色信息与装备检视] Lv.15 双刀战士 · 狂暴先驱</span>
+        <span class="text-gold">综合装等评分: 1,845 (全服第 1 名)</span>
+      </div>
+      <div class="modal-body">
+        <!-- 左侧: 13 槽装备展示 -->
+        <div class="profile-left">
+          <div class="paper-doll-wrap">
+            <!-- 左翼: 5 防具 + 1 主动饰品 -->
+            <div class="doll-col">
+              <div class="gear-slot" onmouseenter="showTooltip('shoulder')" onmouseleave="hideTooltip()">
+                <div class="gear-icon green">肩<div class="dura-bar"><div class="dura-fill dura-normal" style="width:100%"></div></div></div>
+                <div class="gear-info"><div class="gear-name text-green">幽暗护肩</div><div class="gear-sub">Lv.15 耐久 80/80</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('chest')" onmouseleave="hideTooltip()">
+                <div class="gear-icon purple">胸<div class="dura-bar"><div class="dura-fill dura-normal" style="width:90%"></div></div></div>
+                <div class="gear-info"><div class="gear-name text-purple">幽暗轻甲</div><div class="gear-sub">Lv.15 耐久 90/100</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('belt')" onmouseleave="hideTooltip()">
+                <div class="gear-icon blue">腰<div class="dura-bar"><div class="dura-fill dura-normal" style="width:94%"></div></div></div>
+                <div class="gear-info"><div class="gear-name text-blue">兽皮腰带</div><div class="gear-sub">Lv.10 耐久 75/80</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('pants')" onmouseleave="hideTooltip()">
+                <div class="gear-icon purple">腿<div class="dura-bar"><div class="dura-fill dura-broken" style="width:0%"></div></div></div>
+                <div class="gear-info"><div class="gear-name text-purple">幽暗长裤</div><div class="gear-sub text-red">破损 0/80 (需修理)</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('boots')" onmouseleave="hideTooltip()">
+                <div class="gear-icon green">鞋<div class="dura-bar"><div class="dura-fill dura-warn" style="width:40%"></div></div></div>
+                <div class="gear-info"><div class="gear-name text-green">幽暗战靴</div><div class="gear-sub text-gold">磨损 28/70</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('trinket')" onmouseleave="hideTooltip()">
+                <div class="gear-icon blue">饰</div>
+                <div class="gear-info"><div class="gear-name text-blue">疾风徽章</div><div class="gear-sub">主动饰品 (50s CD)</div></div>
+              </div>
+            </div>
+
+            <!-- 中央立绘与主手武器 -->
+            <div class="doll-center">
+              <div class="avatar-box">
+                <div style="font-size:32px;margin-bottom:8px">⚔️</div>
+                <div>[ 2.5D 高精角色立绘 ]</div>
+                <div style="font-size:11px;color:#8fa2af;margin-top:4px">狂战士 · 双刀流姿态</div>
+              </div>
+              <div class="weapon-slot-wrap">
+                <div class="gear-slot" style="border-color:#ffa726;background:#1e2933" onmouseenter="showTooltip('weapon')" onmouseleave="hideTooltip()">
+                  <div class="gear-icon purple">
+                    武<span class="enhance-badge">+10</span>
+                    <div class="dura-bar"><div class="dura-fill dura-normal" style="width:85%"></div></div>
+                  </div>
+                  <div class="gear-info"><div class="gear-name text-purple">狂暴残虐双刀 +10</div><div class="gear-sub">Lv.15 耐久 85/100</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右翼: 3 首饰 + 3 特殊装备 -->
+            <div class="doll-col">
+              <div class="gear-slot" onmouseenter="showTooltip('necklace')" onmouseleave="hideTooltip()">
+                <div class="gear-icon blue">链</div>
+                <div class="gear-info"><div class="gear-name text-blue">秘银项链</div><div class="gear-sub">首饰 (永久无磨损)</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('bracelet')" onmouseleave="hideTooltip()">
+                <div class="gear-icon green">镯</div>
+                <div class="gear-info"><div class="gear-name text-green">守护手镯</div><div class="gear-sub">首饰 (永久无磨损)</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('ring')" onmouseleave="hideTooltip()">
+                <div class="gear-icon blue">戒</div>
+                <div class="gear-info"><div class="gear-name text-blue">狂暴之戒</div><div class="gear-sub">首饰 (永久无磨损)</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('subEquip')" onmouseleave="hideTooltip()">
+                <div class="gear-icon blue">辅</div>
+                <div class="gear-info"><div class="gear-name text-blue">战神图腾</div><div class="gear-sub">特殊装备 (无磨损)</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('magicStone')" onmouseleave="hideTooltip()">
+                <div class="gear-icon blue">石</div>
+                <div class="gear-info"><div class="gear-name text-blue">元素魔石</div><div class="gear-sub">特殊装备 (无磨损)</div></div>
+              </div>
+              <div class="gear-slot" onmouseenter="showTooltip('earring')" onmouseleave="hideTooltip()">
+                <div class="gear-icon purple">
+                  耳<span class="enhance-badge">+10</span>
+                  <div class="dura-bar"><div class="dura-fill dura-normal" style="width:100%"></div></div>
+                </div>
+                <div class="gear-info"><div class="gear-name text-purple">聚能耳环 +10</div><div class="gear-sub">Lv.15 耐久 50/50</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧: 属性详情 / 套装汇总页签 -->
+        <div class="profile-right">
+          <div class="tab-bar">
+            <button id="tab-btn-stats" class="tab-btn active" onclick="switchProfileTab('stats')">详细属性</button>
+            <button id="tab-btn-sets" class="tab-btn" onclick="switchProfileTab('sets')">套装效果 (3)</button>
+          </div>
+          <div id="profile-tab-stats" class="stats-content">
+            <div class="stat-group">
+              <div class="stat-title">【核心基础属性】</div>
+              <div class="stat-row"><span>力量: 145</span><span>敏捷: 48</span></div>
+              <div class="stat-row"><span>智力: 32</span><span>体质: 90</span></div>
+            </div>
+            <div class="stat-group">
+              <div class="stat-title">【进攻属性 · 详细拆解】</div>
+              <div class="stat-row"><strong>攻击强度 (AP):</strong><strong class="text-gold">328</strong></div>
+              <div class="stat-row text-dim" style="padding-left:8px"><span>- 基础与武器 AP:</span><span>180</span></div>
+              <div class="stat-row text-dim" style="padding-left:8px"><span>- 力量换算 AP (0.45):</span><span>+65</span></div>
+              <div class="stat-row text-dim" style="padding-left:8px"><span>- 强化追加 AP:</span><span class="text-gold">+48 (武/耳)</span></div>
+              <div class="stat-row text-dim" style="padding-left:8px"><span>- 专属 AP 词条:</span><span class="text-blue">+35</span></div>
+              <div class="stat-row"><span>物理暴击率:</span><span>18.5% (暴伤 150%)</span></div>
+              <div class="stat-row"><span>急速等级:</span><span>8.2% (攻速/前摇)</span></div>
+              <div class="stat-row"><span>精通等级:</span><span>6.0% (流血增伤)</span></div>
+              <div class="stat-row"><span>护甲穿透:</span><span>12 点</span></div>
+            </div>
+            <div class="stat-group">
+              <div class="stat-title">【生存与防御属性】</div>
+              <div class="stat-row"><span>最大生命值 (HP):</span><span class="text-green">1,450 / 1,450</span></div>
+              <div class="stat-row"><span>物理护甲:</span><span>280 (减伤率 28.5%)</span></div>
+              <div class="stat-row"><span>魔法抗性:</span><span>15.0%</span></div>
+            </div>
+            <div class="stat-group" style="border:none">
+              <div class="stat-title">【法力与技能冷却】</div>
+              <div class="stat-row"><span>最大法力值 (MP):</span><span class="text-blue">240 / 240</span></div>
+              <div class="stat-row"><span>职业技能 CDR:</span><span>5.0%</span></div>
+            </div>
+          </div>
+
+          <div id="profile-tab-sets" class="stats-content" style="display:none">
+            <div class="stat-group">
+              <div class="stat-title text-purple">【幽暗密林征服者】(防具套 3/5)</div>
+              <div class="text-dim" style="font-size:11px">穿戴件数: 3 件 (注: 护腿破损0耐久不计件)</div>
+              <div class="text-green" style="margin-top:4px">[已激活] (2) 件: 全职业技能伤害提升 8%</div>
+              <div class="text-dim">[未激活] (5) 件: 技能范围扩大 15%，终结技附加地裂波</div>
+            </div>
+            <div class="stat-group">
+              <div class="stat-title text-blue">【疾风守护饰品套】(首饰套 3/3)</div>
+              <div class="text-green">[已激活] (3) 件: 全主属性+15，AP+20，暴击/急速+3%</div>
+            </div>
+            <div class="stat-group" style="border:none">
+              <div class="stat-title text-purple">【远古贤者之契】(特殊套 2/3)</div>
+              <div class="text-dim">[未激活] (3) 件: 攻击强度+25，职业技能冷却减少 8%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span class="text-dim">★ 严格13槽规范 · 耐久仅7槽计磨损 · 强化与攻强词条仅限武器与耳环 ★</span>
+        <div>
+          <button class="btn-action" onclick="switchView('inventory')">打开背包 (B)</button>
+          <button class="btn-action" onclick="alert('已复制角色配装配置快照！')">分享配装</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 装备细节卡片浮层 (Tooltip) -->
+    <div id="tooltip-card" style="display:none">
+      <div id="tt-title" style="font-weight:bold;font-size:13px;color:#ab47bc">★ 狂暴之残虐双刀 +10</div>
+      <div id="tt-type" class="text-dim">稀有 (紫装) · 单手双刀</div>
+      <hr style="border:none;border-top:1px solid #344654;margin:6px 0">
+      <div>装备等级: Lv.15 (需求角色 Lv.10+)</div>
+      <div>绑定类型: <span class="text-gold">角色绑定 (Soulbound)</span></div>
+      <div id="tt-dura">耐久状态: 85 / 100 (良好)</div>
+      <hr style="border:none;border-top:1px solid #344654;margin:6px 0">
+      <div class="text-gold">【基础属性】</div>
+      <div>物理攻击力 +85</div>
+      <div>力量 +18 · 耐力 +12</div>
+      <div class="text-gold" style="margin-top:4px">【强化增益 (+10)】</div>
+      <div class="text-cyan">攻击强度 (AP) +24</div>
+      <div class="text-gold" style="margin-top:4px">【随机副属性】</div>
+      <div class="text-blue">· 物理暴击率 +2.8%</div>
+      <div class="text-blue">· 攻击强度 +12 (武器/耳环专属合法词条)</div>
+      <hr style="border:none;border-top:1px solid #344654;margin:6px 0">
+      <div class="text-purple">【所属套装: 幽暗密林征服者】(3/5)</div>
+      <div class="text-green">[已激活] (2) 件: 全技能伤害 +8%</div>
+      <div class="text-dim">[未激活] (5) 件: 范围 +15% 附带地裂</div>
+    </div>
+
+    <!-- 界面 5：背包换装界面 (Inventory) -->
+    <div id="panel-inventory" class="modal-frame" style="display:none">
+      <div class="modal-header">
+        <span>[角色背包与换装] (快捷键 B)</span>
+        <span class="text-gold">金币: 1,250 | 点券: 0</span>
+      </div>
+      <div class="modal-body">
+        <div style="width:420px;padding:12px;border-right:1px solid #2b3a46">
+          <div style="font-weight:bold;color:#ffca28;margin-bottom:8px">穿戴装备概览 (13 槽)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">
+            <div class="gear-slot"><div class="gear-icon green">肩</div><span>幽暗护肩 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon blue">链</div><span>秘银项链 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon purple">胸</div><span>幽暗轻甲 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon green">镯</div><span>守护手镯 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon blue">腰</div><span>兽皮腰带 (Lv.10)</span></div>
+            <div class="gear-slot"><div class="gear-icon blue">戒</div><span>狂暴之戒 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon purple">腿</div><span>幽暗长裤 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon blue">辅</div><span>战神图腾 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon green">鞋</div><span>幽暗战靴 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon blue">石</div><span>元素魔石 (Lv.15)</span></div>
+            <div class="gear-slot"><div class="gear-icon blue">饰</div><span>疾风徽章 (50s)</span></div>
+            <div class="gear-slot"><div class="gear-icon purple">耳</div><span>聚能耳环 +10</span></div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="gear-slot" style="border-color:#ffa726"><div class="gear-icon purple">武</div><span>狂暴残虐双刀 +10 (主手武器)</span></div>
+          </div>
+        </div>
+        <div style="flex:1;padding:12px;display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span style="font-weight:bold;color:#ffca28">背包物品 (20/20 格)</span>
+            <button class="btn-action" style="padding:2px 8px" onclick="alert('背包已扩容至 40 格 (扣除 2000 金币)！')">+20 格扩容 (2000 金币)</button>
+          </div>
+          <div class="bag-grid">
+            <div class="bag-cell text-purple" onclick="alert('满包原格无缝对调换装：身上旧胸甲换入此格，新装备穿在身上！')">紫胸甲</div>
+            <div class="bag-cell text-green">绿弓</div>
+            <div class="bag-cell text-blue">蓝药x20</div>
+            <div class="bag-cell text-red">红药x20</div>
+            <div class="bag-cell text-gold">碳x15</div>
+            <div class="bag-cell text-dim">铁矿x5</div>
+            <div class="bag-cell text-dim">狼皮x10</div>
+            <div class="bag-cell text-purple">紫戒</div>
+            <div class="bag-cell text-blue">蓝鞋</div>
+            <div class="bag-cell text-green">绿腿</div>
+            <div class="bag-cell text-dim">杂物1</div>
+            <div class="bag-cell text-dim">杂物2</div>
+            <div class="bag-cell text-dim">杂物3</div>
+            <div class="bag-cell text-dim">杂物4</div>
+            <div class="bag-cell text-dim">杂物5</div>
+            <div class="bag-cell text-dim">杂物6</div>
+            <div class="bag-cell text-dim">杂物7</div>
+            <div class="bag-cell text-dim">杂物8</div>
+            <div class="bag-cell text-dim">杂物9</div>
+            <div class="bag-cell text-dim">杂物10</div>
+          </div>
+          <div style="margin-top:auto;padding-top:8px;border-top:1px solid #2b3a46;font-size:12px">
+            <span class="text-dim">消耗品快捷位 (长按拖拽绑定):</span>
+            <span style="margin-left:8px;padding:3px 6px;background:#10181e;border:1px solid #ffca28;border-radius:3px">[格1: 初级生命药]</span>
+            <span style="margin-left:4px;padding:3px 6px;background:#10181e;border:1px solid #42a5f5;border-radius:3px">[格2: 初级法力药]</span>
+            <span style="margin-left:4px;padding:3px 6px;background:#10181e;border:1px dashed #5b7c8e;border-radius:3px">[格3: 空]</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 界面 6：林纳克斯装备修理 -->
+    <div id="panel-repair" class="modal-frame" style="display:none">
+      <div class="modal-header"><span>铁匠铺 · 装备修理 (林纳克斯)</span><span>持有金币: 1,250</span></div>
+      <div class="modal-body">
+        <div style="flex:1;padding:16px;border-right:1px solid #2b3a46">
+          <div style="font-weight:bold;color:#ffca28;font-size:14px;margin-bottom:12px">【当前选中装备修理】</div>
+          <div style="background:#10181e;border:1px solid #344654;padding:12px;border-radius:4px;margin-bottom:16px">
+            <div class="text-purple" style="font-size:14px;font-weight:bold">狂暴残虐双刀 +10</div>
+            <div class="text-gold" style="margin-top:6px">当前耐久: 85 / 100 (良好)</div>
+            <div>单点修理费: 2 金币 / 点</div>
+            <div>缺失耐久: 15 点 | 单件修理总价: <span class="text-gold">30 金币</span></div>
+          </div>
+          <button class="btn-action" style="width:100%;padding:10px" onclick="alert('单件修复完成！扣除 30 金币。')">单件修复 (30 金币)</button>
+          <hr style="border:none;border-top:1px solid #2b3a46;margin:16px 0">
+          <div style="font-weight:bold;color:#ffca28;font-size:14px;margin-bottom:8px">【当前穿戴一键全修】</div>
+          <div class="text-dim" style="font-size:12px;margin-bottom:8px">磨损装备: 3 件 (双刀、战靴、破损长裤) | 所需总金币: 256 金币</div>
+          <button class="btn-action" style="width:100%;padding:10px;background:#388e3c" onclick="alert('一键全修完成！已修复所有 7 个磨损槽位，扣除 256 金币。')">当前穿戴一键全修 (256 金币)</button>
+        </div>
+        <div style="width:400px;padding:16px;overflow-y:auto">
+          <div style="font-weight:bold;color:#ffca28;margin-bottom:8px">当前 7 件耐久槽概览:</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px">
+            <div class="gear-slot"><span>[武器] 狂暴残虐双刀: 85/100 (绿 良好)</span></div>
+            <div class="gear-slot"><span>[上衣] 幽暗轻甲: 90/100 (绿 良好)</span></div>
+            <div class="gear-slot"><span>[下衣] 幽暗长裤: <strong class="text-red">0/80 (红 破损失效!)</strong></span></div>
+            <div class="gear-slot"><span>[护肩] 幽暗护肩: 80/80 (绿 满耐久)</span></div>
+            <div class="gear-slot"><span>[腰带] 兽皮腰带: 75/80 (绿 良好)</span></div>
+            <div class="gear-slot"><span>[鞋子] 幽暗战靴: <strong class="text-gold">28/70 (黄 磨损警告)</strong></span></div>
+            <div class="gear-slot"><span>[耳环] 聚能耳环: 50/50 (绿 满耐久)</span></div>
+          </div>
+          <div class="text-dim" style="font-size:11px;margin-top:12px">注: 首饰 3 件、辅助装备、魔法石、饰品不计磨损。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 界面 7：玛丽装备强化 -->
+    <div id="panel-enhance" class="modal-frame" style="display:none">
+      <div class="modal-header"><span>玛丽工坊 · 装备强化</span><span>持有金币: 12,500 | 炉岩碳: 25</span></div>
+      <div class="modal-body" style="padding:16px;display:flex;gap:16px">
+        <div style="flex:1;background:#10181e;border:1px solid #344654;border-radius:6px;padding:16px;display:flex;flex-direction:column;align-items:center">
+          <div style="font-size:36px;margin:16px 0">🔥 强化祭坛 🔥</div>
+          <div class="text-purple" style="font-size:16px;font-weight:bold">精炼铁双刀 +10 ===> 精炼铁双刀 +11</div>
+          <div class="text-gold" style="margin:12px 0">属性变化: 攻击强度 80 (+24) ===> 80 (+32)</div>
+          <div style="font-size:12px;color:#8fa2af;margin-bottom:12px">消耗金币: 8,000 | 消耗炉岩碳: 10 个</div>
+          <div style="background:#22323e;padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:16px">
+            <input type="checkbox" id="souvenir-chk" checked>
+            <label for="souvenir-chk">消耗【强化纪念品】提供额外概率 (拥有: 12个，本次消耗: 5个)</label>
+          </div>
+          <div class="text-red" style="font-size:11px;margin-bottom:12px">★ 严禁展示具体成功率数字与概率条 · +13 起失败损毁返还角色绑定纪念品 ★</div>
+          <button class="btn-action" style="padding:10px 24px;font-size:14px;background:#d84315" onclick="alert('强化成功！武器升级为 +11！')">开始强化</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 界面 8：杂货商人 -->
+    <div id="panel-merchant" class="modal-frame" style="display:none">
+      <div class="modal-header"><span>微风杂货铺 · 商人常驻买卖</span><span>持有金币: 1,250</span></div>
+      <div class="modal-body" style="padding:16px;display:flex;gap:16px">
+        <div style="flex:1;background:#10181e;border:1px solid #344654;padding:12px;border-radius:4px">
+          <div style="font-weight:bold;color:#ffca28;margin-bottom:8px">商品货架 (常驻无限供应)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px;background:#19252e">
+              <span>初级生命药水 (单价: 50 金币)</span>
+              <button class="btn-action" onclick="alert('购买 1 瓶生命药水！')">购买</button>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px;background:#19252e">
+              <span>初级法力药水 (单价: 40 金币)</span>
+              <button class="btn-action" onclick="alert('购买 1 瓶法力药水！')">购买</button>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px;background:#19252e">
+              <span>Lv.1 新手白铁双刀 (单价: 100 金币)</span>
+              <button class="btn-action" onclick="alert('购买 1 把白铁双刀！')">购买</button>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;background:#10181e;border:1px solid #344654;padding:12px;border-radius:4px">
+          <div style="font-weight:bold;color:#ffca28;margin-bottom:8px">出售回收 (无历史回购，买卖不套利)</div>
+          <div class="text-dim" style="font-size:12px">点选右侧背包物品出售，穿戴中的装备禁止直接出售（需先卸入背包）。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 界面 9：银行金库 -->
+    <div id="panel-vault" class="modal-frame" style="display:none">
+      <div class="modal-header"><span>王国储蓄银行</span><span>金库服务</span></div>
+      <div class="modal-body" style="padding:16px">
+        <div class="tab-bar" style="margin-bottom:12px">
+          <button class="tab-btn active">● 个人金库 (当前角色隔离)</button>
+          <button class="tab-btn" onclick="alert('切换至账号金库！注意：严禁存入【角色绑定】道具！')">○ 账号金库 (100格账号共享)</button>
+        </div>
+        <div class="text-dim" style="font-size:12px">个人金库允许存放角色绑定物品；账号金库全账号角色共享，严禁存入任何角色绑定物品！</div>
+      </div>
+    </div>
+
+    <!-- 界面 10：邮箱与通关待领 -->
+    <div id="panel-mail" class="modal-frame" style="display:none">
+      <div class="modal-header"><span>信件与奖励收发所</span><span>旅店门口邮筒</span></div>
+      <div class="modal-body" style="padding:16px">
+        <div class="tab-bar" style="margin-bottom:12px">
+          <button class="tab-btn active">● 系统信箱 (30天时效)</button>
+          <button class="tab-btn">○ 通关待领仓库 (永久保存)</button>
+        </div>
+        <div class="text-green" style="font-size:12px">信件附件支持一键尽可能领取，有附件信件严禁手动删除。</div>
+      </div>
+    </div>
+
+    <!-- 界面 11：战力排行榜 -->
+    <div id="panel-leaderboard" class="modal-frame" style="display:none">
+      <div class="modal-header"><span>全服冒险家战力评分榜 (点击玩家行检视装备)</span><span>主动查询</span></div>
+      <div class="modal-body" style="padding:16px;flex-direction:column">
+        <table style="width:100%;font-size:12px;border-collapse:collapse">
+          <thead>
+            <tr style="color:#ffca28;text-align:left;border-bottom:1px solid #344654">
+              <th style="padding:8px">排名</th><th>角色名 (点击检视)</th><th>职业</th><th>装备评分</th><th>达成时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #22323e;cursor:pointer" onclick="inspectPlayer('狂暴先驱', 1845)">
+              <td style="padding:8px" class="text-gold">1</td><td class="text-purple">狂暴先驱 (点击检视)</td><td>双刀战士</td><td>1,845</td><td>2026-10-19 14:20</td>
+            </tr>
+            <tr style="border-bottom:1px solid #22323e;cursor:pointer" onclick="inspectPlayer('疾风暴雨', 1845)">
+              <td style="padding:8px">2</td><td>疾风暴雨 (同分后达)</td><td>双刀战士</td><td>1,845</td><td>2026-10-19 16:05</td>
+            </tr>
+            <tr style="border-bottom:1px solid #22323e;cursor:pointer" onclick="inspectPlayer('追风游侠', 1720)">
+              <td style="padding:8px">3</td><td>追风游侠</td><td>弓箭猎人</td><td>1,720</td><td>2026-10-18 20:11</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- HUD 界面 -->
+    <div id="panel-townHud" style="width:100%;height:100%;position:relative;display:none;padding:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:48px;height:48px;background:#2b4557;border:2px solid #ffca28;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="switchView('profile')">头像</div>
+        <div>
+          <div class="text-gold" style="font-weight:bold;font-size:14px">Lv.15 狂暴先驱 [双刀战士]</div>
+          <div style="width:160px;height:8px;background:#3e1b1b;margin-top:3px;border-radius:2px"><div style="width:100%;height:100%;background:#e54b4b"></div></div>
+          <div style="width:160px;height:6px;background:#132636;margin-top:2px;border-radius:2px"><div style="width:100%;height:100%;background:#2b82c9"></div></div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:20px;right:24px;display:flex;flex-direction:column;gap:8px">
+        <button class="btn-action" onclick="switchView('inventory')">背包 (B)</button>
+        <button class="btn-action" onclick="switchView('profile')">角色 (C)</button>
+        <button class="btn-action" onclick="switchView('leaderboard')">排行</button>
+      </div>
+    </div>
+
+    <div id="panel-combatHud" style="width:100%;height:100%;position:relative;display:none;padding:12px">
+      <div class="text-gold" style="font-size:16px">[副本战斗态] 幽暗密林 · Boss 蛮荒牛头巨兽 (80/80)</div>
+      <div style="position:absolute;bottom:20px;right:24px;width:120px;height:120px;background:#e54b4b;border-radius:60px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px">普攻 A</div>
+    </div>
+
+  </div>
+
+  <script>
+    const panels = ['profile', 'inventory', 'repair', 'enhance', 'merchant', 'vault', 'mail', 'leaderboard', 'townHud', 'combatHud'];
+    function switchView(id) {
+      panels.forEach(p => {
+        const el = document.getElementById('panel-' + p);
+        if (el) el.style.display = (p === id) ? 'flex' : 'none';
+      });
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick')?.includes(id));
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    function switchProfileTab(tab) {
+      document.getElementById('profile-tab-stats').style.display = tab === 'stats' ? 'block' : 'none';
+      document.getElementById('profile-tab-sets').style.display = tab === 'sets' ? 'block' : 'none';
+      document.getElementById('tab-btn-stats').classList.toggle('active', tab === 'stats');
+      document.getElementById('tab-btn-sets').classList.toggle('active', tab === 'sets');
+    }
+
+    function showTooltip(slot) {
+      const card = document.getElementById('tooltip-card');
+      card.style.display = 'block';
+    }
+
+    function hideTooltip() {
+      document.getElementById('tooltip-card').style.display = 'none';
+    }
+
+    function inspectPlayer(name, score) {
+      document.getElementById('profile-title').innerText = `【检视冒险家: ${name}】 (只读模式 · 服务端快照)`;
+      switchView('profile');
+    }
+  </script>
+</body>
+</html>
