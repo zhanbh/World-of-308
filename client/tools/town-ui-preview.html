@@ -777,6 +777,34 @@
       document.getElementById('profile-title').innerText = `【检视冒险家: ${name}】 (只读模式 · 服务端快照)`;
       switchView('profile');
     }
+
+    // URL 参数支持快速定位与离线截图生成
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetPanel = urlParams.get('panel');
+    if (targetPanel && panels.includes(targetPanel)) {
+      switchView(targetPanel);
+    }
+    if (urlParams.get('tab') === 'sets') {
+      switchProfileTab('sets');
+    }
+    if (urlParams.get('tooltip') === '1') {
+      showTooltip('weapon');
+    }
+    if (urlParams.get('export') === '1') {
+      const header = document.querySelector('header');
+      if (header) header.style.display = 'none';
+      const nav = document.querySelector('nav');
+      if (nav) nav.style.display = 'none';
+      document.body.style.padding = '0';
+      document.body.style.margin = '0';
+      document.body.style.background = '#10181e';
+      const vp = document.getElementById('viewport');
+      if (vp) {
+        vp.style.border = 'none';
+        vp.style.boxShadow = 'none';
+        vp.style.margin = '0';
+      }
+    }
   </script>
 </body>
 </html>
