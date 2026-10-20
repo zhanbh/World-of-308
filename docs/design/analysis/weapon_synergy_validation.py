@@ -15,24 +15,32 @@ MANA = {'cross':(8,1), 'mountain':(14,2), 'draw':(18,2), 'outrage':(32,3)}
 
 
 def build(level, mode='blue', disabled=(), w_enhance=0, e_enhance=0,
-          affixes=False, roll=1, main_buff=0, flat_buff=0, flat_buff_stage='final', haste_bonus=0, hit_affixes=False):
+          affixes=False, roll=1, main_buff=0, flat_buff=0, flat_buff_stage='final', haste_bonus=0, hit_affixes=False, slot_modes=None, item_level=None, starter_quality=None):
     assert 1 <= level <= 30 and mode in ('starter','blue','purple')
     assert flat_buff_stage in ('base','final')
     assert roll > 0 and haste_bonus >= 0
     assert not (affixes and hit_affixes), 'both fixtures would replace the same secondary slot'
+    if slot_modes is not None:
+        assert mode=='blue' and not affixes and not hit_affixes
+        assert set(slot_modes)<=ALL and slot_modes.get('weapon') in ('starter','blue')
+        assert all(v=='blue' or (k=='weapon' and v=='starter') for k,v in slot_modes.items())
+    assert item_level is None or item_level in (10,15,20,25,30)
+    assert starter_quality in (None,'white','green')
+    starter_white=(level<5) if starter_quality is None else starter_quality=='white'
     n=level-1
-    item_scale=.25 if level<5 else .4 if level<10 else .6 if level<15 else .8 if level<20 else 1
+    item_scale=(.25 if level<5 else .4 if level<10 else .6 if level<15 else .8 if level<20 else 1) if item_level is None else {10:.25,15:.4,20:.6,25:.8,30:1}[item_level]
     weapon=120*item_scale
     equipped={'weapon'} if mode=='starter' else ALL.copy()
+    if slot_modes is not None: equipped=set(slot_modes)
     active=equipped-set(disabled)
     purple=mode=='purple'
     # Affixes are substituted, never added as an illegal third secondary.
     main=crit_rating=haste_rating=mastery_rating=hp_item=mp_item=armor=0
-    for slot in active:
+    for slot in sorted(active):
         s,c,h,m,hp,defense=SLOTS[slot]
-        if mode=='starter':
+        if (slot_modes.get(slot) if slot_modes is not None else mode)=='starter':
             s=0
-            if level<5:
+            if starter_white:
                 c=h=m=0
             else:
                 h=m=0
