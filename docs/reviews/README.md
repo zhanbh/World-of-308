@@ -7,7 +7,7 @@
 | 记录 | 来源 / 日期 | 状态 |
 | --- | --- | --- |
 | [工程评审准备包](engineering-review-pack-v1.md) | 用户要求先收敛再eng-review / 2026-10-20 | E08追踪与故障/门禁材料已建；尚未正式eng-review，准入未满足 |
-| [UI设计规格审阅](ui-design-review-v1.md) | 用户要求逐项审阅 / 2026-10-20 | 检视公开范围和排行榜/搜索入口已确认；其余规则、布局与社交状态待收敛 |
+| [UI设计规格审阅](ui-design-review-v1.md) | 用户要求逐项审阅 / 2026-10-20 | 本期社交后置；HUD/整理/小浮窗/银行选量已确认，规则文字已对齐，状态覆盖已补；尺寸与工程联调待完成 |
 | [UI与规则衔接检查](ui-integration-alignment-review-v1.md) | UI会话稿交接 / 2026-10-20 | 记录体力提示、饰品、社交/检视等差异；未改UI稿，未视觉验收 |
 | [MVP设计完整性审计](design-completeness-audit-2026-10-20.md) | 用户要求先收敛再eng-review / 2026-10-20 | 产品P01–P11、工程E01–E08及文档冲突已列；未做eng-review，不进入coding |
 | [规划与动画合并归档检查](planning-animation-checkpoint-review-v1.md) | 用户要求 / 2026-10-19 | 新规则/试算与战士、猎人v7动画归档；模型、类型及49项后台检查通过，实机未复验 |
@@ -34,3 +34,25 @@
 ## 回家后的衔接
 
 最新Web Mobile已完成统一重建及浏览器回归，手机入口和复现命令见[H5统一验收](h5-integration-review-v1.md)。Note20 Ultra复测“连贯性、停顿、击退距离、十字轨迹、大崩起身和文字触达”，再进行微信10分钟性能验收；通过动作原型出口后进入在线基础闭环。流血持续扣血及手动再挑战已有用户验收，具体数值仍待定。
+
+
+- [低修正恢复方案比较](recovery-low-correction-review-v1.md)：2026-10-21，用户暂不接受直接检查点修正，比较持久接收与提前等待；替代方案待选，未实测。
+
+## 2026-10-21补充复核
+
+- [工程规则差异](engineering-rule-delta-review-2026-10-21.md)：家中强化/耐久/急速规则映射，未作正式eng-review。
+- [静态稿证据](ui-static-evidence-review-2026-10-21.md)：直接查看HUD与银行，发现图稿尚未与布局确认一致；没有改动并行预览/图片。
+
+- [本轮UI与工程综合评审](design-review-consolidated-2026-10-21.md)：七轮设计检查、12图证据、八维工程缺口与集中决策；现有材料审阅完成，未通过编码准入。
+- [平台事实补核](platform-facts-review-2026-10-21.md)：官方事务/运行时文档已核对，环境能力仍未实测。
+
+
+- [集中决策单](decision-register-2026-10-21.md)：命名规范化、旧数据缺证据处理；候选建议待确认。
+- [数值v25](../design/basic-skill-policy-review-v25.md)与[v26](../design/intermediate-gear-policy-review-v26.md)：评审后续接，444条策略/中间配装路径，完整成长未完成。
+
+
+- [首副本连续供给v27](../design/first-dungeon-supply-path-review-v27.md)：24条1至15级路径、481次挑战，接入候选掉落与真实库存；完整1至30级未完成。
+
+- [难度分析模型专项审阅](difficulty-model-audit-2026-10-21.md)：v38至v43规则/漏斗/站位/输入敏感性与贴墙死锁修复，普通一分钟目标复核；难度递进尚未验收。
+
+- [怪物职责与玩家策略审阅v46](enemy-role-and-policy-review-v46.md)：职责契约/预算实际执行、双侧威胁观测和同装备普攻对照，夹击效果未验收。

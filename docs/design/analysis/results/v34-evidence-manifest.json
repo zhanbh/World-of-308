@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "path": "docs/design/analysis/difficulty_behavior_trial.py",
+      "sha256": "26df7d347a95dbf08fb1c2175482de7a19c591a4e8d70b12f199dde9218363d0"
+    },
+    {
+      "path": "docs/design/analysis/difficulty_encounter_trial.py",
+      "sha256": "17959fcbaa7e2a572b8f17bb3c37524c54579f4a77997b66c48fac58fbe52b08"
+    },
+    {
+      "path": "docs/design/analysis/spatial_growth_encounter_trial.py",
+      "sha256": "25d7627e132ed5d58cdc46c499815600befda6189b307e9a9f0ba03c8b70ca2c"
+    },
+    {
+      "path": "docs/design/analysis/first_dungeon_supply_path_trial.py",
+      "sha256": "6771ff681a4941ed82bbed34023d36581d3886de0f804fec149a7dfb2fad32fa"
+    },
+    {
+      "path": "docs/design/analysis/results/first-dungeon-one-minute-path-v33.json",
+      "sha256": "e3600a21197a7cc65995dff7c307772ae9f1280359f7853d62c74f389c288046"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-encounter-v34.json",
+      "sha256": "b3e923351780c5f4271a53bdedcfcc59d402ca0f0230d5da3a33be39a69442b3"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-regression-v34.json",
+      "sha256": "a301f54c7171b79c996842fe03b29cf05e6c52a5cd132f54fe371b1321901368"
+    }
+  ],
+  "ordinary_attempts": 480,
+  "difficulty_probes": 72,
+  "note": "Ordinary process loaded pre-profile source; default=None exact v27 career regression confirms preserved behavior."
+}

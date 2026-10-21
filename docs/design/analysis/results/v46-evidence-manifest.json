@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "path": "docs/design/analysis/enemy-role-candidates-v1.json",
+      "sha256": "e7dfe7876d3a593a4e842971594f9c647afe62f8a0adb092595fd43019cfc41a"
+    },
+    {
+      "path": "docs/design/analysis/enemy_role_contract_trial.py",
+      "sha256": "3b6a9f92748f3280db4e63746580ed5e0942f7dac2e6674b3f207908965ec5e7"
+    },
+    {
+      "path": "docs/design/analysis/spatial_growth_encounter_trial.py",
+      "sha256": "b43566b123f49d2ef823de974b098be8896ec0f115d78aab7aff39504bf95fd0"
+    },
+    {
+      "path": "docs/design/analysis/difficulty_encounter_trial.py",
+      "sha256": "4377611a41114ab998582fe3018185e597f6f957d430d4345b0a37d7f83bbe17"
+    },
+    {
+      "path": "docs/design/analysis/results/enemy-role-contract-v44.json",
+      "sha256": "d760e18c441a992da52bec40041c447992927034a4cb5e603ef6bf4c1d80ac3e"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-role-encounter-v45.json",
+      "sha256": "d51044105eadc9a4a20fd76d240f44916cf5df05a87ff10934f09ef4a830bd2c"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-role-observed-v45.json",
+      "sha256": "3e045630f768b764ae9d9b98e6b717cb7a0e7db7c8f78a2556a48ae5c9904936"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-role-baseline-v45.json",
+      "sha256": "ddb74869e265edea508e11dca09b036e80e8289ab9e3bc7c300d4a433d057b3d"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-role-basic-v46.json",
+      "sha256": "8f359797fcd75204f93e905f3b88c01efafebbc9651ecff84e747c4727b94a37"
+    }
+  ],
+  "configuration_fixtures": 168,
+  "main_combat_executions": 240,
+  "repeat_observation_executions": 96,
+  "checks": "old baseline unchanged, added observations do not change prior outcomes, matched acquired gear, role budgets and room conservation"
+}

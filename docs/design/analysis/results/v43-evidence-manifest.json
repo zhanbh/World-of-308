@@ -1,0 +1,69 @@
+{
+  "files": [
+    {
+      "path": "docs/design/analysis/spatial_growth_encounter_trial.py",
+      "sha256": "23766ea1a1a3736611afa17faad890b75f2ef1bd0bed19a56dc334d36b5703e4"
+    },
+    {
+      "path": "docs/design/analysis/difficulty_encounter_trial.py",
+      "sha256": "77b2e92a607e26f9e04853c63b385e2c3b2ce192ff73552377985c71e86e9375"
+    },
+    {
+      "path": "docs/design/analysis/difficulty_behavior_trial.py",
+      "sha256": "5dc9e8b5820ca3658d6834c14988367a59089b124c4e25226c0cbaf1c88ee12b"
+    },
+    {
+      "path": "docs/design/analysis/enemy_interrupt_policy_trial.py",
+      "sha256": "b9f03753d7f572041553c2cef86b1d9b7017a2f77c6b0238406c0102cde8f28d"
+    },
+    {
+      "path": "docs/design/analysis/approach_regression_trial.py",
+      "sha256": "3bae4cb8d9c43a29736ec09ea69568eb199debd22dac4ea59366d306385bb9a4"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-funnel-v38.json",
+      "sha256": "2c946bddf380226b7294d373d08a8e7b24e698015c58a91d95244eff1510df2b"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-interrupt-v38.json",
+      "sha256": "9022e6885db5b555bfdb7dbb1710c4417ecb52cc3f2fc03f7e2e6fdaa92a8247"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-awareness-v38.json",
+      "sha256": "f5b5c9fba81f664c096463df0da2f200d0da126beb136b9e9fc91de9a2c6fe99"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-formation-v39.json",
+      "sha256": "14271fdc36857f19dd0b3f293b9322c795d838534296bcf28398dcb5ceb34e41"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-target-hold-v40.json",
+      "sha256": "917fbbbff41f52932ef5a5d8c697db51ec6474f71cb3f130006f9023cbbbce3b"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-target-hold-slow-v40.json",
+      "sha256": "5e28be0a8291f0315be3a520d5d668638d8c40f39e9dc1dfa40e35c7b2ad396f"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-spawn-layout-v41.json",
+      "sha256": "b7db995396f67c9222d67d06daa083d01d8dedf50add99427b75626fc14400a8"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-approach-front-v42.json",
+      "sha256": "64ea58e3b1f32e3285a9fe70e02801c0f3345283c2249ebd4c08fc88be115186"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-approach-split-v42.json",
+      "sha256": "3fcd0105487ac14de1660ad39e680d9ac640528180fd1a8da13577e56fdc9b70"
+    },
+    {
+      "path": "docs/design/analysis/results/first-dungeon-one-minute-path-v43.json",
+      "sha256": "b764ed027749a516e8b38c40fb9f180b8a88272b7395ffb32e48e335d8068f2d"
+    },
+    {
+      "path": "docs/design/analysis/results/approach-stall-regression-v42.json",
+      "sha256": "46970661d2ca9d764c36533b58855d51f5cec8eec55f3bdc8989dc1aebf23891"
+    }
+  ],
+  "note": "Historical batches loaded preceding source revisions; explicit condition flags and results retained. Latest approach fix separately revalidated by v42/v43."
+}

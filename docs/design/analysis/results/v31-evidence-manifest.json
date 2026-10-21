@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "path": "docs/design/analysis/first_dungeon_supply_path_trial.py",
+      "sha256": "6771ff681a4941ed82bbed34023d36581d3886de0f804fec149a7dfb2fad32fa"
+    },
+    {
+      "path": "docs/design/analysis/results/first-dungeon-one-minute-path-v31.json",
+      "sha256": "b8cdca81f517750944d3d7c433da2f4125d322b55e495162fe50e44b964aa66b"
+    },
+    {
+      "path": "docs/design/analysis/results/level15-return-probe-v31.json",
+      "sha256": "359f283714dafb95a94208decd420c1ecf9e16e23971babc935cea5b5575053b"
+    }
+  ],
+  "continuous_attempts": 480,
+  "within60": 478,
+  "controlled15_probes": 24
+}

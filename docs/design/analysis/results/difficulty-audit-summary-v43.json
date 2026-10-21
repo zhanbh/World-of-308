@@ -1,0 +1,115 @@
+{
+  "executions": 1272,
+  "ordinary_attempts": 480,
+  "ordinary_clears": 480,
+  "max_boss": 54.89999999999999,
+  "changed_attempts_vs_v33": [
+    {
+      "seed": 7,
+      "policy": "burst",
+      "run": 7,
+      "old_seconds": 125.325,
+      "new_seconds": 125.1
+    },
+    {
+      "seed": 9,
+      "policy": "burst",
+      "run": 19,
+      "old_seconds": 133.36666666666667,
+      "new_seconds": 129.59166666666667
+    },
+    {
+      "seed": 7,
+      "policy": "mixed3_safe",
+      "run": 17,
+      "old_seconds": 145.1,
+      "new_seconds": 134.275
+    },
+    {
+      "seed": 11,
+      "policy": "mixed3_safe",
+      "run": 9,
+      "old_seconds": 135.50833333333333,
+      "new_seconds": 126.91666666666667
+    },
+    {
+      "seed": 11,
+      "policy": "mixed3_safe",
+      "run": 16,
+      "old_seconds": 131.1,
+      "new_seconds": 129.64166666666668
+    }
+  ],
+  "ordinary_summaries": [
+    {
+      "policy": "burst",
+      "samples": 12,
+      "reached15": 12,
+      "median_attempts": 20.0,
+      "median_effective_minutes": 50.47618055555556,
+      "mean_wallet": 30996.166666666668,
+      "mean_purchase_cost": 0,
+      "mean_failures": 0,
+      "mean_blue_worn_end": 0.4166666666666667
+    },
+    {
+      "policy": "mixed3_safe",
+      "samples": 12,
+      "reached15": 12,
+      "median_attempts": 20.0,
+      "median_effective_minutes": 51.692569444444445,
+      "mean_wallet": 30996.166666666668,
+      "mean_purchase_cost": 0,
+      "mean_failures": 0,
+      "mean_blue_worn_end": 0.4166666666666667
+    }
+  ],
+  "probes": [
+    {
+      "name": "difficulty-funnel-v38",
+      "attempts": 96,
+      "clears": 96
+    },
+    {
+      "name": "difficulty-interrupt-v38",
+      "attempts": 96,
+      "clears": 96
+    },
+    {
+      "name": "difficulty-awareness-v38",
+      "attempts": 96,
+      "clears": 96
+    },
+    {
+      "name": "difficulty-formation-v39",
+      "attempts": 72,
+      "clears": 72
+    },
+    {
+      "name": "difficulty-target-hold-v40",
+      "attempts": 72,
+      "clears": 72
+    },
+    {
+      "name": "difficulty-target-hold-slow-v40",
+      "attempts": 72,
+      "clears": 72
+    },
+    {
+      "name": "difficulty-spawn-layout-v41",
+      "attempts": 96,
+      "clears": 95
+    },
+    {
+      "name": "difficulty-approach-front-v42",
+      "attempts": 96,
+      "clears": 96
+    },
+    {
+      "name": "difficulty-approach-split-v42",
+      "attempts": 96,
+      "clears": 96
+    }
+  ],
+  "checks": "all non-time career state unchanged vs v33; damage and funnel conservation verified; legacy stall reproduced and fixed"
+}

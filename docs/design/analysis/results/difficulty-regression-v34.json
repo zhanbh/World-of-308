@@ -1,0 +1,6 @@
+{
+  "checks": "PASS: warrior seed0 exact replay and saved trace equality, 60Hz diagnostic clear/28kills, AST",
+  "fine_seconds": 115.375,
+  "coarse_seconds": 115.46666666666667,
+  "limitation": "One fixture only, not full frame-rate or difficulty acceptance"
+}

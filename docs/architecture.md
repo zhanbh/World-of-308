@@ -183,3 +183,6 @@ Cocos 本地/分包/远程资源按实际样板包体选择。首次加载、缓
 - [CloudBase 服务端事务](https://docs.cloudbase.net/database/transaction)
 - [CloudBase 数据库安全规则](https://docs.cloudbase.net/database/security-rules)
 - [CloudBase 云函数](https://docs.cloudbase.net/cloud-function/how-use)
+
+
+2026-10-21架构方向确认：客户端即时预测与表现，服务端有序输入分段验证战斗/移动/道具及城镇地点。需要可重放的判定规则与检查点；不以资产权威掩盖客户端战斗事实未校验，不新增实时多人。详见[可信边界](backend/action-trust-boundary-proposal-v1.md)及[输入与检查点协议](backend/verified-action-protocol-v1.md)。历史客户端负责碰撞/AI描述保留为即时执行职责，不排除服务端验证；当前尚未实现。

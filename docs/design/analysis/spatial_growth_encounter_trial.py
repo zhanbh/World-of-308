@@ -14,6 +14,9 @@ from progression_award_trial import Character,XP,challenge_awards
 from skill_displacement_dodge_trial import displacement
 from spatial_dodge_trial import at,valid,safe as geometry_safe,travel,segment_distance
 from weapon_synergy_validation import build
+from difficulty_behavior_trial import PROFILES, destination
+from enemy_interrupt_policy_trial import may_interrupt
+from enemy_role_contract_trial import assign_roles,retreat_permits,validate_config
 
 DT=1/120
 SPAWNS=[
@@ -50,32 +53,86 @@ def advance_to(p,target,dt,vx=100,vy=45,radius=8):
     return sweep(p,(dx*f,dy*f),radius=radius)[0]
 
 
-def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_seconds=900,hz=120,use_pots=True,hp_fraction=1,boss_hp_scale=1,boss_recovery_bonus=0,ranged_counter=True):
-    assert level in REF and gear in ('starter','blue') and 0<=xp_fraction<1
+def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_seconds=900,hz=120,use_pots=True,hp_fraction=1,boss_hp_scale=1,boss_recovery_bonus=0,ranged_counter=True,skill_policy='burst',slot_modes=None,campaign=None,behavior_profile=None,observe=False,reaction_delay=0,interrupt_overrides=None,reaction_clock='set',target_hold=0,spawn_layout='front',reachable_approach=True,role_config=None):
+    assert (level in REF or (campaign is not None and 1<=level<=15)) and gear in ('starter','blue') and 0<=xp_fraction<1
     assert boss_hp_scale>0 and boss_recovery_bonus>=0
+    assert 0<=reaction_delay<=1
+    assert 0<=target_hold<=1
+    assert spawn_layout in ('front','split_probe')
+    assert reaction_clock in ('set','per_hazard')
+    assert interrupt_overrides is None or all(k in NODES and all(c in ('stagger','down') for c in v) for k,v in interrupt_overrides.items())
+    assert behavior_profile is None or behavior_profile in PROFILES
+    behavior=PROFILES.get(behavior_profile)
+    role_difficulty={None:'normal','adventure':'adventure','warrior':'warrior','king':'king'}.get(behavior_profile)
+    assert role_config is None or role_difficulty is not None
+    if role_config is not None:validate_config(role_config)
+    assert skill_policy in ('burst','mixed3','mixed6','mixed3_safe','basic_only')
+    assert slot_modes is None or (gear=='blue' and slot_modes.get('weapon')=='starter')
     nodes={key:{**value,'end':value['end']+(boss_recovery_bonus if key in ('hammer','stomp','roar','combo') else 0)} for key,value in NODES.items()}
+    if behavior:
+        nodes={key:{**value,'cd':value['cd']*behavior['cd_scale']} for key,value in nodes.items()}
     assert 0<hp_fraction<=1 and hz in (60,120)
     dt=1/hz;rng=random.Random(seed);hit_rng=random.Random(seed+1000003)
-    ilvl={1:10,5:15,10:20,15:25}[level]
+    ilvl={1:10,5:15,10:20,15:25}[level] if campaign is None else campaign['loadout']['weapon']['item_level']
     c=Character(level=level,xp=int(XP[level]*xp_fraction),weapon_level=ilvl,quality='white' if level==1 else 'green')
+    if campaign is not None:
+        c.xp=campaign['xp'];c.quality=campaign['loadout']['weapon']['quality']
+        assert 0<=c.xp<XP[level]
     worn=['weapon'] if gear=='starter' else ['weapon','chest','pants','belt','shoulder','boots','earring']
+    if slot_modes is not None:worn=[k for k in worn if k in slot_modes]
     quality_index=0 if level==1 else 1 if gear=='starter' else 2
     durability={k:(60+2*(ilvl-10)+20*quality_index) if k=='weapon' else 100 for k in worn}
+    if slot_modes is not None:durability['weapon']=60+2*(ilvl-10)+20*(0 if level==1 else 1)
+    if campaign is not None:durability=campaign['durability'].copy()
     initial=durability.copy()
-    def stats():return build(c.level,gear,item_level=ilvl,starter_quality=c.quality,disabled=[k for k,v in durability.items() if v==0])
+    def stats():return build(c.level,gear,item_level=ilvl,starter_quality=c.quality if c.quality in ('white','green') else None,disabled=[k for k,v in durability.items() if v==0],slot_modes=slot_modes,loadout=campaign['loadout'] if campaign is not None else None)
+    if campaign is not None:c.stats=stats
     s=stats();hp=s['hp']*hp_fraction;mp=s['mp'];p=(-180.,20.);simulation_tick=0;now=0.;facing=1
     cd={k:0. for k in ALIASES};basic_stage=0;body=None;casts=[];cast_serial=0
     dots=[];projectiles=[];serial=0
     hp_pots=mp_pots=0;hp_cd=mp_cd=0.;protect=stun=down=0.;death_at=None
+    basic_since_skill=6;mana_spent=0;cast_counts={k:0 for k in ('basic',*ALIASES)};room_metrics=[]
     xp_earned=dodge_replans=recovery_casts=0
     attacks=misses=dot_ticks=controls=cancelled=0;damage_taken=0.;kills=[];events=[];room_times=[]
     parts=challenge_awards(level);ordinary=parts[0];purple_room=rng.randrange(6)
-    ref,rh,rm=REF[level];unit=ref*.8;pot_hp,pot_mp,price=POTS[level]
+    ref,rh,rm=REF[level] if campaign is None else campaign['enemy_reference'];unit=ref*.8
+    pot_hp,pot_mp,price=POTS[level] if campaign is None else (campaign['hp_restore'],campaign['mp_restore'],0)
+    hp_limit=8 if campaign is None else campaign['hp_count'];mp_limit=8 if campaign is None else campaign['mp_count']
     templates=[list(r) for r in SPAWNS];templates[purple_room].append(('purple',105,20))
+    if spawn_layout=='split_probe':
+        # Diagnostic only: one existing melee moved behind entry in R3/R6; no extra wave or rewards.
+        for room in (2,5):
+            i=next(i for i,v in enumerate(templates[room]) if v[0]=='melee')
+            templates[room][i]=('melee',-205,55)
     all_weight=sum(4 if k=='elite' else 8 if k=='boss' else 1.5 if k=='charge' else 1 for room in templates for k,_,_ in room)
     cleared=0;free_revive=False;boss_dead=False;actor_lookup={}
     avoidance=None;avoid_goal=None;avoid_signature=None
     time_budget=dict(action=0.,move=0.,control=0.,dead=0.,idle=0.,transition=0.)
+    target_cache=None;target_next=0.;target_direction=1
+
+    def choose_target(alive):
+        nonlocal target_cache,target_next,target_direction
+        if target_cache is None or target_cache['hp']<=0 or now>=target_next:
+            target_cache=min(alive,key=lambda e:math.dist(e['p'],p))
+            target_direction=1 if target_cache['p'][0]>=p[0] else -1
+            target_next=now+target_hold
+        return target_cache,target_direction
+    telemetry=[dict(enemy_casts=0,damage_nodes=0,received_hits=0,damage_taken=0.,dodge_seconds=0.,flank_seconds=0.,retreat_seconds=0.,chase_seconds=0.,control_cancels=0,death_cancels=0,pending_nodes_cancelled=0,contact_groups={},funnel={},accepted_stagger=0,accepted_down=0,kept_casts_under_control=0,melee_starts_behind=0,melee_starts=0,committed_flank_seconds=0,bilateral_position_seconds=0.,bilateral_ready_seconds=0.,peak_retreaters=0,peak_role_flankers_moving=0) for _ in templates]
+
+    def observe_funnel(e,a,field,n=1):
+        if observe:
+            key=f"{e['kind']}:{a['key']}"
+            row=telemetry[room_index]['funnel'].setdefault(key,dict(starts=0,nodes=0,control_cancels=0,death_cancels=0,pending_cancelled=0,finished=0))
+            row[field]+=n
+
+    def observe_cancel(e,reason):
+        if observe and e['active']:
+            a=e['active'];remaining=len(nodes[a['key']]['times'])-len(a['done'])
+            if remaining>0:
+                telemetry[room_index][reason]+=1
+                telemetry[room_index]['pending_nodes_cancelled']+=remaining
+                observe_funnel(e,a,reason)
+                observe_funnel(e,a,'pending_cancelled',remaining)
 
     def cancel_body():
         nonlocal body,cancelled
@@ -99,6 +156,7 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
     def killed(e,indirect=False):
         nonlocal boss_dead,hp,mp,s,protect,free_revive,death_at
         if e['rewarded']:return
+        observe_cancel(e,'death_cancels')
         e['rewarded']=True;e['hp']=0;e['active']=None
         kills.append((e['kind'],e['purple']))
         value=parts[-2] if e['kind']=='boss' else ordinary*(4 if e['kind']=='elite' else 2 if e['purple'] else 1)
@@ -141,14 +199,21 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
         ratio=.2 if e['kind'] in ('boss','elite') else .35
         if force or e['accumulated']>=e['maximum']*ratio:
             e['control_until']=now+.8+.24;e['accumulated']=0.;e['reset_at']=e['control_until']
-            e['active']=None;controls+=1
+            control='down';controls+=1
         else:
-            e['control_until']=max(e['control_until'],now+.28);e['active']=None
+            e['control_until']=max(e['control_until'],now+.28);control='stagger'
+        if observe:telemetry[room_index]['accepted_'+control]+=1
+        if e['active'] and may_interrupt(e['active']['key'],control,interrupt_overrides):
+            observe_cancel(e,'control_cancels');e['active']=None
+        elif observe and e['active']:telemetry[room_index]['kept_casts_under_control']+=1
 
     def hurt_player(raw,origin,roar=None):
         nonlocal hp,stun,down,protect,p,death_at,damage_taken,s
         if hp<=0 or (roar is None and now<protect):return
         actual=min(hp,raw*100/(100+s['armor']));hp-=actual;damage_taken+=actual
+        if observe:
+            telemetry[room_index]['received_hits']+=1
+            telemetry[room_index]['damage_taken']+=actual
         cancel_body();stun=max(stun,now+.24)
         if roar is not None:
             roar['accumulated']+=actual
@@ -204,6 +269,7 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
         return math.hypot(dx,dy)<=(54 if key=='mountain' else 145)
 
     def available_skill(target,keys):
+        if not policy_allows_skill():return None
         dx=(target['p'][0]-p[0])*facing;dy=target['p'][1]-p[1]
         for key in keys:
             if key not in s['skills'] or cd[key]>now or mp<s['skills'][key]['mana']:continue
@@ -211,26 +277,40 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
             if inside:return key
         return None
 
+    def policy_allows_skill():
+        # Script-policy sensitivity only, never a player skill restriction.
+        if skill_policy=='mixed3_safe':
+            return basic_since_skill>=3 or hp<=s['hp']*.5 or any(e['hp']>0 and e['kind'] in ('elite','boss') and recovering(e) for e in actors)
+        return skill_policy=='burst' or (skill_policy=='mixed3' and basic_since_skill>=3) or (skill_policy=='mixed6' and basic_since_skill>=6)
+
     def begin(key):
-        nonlocal body,cast_serial,mp,basic_stage,recovery_casts
+        nonlocal body,cast_serial,mp,basic_stage,recovery_casts,basic_since_skill,mana_spent
         cast_serial+=1;q=1+s['haste']
+        cast_counts[key]+=1
         if any(e['kind'] in ('elite','boss') and recovering(e) for e in actors):
             recovery_casts+=1
         if key=='basic':
+            basic_since_skill+=1
             spec=ACTION['basic'+str(basic_stage+1)]
             budget=s['basic_cycle_damage']*[.3,1/3,11/30][basic_stage]
             basic_stage=(basic_stage+1)%3;bleed=0;times=spec['contacts'];weights=[1]
         else:
+            basic_since_skill=0
             spec=ACTION[ALIASES[key]];v=s['skills'][key]
             budget=v['direct'];bleed=v['bleed'];times=spec['contacts'];weights=WEIGHTS[key]
             mp-=v['mana'];cd[key]=now+v['cd']
+            mana_spent+=v['mana']
         body=dict(id=cast_serial,key=key,start=now,q=q,budget=budget,bleed=bleed,
             duration=spec['duration'],move_at=spec['move_at'],times=times,weights=weights,
             facing=facing,origin=p,hit_score=s['hit_score'],launched=False,cancelled=False,seen=set(),motion=0.,previous=0.)
         casts.append(body)
 
     for room_index,template in enumerate(templates):
+        room_mp_start=mp_pots;room_hp_start=hp_pots;room_mana_start=mana_spent;room_cast_start=cast_counts.copy()
         entered=now;p=(-180.,20.);actors=[];avoidance=None;avoid_goal=None;avoid_signature=None;dots.clear();projectiles.clear();casts.clear();body=None
+        reaction_signature=None;reaction_ready=now
+        reaction_seen={}
+        target_cache=None;target_next=now;target_direction=1
         for index,(kind,x,y) in enumerate(template):
             purple=kind=='purple';kind='melee' if purple else kind
             hpmax=ref*(35 if kind=='elite' else 130)*(1+rh)*(1+rm) if kind in ('elite','boss') else unit*{'melee':3.5,'ranged':2.5,'charge':5}[kind]
@@ -239,6 +319,16 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                 active=None,cd={},control_until=0.,accumulated=0.,reset_at=0.,rewarded=False,casts=0,
                 facing=-1,turn_until=0.,phase=1,pending_phase=False,weak_until=0.)
             actors.append(e);actor_lookup[e['id']]=e
+        room_roles={}
+        if role_config is not None:
+            for e in actors:
+                e.update(role_config['candidateAdapter'][e['kind']])
+            room_roles=assign_roles(actors,role_difficulty,role_config)
+            if observe:telemetry[room_index]['role_assignments']=room_roles.copy()
+            flankers=sorted(i for i,role in room_roles.items() if role=='flanker')
+            for e in actors:
+                e['role']=room_roles[e['id']]
+                if e['id'] in flankers:e['role_side']=-1 if flankers.index(e['id'])%2==0 else 1
         while now<max_seconds:
             alive=[e for e in actors if e['hp']>0]
             if boss_dead:break
@@ -269,6 +359,10 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                         cast['seen'].add(marker);attacks+=1
                         evasion=.10 if e['kind']=='boss' else .08 if e['kind']=='elite' else .05
                         if hit_rng.random()<1-max(0,min(1,cast['hit_score']-evasion)):misses+=1;continue
+                        if observe:
+                            group=f"{cast['id']}:{index}"
+                            contacts=telemetry[room_index]['contact_groups']
+                            contacts[group]=contacts.get(group,0)+1
                         weight=cast['weights'][index]
                         force=(cast['key']=='mountain' and index==2) or (cast['key']=='outrage' and index==0)
                         hurt_enemy(e,cast['budget']*weight,force=force)
@@ -291,10 +385,18 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                 and (len(e['active']['done'])<len(nodes[e['active']['key']]['times']) or (e['active']['key']=='combo' and 'charge_end' not in e['active']))
                 and now-e['active']['start']>=.2]
             signature=tuple((e['id'],e['active']['start']) for e in hazards)
+            if reaction_clock=='per_hazard':
+                reaction_seen={key:reaction_seen.get(key,now) for key in signature}
+                reaction_ready=min((t+reaction_delay for t in reaction_seen.values()),default=now)
+            elif signature!=reaction_signature:
+                reaction_signature=signature;reaction_ready=now+reaction_delay
             threatened=any(not hazard_safe(e['active'],p) for e in hazards)
+            reaction_due=threatened and now>=reaction_ready
+            if reaction_clock=='per_hazard':
+                reaction_due=any(not hazard_safe(e['active'],p) and now>=reaction_seen[(e['id'],e['active']['start'])]+reaction_delay for e in hazards)
             if not hazards:
                 avoidance=None;avoid_goal=None;avoid_signature=None
-            elif threatened or avoidance is not None:
+            elif reaction_due or avoidance is not None:
                 if signature!=avoid_signature:
                     avoid_goal=escape_point(p,hazards);avoid_signature=signature;dodge_replans+=1
                 avoidance=True
@@ -305,8 +407,7 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                     at_safe=all(hazard_safe(e['active'],p) for e in hazards) and math.dist(p,avoid_goal)<2
                     if ranged_counter and at_safe:
                         if body is None and alive:
-                            nearest=min(alive,key=lambda e:math.dist(e['p'],p))
-                            facing=1 if nearest['p'][0]>=p[0] else -1
+                            nearest,facing=choose_target(alive)
                             key=available_skill(nearest,['draw','cross'])
                             if key:begin(key)
                     else:
@@ -316,19 +417,27 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                 elif not alive:
                     proposed=advance_to(p,(200.,20.),dt);moved=math.dist(p,proposed)>1e-9;p=proposed
                 elif body is None:
-                    nearest=min(alive,key=lambda e:math.dist(e['p'],p))
+                    nearest,facing=choose_target(alive)
                     dx,dy=nearest['p'][0]-p[0],nearest['p'][1]-p[1]
-                    facing=1 if dx>=0 else -1
                     ranged_key=available_skill(nearest,['outrage','draw','mountain','cross']) if ranged_counter else None
                     if ranged_key:
                         begin(ranged_key)
                     elif abs(dx)>42 or abs(dy)>15:
-                        desired=(nearest['p'][0]-facing*30,nearest['p'][1]);proposed=advance_to(p,desired,dt)
+                        desired=sweep(nearest['p'],(-facing*30,0))[0] if reachable_approach else (nearest['p'][0]-facing*30,nearest['p'][1])
+                        proposed=advance_to(p,desired,dt)
                         moved=math.dist(p,proposed)>1e-9;p=proposed
                     else:
-                        key=next((k for k in ['outrage','draw','mountain','cross'] if k in s['skills'] and cd[k]<=now and mp>=s['skills'][k]['mana']),None)
+                        key=next((k for k in ['outrage','draw','mountain','cross'] if policy_allows_skill() and k in s['skills'] and cd[k]<=now and mp>=s['skills'][k]['mana']),None)
                         begin(key or 'basic')
             # Enemy contacts after player effects: candidate same-frame ordering.
+            frame_retreaters=frame_flankers=0
+            retreat_allowed=None
+            if role_config is not None:
+                for e in actors:
+                    target=destination(behavior_profile,e['kind'],e['id'],e['p'],p) if behavior and e['kind']=='ranged' else None
+                    e['wants_retreat']=bool(e['hp']>0 and e['active'] is None and now>=max(e['control_until'],e['weak_until']) and target is not None
+                        and math.dist(e['p'],advance_to(e['p'],target,dt,behavior['chase_x'],behavior['chase_y']))>1e-9)
+                retreat_allowed=set(retreat_permits(actors,room_roles,role_difficulty,role_config))
             for e in actors:
                 if e['hp']<=0:continue
                 if e['reset_at'] and now>=e['reset_at']:e['accumulated']=0.;e['reset_at']=0.
@@ -337,7 +446,10 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                     node=nodes[a['key']];age=now-a['start']
                     for index,t in enumerate(node['times']):
                         if index not in a['done'] and age+1e-9>=t:
-                            a['done'].add(index);enemy_contact(e,a)
+                            a['done'].add(index)
+                            if observe:telemetry[room_index]['damage_nodes']+=1
+                            observe_funnel(e,a,'nodes')
+                            enemy_contact(e,a)
                     if a['key']=='combo':
                         if age>=2.4 and not a.get('charge_locked'):
                             a['facing']=1 if p[0]>=e['p'][0] else -1;a['charge_locked']=True
@@ -352,7 +464,8 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                                 if wall:
                                     e['weak_until']=now+3+boss_recovery_bonus
                                     events.append(dict(time=now,event='boss_wall',position=e['p']))
-                    if age>=a.get('end',node['end']):e['active']=None
+                    if age>=a.get('end',node['end']):
+                        observe_funnel(e,a,'finished');e['active']=None
                 if e['active'] is not None:continue
                 if e['pending_phase'] and e['kind']=='boss':
                     e['phase']=2;e['pending_phase']=False
@@ -362,6 +475,32 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                 if desired_facing!=e['facing']:
                     e['facing']=desired_facing;e['turn_until']=now+.25
                 kind=e['kind']
+                if behavior and (behavior.get('commit_flank') or (role_config is not None and e['role']=='flanker')) and kind=='melee':
+                    side=e.get('role_side',1 if e['id']%2 else -1)
+                    # Bounded repositioning opportunity, never permanent immunity or forced player movement.
+                    if (e['p'][0]-p[0])*side<8 and now>=e.get('flank_retry',0) and (role_config is None or math.dist(e['p'],p)<85):
+                        e['flank_until']=now+1.2;e['flank_retry']=now+2.5
+                    if (e['p'][0]-p[0])*side>=12:e['flank_until']=0
+                    if now<e.get('flank_until',0):
+                        target=sweep(p,(side*28,side*20))[0]
+                        old=e['p'];e['p']=advance_to(old,target,dt,behavior['chase_x'],behavior['chase_y'])
+                        if math.dist(old,e['p'])>1e-9:
+                            if observe:
+                                telemetry[room_index]['flank_seconds']+=dt
+                                telemetry[room_index]['chase_seconds']+=dt
+                                telemetry[room_index]['committed_flank_seconds']+=dt
+                            if role_config is not None and e['role']=='flanker':frame_flankers+=1
+                            continue
+                if behavior and kind=='ranged':
+                    retreat=destination(behavior_profile,kind,e['id'],e['p'],p)
+                    if retreat_allowed is not None and e['id'] not in retreat_allowed:retreat=None
+                    if retreat is not None:
+                        old=e['p'];e['p']=advance_to(old,retreat,dt,behavior['chase_x'],behavior['chase_y'])
+                        # At a wall the ranged actor may shoot; never wait forever for unreachable separation.
+                        if math.dist(old,e['p'])>1e-9:
+                            if observe:telemetry[room_index]['retreat_seconds']+=dt
+                            frame_retreaters+=1
+                            continue
                 if kind=='elite':options=['sweep','cleave'] if e['casts']%2 else ['cleave','sweep']
                 elif kind=='boss':options=['combo','roar','hammer','stomp'] if e['phase']==2 else ['roar','hammer','stomp']
                 else:options=[kind]
@@ -370,14 +509,27 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                     and (k!='roar' or (60<=abs(dx)<=140 and abs(dy)<=abs(dx)*.577))),None)
                 if key and now>=e['turn_until']:
                     special=kind!='melee'
-                    reserved=any(other['active'] and other['kind']!='melee' and now-other['active']['start']<=nodes[other['active']['key']]['times'][-1] for other in actors)
-                    if coordination and special and reserved:continue
+                    reserved=sum(bool(other['active'] and other['kind']!='melee' and now-other['active']['start']<=nodes[other['active']['key']]['times'][-1]) for other in actors)
+                    if coordination and special and reserved>=(behavior['special_cap'] if behavior else 1):continue
                     e['active']=dict(key=key,start=now,origin=e['p'],aim=p,facing=e['facing'],done=set(),accumulated=0.,knocked=False,max_hp=s['hp'])
                     e['cd'][key]=now+nodes[key]['cd'];e['casts']+=1
+                    if observe:telemetry[room_index]['enemy_casts']+=1
+                    if observe and kind=='melee':
+                        telemetry[room_index]['melee_starts']+=1
+                        telemetry[room_index]['melee_starts_behind']+=int((e['p'][0]-p[0])*facing<0)
+                    observe_funnel(e,e['active'],'starts')
                     if kind=='boss':events.append(dict(time=now,event='boss_cast',skill=key,phase=e['phase']))
                 elif kind!='ranged' and (body is not None or key is None):
                     # Moving enemies can still be passed through; bodies never block player.
-                    target=(p[0]-e['facing']*28,p[1]);e['p']=advance_to(e['p'],target,dt,55,24,radius=14 if kind=='boss' else 8)
+                    target=destination(behavior_profile,kind,e['id'],e['p'],p) if behavior else (p[0]-e['facing']*28,p[1])
+                    if role_config is not None and kind=='melee':
+                        target=(p[0]+e['role_side']*28,p[1]+e['role_side']*20) if e['role']=='flanker' else (p[0]-e['facing']*28,p[1])
+                    before=e['p']
+                    e['p']=advance_to(e['p'],target,dt,behavior['chase_x'] if behavior else 55,behavior['chase_y'] if behavior else 24,radius=14 if kind=='boss' else 8)
+                    if observe and math.dist(before,e['p'])>1e-9:
+                        telemetry[room_index]['chase_seconds']+=dt
+                        if kind=='melee' and (e.get('role')=='flanker' if role_config is not None else behavior and behavior['flank']):telemetry[room_index]['flank_seconds']+=dt
+                    if role_config is not None and kind=='melee' and e['role']=='flanker' and math.dist(before,e['p'])>1e-9:frame_flankers+=1
                 assert valid(e['p'])
             for projectile in list(projectiles):
                 if projectile['due']<=now:
@@ -385,15 +537,27 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
                         hurt_player(unit,projectile['origin'])
                     projectiles.remove(projectile)
             if hp>0:
-                if use_pots and hp<=s['hp']*.4 and now>=hp_cd and hp_pots<8:
+                if use_pots and hp<=s['hp']*.4 and now>=hp_cd and hp_pots<hp_limit:
                     hp=min(s['hp'],hp+pot_hp);hp_pots+=1;hp_cd=now+10
-                if use_pots and mp<=s['mp']*.25 and now>=mp_cd and mp_pots<8:
+                if use_pots and mp<=s['mp']*.25 and now>=mp_cd and mp_pots<mp_limit:
                     mp=min(s['mp'],mp+pot_mp);mp_pots+=1;mp_cd=now+10
             category='dead' if hp<=0 else 'control' if now<max(stun,down) else 'move' if moved else 'action' if body else 'idle'
+            if role_config is not None:
+                assert frame_retreaters<=role_config['difficulty'][role_difficulty]['maxConcurrentRetreaters']
+                assert frame_flankers<=role_config['difficulty'][role_difficulty]['maxFlankers']
+            if observe:
+                telemetry[room_index]['peak_retreaters']=max(telemetry[room_index]['peak_retreaters'],frame_retreaters)
+                telemetry[room_index]['peak_role_flankers_moving']=max(telemetry[room_index]['peak_role_flankers_moving'],frame_flankers)
+                near=[e for e in actors if e['hp']>0 and e['kind']=='melee' and abs(e['p'][1]-p[1])<=26 and abs(e['p'][0]-p[0])<=72]
+                for field,group in [('bilateral_position_seconds',near),('bilateral_ready_seconds',[e for e in near if now>=max(e['control_until'],e['weak_until'])])]:
+                    if any(e['p'][0]-p[0]<-12 for e in group) and any(e['p'][0]-p[0]>12 for e in group):telemetry[room_index][field]+=dt
+            if observe and moved and avoidance:telemetry[room_index]['dodge_seconds']+=dt
             time_budget[category]+=dt;simulation_tick+=1;now=simulation_tick/hz
             assert valid(p) and hp>=0 and mp>=-1e-6
             if not alive and hp>0 and math.dist(p,(200,20))<1e-6:break
         room_times.append(now-entered)
+        room_metrics.append(dict(room=room_index+1,seconds=now-entered,hp_pots=hp_pots-room_hp_start,mp_pots=mp_pots-room_mp_start,
+            mana_spent=mana_spent-room_mana_start,cast_counts={k:cast_counts[k]-room_cast_start[k] for k in cast_counts}))
         if (hp<=0 and not boss_dead) or now>=max_seconds:break
         if any(e['hp']>0 for e in actors) and not boss_dead:break
         cleared+=1
@@ -406,7 +570,7 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
     if success:award(parts[-1],('clear',0),'clear')
     kill_weight=sum(4 if kind=='elite' else 8 if kind=='boss' else 1.5 if kind=='charge' else 1 for kind,_ in kills)
     gross=GOLD(level) if success else math.floor(GOLD(level)*.7*kill_weight/all_weight)
-    repair=sum(initial[k]-v for k,v in durability.items())*math.ceil(ilvl/10*(1 if gear=='starter' else 1.5))
+    repair=sum((initial[k]-v)*math.ceil(ilvl/10*(1 if gear=='starter' or (slot_modes is not None and k=='weapon') else 1.5)) for k,v in durability.items())
     assert math.isclose(sum(time_budget.values()),now,abs_tol=1e-4)
     if success:assert len(kills)==28 and xp_earned==sum(parts)
     assert sum(e['event']=='boss_phase' for e in events)<=1
@@ -416,7 +580,12 @@ def run(level=1,gear='starter',seed=0,xp_fraction=0,coordination=True,max_second
         held_weapon_level=ilvl,mail=c.mail,hp_pots=hp_pots,mp_pots=mp_pots,hp_remaining=hp,
         xp_earned=xp_earned,dodge_replans=dodge_replans,recovery_casts=recovery_casts,damage_taken=damage_taken,controls=controls,cancelled_casts=cancelled,
         hit_attempts=attacks,misses=misses,dot_ticks=dot_ticks,free_boss_revive=free_revive,
-        net=gross-repair-(hp_pots+mp_pots)*price,time_budget=time_budget,events=events)
+        net=gross-repair-(hp_pots+mp_pots)*price,time_budget=time_budget,events=events,
+        skill_policy=skill_policy,mana_spent=mana_spent,cast_counts=cast_counts,room_metrics=room_metrics,
+        xp_remaining=c.xp,durability=durability.copy(),kill_records=[dict(kind=k,purple=v) for k,v in kills],gross=gross,
+        **({'telemetry':telemetry} if observe else {}),
+        **({'terminal_debug':dict(player=p,facing=facing,hp=hp,mp=mp,body=None if body is None else body['key'],
+            alive=[dict(kind=e['kind'],position=e['p'],hp=e['hp']) for e in actors if e['hp']>0])} if observe and now>=max_seconds else {}))
 
 
 def main():

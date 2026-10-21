@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "status": "analysis_candidate_not_release_config",
+  "roles": {
+    "frontline": {"requires": ["melee_strike"], "purpose": "近身牵制；不能以身体阻挡玩家穿行"},
+    "flanker": {"requires": ["melee_strike", "ground_move"], "purpose": "有限时换位，不强制每次绕后成功"},
+    "artillery": {"requires": ["projectile"], "purpose": "保持有效输出；后撤需单独取得协调许可"},
+    "charger": {"requires": ["charge"], "purpose": "起手锁向的直线威胁"},
+    "heavy_guard": {"requires": ["cleave", "sweep"], "purpose": "可中断顺劈与霸体横扫的窗口切换"},
+    "area_controller": {"requires": ["area_attack"], "purpose": "区域攻击与可反击窗口"}
+  },
+  "difficulty": {
+    "normal": {"maxFlankers": 0, "maxConcurrentRetreaters": 0},
+    "adventure": {"maxFlankers": 1, "maxConcurrentRetreaters": 0},
+    "warrior": {"maxFlankers": 1, "maxConcurrentRetreaters": 1},
+    "king": {"maxFlankers": 2, "maxConcurrentRetreaters": 1}
+  },
+  "candidateAdapter": {
+    "melee": {"role": "frontline", "alternates": ["flanker"], "capabilities": ["melee_strike", "ground_move"]},
+    "ranged": {"role": "artillery", "alternates": [], "capabilities": ["projectile", "ground_move"]},
+    "charge": {"role": "charger", "alternates": [], "capabilities": ["charge", "ground_move"]},
+    "elite": {"role": "heavy_guard", "alternates": [], "capabilities": ["cleave", "sweep", "ground_move"]},
+    "boss": {"role": "area_controller", "alternates": [], "capabilities": ["area_attack", "ground_move"]}
+  }
+}

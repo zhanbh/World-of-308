@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "path": "docs/design/analysis/first_dungeon_supply_path_trial.py",
+      "sha256": "6771ff681a4941ed82bbed34023d36581d3886de0f804fec149a7dfb2fad32fa"
+    },
+    {
+      "path": "docs/design/analysis/spatial_growth_encounter_trial.py",
+      "sha256": "f74f107b23ff21a2eec42c033a5dea8c3a90634391ba51f8caaa3f9a415c6ddf"
+    },
+    {
+      "path": "docs/design/analysis/results/first-dungeon-one-minute-path-v30.json",
+      "sha256": "d8a1287dce1091e72112938e37df577b2b9500f6917a329dc83d1a562a1796d3"
+    }
+  ],
+  "attempts": 480,
+  "within_60": 473,
+  "default_regression": "seed0 burst equals v27"
+}

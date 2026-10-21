@@ -1,0 +1,6199 @@
+{
+  "boss_hp_scale": 0.2,
+  "summaries": [
+    {
+      "policy": "burst",
+      "samples": 1,
+      "reached15": 1,
+      "median_attempts": 20,
+      "median_effective_minutes": 50.75513888888889,
+      "mean_wallet": 30789,
+      "mean_purchase_cost": 0,
+      "mean_failures": 0,
+      "mean_blue_worn_end": 0
+    },
+    {
+      "policy": "mixed3_safe",
+      "samples": 1,
+      "reached15": 1,
+      "median_attempts": 20,
+      "median_effective_minutes": 52.70152777777777,
+      "mean_wallet": 30789,
+      "mean_purchase_cost": 0,
+      "mean_failures": 0,
+      "mean_blue_worn_end": 0
+    }
+  ],
+  "traces": [
+    {
+      "seed": 3,
+      "policy": "burst",
+      "reached15": true,
+      "level": 15,
+      "xp": 1370,
+      "runs": 20,
+      "clears": 20,
+      "effective_seconds": 3045.3083333333334,
+      "waiting_seconds": 0.0,
+      "wallet": 30789,
+      "materials": 110,
+      "generated_equipment": 38,
+      "ground_lost": 0,
+      "remaining_pending": 0,
+      "remaining_mail": 0,
+      "milestone_claims": [
+        "level_mail:10",
+        "level_mail:15",
+        "level_mail:5",
+        "starter_mail"
+      ],
+      "potion_purchases": 0,
+      "repair": 1211,
+      "sales": 1580,
+      "stock": [
+        {
+          "kind": "hp",
+          "tier": 10,
+          "binding": "gift",
+          "remaining": 5,
+          "acquired": 8,
+          "used": 3
+        },
+        {
+          "kind": "mp",
+          "tier": 10,
+          "binding": "gift",
+          "remaining": 8,
+          "acquired": 8,
+          "used": 0
+        }
+      ],
+      "stopped": null,
+      "ledger": [
+        {
+          "delta": 500,
+          "reason": "challenge_gold",
+          "balance": 500
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 493
+        },
+        {
+          "delta": 550,
+          "reason": "challenge_gold",
+          "balance": 1043
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 1036
+        },
+        {
+          "delta": 620,
+          "reason": "challenge_gold",
+          "balance": 1656
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 1649
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 1642
+        },
+        {
+          "delta": 710,
+          "reason": "challenge_gold",
+          "balance": 2352
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 2372
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 2365
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 2358
+        },
+        {
+          "delta": 820,
+          "reason": "challenge_gold",
+          "balance": 3178
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 3218
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 3258
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 3244
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 3237
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 3230
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 3223
+        },
+        {
+          "delta": 950,
+          "reason": "challenge_gold",
+          "balance": 4173
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 4159
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 4152
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 4145
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 4131
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 4124
+        },
+        {
+          "delta": 950,
+          "reason": "challenge_gold",
+          "balance": 5074
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 5114
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 5154
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 5174
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 5160
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 5153
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 5146
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 5132
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 5125
+        },
+        {
+          "delta": 1100,
+          "reason": "challenge_gold",
+          "balance": 6225
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 6265
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 6251
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 6244
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 6237
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 6223
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 6216
+        },
+        {
+          "delta": 1270,
+          "reason": "challenge_gold",
+          "balance": 7486
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 7526
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 7512
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 7505
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 7498
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 7484
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 7477
+        },
+        {
+          "delta": 1460,
+          "reason": "challenge_gold",
+          "balance": 8937
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 8977
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 9017
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 9037
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 9023
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 9016
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 9009
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 8995
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 8981
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 8967
+        },
+        {
+          "delta": 1460,
+          "reason": "challenge_gold",
+          "balance": 10427
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 10467
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 10507
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 10527
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 10607
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 10600
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 10586
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 10572
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 10558
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 10544
+        },
+        {
+          "delta": 1670,
+          "reason": "challenge_gold",
+          "balance": 12214
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 12254
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12240
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12226
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 12219
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12205
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12191
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12177
+        },
+        {
+          "delta": 1900,
+          "reason": "challenge_gold",
+          "balance": 14077
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 14097
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14083
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14069
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14055
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14041
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14027
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14013
+        },
+        {
+          "delta": 1900,
+          "reason": "challenge_gold",
+          "balance": 15913
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 15953
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 16033
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 16019
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 16005
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15991
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15977
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15963
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15949
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15935
+        },
+        {
+          "delta": 2150,
+          "reason": "challenge_gold",
+          "balance": 18085
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 18165
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 18245
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 18325
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18311
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18297
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18283
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18269
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18255
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18241
+        },
+        {
+          "delta": 2150,
+          "reason": "challenge_gold",
+          "balance": 20391
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 20471
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20457
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20443
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20429
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20415
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20401
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20387
+        },
+        {
+          "delta": 2420,
+          "reason": "challenge_gold",
+          "balance": 22807
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 22887
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22873
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22859
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22845
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22831
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22817
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22803
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22789
+        },
+        {
+          "delta": 2420,
+          "reason": "challenge_gold",
+          "balance": 25209
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 25289
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25275
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25261
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25247
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25233
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25219
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25205
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25191
+        },
+        {
+          "delta": 2710,
+          "reason": "challenge_gold",
+          "balance": 27901
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 27981
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27967
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27953
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27939
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27925
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27911
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27897
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27883
+        },
+        {
+          "delta": 2710,
+          "reason": "challenge_gold",
+          "balance": 30593
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 30673
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 30713
+        },
+        {
+          "delta": 160,
+          "reason": "sell_equipment",
+          "balance": 30873
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30859
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30845
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30831
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30817
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30803
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30789
+        }
+      ],
+      "path": [
+        {
+          "run": 1,
+          "entry_level": 1,
+          "end_level": 2,
+          "success": true,
+          "seconds": 115.89166666666667,
+          "boss_seconds": 26.516666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 0,
+          "wallet_after": 493,
+          "bag_slots_before": 3,
+          "bag_slots_after": 4,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "initial_weapon",
+              "durability": {
+                "wearEnabled": true,
+                "current": 60,
+                "max": 60
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 145.89166666666665
+        },
+        {
+          "run": 2,
+          "entry_level": 2,
+          "end_level": 3,
+          "success": true,
+          "seconds": 124.69166666666666,
+          "boss_seconds": 34.891666666666666,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "wallet_before": 493,
+          "wallet_after": 1036,
+          "bag_slots_before": 4,
+          "bag_slots_after": 4,
+          "materials_gained": 6,
+          "worn": {
+            "weapon": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "initial_weapon",
+              "durability": {
+                "wearEnabled": true,
+                "current": 60,
+                "max": 60
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 154.69166666666666
+        },
+        {
+          "run": 3,
+          "entry_level": 3,
+          "end_level": 4,
+          "success": true,
+          "seconds": 129.41666666666666,
+          "boss_seconds": 33.091666666666654,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 1036,
+          "wallet_after": 1642,
+          "bag_slots_before": 4,
+          "bag_slots_after": 4,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "initial_weapon",
+              "durability": {
+                "wearEnabled": true,
+                "current": 60,
+                "max": 60
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 159.41666666666669
+        },
+        {
+          "run": 4,
+          "entry_level": 4,
+          "end_level": 5,
+          "success": true,
+          "seconds": 150.26666666666668,
+          "boss_seconds": 49.26666666666668,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 1642,
+          "wallet_after": 2358,
+          "bag_slots_before": 4,
+          "bag_slots_after": 5,
+          "materials_gained": 8,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 10,
+              "quality": "green",
+              "source": "3:kill:18",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 10,
+              "quality": "green",
+              "source": "3:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 180.26666666666665
+        },
+        {
+          "run": 5,
+          "entry_level": 5,
+          "end_level": 6,
+          "success": true,
+          "seconds": 115.50833333333334,
+          "boss_seconds": 27.51666666666668,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 2358,
+          "wallet_after": 3223,
+          "bag_slots_before": 5,
+          "bag_slots_after": 5,
+          "materials_gained": 6,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 10,
+              "quality": "green",
+              "source": "3:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 145.50833333333333
+        },
+        {
+          "run": 6,
+          "entry_level": 6,
+          "end_level": 6,
+          "success": true,
+          "seconds": 127.90833333333333,
+          "boss_seconds": 33.575,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 3223,
+          "wallet_after": 4124,
+          "bag_slots_before": 5,
+          "bag_slots_after": 5,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 10,
+              "quality": "green",
+              "source": "3:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 157.9083333333333
+        },
+        {
+          "run": 7,
+          "entry_level": 6,
+          "end_level": 7,
+          "success": true,
+          "seconds": 117.85,
+          "boss_seconds": 25.924999999999997,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 4124,
+          "wallet_after": 5125,
+          "bag_slots_before": 5,
+          "bag_slots_after": 5,
+          "materials_gained": 2,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 147.85000000000002
+        },
+        {
+          "run": 8,
+          "entry_level": 7,
+          "end_level": 8,
+          "success": true,
+          "seconds": 131.9,
+          "boss_seconds": 39.17500000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 5125,
+          "wallet_after": 6216,
+          "bag_slots_before": 5,
+          "bag_slots_after": 6,
+          "materials_gained": 10,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "7:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 161.9000000000001
+        },
+        {
+          "run": 9,
+          "entry_level": 8,
+          "end_level": 9,
+          "success": true,
+          "seconds": 140.25,
+          "boss_seconds": 42.650000000000006,
+          "hp_pots": 2,
+          "mp_pots": 0,
+          "wallet_before": 6216,
+          "wallet_after": 7477,
+          "bag_slots_before": 6,
+          "bag_slots_after": 6,
+          "materials_gained": 7,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 170.25
+        },
+        {
+          "run": 10,
+          "entry_level": 9,
+          "end_level": 9,
+          "success": true,
+          "seconds": 144.2,
+          "boss_seconds": 45.05833333333332,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 7477,
+          "wallet_after": 8967,
+          "bag_slots_before": 6,
+          "bag_slots_after": 6,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 174.20000000000005
+        },
+        {
+          "run": 11,
+          "entry_level": 9,
+          "end_level": 10,
+          "success": true,
+          "seconds": 121.91666666666667,
+          "boss_seconds": 27.991666666666674,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 8967,
+          "wallet_after": 10544,
+          "bag_slots_before": 6,
+          "bag_slots_after": 7,
+          "materials_gained": 8,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 151.91666666666674
+        },
+        {
+          "run": 12,
+          "entry_level": 10,
+          "end_level": 11,
+          "success": true,
+          "seconds": 113.26666666666667,
+          "boss_seconds": 23.09166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 10544,
+          "wallet_after": 12177,
+          "bag_slots_before": 7,
+          "bag_slots_after": 7,
+          "materials_gained": 4,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 143.26666666666665
+        },
+        {
+          "run": 13,
+          "entry_level": 11,
+          "end_level": 11,
+          "success": true,
+          "seconds": 112.625,
+          "boss_seconds": 24.825000000000003,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 12177,
+          "wallet_after": 14013,
+          "bag_slots_before": 7,
+          "bag_slots_after": 7,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 142.625
+        },
+        {
+          "run": 14,
+          "entry_level": 11,
+          "end_level": 12,
+          "success": true,
+          "seconds": 111.15,
+          "boss_seconds": 27.21666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 14013,
+          "wallet_after": 15935,
+          "bag_slots_before": 7,
+          "bag_slots_after": 7,
+          "materials_gained": 4,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 141.14999999999986
+        },
+        {
+          "run": 15,
+          "entry_level": 12,
+          "end_level": 12,
+          "success": true,
+          "seconds": 116.20833333333333,
+          "boss_seconds": 28.516666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 15935,
+          "wallet_after": 18241,
+          "bag_slots_before": 7,
+          "bag_slots_after": 8,
+          "materials_gained": 6,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 146.20833333333348
+        },
+        {
+          "run": 16,
+          "entry_level": 12,
+          "end_level": 13,
+          "success": true,
+          "seconds": 109.59166666666667,
+          "boss_seconds": 23.549999999999997,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 18241,
+          "wallet_after": 20387,
+          "bag_slots_before": 8,
+          "bag_slots_after": 8,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 139.5916666666667
+        },
+        {
+          "run": 17,
+          "entry_level": 13,
+          "end_level": 13,
+          "success": true,
+          "seconds": 115.225,
+          "boss_seconds": 28.14999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 20387,
+          "wallet_after": 22789,
+          "bag_slots_before": 8,
+          "bag_slots_after": 8,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 145.2249999999999
+        },
+        {
+          "run": 18,
+          "entry_level": 13,
+          "end_level": 14,
+          "success": true,
+          "seconds": 113.51666666666667,
+          "boss_seconds": 28.391666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 22789,
+          "wallet_after": 25191,
+          "bag_slots_before": 8,
+          "bag_slots_after": 8,
+          "materials_gained": 4,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 143.51666666666688
+        },
+        {
+          "run": 19,
+          "entry_level": 14,
+          "end_level": 14,
+          "success": true,
+          "seconds": 120.04166666666667,
+          "boss_seconds": 30.183333333333337,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 25191,
+          "wallet_after": 27883,
+          "bag_slots_before": 8,
+          "bag_slots_after": 9,
+          "materials_gained": 6,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 150.04166666666652
+        },
+        {
+          "run": 20,
+          "entry_level": 14,
+          "end_level": 15,
+          "success": true,
+          "seconds": 113.88333333333334,
+          "boss_seconds": 26.366666666666674,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 27883,
+          "wallet_after": 30789,
+          "bag_slots_before": 9,
+          "bag_slots_after": 9,
+          "materials_gained": 4,
+          "worn": {
+            "weapon": {
+              "item_level": 25,
+              "quality": "green",
+              "source": "level_mail:15",
+              "durability": {
+                "wearEnabled": true,
+                "current": 110,
+                "max": 110
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "19:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "19:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 143.8833333333332
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "policy": "mixed3_safe",
+      "reached15": true,
+      "level": 15,
+      "xp": 1370,
+      "runs": 20,
+      "clears": 20,
+      "effective_seconds": 3162.0916666666662,
+      "waiting_seconds": 0.0,
+      "wallet": 30789,
+      "materials": 110,
+      "generated_equipment": 38,
+      "ground_lost": 0,
+      "remaining_pending": 0,
+      "remaining_mail": 0,
+      "milestone_claims": [
+        "level_mail:10",
+        "level_mail:15",
+        "level_mail:5",
+        "starter_mail"
+      ],
+      "potion_purchases": 0,
+      "repair": 1211,
+      "sales": 1580,
+      "stock": [
+        {
+          "kind": "hp",
+          "tier": 10,
+          "binding": "gift",
+          "remaining": 7,
+          "acquired": 8,
+          "used": 1
+        },
+        {
+          "kind": "mp",
+          "tier": 10,
+          "binding": "gift",
+          "remaining": 8,
+          "acquired": 8,
+          "used": 0
+        }
+      ],
+      "stopped": null,
+      "ledger": [
+        {
+          "delta": 500,
+          "reason": "challenge_gold",
+          "balance": 500
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 493
+        },
+        {
+          "delta": 550,
+          "reason": "challenge_gold",
+          "balance": 1043
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 1036
+        },
+        {
+          "delta": 620,
+          "reason": "challenge_gold",
+          "balance": 1656
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 1649
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 1642
+        },
+        {
+          "delta": 710,
+          "reason": "challenge_gold",
+          "balance": 2352
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 2372
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 2365
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 2358
+        },
+        {
+          "delta": 820,
+          "reason": "challenge_gold",
+          "balance": 3178
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 3218
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 3258
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 3244
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 3237
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 3230
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 3223
+        },
+        {
+          "delta": 950,
+          "reason": "challenge_gold",
+          "balance": 4173
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 4159
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 4152
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 4145
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 4131
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 4124
+        },
+        {
+          "delta": 950,
+          "reason": "challenge_gold",
+          "balance": 5074
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 5114
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 5154
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 5174
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 5160
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 5153
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 5146
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 5132
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 5125
+        },
+        {
+          "delta": 1100,
+          "reason": "challenge_gold",
+          "balance": 6225
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 6265
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 6251
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 6244
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 6237
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 6223
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 6216
+        },
+        {
+          "delta": 1270,
+          "reason": "challenge_gold",
+          "balance": 7486
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 7526
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 7512
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 7505
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 7498
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 7484
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 7477
+        },
+        {
+          "delta": 1460,
+          "reason": "challenge_gold",
+          "balance": 8937
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 8977
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 9017
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 9037
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 9023
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 9016
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 9009
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 8995
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 8981
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 8967
+        },
+        {
+          "delta": 1460,
+          "reason": "challenge_gold",
+          "balance": 10427
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 10467
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 10507
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 10527
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 10607
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 10600
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 10586
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 10572
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 10558
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 10544
+        },
+        {
+          "delta": 1670,
+          "reason": "challenge_gold",
+          "balance": 12214
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 12254
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12240
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12226
+        },
+        {
+          "delta": -7,
+          "reason": "repair",
+          "balance": 12219
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12205
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12191
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 12177
+        },
+        {
+          "delta": 1900,
+          "reason": "challenge_gold",
+          "balance": 14077
+        },
+        {
+          "delta": 20,
+          "reason": "sell_equipment",
+          "balance": 14097
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14083
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14069
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14055
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14041
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14027
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 14013
+        },
+        {
+          "delta": 1900,
+          "reason": "challenge_gold",
+          "balance": 15913
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 15953
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 16033
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 16019
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 16005
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15991
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15977
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15963
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15949
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 15935
+        },
+        {
+          "delta": 2150,
+          "reason": "challenge_gold",
+          "balance": 18085
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 18165
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 18245
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 18325
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18311
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18297
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18283
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18269
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18255
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 18241
+        },
+        {
+          "delta": 2150,
+          "reason": "challenge_gold",
+          "balance": 20391
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 20471
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20457
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20443
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20429
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20415
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20401
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 20387
+        },
+        {
+          "delta": 2420,
+          "reason": "challenge_gold",
+          "balance": 22807
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 22887
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22873
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22859
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22845
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22831
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22817
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22803
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 22789
+        },
+        {
+          "delta": 2420,
+          "reason": "challenge_gold",
+          "balance": 25209
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 25289
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25275
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25261
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25247
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25233
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25219
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25205
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 25191
+        },
+        {
+          "delta": 2710,
+          "reason": "challenge_gold",
+          "balance": 27901
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 27981
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27967
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27953
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27939
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27925
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27911
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27897
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 27883
+        },
+        {
+          "delta": 2710,
+          "reason": "challenge_gold",
+          "balance": 30593
+        },
+        {
+          "delta": 80,
+          "reason": "sell_equipment",
+          "balance": 30673
+        },
+        {
+          "delta": 40,
+          "reason": "sell_equipment",
+          "balance": 30713
+        },
+        {
+          "delta": 160,
+          "reason": "sell_equipment",
+          "balance": 30873
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30859
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30845
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30831
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30817
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30803
+        },
+        {
+          "delta": -14,
+          "reason": "repair",
+          "balance": 30789
+        }
+      ],
+      "path": [
+        {
+          "run": 1,
+          "entry_level": 1,
+          "end_level": 2,
+          "success": true,
+          "seconds": 120.35833333333333,
+          "boss_seconds": 30.691666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 0,
+          "wallet_after": 493,
+          "bag_slots_before": 3,
+          "bag_slots_after": 4,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "initial_weapon",
+              "durability": {
+                "wearEnabled": true,
+                "current": 60,
+                "max": 60
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 150.35833333333335
+        },
+        {
+          "run": 2,
+          "entry_level": 2,
+          "end_level": 3,
+          "success": true,
+          "seconds": 123.55833333333334,
+          "boss_seconds": 34.40833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 493,
+          "wallet_after": 1036,
+          "bag_slots_before": 4,
+          "bag_slots_after": 4,
+          "materials_gained": 6,
+          "worn": {
+            "weapon": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "initial_weapon",
+              "durability": {
+                "wearEnabled": true,
+                "current": 60,
+                "max": 60
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 153.55833333333334
+        },
+        {
+          "run": 3,
+          "entry_level": 3,
+          "end_level": 4,
+          "success": true,
+          "seconds": 129.41666666666666,
+          "boss_seconds": 33.091666666666654,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 1036,
+          "wallet_after": 1642,
+          "bag_slots_before": 4,
+          "bag_slots_after": 4,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "initial_weapon",
+              "durability": {
+                "wearEnabled": true,
+                "current": 60,
+                "max": 60
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 159.41666666666669
+        },
+        {
+          "run": 4,
+          "entry_level": 4,
+          "end_level": 5,
+          "success": true,
+          "seconds": 154.48333333333332,
+          "boss_seconds": 50.40833333333332,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 1642,
+          "wallet_after": 2358,
+          "bag_slots_before": 4,
+          "bag_slots_after": 5,
+          "materials_gained": 8,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 10,
+              "quality": "green",
+              "source": "3:kill:18",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 10,
+              "quality": "green",
+              "source": "3:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 184.48333333333335
+        },
+        {
+          "run": 5,
+          "entry_level": 5,
+          "end_level": 6,
+          "success": true,
+          "seconds": 114.775,
+          "boss_seconds": 27.650000000000006,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 2358,
+          "wallet_after": 3223,
+          "bag_slots_before": 5,
+          "bag_slots_after": 5,
+          "materials_gained": 6,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 10,
+              "quality": "green",
+              "source": "3:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 144.77499999999998
+        },
+        {
+          "run": 6,
+          "entry_level": 6,
+          "end_level": 6,
+          "success": true,
+          "seconds": 139.09166666666667,
+          "boss_seconds": 43.650000000000006,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "wallet_before": 3223,
+          "wallet_after": 4124,
+          "bag_slots_before": 5,
+          "bag_slots_after": 5,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "0:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 10,
+              "quality": "green",
+              "source": "3:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 169.0916666666667
+        },
+        {
+          "run": 7,
+          "entry_level": 6,
+          "end_level": 7,
+          "success": true,
+          "seconds": 120.85,
+          "boss_seconds": 28.758333333333326,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 4124,
+          "wallet_after": 5125,
+          "bag_slots_before": 5,
+          "bag_slots_after": 5,
+          "materials_gained": 2,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 150.8499999999999
+        },
+        {
+          "run": 8,
+          "entry_level": 7,
+          "end_level": 8,
+          "success": true,
+          "seconds": 139.53333333333333,
+          "boss_seconds": 45.54166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 5125,
+          "wallet_after": 6216,
+          "bag_slots_before": 5,
+          "bag_slots_after": 6,
+          "materials_gained": 10,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "7:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 169.5333333333333
+        },
+        {
+          "run": 9,
+          "entry_level": 8,
+          "end_level": 9,
+          "success": true,
+          "seconds": 145.48333333333332,
+          "boss_seconds": 50.999999999999986,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 6216,
+          "wallet_after": 7477,
+          "bag_slots_before": 6,
+          "bag_slots_after": 6,
+          "materials_gained": 7,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "3:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 175.48333333333335
+        },
+        {
+          "run": 10,
+          "entry_level": 9,
+          "end_level": 9,
+          "success": true,
+          "seconds": 149.46666666666667,
+          "boss_seconds": 51.108333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 7477,
+          "wallet_after": 8967,
+          "bag_slots_before": 6,
+          "bag_slots_after": 6,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "level_mail:5",
+              "durability": {
+                "wearEnabled": true,
+                "current": 90,
+                "max": 90
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "1:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 179.4666666666667
+        },
+        {
+          "run": 11,
+          "entry_level": 9,
+          "end_level": 10,
+          "success": true,
+          "seconds": 137.43333333333334,
+          "boss_seconds": 40.741666666666674,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 8967,
+          "wallet_after": 10544,
+          "bag_slots_before": 6,
+          "bag_slots_after": 7,
+          "materials_gained": 8,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "4:kill:27",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 167.4333333333334
+        },
+        {
+          "run": 12,
+          "entry_level": 10,
+          "end_level": 11,
+          "success": true,
+          "seconds": 115.69166666666666,
+          "boss_seconds": 27.45833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 10544,
+          "wallet_after": 12177,
+          "bag_slots_before": 7,
+          "bag_slots_after": 7,
+          "materials_gained": 4,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 10,
+              "quality": "white",
+              "source": "2:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 145.6916666666666
+        },
+        {
+          "run": 13,
+          "entry_level": 11,
+          "end_level": 11,
+          "success": true,
+          "seconds": 124.41666666666667,
+          "boss_seconds": 36.19166666666668,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 12177,
+          "wallet_after": 14013,
+          "bag_slots_before": 7,
+          "bag_slots_after": 7,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "6:kill:17",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "6:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 154.41666666666674
+        },
+        {
+          "run": 14,
+          "entry_level": 11,
+          "end_level": 12,
+          "success": true,
+          "seconds": 115.21666666666667,
+          "boss_seconds": 31.233333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 14013,
+          "wallet_after": 15935,
+          "bag_slots_before": 7,
+          "bag_slots_after": 7,
+          "materials_gained": 4,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "9:kill:6",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 145.2166666666667
+        },
+        {
+          "run": 15,
+          "entry_level": 12,
+          "end_level": 12,
+          "success": true,
+          "seconds": 118.13333333333334,
+          "boss_seconds": 31.450000000000003,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 15935,
+          "wallet_after": 18241,
+          "bag_slots_before": 7,
+          "bag_slots_after": 8,
+          "materials_gained": 6,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 15,
+              "quality": "green",
+              "source": "8:kill:14",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 148.1333333333332
+        },
+        {
+          "run": 16,
+          "entry_level": 12,
+          "end_level": 13,
+          "success": true,
+          "seconds": 120.71666666666667,
+          "boss_seconds": 32.358333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 18241,
+          "wallet_after": 20387,
+          "bag_slots_before": 8,
+          "bag_slots_after": 8,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 150.7166666666667
+        },
+        {
+          "run": 17,
+          "entry_level": 13,
+          "end_level": 13,
+          "success": true,
+          "seconds": 117.98333333333333,
+          "boss_seconds": 27.375,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 20387,
+          "wallet_after": 22789,
+          "bag_slots_before": 8,
+          "bag_slots_after": 8,
+          "materials_gained": 5,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 147.98333333333312
+        },
+        {
+          "run": 18,
+          "entry_level": 13,
+          "end_level": 14,
+          "success": true,
+          "seconds": 128.575,
+          "boss_seconds": 41.224999999999994,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 22789,
+          "wallet_after": 25191,
+          "bag_slots_before": 8,
+          "bag_slots_after": 8,
+          "materials_gained": 4,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 158.57499999999982
+        },
+        {
+          "run": 19,
+          "entry_level": 14,
+          "end_level": 14,
+          "success": true,
+          "seconds": 126.36666666666666,
+          "boss_seconds": 35.32499999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 25191,
+          "wallet_after": 27883,
+          "bag_slots_before": 8,
+          "bag_slots_after": 9,
+          "materials_gained": 6,
+          "worn": {
+            "weapon": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "level_mail:10",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:kill:5",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "5:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 156.3666666666668
+        },
+        {
+          "run": 20,
+          "entry_level": 14,
+          "end_level": 15,
+          "success": true,
+          "seconds": 120.54166666666667,
+          "boss_seconds": 30.833333333333343,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "wallet_before": 27883,
+          "wallet_after": 30789,
+          "bag_slots_before": 9,
+          "bag_slots_after": 9,
+          "materials_gained": 4,
+          "worn": {
+            "weapon": {
+              "item_level": 25,
+              "quality": "green",
+              "source": "level_mail:15",
+              "durability": {
+                "wearEnabled": true,
+                "current": 110,
+                "max": 110
+              }
+            },
+            "stone": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "13:kill:25",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "belt": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "10:kill:17",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "pants": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "12:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "boots": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "11:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "trinket": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "19:kill:27",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "earring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "14:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "ring": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "19:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "shoulder": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:kill:1",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "chest": {
+              "item_level": 15,
+              "quality": "white",
+              "source": "8:clear",
+              "durability": {
+                "wearEnabled": true,
+                "current": 100,
+                "max": 100
+              }
+            },
+            "auxiliary": {
+              "item_level": 20,
+              "quality": "green",
+              "source": "11:kill:14",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "necklace": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "13:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            },
+            "bracelet": {
+              "item_level": 20,
+              "quality": "white",
+              "source": "15:clear",
+              "durability": {
+                "wearEnabled": false,
+                "current": null,
+                "max": null
+              }
+            }
+          },
+          "blue_worn": 0,
+          "paid_stamina": 7,
+          "effective_seconds": 150.54166666666652
+        }
+      ]
+    }
+  ],
+  "checks": "PASS: gold and real potion conservation, 20-slot budget, milestone source uniqueness, preserved held gear/durability, reference and build endpoint equivalence, deterministic replay",
+  "limitations": [
+    "Only first dungeon normal1->15; no full1->30 target, hunter, second or special dungeon.",
+    "All drop rates,13-slot uniform pool, highest unlocked item tier, fixed first green secondary, prices and30s town overhead are explicit candidate fixtures.",
+    "White clear reward and70/25/5 monster qualities come from old D03 candidates, not a finalized normal acquisition profile.",
+    "Random affix types/rolls, paid resurrection, bank, consumable drops and enchant spending are not simulated; materials accumulate and enhancement cost is zero.",
+    "Player strategy equips by item tier then quality, sells spare gear, prioritizes repair and HP then MP, consumes gift tier first; not optimal or automatic game behaviour.",
+    "Inventory binding gift/bought potion buckets are explicit. One selected HP and one MP template per challenge; no free tier upgrade or mid-fight shopping.",
+    "Milestone mail and permanent clear-pending queues are separate; all visits occur before expiry in this path, not a mail-expiry implementation.",
+    "Intermediate enemy reference AP uses old CSV; existing1/5/10/15 REF preserved (15 CSV145.44 differs from historical REF153.44). Not newly finalized enemy tuning.",
+    "Expected crit/candidate geometry and AI; no real-player or runtime/cloud verification."
+  ]
+}

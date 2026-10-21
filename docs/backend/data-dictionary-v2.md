@@ -13,6 +13,7 @@
 | Id | 非空、有长度上限的服务端标识；具体编码在适配器定义，不使用含分隔符歧义的拼接 |
 | Int | 有界安全整数，禁止NaN/无穷/溢出；金额/数量另有业务上下限 |
 | Time | 服务端UTC毫秒安全整数；可选时间未发生时缺省，不用0混淆 |
+| LogicTick | 有界非负逻辑刻整数，依规则版本定义步长；不能与UTC毫秒Time直接比较，暂停/恢复沿同一逻辑前沿 |
 | Version | 非负单调递增整数，不能回退；schemaVersion与业务version分别维护 |
 | Ref | 配置实体ID与不可变版本/内容摘要的组合，不能只存指向可变最新表的ID |
 | StatValue | 配置声明精度/单位的有限数值；固定点尺度、取整阶段需随P01–P03收敛，不在本稿固定伤害精度 |
@@ -85,7 +86,7 @@ erDiagram
 | status | active/revoked，active | 接管撤销旧会话，不允许旧launch重试抢回 |
 | openedAt/revokedAt | Time／可选Time | revoked时需撤销时间；恢复窗口另属挑战lease |
 
-会话open幂等键需单独覆盖普通operation建立前的首次登录，可采用H(identityKey,launchId,operationId)确定记录；最终物理放置由E03核定，不遗漏首次登录响应丢失场景。旧会话来源未安全归档前不随意TTL删除。
+会话open幂等键需单独覆盖普通operation建立前的首次登录，当前候选为sessionOpenReceipts/H(identityKey,launchId,openOperationId)，见[身份适配方案](identity-adapter-proposal-v1.md)。保存摘要及原session/epoch结果，旧回执不得重新激活被替代会话；首次open单列预算。prepare另用loginAttempts/H(identityKey,launchId,prepareOperationId)，绑定身份/launch、基础账号及epoch、服务端签发/截止、状态和提交回执；prepare不切代，commit比较基础epoch并同笔消耗票据。候选有效期60秒不延长战斗恢复；不承诺跨设备物理启动顺序，见身份适配§6。旧会话/票据来源未安全归档前不随意TTL删除。
 
 ### wallets／accountId
 
@@ -129,9 +130,9 @@ Location候选：`inn{characterId}`、`town{mapId,anchorId,originChallengeId?}`�
 | slots | BoundedMap<slotIndex,Slot>，空 | 只允许0≤index<capacity，最多100；空格缺省，不用假物品占锁格 |
 | unlockConfigRef | Ref，背包/个人必填 | 当前阶段价格来源；历史支付流水保留原引用，账号库无解锁价格 |
 
-Slot为判别联合：`equipment{itemId}`或`stack{stackId,templateRef,quantity,binding,originRefs}`。quantity为1–20，同模板不同绑定/归属不合堆。stackId是容器内可寻址单位，拆分/合并可产生新ID，来源账本守恒，不能当作永不变化的模板ID。
+Slot为判别联合：`equipment{itemId,sortHeader}`或`stack{stackId,templateRef,quantity,binding,traceRef}`。sortHeader只含可信生成的不可变itemLevel/quality/slotKind，不含可变装备属性。quantity为1–20，同模板不同绑定/归属不合堆。stackId是容器内可寻址单位，拆分/合并可产生新ID，来源账本守恒，不能当作永不变化的模板ID。
 
-originRefs不得随多次合堆无限增长：详细来源拆分记流水/独立来源记录，槽内只保存有界追踪标识或摘要；E03需明确压缩与可回溯方案，不在100格容器中塞无限逐件来源数组。耐久/强化等装备实例字段不复制进槽成为另一份真相。
+原originRefs来源数组候选由traceRef替换：单个traceRef指向已提交assetJournal的输出ordinal，详细拆分/合并以有界单笔数量流追踪，不递归读取历史来执行存取/整理。纯排序保留数量追踪头。归档不自动删除祖先凭据，具体压缩/保留仍需E06；见[物理映射](asset-physical-mapping-v1.md)。耐久/强化等可变装备字段不复制进槽成为另一份真相。
 
 存取只在银行，角色绑定可入本角色个人金库但不能入账号金库；移动不改绑定。双容器转移一次提交，selected quantity空间不足整笔拒绝。目标具体格/自动填格与整理玩法由交互契约收敛，不凭字段额外增加跨库交换或自动出售。
 
@@ -148,24 +149,26 @@ Binding联合：`none`、`account{accountId}`、`character{accountId,characterId
 | 字段 | 类型／必填或初值 | 约束 |
 | --- | --- | --- |
 | accountId/holderCharacterId | Id／可选Id | holderCharacterId在穿戴/角色容器时必须一致，账号金库时可空；不是bindingCharacterId |
-| sourceGrantId/sourceOrdinal | Id/Int，必填 | 确定生成来源，不能重试创建第二实例 |
+| sourceKey/sourceOrdinal/sourceLocator | Id/Int/判别引用，必填 | 确定生成来源及roomDrop/mailAttachment/grant/challengeClear载体；旧sourceGrantId命名不意味着每来源都要独立grant文档，不重试创建第二实例 |
 | templateRef/itemLevel/quality | Ref/Int/五品质，必填 | 装等10/15/20/25/30及最低等级/品质上限按模板；初始武器用合法模板，不造装等1/5 |
 | rolledAffixes/setRef | BoundedList／可选Ref | 绿1副/蓝2副、逐层叠加，攻强副属性仅武器/耳环；合法词条池由配置验证 |
 | binding | Binding，来源决定 | 穿紫绑定、拾橙绑定、赠品例外；不能存取洗绑定 |
 | enhancementLevel | Int，0 | 武器/耳环0–20，其他槽不得有非0强化；强化增量按配置推导 |
-| durability | {current,max,policyRef}，或缺省 | 仅武器/5防具/耳环有此对象，0≤current≤max；其他槽缺省，不标0耐久 |
+| durability | {wearEnabled,current,max,policyRef}，必填 | 所有装备有字段；武器/5防具/耳环wearEnabled=true且0≤current≤max；不磨损部位wearEnabled=false，current/max为显式null表示不适用（工程表示），不得当0耐久或未知缺失 |
 | location | EquipmentLocation，必填 | 与槽/穿戴/交付记录一致，互斥 |
 | lifecycle | active/destroyed/sold/expired，active | 不因售出/损毁物理删实例而丢来源和去重依据，非active不可再装备/转移 |
 
-EquipmentLocation候选：container{containerId,slotIndex}、equipped{characterId,slotId}、pending{grantId}、retired{reason,operationId或sourceId}。邮件装备在附件描述中固定随机结果，领取时以确定itemId物化；永久待领装备沿已有模型可先创建实例且location=pending，grant只引用该itemId，不再保存可变副本。若物理实现改为延迟物化，须同时调整整个来源契约，不能两种方式混用重复造物。
+EquipmentLocation候选：container{containerId}、equipped{characterId,slotId}、pending{grantId}、retired{reason,operationId或sourceId}。容器内slotIndex只在containers.slots维护，实例不另存可失配的副本；纯整理无需逐件更新equipment。邮件装备在附件描述中固定随机结果，领取时以确定itemId物化；永久待领装备先创建实例且location=pending，grant只引用itemId。不得同时另留可领取的可变payload或混用延迟物化重造实例。
 
 双刀是一把武器实例，不新增副手槽；饰品是装备实例但其使用与职业技能/药品冷却分开。实例快照用于挑战属性，不代替永久实例状态。
 
 ## 7. 交付来源、邮件与永久待领
 
-### rewardGrants／H(sourceType,sourceTuple,ordinal)
+### 交付来源逻辑契约及rewardGrants／H(sourceType,sourceTuple,ordinal)
 
 本稿将grant作为统一交付来源凭据；UI“永久待领”只查询符合pending渠道的grant，不把所有未领取邮件都混入待领。
+
+以下为逻辑来源字段，不表示每种route均创建rewardGrants物理文档。当前物理选择：地面/击杀在rooms、邮件/礼包在mails及同键来源stub、直接通关在challenge.clearReceipt，永久待领在rewardGrants。来源通过sourceKey+SourceLocator定位，不能同一附件同时维护mail和grant两份可领余额。邮件删除/过期从列表移除，保留同键最小来源stub，不重复发礼包；完整映射见asset-physical-mapping-v1.md。
 
 | 字段 | 类型／必填或初值 | 约束 |
 | --- | --- | --- |
@@ -210,12 +213,13 @@ EquipmentLocation候选：container{containerId,slotIndex}、equipped{characterI
 | staminaSnapshot | 见下表，必填 | 体力至少1开本，房间扣快照而非角色最新余额 |
 | staminaSettlement | 见下表，unsettled | 直到真正结束场景回城一次加载；通关仍拾取不提前结算 |
 | purpleEncounter | {roomNo,spawnId,templateRef}，适用首本时必填 | 创建时确定额外1只R1–R6，对应roomNo0–5；重连不重抽，权重/模板仍待配置 |
-| deathIndex/deathDeadline | Int0／可选Time | 每次死亡递增，dead且active需截止；死亡10秒不因重连延长 |
-| paidRevives/protectionUntil | Int0／可选Time | 特殊各3次；保护参数按既定2秒，合法免费复活不加paidRevives |
-| lastEventSeq/lastAcceptedBatch | Int0／可选有界摘要 | 连续序号、payloadHash，不能无限保存全历史事件数组 |
+| deathIndex/deathOccurredAt/deathDeadline | Int0／可选Time／可选Time | 每次死亡递增；按节点所属服务端时间锚点映射deathOccurredAt，首次确认固定deadline=occurredAt+10秒；不按响应/恢复时间延长 |
+| paidRevives | Int0 | 特殊各3次，合法免费复活不增加；升级副本无额外次数上限 |
+| protectionUntilTick | 可选LogicTick | 复活保护沿既定2秒由内核换算，recovery随模拟暂停；旧protectionUntil命名不得当UTC截止混用，物理映射待E03 |
+| lastEventSeq/lastAcceptedBatch | Int0／可选旧有界摘要 | lastEventSeq仅服务端生成事实游标，不是客户端自报击杀序号；旧事件批摘要只读迁移，新输入游标在检查点、父片段原结果在operations，不接新C25 |
 | controlSeq/lease | Int0/见下表 | 心跳/恢复独立版本，不让无关心跳使业务expected失配 |
-| battleMirror/restoreRevision | 有界确认状态/Version | 生命状态、已确认升级/复活指令、模拟游标；不等于可信实时战斗存档 |
-| actionRestriction | 可选{kind,source,revision} | 可表达weaponBroken等，不把暂停直接写为dead/failed；时钟细节未决 |
+| simulationCheckpointRef/restoreRevision | 权威检查点引用/Version | 已验证玩家/敌人/效果/输入游标，见simulation-checkpoint-schema-v1.md；替代旧最小battleMirror，物理映射待预算 |
+| equipmentValidity/attributeRevision | 有界失效事实/Version | 武器破损只移除贡献，不限制本局攻击/换房；状态不与暂停/死亡混用 |
 | exitAnchorRef/closedAt/endReason | Ref／可选Time/枚举 | 对应门口；closed需记录原因，旧结算不可改新location |
 
 体力对象：
@@ -224,11 +228,13 @@ EquipmentLocation候选：container{containerId,slotIndex}、equipped{characterI
 | --- | --- |
 | staminaSnapshot | entryValue=入场城镇有效余额(1–308)、remaining=entryValue、entryRefillWindow=当时窗口、entryAt、revision0；0≤remaining≤entryValue |
 | staminaSettlement | state=unsettled/settled；settled时记录settledAt、loadedRefillWindow、loadedValue、sourceChallengeId；加载值是历史结果，不可重放覆盖当前余额 |
-| lease | mode=connected/recovery、leaseUntil、lastHeartbeatAt/Seq、recoveryUntil?、revision；恢复期限10秒，不能与死亡截止或模拟时钟混用 |
+| lease | mode=connected/recovery、lastEvidenceAt、leaseUntil、lastHeartbeatAt/Seq、recoveryUntil?、revision；新有效输入/新心跳可刷新连接证据，重复原请求不续期；静默缺口沿原leaseUntil不另加10秒，显式暂停接受时固定10秒，均不延死亡截止 |
 
 回城结算：同入场窗口取remaining；跨窗口按固定补满加载308；已结算先返回原结果，角色在之后有新挑战时旧结束事件不能再覆盖。角色staminaReservation、挑战结算标记和城镇位置同事务更新，接管/重登也必须先处理旧归属。心跳不能刷新本局体力。
 
-battleMirror只保存协议已确认的必要游标/指令，不为了“断线恢复”暗中引入跨进程续关。技能CD、DOT预算等在客户端正常内存继续；需要服务端判定的道具消耗与技能/饰品换装限制应在E04明确其最小可验证字段/事件，尚未定义的字段不能当成已完成作弊防护。
+2026-10-21覆盖：用户已选择服务端可验证行为，原battleMirror最小镜像不足以支撑此方向，需演进为有界权威模拟检查点，含玩家/怪物、CD、DOT及残留、位置与随机游标等必要状态。具体schema与大小须按verified-action-protocol-v1.md验证；持久恢复同一有效会话不等于允许重启/跨设备续关，重启/接管仍沿原关闭规则。旧最小镜像不能被当作完整作弊防护。
+
+检查点时间字段字典候选：timelineEpoch:Version、acceptedTick:LogicTick、acceptedSeq:Int0、anchorWallAt:Time、anchorTick:LogicTick、lastAcceptedInputAt:Time；lease.lastEvidenceAt/leaseUntil/recoveryUntil为Time。resume递增timelineEpoch及检查点版本，但不改sceneEpoch/roomToken/dropId，acceptedTick/Seq连续。完整检查点结构以simulation-checkpoint-schema-v1.md为唯一明细，不在挑战记录另存一份可独立修改的恢复状态。
 
 ### challengeRooms／H(challengeId,roomNo)
 
@@ -261,14 +267,15 @@ KillReceipt含事件seq、sourceId/sourceKind、xpGranted、goldGranted、reward
 | outcome | committed或rejected | 持久记录已决定结果；unknown是传输不确定，不是假装已决定的业务拒绝 |
 | result/resultVersions/decidedAt | 有界DTO/有界版本Map/Time | 原结果不是全量存档，不含secret；旧回包不能回退新资产视图 |
 | sourceRefs/configRefs | BoundedList | 关联副本、grant、报价/随机决策，便于恢复与追溯 |
+| assetJournalRef | 可选Id | 成功资产变更指向同笔有界流水；拒绝/无资产变化不强造流水，不把整包数据塞进result |
 
 不需要先持久写processing再靠超时猜结果；若实现增加处理中状态，必须给出接管/恢复协议。operations无未经评审的自动TTL；删去重结果后仍允许旧请求重放将重复消费/发奖，禁止这样清理。
 
 报价可作为有签名/摘要校验的有界视图，不必每次单独建集合。字段候选quoteId、serviceKind、targetId/versions、priceConfigRef、goldCost/pointsCost、materialCosts、displayChanges、failureConsequences、expiresAt?；报价有效期是否需要及数值在E04/E07定。执行重验对象/价格版本，报价变化拒绝后重新确认，不静默按更贵价扣款。强化概率不进入公开报价。
 
-### assetJournals／H(accountId,operationId或systemSourceId,entryNo)
+### assetJournals／H(accountId,operationId或systemSourceId,asset)
 
-不可变：accountId、characterId?、sourceId、operationId?、assetKind、objectId、beforeVersion、afterVersion、deltaOrMove、configRefs、occurredAt。钱包delta可正负但余额非负；物品move含from/to，拆并堆叠保留来源关系。系统到期/间接击杀等也需稳定来源，不强行伪造玩家点击operationId。
+不可变：accountId、characterId?、sourceId、operationId?、configRefs、occurredAt及有界changes/stackInputs/stackOutputs。changes每项含assetKind、objectId、beforeVersion、afterVersion、deltaOrMove；一次100格整理合并在同一有界流水，不为每个两堆合并单建文档。stackInputs引用旧追踪头/来源及参与量，stackOutputs按稳定ordinal提供新traceRef，含余量/消耗出口且按模板/绑定守恒。钱包余额非负；系统操作采用稳定systemSourceId，不伪造玩家点击。具体编码和字节预算见asset-physical-mapping-v1.md，不将J=1当平台能力已验证。
 
 日志与账本不同：调试日志可按策略清理，账本保留/归档需追溯要求和去重方案；不能删日志顺带删除权威余额或未领物。
 
@@ -311,7 +318,7 @@ E03已补[访问路径、索引与事务v2](access-and-transactions-v2.md)提案
 
 当前model.ts仅有部分接口：Equipment位置backpack/pending与none/character绑定、10格创角、角色体力逐房刷新等均不能直接满足本字典。迁移至少补三容器、完整Binding/Location、正式初始化来源、mail、challenge快照/结算、零扣费状态和销毁凭据；每步需旧→新实例与幂等重放用例，不假定清档。
 
-尚未冻结：数值精度/上界与取整；具体价格/内容模板；部分附件拆领边界；角色服务访问/道具CD校验记录；武器0暂停时钟；来源追溯压缩方案、物理集合数与事务预算；配置切换/归档和排行榜细节。已定容量/绑定/体力规则不重开；这些未决需E03/E04/E06/E07或产品清单明确，不以“字段可扩展”宣称全部设计完成。
+尚未冻结：数值精度/合法上界与取整、候选价格/内容模板、服务/动作的物理映射与预算、来源追溯压缩/归档和排行榜细节。附件部分领取/一键跳过、途中武器0不停战及配置新挑战生效等已确认，不重列为玩法待决。时间字段按Time/LogicTick及恢复时序第6节区分；具体平台验证仍未完成，不以“字段可扩展”宣称全部设计完成。
 
 E02交付为本字典与关系图，状态为草案待收敛/待评审。下一步E03逐用例制定访问路径、索引候选和最坏事务预算，再反向调整有界模型。完整方案收敛→eng-review→关闭问题→coding门禁不变。
 
@@ -320,3 +327,26 @@ E02交付为本字典与关系图，状态为草案待收敛/待评审。下一�
 用户确认：仅角色名搜索，角色名不重复，创建时检查并防并发。建议角色保存characterName（展示原文）与nameKey（统一规范化比较键）；规范化及唯一范围具体编码待冻结，同一游戏环境内需跨账号、职业防同名，测试与正式环境隔离。
 
 新增逻辑名称占位nameClaims／H(命名空间,nameKey)，记录nameKey与characterId；哈希时校验原键以避免冲突误认。通过事务内同一确定键的仅不存在才创建保证并发争用，不能使用可覆盖的set/upsert抢占他人名称。占位与角色及初始化交付同事务成功或失败；原请求结果按操作ID查询。已有实体的version乐观校验保留，但不能替代名称唯一占位。若选定数据库提供已验证唯一约束可使用等价实现，不假设当前CloudBase已验证此能力；E07需验证同键并发创建和整体回滚。历史角色名称迁移、规范化冲突及删除/改名名称保留规则未定，不能直接生成占位后上线。
+## 角色游玩代次与强化记忆补充（2026-10-21候选）
+
+当前角色游玩上下文增加rolePlayEpoch及对应有效角色引用，切角色即关闭旧代次并创建新代次；账号sessionEpoch不替代它。强化记忆逻辑实体以账号/角色/rolePlayEpoch确定键存储，包含有界20个来源目标等级的补偿量h、version及配置引用；h是有限精度非负补偿量，不是只能存整数的失败次数。所有数量边界、精度、距离函数、上限与成功消耗函数须随不可变配置明确，不在本稿锁定候选小数。
+
+采用已确认的相似度成功消耗，覆盖较旧笼统成功全部清零表述。角色切走/重登后旧记忆不再参与判定；服务进程重启但代次有效须能恢复，不能只放客户端或单进程内存。隐藏概率与补偿量不得进入公开角色属性/报价。旧记忆审计保留和清理期限待运维策略，不删除尚需恢复的操作结果。
+
+检查点schema与原子写集合已展开为[权威模拟检查点](simulation-checkpoint-schema-v1.md)，物理映射、内容上界与字段精度尚待验证；旧battleMirror字段名不作为新协议实现基线。
+
+角色命名补充（2026-10-21用户确认）：仅允许字母或中文，不允许数字、空格、标点及其他符号；纯中文角色名最多6个字。后续同日补充已明确纯中文6字或纯英文12字母，禁止中英混用；大小写等判重规范化由字段约束继续细化。角色名唯一、服务端原子占名及并发防重规则保留；命名规则属于创建角色基础能力，不随社交后置取消。
+角色命名最新确认（2026-10-21）：不允许中英混用，只能是纯中文或纯英文；以中文每字2个长度单位、英文字母每个1个单位换算，总上限12，即最多6个汉字或12个英文字母。禁止数字、空格、标点、符号及不可见控制字符。英文采用A–Z/a–z字符集合；中文字符集合按Unicode汉字规则由实现规范明确，不用UTF-16代码单元误计汉字个数。大小写/全半角等名称判重规范化仍按未确认候选处理，不据本条自动允许近似同名。命名唯一、服务端原子占名不变。
+
+所有装备实例必须包含durability字段；是否参与磨损由明确策略区分，不通过字段有无推断。礼包必须记录生成来源、附件总量、累计实领及每次领取原结果，领取进度与资产入包同事务更新。不能因邮件删除/过期或操作响应丢失而重复发放。本轮撤销假设旧数据缺字段作为当前用户待决项，改为新schema必需约束；没有盘点或修改真实旧数据。
+### 礼包与领取历史的必需关系（2026-10-21）
+
+复用既有rewardGrants与mails/attachments，不新建一份会与它们矛盾的礼包余额：
+
+| 逻辑记录 | 唯一键/字段 | 约束 |
+| --- | --- | --- |
+| 礼包发放来源 | H(characterId,giftKind,milestoneOrEvent)，关联mailId与configRef | 新手每角色一次、等级节点各一次；配置版本只作引用，不因版本号改变自动再发同一礼包 |
+| 附件发放与进度 | attachmentId、grantRef、quantityGranted、quantityClaimed、binding、createdAt/expiresAt、version | 0≤claimed≤granted，剩余量派生；部分领取只增加实际入包量，不能领不下也扣余量 |
+| 领取回执 | H(accountId,operationId,attachmentId)，actualQuantity、目标容器/实例引用、结果版本、committedAt | 同原请求返回原量，不二次执行；逻辑回执可承载于既有operations结果/来源账目，不要求重复存独立余额 |
+
+领取事务共同校验来源、原角色权限、附件时效、版本、当前可容纳量，原子提交附件进度＋背包/装备＋来源状态＋操作回执。发邮件与领入背包是两个不同阶段，不以createdAt或mail.status代替是否已领。邮件过期/手动删除只改变邮件可见生命周期，不能删除礼包已发事实后允许再次生成。暂无真实历史数据缺证据实例，迁移异常仅作未来预检，不向用户请求假设清档授权。

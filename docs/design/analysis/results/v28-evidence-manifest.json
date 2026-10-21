@@ -1,0 +1,30 @@
+{
+  "files": [
+    {
+      "path": "docs/design/analysis/boss_acquired_gear_sensitivity_trial.py",
+      "sha256": "bd413f3752c4bb95a0b23fe85c1764b7714b327e027d191dab4c15d797466965"
+    },
+    {
+      "path": "docs/design/analysis/first_dungeon_supply_path_trial.py",
+      "sha256": "bd61f08bb1f6d4b3f72130723aa24bd8a86d80cbb555e2477a2a6767ca125e84"
+    },
+    {
+      "path": "docs/design/analysis/spatial_growth_encounter_trial.py",
+      "sha256": "f74f107b23ff21a2eec42c033a5dea8c3a90634391ba51f8caaa3f9a415c6ddf"
+    },
+    {
+      "path": "docs/design/analysis/weapon_synergy_validation.py",
+      "sha256": "c32f1e99979a801f7d913791ec11480b4abadff7c54c88d645f7a0d0db15a95a"
+    },
+    {
+      "path": "docs/design/analysis/results/boss-acquired-gear-sensitivity-v28.json",
+      "sha256": "23e943954e55dc225a1d98b3ef12a7d9925997a5d71974f6fa19cf7ad40436f2"
+    },
+    {
+      "path": "docs/design/analysis/results/first-dungeon-supply-path-v27.json",
+      "sha256": "f4a7e31f29fb5eaa8a1e8a4b4f4b5bc2a450ca34866770308cb99d38cc4cdbdf"
+    }
+  ],
+  "attempts": 144,
+  "clears": 144
+}

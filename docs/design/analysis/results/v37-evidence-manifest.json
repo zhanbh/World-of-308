@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "path": "docs/design/analysis/spatial_growth_encounter_trial.py",
+      "sha256": "8b69a2c47f1334f7ef65b7f38a5dccb193444bb31f43b77910c9ce9d4b3acf93"
+    },
+    {
+      "path": "docs/design/analysis/difficulty_encounter_trial.py",
+      "sha256": "4ae568fa11f69aff1642a249031176a14572171438260f2d56acc7eae3f4a980"
+    },
+    {
+      "path": "docs/design/analysis/difficulty_behavior_trial.py",
+      "sha256": "a92aa2324f22ded7ccb197e97c8184c9d00d867f54f7456cdc439df21a48e4cd"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-causes-v37.json",
+      "sha256": "f643fdb1c86e842aa2c658a0fc986f91bec8661ae42c76e8f7e8e864c6e7dedc"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-reaction-v37.json",
+      "sha256": "cfb00dde69c90dccc609f33639a5e2e93d93112de036cebc507d0f6a7a6d7bb6"
+    }
+  ],
+  "trials": 192,
+  "checks": [
+    "all clear",
+    "96 prior traces unchanged on common fields",
+    "room damage conservation",
+    "cancelled casts <= started casts"
+  ],
+  "limitations": [
+    "reaction delay is a changing-hazard-set clock, not human latency measurement",
+    "same encounter seeds do not imply paired later hit RNG"
+  ]
+}

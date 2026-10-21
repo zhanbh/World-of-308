@@ -15,7 +15,7 @@ MANA = {'cross':(8,1), 'mountain':(14,2), 'draw':(18,2), 'outrage':(32,3)}
 
 
 def build(level, mode='blue', disabled=(), w_enhance=0, e_enhance=0,
-          affixes=False, roll=1, main_buff=0, flat_buff=0, flat_buff_stage='final', haste_bonus=0, hit_affixes=False, slot_modes=None, item_level=None, starter_quality=None):
+          affixes=False, roll=1, main_buff=0, flat_buff=0, flat_buff_stage='final', haste_bonus=0, hit_affixes=False, slot_modes=None, item_level=None, starter_quality=None,loadout=None):
     assert 1 <= level <= 30 and mode in ('starter','blue','purple')
     assert flat_buff_stage in ('base','final')
     assert roll > 0 and haste_bonus >= 0
@@ -26,13 +26,21 @@ def build(level, mode='blue', disabled=(), w_enhance=0, e_enhance=0,
         assert all(v=='blue' or (k=='weapon' and v=='starter') for k,v in slot_modes.items())
     assert item_level is None or item_level in (10,15,20,25,30)
     assert starter_quality in (None,'white','green')
+    if loadout is not None:
+        assert mode=='blue' and slot_modes is None and not affixes and not hit_affixes
+        assert 'weapon' in loadout and set(loadout)<=ALL
+        assert all(v['quality'] in ('white','green','blue') and v['item_level'] in (10,15,20,25,30) for v in loadout.values())
+        item_level=loadout['weapon']['item_level']
     starter_white=(level<5) if starter_quality is None else starter_quality=='white'
     n=level-1
     item_scale=(.25 if level<5 else .4 if level<10 else .6 if level<15 else .8 if level<20 else 1) if item_level is None else {10:.25,15:.4,20:.6,25:.8,30:1}[item_level]
     weapon=120*item_scale
     equipped={'weapon'} if mode=='starter' else ALL.copy()
     if slot_modes is not None: equipped=set(slot_modes)
+    if loadout is not None:equipped=set(loadout)
     active=equipped-set(disabled)
+    def scale(slot):
+        return {10:.25,15:.4,20:.6,25:.8,30:1}[loadout[slot]['item_level']] if loadout is not None else item_scale
     purple=mode=='purple'
     # Affixes are substituted, never added as an illegal third secondary.
     main=crit_rating=haste_rating=mastery_rating=hp_item=mp_item=armor=0
@@ -44,20 +52,29 @@ def build(level, mode='blue', disabled=(), w_enhance=0, e_enhance=0,
                 c=h=m=0
             else:
                 h=m=0
-        elif affixes:
+        if loadout is not None:
+            quality=loadout[slot]['quality']
+            if quality!='blue':s=0
+            if quality=='white':c=h=m=0
+            elif quality=='green':
+                # First candidate secondary from equipment-proposal-v1, never a third affix.
+                first={'weapon':'c','chest':'m','pants':'m','belt':'h','shoulder':'c','boots':'h',
+                       'bracelet':'m','ring':'c','necklace':'h','auxiliary':'h','stone':'m','earring':'m','trinket':'m'}[slot]
+                c=c if first=='c' else 0;h=h if first=='h' else 0;m=m if first=='m' else 0
+        elif affixes and (slot_modes.get(slot) if slot_modes is not None else mode)!='starter':
             if slot=='weapon': h=0
             if slot=='earring': c=0
         if hit_affixes and mode!='starter':
             if slot=='weapon': h=0
             if slot=='earring': c=0
-        main+=s*item_scale
-        crit_rating+=c*item_scale
-        haste_rating+=h*item_scale
-        mastery_rating+=m*item_scale
-        hp_item+=hp*item_scale
-        armor+=defense*item_scale
+        main+=s*scale(slot)
+        crit_rating+=c*scale(slot)
+        haste_rating+=h*scale(slot)
+        mastery_rating+=m*scale(slot)
+        hp_item+=hp*scale(slot)
+        armor+=defense*scale(slot)
     for slot, mp in [('bracelet',20),('ring',20),('necklace',30),('stone',40),('trinket',20)]:
-        if slot in active: mp_item+=mp*item_scale
+        if slot in active: mp_item+=mp*scale(slot)
     a2=purple and len(active&ARMOR)>=2
     a5=purple and ARMOR<=active
     j=purple and JEWELRY<=active
@@ -67,8 +84,8 @@ def build(level, mode='blue', disabled=(), w_enhance=0, e_enhance=0,
     agility=10+n+8*sets
     intelligence=10+n+8*sets
     base=4+(weapon if 'weapon' in active else 0)
-    base+=4*item_scale if 'auxiliary' in active else 0
-    base+=6*item_scale if 'earring' in active else 0
+    base+=4*scale('auxiliary') if 'auxiliary' in active else 0
+    base+=6*scale('earring') if 'earring' in active else 0
     if affixes:
         base+=12*item_scale*roll if 'weapon' in active else 0
         base+=2*item_scale*roll if 'earring' in active else 0

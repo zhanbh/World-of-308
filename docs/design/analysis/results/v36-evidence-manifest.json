@@ -1,0 +1,27 @@
+{
+  "files": [
+    {
+      "path": "docs/design/analysis/spatial_growth_encounter_trial.py",
+      "sha256": "0c120537a781a3739bea5605041b2b372279873036dbc1196e430cdc12bb2f91"
+    },
+    {
+      "path": "docs/design/analysis/difficulty_encounter_trial.py",
+      "sha256": "c474daf8c1f97665160375babad62ad0234278ae1836bb6a844bcd6137f3964a"
+    },
+    {
+      "path": "docs/design/analysis/difficulty_behavior_trial.py",
+      "sha256": "a92aa2324f22ded7ccb197e97c8184c9d00d867f54f7456cdc439df21a48e4cd"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-pressure-v35.json",
+      "sha256": "4a740a19674e0e58dc03f13bdea86cd855a74046675e24b836f25d88fd3c3a3e"
+    },
+    {
+      "path": "docs/design/analysis/results/difficulty-ablation-v36.json",
+      "sha256": "4828570f9dd255c2362caf1f03ff05a7d39eb1fed75e168f2a2e05f151408813"
+    }
+  ],
+  "executions": 168,
+  "repeated_baselines": 24,
+  "checks": "all clear; baseline output equality; per-room damage conservation; observe non-interference seed0"
+}

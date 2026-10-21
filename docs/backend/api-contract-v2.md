@@ -55,7 +55,7 @@ expected缩写：A=账号业务版本（仅需要时）、C=角色、B=背包、
 
 | ID／命令 | payload关键字段 | expected与前置 | 成功结果／关键拒绝 |
 | --- | --- | --- | --- |
-| C01 session.open | launchId及独立openOperationId，可信平台上下文 | 当前session未建立亦可；旧launch已撤销不可抢回 | session/epoch、角色摘要；必要旧挑战结束结算，重启上线旅店 |
+| C01 session.prepare / session.commit（原session.open流程） | prepare:launchId、prepareOperationId；commit:ticketId、launchId、openOperationId；均需可信平台身份 | prepare只发票据；commit校验票据身份/时效及baseSessionEpoch并原子切代；旧launch不可抢回 | commit返回session/epoch、角色摘要及必要旧挑战结算；原回执不激活旧会话；详见身份适配§6 |
 | C02 character.create | classId,characterName | 合法开放职业、账号职业未占用、名称合法且同名未占用（提交事务内校验） | C+20格B+20格个人库+白武器穿戴+新手邮件来源，同事务；不重置共享钱包/账号库 |
 | C03 character.select | characterId | 无未结束挑战或旧拾取场景；不静默丢未拾取物 | 选中角色及其隔离旅店位置；有旧挑战/场景要求先明确结束 |
 | C04 scene.exitInn | characterId,exitAnchorId | C；当前角色旅店、合法城镇出口 | 城镇固定入口锚点，无战斗/金库资产变化；地图几何待定 |
@@ -72,10 +72,10 @@ expected缩写：A=账号业务版本（仅需要时）、C=角色、B=背包、
 | C08 equipment.equip | characterId,itemId,targetSlot | C/B/I与旧穿戴I；城镇、职业/等级/绑定，饰品等待限制 | 满包同部位原格交换，属性/绑定/评分修订；不创造第二装备位置 |
 | C09 equipment.unequip | characterId,itemId,slot | C/B/I；空格、饰品限制 | 入包并清穿戴；满包拒绝，不允许出售时隐式卸下 |
 | C10 quickslot.assign | characterId,slotIndex,templateId或null | C；3格0–2，主动消耗品模板合法 | 更新绑定，null仅解绑不删道具；无库存是否能绑定的非拖动路径不额外开放 |
-| C11 item.use | challengeId,templateId,quickSlotIndex?、动作标识 | H/B及合法动作状态；下文冷却协议待边界 | 消耗1、恢复指令/共享CD事实、B版本；满值拒绝不消耗不进CD |
-| C12 trinket.activate | challengeId,itemId、动作标识 | H/I及合法动作/固定CD；冷却协议待边界 | 临时属性buff/固定CD指令，不解控、不护盾、不耗MP |
+| C11 item.use（仅有序输入内的动作语义） | templateId,quickSlotIndex?、片段内动作序号 | 父输入片段的检查点/H/B及合法动作/CD | 与检查点同笔消费1并生效；满值拒绝不消耗不进CD，无独立公开扣药命令 |
+| C12 trinket.activate（仅有序输入内的动作语义） | itemId、片段内动作序号 | 父输入片段的检查点/H/I及合法动作/固定CD | 与检查点同笔确认buff/CD，不解控、不护盾、不耗MP，无并行激活入口 |
 
-C11/C12不能先以“不校验CD”的资产接口落地。恢复/HP上限、模拟时间与CD证据需要完整E04/E07动作协议闭合，见第6节。后端不接受client传amount=治疗量或直接setHp。
+C11/C12编号保留作规则追踪，不代表可独立调用的资产端点；统一由simulation.submit候选入口处理，语义见第6节。旧独立请求不作为兼容旁路，新请求拒绝UNSUPPORTED_PROTOCOL；已提交历史结果仅按授权查询原operation，不再次消费。后端不接受client传amount=治疗量或直接setHp。
 
 ### NPC服务与兑换
 
@@ -94,7 +94,7 @@ C11/C12不能先以“不校验CD”的资产接口落地。恢复/HP上限、�
 | ID／命令 | payload关键字段 | expected与前置 | 成功结果／关键拒绝 |
 | --- | --- | --- | --- |
 | C18 mail.markRead | characterId,contextId,mailId | M；邮箱授权/本角色 | 记录已读不影响附件资格；不因读更新生成时间 |
-| C19 mail.claimAttachment | characterId,contextId,mailId,attachmentId | M/B/G/I如适用；时效/原角色 | 入包与附件来源交付同笔，满包保留；堆叠可按可容纳量部分领取、余量留原处，装备整件领取 |
+| C19 mail.claimAttachment | characterId,contextId,mailId,attachmentId | M/B/I如适用；时效/原角色；邮件内来源为权威，不另建同附件G余额 | 入包与附件实领/来源同笔，满包保留；堆叠可按可容纳量部分领取、余量留原处，装备整件领取 |
 | C20 mail.claimAvailable | characterId,contextId,selection/cursor,batchIntentId | 服务端有界分配子意图；每附件重验 | 每项结果/剩余游标，尽可能领取，可部分成功；不承诺无限大原子全领 |
 | C21 mail.delete | characterId,contextId,mailId | M；无未领附件 | 逻辑删除并保留来源凭据；有附件拒绝 |
 | C22 reward.claim | characterId,contextId,grantId | G/B/I如适用；邮箱永久待领页签 | 原角色入包，pending→delivered；不过期、不转其他角色 |
@@ -106,10 +106,10 @@ C11/C12不能先以“不校验CD”的资产接口落地。恢复/HP上限、�
 | ID／命令 | payload关键字段 | expected与前置 | 成功结果／关键拒绝 |
 | --- | --- | --- | --- |
 | C23 challenge.start | characterId,dungeonId,difficultyId,entryContext | C及装备/解锁事实；至少1体力、可用武器、无旧active/looting | challengeId、配置/等级/装备/体力快照、序号；不开场前额外扣费；固定紫名安排 |
-| C24 challenge.enterRoom | challengeId,roomNo | H；alive/active/connected、上一房全灭、非weaponBroken | roomToken/sceneEpoch、全房manifest、remaining；0余额仍合法，同房实际或零扣费一次 |
-| C25 challenge.reportEvents | challengeId,roomToken,sceneEpoch,firstSeq,events | H及游标；单房有界整批 | acceptedThrough、结果/升级/复活/磨损/奖励指令；不收自报经验金币和随机结果 |
+| C24 challenge.enterRoom | challengeId,roomNo | H；alive/active/connected、上一房全灭；途中武器0不阻止后续房间 | roomToken/sceneEpoch、全房manifest、remaining；0余额仍合法，同房实际或零扣费一次 |
+| C25 challenge.reportEvents（旧协议，禁止新调用） | 旧自报事件批结构仅供迁移识别 | 新请求拒绝UNSUPPORTED_PROTOCOL，不重算或发奖 | 新战斗改用simulation.submit有序输入；历史结果仅授权查询原operation |
 | C26 challenge.revive | challengeId,deathIndex | H/B；dead/active/connected、两个截止均有效、纹章及次数 | 原子消费/复活/保护；职业CD清零、药品饰品不清；免费通关后不可再收费 |
-| C27 challenge.leave | challengeId,reason=abandon或finishLoot | H；先flush待确认事件，按权威result决定reason | 关闭场景、终态、回城门口、体力一次结算/满HPMP/清CD，不丢已保存收益 |
+| C27 challenge.leave | challengeId,reason=abandon或finishLoot | H；先确认在途输入/原请求结果，按权威result决定reason | 关闭场景、终态、回城门口、体力一次结算/满HPMP/清CD，不丢已保存收益 |
 | C28 drop.collect | challengeId,roomNo,dropId,roomToken,sceneEpoch,positionHint | H/B；当前可拾取场景、有效来源 | 交付/绑定一次，满包留地；位置提示不是可信移动证明 |
 
 进入入口范围只打开选择页，不提交C23；关闭页或回城门口后离开再走入才重触发。未加载资源时重复打开页面不重开挑战，加载失败后的握手时序在第8节保留检查项。
@@ -118,21 +118,21 @@ C11/C12不能先以“不校验CD”的资产接口落地。恢复/HP上限、�
 
 服务上下文候选字段为contextId、accountId、characterId、sessionEpoch、locationRevision、serviceKind、anchorId、issuedAt及状态。服务端签发并验证，不接受客户端换NPC名称就调用强化/银行。
 
-上下文不是“证明玩家真实走到NPC”的魔法凭据：城镇运动在客户端，服务端目前没有可信坐标源。E07须给出入场/地点转换校验、上下文创建的证据、内测威胁限制和正式强化校验方案；未闭合前C05和服务位置访问属于待边界，不宣称已安全。
+上下文根据服务端最后确认的城镇位置/地点版本及合法移动输入签发，沿可验证动作协议，不信任客户端自报“已到NPC”。地图/出生锚点、移动时间及距离校验、签发/消费的版本竞争仍需联调；已有方案不等于已实现可信坐标源，不能仅持contextId就绕过地点校验。
 
 关闭上下文后，已被服务端接受并提交的资产请求不撤销；关闭与在途请求的先后由事务顺序决定。若关闭先成立可拒绝尚未执行请求；若请求先提交则保留结果，UI关闭后仍能查原operation。换角色/接管/locationRevision改变时旧上下文失效；旧请求命中历史结果不授予新的写权限。
 
 ## 5. 战斗事件、来源与控制通道
 
-当前已定义持久收益事件为playerDied、monsterKilled，未来为道具/饰品/属性修订所需事件必须在同一顺序协议内定义，不能另开无序通道绕过deadline。
+playerDied、monsterKilled等为服务端重算生成的领域事实，不是客户端可提交并授权资产的事件。客户端只能提交有序输入意图；事实用于内部生命周期、来源去重及输出指令，不保留自报击杀的兼容入口。
 
-每事件有seq、simulationTick和合法source标识；monsterKilled仅引用manifest的spawnId；playerDied带递增deathIndex与有界lingeringSourceIds。同一模拟步玩家/首领同死先报告玩家死再报告首领死，触发免费复活。首领识别来自manifest，不设任意finishVictory命令。
+输入序号与服务端生成事实的顺序分别维护，不能把客户端firstSeq当作已发生击杀的证据。内部事实带逻辑时刻和合法来源：monsterKilled绑定manifest的spawnId，playerDied带deathIndex及受规则内核约束的残留引用。同一步玩家/首领同死的领域处理顺序保留先死亡、再认定首领击杀/通关及免费复活；不是让客户端自行选择报告次序。首领识别来自manifest，不设任意finishVictory命令。
 
-同批次不能跨房间；整批接收或拒绝。最新同摘要事件批可重放；旧批按operation或业务来源查已确认序号，缺号返EVENT_GAP/nextSeq，不能为补缺号重生成奖励。死亡后不得创建新直接攻击来源；声明残留只是边界校验，不证明客户端没有作弊。
+输入片段不能跨未确认房间边界。格式/版本/序号错误拒绝整段，不推进游标；满值用药、CD未到等合法动作拒绝则记录逐动作结果并按输入协议推进合法时间，不把无效动作当成功消费。重复父operation返回原结果，缺片段返回期望序号/检查点，不补发收益。死亡后不得生成新直接攻击，残留存续由权威检查点和既有技能生命周期决定，不接受客户端声明作为唯一证据。
 
 控制通道独立：heartbeat、scene.suspend、scene.resume、scene.status，按递增controlSeq/heartbeatSeq及leaseRevision处理，不制造无限业务operations，也不让心跳无故推进challenge业务version。显式recovery只有resume能解除，重复suspend不能延长原截止。
 
-租约检测沿v1设计：最后成功新心跳的服务端时刻+10秒；2秒心跳为工程候选，不是已测承诺。真实物理断网时刻不可观测，不能声称精确从拔网线再给满10秒。目标窗口、租约误差、客户端本地暂停须E07验证后收敛。
+租约按最后新有效连接证据lease.lastEvidenceAt+10秒；有效输入可承载保活，新心跳另有序号去重，旧请求重放不续期。静默缺口沿原leaseUntil，不在到期后另加10秒；显式暂停/恢复与timelineEpoch统一见恢复时序第6节。真实断网瞬间不可观测，工程频率/阈值不是平台或体验实测承诺。
 
 ## 6. 药品、饰品与冷却事实（明确未闭合）
 
@@ -140,7 +140,7 @@ C11/C12不能先以“不校验CD”的资产接口落地。恢复/HP上限、�
 
 工程需补：本地模拟tick如何映射服务端可验证的动作顺序、HP/MP/最大值镜像如何推进、何时确认消费并表现恢复、断线暂停与死亡继续时钟、冷却期间饰品不可卸换/60秒换装等待。不能单纯收clientHp/ready=true就扣资产，也不能擅自改成墙钟CD绕过死亡/断线规则。
 
-因此C11/C12及C08/C09涉及饰品时标记待边界；其他已收敛行为仍可用于UI模拟，但此处不构成coding就绪。服务端每帧模拟是否需要，必须按安全与成本专项决策，不在本稿暗改既定单人架构。
+方向已确认：服务端按有序片段重算，不部署常驻逐帧多人服务器。C11/C12是该片段内动作，C08/C09涉及饰品的限制仍需与已确认CD事实对齐。剩余未定为时间锚点、精度/上界、逐动作结果结构及成本方案，不再把“是否验证行为”作为待用户选择；本文仍不构成coding准入。
 
 ## 7. 错误分类与客户端动作
 
@@ -190,3 +190,28 @@ C11/C12不能先以“不校验CD”的资产接口落地。恢复/HP上限、�
 
 
 在线私聊补充确认：仅双方在线时允许发送，不提供离线留言或下次登录补收。服务端发送时检查好友关系及双方有效在线会话；客户端在线展示不构成授权。在线租约判定、投递中断、历史保留与发送结果恢复契约待收敛；未知结果恢复必须保留原消息身份防重复，不能自动升级为离线队列。
+
+## 本期补充：背包整理契约候选（2026-10-21）
+
+inventory.organize候选输入为当前角色、背包expectedVersion、direction=forward/reverse及原操作ID；不接收客户端排列后的任意实例位置或数量。服务端生成稳定排列，按完整堆叠兼容键合并至20，装备不合并；正序装备→消耗品→材料，装备按固定部位顺序、品质高到低、装等高到低，同键稳定。倒序反转排列、空格置首；正序空格置末。快捷栏绑定模板不变，金库整理不在已确认范围。结果返回权威容器版本和必要位置变化，未知结果查询原操作；并发修改时不能以旧排列覆盖。持久保存direction偏好尚未确认，不由字段候选推导新设置功能。
+
+原子范围覆盖背包与合并实际涉及的数量/位置记录以及原结果；角色权限、会话栅栏、实例唯一位置与总数量/绑定/来源守恒继续校验。原有T用例预算需增补该用例，尚未平台验证，不能据此编码。UI提交状态见[本期UI状态覆盖](../design/ui-state-coverage-v1.md)。
+## C17强化游玩代次补充（2026-10-21）
+
+写入上下文增加rolePlayEpoch，由服务端与当前有效角色游玩代次核对；它不是身份凭据。C17需校验强化记忆版本，服务端读取来源等级补偿量，按不可变规则计算阈值与相似度；失败增加相应来源量、成功按相似度消耗，而非全部清零。金币、材料、装备、所选纪念品消耗/损毁返还、记忆与操作结果同事务提交，拒绝不改变任何一项。晚到旧代次写拒绝；已完成旧操作仅允许当前授权身份查询其原结果，不执行第二次。
+
+短恢复与同会话令牌更新不创建新角色代次；切角色、重登或接管创建新代次归零，关面板/修理/回城不归零。客户端不得提交自己算的概率或记忆。具体字段需与会话/角色切换契约整体复核，当前仍非冻结协议。
+
+2026-10-21用户确认：本期在线闭环按服务端可验证行为设计。客户端即时表现，服务端分段验证移动/碰撞、战斗、药品/饰品与NPC地点，不只信任客户端击杀/HP；不引入实时多人或常驻逐帧服务器。输入、检查点及原子提交候选见[可验证动作协议](verified-action-protocol-v1.md)。方向已定，但确定性、时间容差、性能/事务与平台验证未完成，不宣称编码就绪。
+
+## 有序输入命令与查询补充（2026-10-21候选）
+
+候选simulation.submit接收verified-action-protocol-v1.md定义的场景/角色代次、timelineEpoch、基准检查点版本、连续输入范围及原operation；返回已提交游标、当前锚点代次/恢复视图及相关资产版本，不返回任意客户端指定奖励。simulation.get读取当前授权场景确认状态；原写结果仍走operation.get，不能把读状态当已执行消费证明。两者名字为候选，尚未写入shared。
+
+C11/C12已按同一有序动作/检查点编排作为设计方向，不能保留一个绕过验证的并行扣药接口。复活、离开及房间转换作为明确外部控制事件与游标串行；不得只加新submit接口却保留可自报击杀的旧奖励入口。满值、CD、未解锁等合法游戏动作拒绝与整个片段格式/版本错误分开，逐动作结果与接受游标推进规则尚需精确定义，不能默默跳过非法输入发奖。
+
+角色location/地点验证与普通资产服务共用服务端确认位置版本，城镇移动非每帧写数据库但仍需有界验证。恢复只返回最新确认状态，允许秒级未确认表现修正；持续断网沿原10秒窗口提示重新进入。与[检查点schema](simulation-checkpoint-schema-v1.md)、[时间基线](simulation-timing-and-budget-v1.md)共同评审。
+角色命名补充（2026-10-21用户确认）：仅允许字母或中文，不允许数字、空格、标点及其他符号；纯中文角色名最多6个字。后续同日补充已明确纯中文6字或纯英文12字母，禁止中英混用；大小写等判重规范化由字段约束继续细化。角色名唯一、服务端原子占名及并发防重规则保留；命名规则属于创建角色基础能力，不随社交后置取消。
+角色命名最新确认（2026-10-21）：不允许中英混用，只能是纯中文或纯英文；以中文每字2个长度单位、英文字母每个1个单位换算，总上限12，即最多6个汉字或12个英文字母。禁止数字、空格、标点、符号及不可见控制字符。英文采用A–Z/a–z字符集合；中文字符集合按Unicode汉字规则由实现规范明确，不用UTF-16代码单元误计汉字个数。大小写/全半角等名称判重规范化仍按未确认候选处理，不据本条自动允许近似同名。命名唯一、服务端原子占名不变。
+
+所有装备实例必须包含durability字段；是否参与磨损由明确策略区分，不通过字段有无推断。礼包必须记录生成来源、附件总量、累计实领及每次领取原结果，领取进度与资产入包同事务更新。不能因邮件删除/过期或操作响应丢失而重复发放。本轮撤销假设旧数据缺字段作为当前用户待决项，改为新schema必需约束；没有盘点或修改真实旧数据。

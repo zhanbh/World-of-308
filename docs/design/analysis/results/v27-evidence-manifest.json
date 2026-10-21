@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "fad3dcb68bfe46fca98da78abac1bf1cf395f2a1",
+  "python": "3.14.3",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "strategies": [
+    "burst",
+    "mixed3_safe"
+  ],
+  "careers": 24,
+  "attempts": 481,
+  "clears": 474,
+  "parts_sha256": {
+    "0": "32a7bc38ceef9c7cb691c90469b07257dc75caf381650805e10934a686bfdf7d",
+    "3": "61f474adb0e43113ee5cf55701bddc1b8740ba90a2536b516156c913b16fb8ae",
+    "6": "e279c0b04d50fe733da2323bdb3b25305021f0c3ea7196e74fdbbafff6d64061",
+    "9": "642c1562c7a712c038cef9a177b2d2d2ec816cd16b6d8eec8a2011a9019db1e4"
+  },
+  "source_sha256": {
+    "docs/design/analysis/first_dungeon_supply_path_trial.py": "bd61f08bb1f6d4b3f72130723aa24bd8a86d80cbb555e2477a2a6767ca125e84",
+    "docs/design/analysis/spatial_growth_encounter_trial.py": "f74f107b23ff21a2eec42c033a5dea8c3a90634391ba51f8caaa3f9a415c6ddf",
+    "docs/design/analysis/weapon_synergy_validation.py": "c32f1e99979a801f7d913791ec11480b4abadff7c54c88d645f7a0d0db15a95a"
+  },
+  "result_sha256": "f4a7e31f29fb5eaa8a1e8a4b4f4b5bc2a450ca34866770308cb99d38cc4cdbdf",
+  "checks": "source parse; gold/stock/20-slot path invariants; default5 fixtures; aggregation main; blue weapon/white armour campaign fixture; old reference endpoints; seed0 replay"
+}

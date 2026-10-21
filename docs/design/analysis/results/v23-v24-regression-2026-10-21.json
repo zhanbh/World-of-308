@@ -1,0 +1,14 @@
+[
+  {
+    "script": "spatial_growth_encounter_trial.py",
+    "exit_code": 0,
+    "seconds": 57.01,
+    "checks": "PASS: bounds, time partition, kill/XP uniqueness, held gear, cast/CD snapshots, fixed replay"
+  },
+  {
+    "script": "boss_counter_window_trial.py",
+    "exit_code": 0,
+    "seconds": 45.481,
+    "checks": "PASS:96 candidate traces, default equivalence; per-run state/snapshot/boundary invariants"
+  }
+]

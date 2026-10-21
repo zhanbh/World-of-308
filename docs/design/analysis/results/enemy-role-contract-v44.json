@@ -1,0 +1,2267 @@
+{
+  "fixtures": [
+    {
+      "purple_room": 1,
+      "difficulty": "normal",
+      "room": 1,
+      "actors": 4,
+      "roles": {
+        "0": "frontline",
+        "1": "frontline",
+        "2": "frontline",
+        "3": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "normal",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "frontline",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "normal",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "frontline",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "normal",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "frontline",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "normal",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "normal",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "frontline",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "normal",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "adventure",
+      "room": 1,
+      "actors": 4,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline",
+        "3": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "adventure",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "adventure",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "adventure",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "adventure",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "adventure",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "adventure",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "warrior",
+      "room": 1,
+      "actors": 4,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline",
+        "3": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "warrior",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "warrior",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "warrior",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "warrior",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "warrior",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "warrior",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "king",
+      "room": 1,
+      "actors": 4,
+      "roles": {
+        "0": "flanker",
+        "1": "flanker",
+        "2": "frontline",
+        "3": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "king",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "flanker",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "king",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "flanker",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "king",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "flanker"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "king",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "king",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "flanker",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 1,
+      "difficulty": "king",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "normal",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "frontline",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "normal",
+      "room": 2,
+      "actors": 6,
+      "roles": {
+        "10": "frontline",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline",
+        "15": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "normal",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "frontline",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "normal",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "frontline",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "normal",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "normal",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "frontline",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "normal",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "adventure",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "adventure",
+      "room": 2,
+      "actors": 6,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline",
+        "15": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "adventure",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "adventure",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "adventure",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "adventure",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "adventure",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "warrior",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "warrior",
+      "room": 2,
+      "actors": 6,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline",
+        "15": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "warrior",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "warrior",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "warrior",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "warrior",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "warrior",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "king",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "flanker",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "king",
+      "room": 2,
+      "actors": 6,
+      "roles": {
+        "10": "flanker",
+        "11": "flanker",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline",
+        "15": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "king",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "flanker",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "king",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "flanker"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "king",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "king",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "flanker",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 2,
+      "difficulty": "king",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "normal",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "frontline",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "normal",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "frontline",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "normal",
+      "room": 3,
+      "actors": 6,
+      "roles": {
+        "20": "frontline",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery",
+        "25": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "normal",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "frontline",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "normal",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "normal",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "frontline",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "normal",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "adventure",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "adventure",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "adventure",
+      "room": 3,
+      "actors": 6,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery",
+        "25": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "adventure",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "adventure",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "adventure",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "adventure",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "warrior",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "warrior",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "warrior",
+      "room": 3,
+      "actors": 6,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery",
+        "25": "frontline"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "warrior",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "warrior",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "warrior",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "warrior",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "king",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "flanker",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "king",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "flanker",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "king",
+      "room": 3,
+      "actors": 6,
+      "roles": {
+        "20": "flanker",
+        "21": "flanker",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery",
+        "25": "frontline"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "king",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "flanker"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "king",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "king",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "flanker",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 3,
+      "difficulty": "king",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "normal",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "frontline",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "normal",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "frontline",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "normal",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "frontline",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "normal",
+      "room": 4,
+      "actors": 5,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "frontline",
+        "33": "frontline",
+        "34": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "normal",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "normal",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "frontline",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "normal",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "adventure",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "adventure",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "adventure",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "adventure",
+      "room": 4,
+      "actors": 5,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline",
+        "34": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "adventure",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "adventure",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "adventure",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "warrior",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "warrior",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "warrior",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "warrior",
+      "room": 4,
+      "actors": 5,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline",
+        "34": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "warrior",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "warrior",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "warrior",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "king",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "flanker",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "king",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "flanker",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "king",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "flanker",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "king",
+      "room": 4,
+      "actors": 5,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "flanker",
+        "34": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "king",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "king",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "flanker",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 4,
+      "difficulty": "king",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "normal",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "frontline",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "normal",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "frontline",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "normal",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "frontline",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "normal",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "frontline",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "normal",
+      "room": 5,
+      "actors": 4,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery",
+        "43": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "normal",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "frontline",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "normal",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "adventure",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "adventure",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "adventure",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "adventure",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "adventure",
+      "room": 5,
+      "actors": 4,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery",
+        "43": "flanker"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "adventure",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "adventure",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "warrior",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "warrior",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "warrior",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "warrior",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "warrior",
+      "room": 5,
+      "actors": 4,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery",
+        "43": "flanker"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "warrior",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "warrior",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "king",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "flanker",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "king",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "flanker",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "king",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "flanker",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "king",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "flanker"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "king",
+      "room": 5,
+      "actors": 4,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery",
+        "43": "flanker"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "king",
+      "room": 6,
+      "actors": 6,
+      "roles": {
+        "50": "flanker",
+        "51": "flanker",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 5,
+      "difficulty": "king",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "normal",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "frontline",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "normal",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "frontline",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "normal",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "frontline",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "normal",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "frontline",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "normal",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "normal",
+      "room": 6,
+      "actors": 7,
+      "roles": {
+        "50": "frontline",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery",
+        "56": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "normal",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "adventure",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "adventure",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "adventure",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "adventure",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "adventure",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "adventure",
+      "room": 6,
+      "actors": 7,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery",
+        "56": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "adventure",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "warrior",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "frontline",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "warrior",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "frontline",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "warrior",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "frontline",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "warrior",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "warrior",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "warrior",
+      "room": 6,
+      "actors": 7,
+      "roles": {
+        "50": "flanker",
+        "51": "frontline",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery",
+        "56": "frontline"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "warrior",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "king",
+      "room": 1,
+      "actors": 3,
+      "roles": {
+        "0": "flanker",
+        "1": "flanker",
+        "2": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "king",
+      "room": 2,
+      "actors": 5,
+      "roles": {
+        "10": "flanker",
+        "11": "flanker",
+        "12": "frontline",
+        "13": "frontline",
+        "14": "frontline"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "king",
+      "room": 3,
+      "actors": 5,
+      "roles": {
+        "20": "flanker",
+        "21": "flanker",
+        "22": "frontline",
+        "23": "artillery",
+        "24": "artillery"
+      },
+      "retreat_permits": [
+        23
+      ]
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "king",
+      "room": 4,
+      "actors": 4,
+      "roles": {
+        "30": "charger",
+        "31": "charger",
+        "32": "flanker",
+        "33": "flanker"
+      },
+      "retreat_permits": []
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "king",
+      "room": 5,
+      "actors": 3,
+      "roles": {
+        "40": "heavy_guard",
+        "41": "artillery",
+        "42": "artillery"
+      },
+      "retreat_permits": [
+        41
+      ]
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "king",
+      "room": 6,
+      "actors": 7,
+      "roles": {
+        "50": "flanker",
+        "51": "flanker",
+        "52": "frontline",
+        "53": "charger",
+        "54": "artillery",
+        "55": "artillery",
+        "56": "frontline"
+      },
+      "retreat_permits": [
+        54
+      ]
+    },
+    {
+      "purple_room": 6,
+      "difficulty": "king",
+      "room": 7,
+      "actors": 1,
+      "roles": {
+        "60": "area_controller"
+      },
+      "retreat_permits": []
+    }
+  ],
+  "checks": "PASS: 168 room contracts; schema/negative-budget rejection, counts, entry space, capability eligibility, bounded role/retreat admission, rank/species independence, no immunity added, no mutation, strategy reload",
+  "limitations": [
+    "Configuration validation only, NOT 168 combat simulations or player samples.",
+    "Counts and skill adapter use current normal dungeon fixtures for all profiles solely to isolate roles; higher difficulty final counts not confirmed.",
+    "No actual movement, cooldown, line of sight, retreat lifetime/fairness, tactical success, damage or rewards measured.",
+    "candidateAdapter maps legacy analysis kinds only; formal roles are independent of species/rank/template identity."
+  ]
+}

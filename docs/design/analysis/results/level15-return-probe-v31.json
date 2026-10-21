@@ -1,0 +1,3249 @@
+{
+  "traces": [
+    {
+      "seed": 0,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "auxiliary": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "0:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "18:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:19",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:23",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:kill:13",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "16:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "stone": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "5:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 24.808333333333337,
+      "seconds": 111.26666666666667,
+      "hp_pots": 0,
+      "mp_pots": 1
+    },
+    {
+      "seed": 1,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "12:kill:19",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:kill:2",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "necklace": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "6:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "14:kill:24",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "blue",
+          "source": "14:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "11:kill:0",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "17:kill:19",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "15:kill:11",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "16:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 32.099999999999994,
+      "seconds": 114.69166666666666,
+      "hp_pots": 0,
+      "mp_pots": 1
+    },
+    {
+      "seed": 2,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:24",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 15,
+          "quality": "blue",
+          "source": "4:kill:16",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "17:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 29.14999999999999,
+      "seconds": 119.975,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 3,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "13:kill:25",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "10:kill:17",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "19:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:1",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "8:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "11:kill:14",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 33.325,
+      "seconds": 122.575,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 4,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:5",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "boots": {
+          "item_level": 10,
+          "quality": "green",
+          "source": "2:kill:13",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "17:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "auxiliary": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "3:kill:4",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "11:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "12:kill:23",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:14",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 23.83333333333333,
+      "seconds": 109.05,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 5,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:kill:26",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:kill:3",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "5:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "auxiliary": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "10:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:4",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "13:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "ring": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "7:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 35.58333333333333,
+      "seconds": 122.36666666666666,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 6,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "13:kill:3",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 15,
+          "quality": "green",
+          "source": "9:kill:26",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:4",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "14:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "17:kill:16",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "15:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 15,
+          "quality": "green",
+          "source": "6:kill:12",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:17",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:1",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 29.191666666666663,
+      "seconds": 113.51666666666667,
+      "hp_pots": 0,
+      "mp_pots": 1
+    },
+    {
+      "seed": 7,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "auxiliary": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "10:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:18",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "9:kill:19",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "blue",
+          "source": "19:kill:5",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "blue",
+          "source": "18:kill:17",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:kill:22",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 25.816666666666663,
+      "seconds": 116.1,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 8,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "shoulder": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "0:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "16:kill:8",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "3:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:18",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "12:kill:12",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:1",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:26",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "blue",
+          "source": "19:kill:13",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 26.38333333333334,
+      "seconds": 112.80833333333334,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 9,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:16",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "3:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "17:kill:21",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "11:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "necklace": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "8:kill:18",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:kill:1",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 40.70833333333334,
+      "seconds": 131.45833333333334,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 10,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "pants": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "5:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:23",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "7:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:0",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "7:kill:0",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 29.691666666666677,
+      "seconds": 121.29166666666667,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 11,
+      "policy": "burst",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:0",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:18",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "3:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:22",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "10:kill:10",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "17:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 32.81666666666666,
+      "seconds": 124.225,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 0,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "auxiliary": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "0:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "18:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:19",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:23",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:kill:13",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "16:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "stone": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "5:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 40.608333333333334,
+      "seconds": 127.025,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 1,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "12:kill:19",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:kill:2",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "necklace": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "6:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "14:kill:24",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "blue",
+          "source": "14:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "11:kill:0",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "17:kill:19",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "15:kill:11",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "16:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 32.2,
+      "seconds": 113.425,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 2,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:24",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 15,
+          "quality": "blue",
+          "source": "4:kill:16",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "17:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 43.216666666666654,
+      "seconds": 132.725,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 3,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "13:kill:25",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "10:kill:17",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "19:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:1",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "8:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "11:kill:14",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 41.383333333333326,
+      "seconds": 130.50833333333333,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 4,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:5",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "boots": {
+          "item_level": 10,
+          "quality": "green",
+          "source": "2:kill:13",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "17:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "auxiliary": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "3:kill:4",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "11:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "12:kill:23",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:14",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 33.96666666666667,
+      "seconds": 122.525,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 5,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:kill:26",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:kill:3",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "5:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "auxiliary": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "10:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:kill:4",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "13:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "ring": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "7:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 32.95,
+      "seconds": 123.16666666666667,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 6,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "13:kill:3",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 15,
+          "quality": "green",
+          "source": "9:kill:26",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:4",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "14:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "17:kill:16",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "15:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 15,
+          "quality": "green",
+          "source": "6:kill:12",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:17",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:1",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 26.491666666666674,
+      "seconds": 111.93333333333334,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 7,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "auxiliary": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "10:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:kill:18",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "9:kill:19",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "blue",
+          "source": "19:kill:5",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "blue",
+          "source": "18:kill:17",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:kill:22",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 42.83333333333333,
+      "seconds": 133.725,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 8,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "shoulder": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "0:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "16:kill:8",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "3:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:18",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "12:kill:12",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:1",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:26",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 20,
+          "quality": "blue",
+          "source": "19:kill:13",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 31.974999999999994,
+      "seconds": 115.20833333333333,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 9,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:16",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "3:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "17:kill:21",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "green",
+          "source": "11:kill:27",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "necklace": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "8:kill:18",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "pants": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:kill:1",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "18:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 34.65833333333333,
+      "seconds": 128.34166666666667,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 10,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "necklace": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "15:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "pants": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "5:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:23",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "earring": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "7:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:0",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "boots": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "14:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "11:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:kill:27",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:18",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "7:kill:0",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 35.81666666666665,
+      "seconds": 131.35833333333332,
+      "hp_pots": 0,
+      "mp_pots": 0
+    },
+    {
+      "seed": 11,
+      "policy": "mixed3_safe",
+      "worn": {
+        "weapon": {
+          "item_level": 25,
+          "quality": "green",
+          "source": "level_mail:15",
+          "durability": {
+            "wearEnabled": true,
+            "current": 110,
+            "max": 110
+          }
+        },
+        "auxiliary": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:kill:0",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "stone": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "4:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "bracelet": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "16:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "ring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:kill:18",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        },
+        "belt": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "12:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "pants": {
+          "item_level": 10,
+          "quality": "white",
+          "source": "3:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "shoulder": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "13:clear",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "earring": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "19:kill:22",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "chest": {
+          "item_level": 15,
+          "quality": "white",
+          "source": "10:kill:10",
+          "durability": {
+            "wearEnabled": true,
+            "current": 100,
+            "max": 100
+          }
+        },
+        "trinket": {
+          "item_level": 20,
+          "quality": "white",
+          "source": "17:clear",
+          "durability": {
+            "wearEnabled": false,
+            "current": null,
+            "max": null
+          }
+        }
+      },
+      "success": true,
+      "boss_seconds": 29.775000000000006,
+      "seconds": 119.66666666666667,
+      "hp_pots": 0,
+      "mp_pots": 0
+    }
+  ],
+  "limitations": "Controlled probe using v30 terminal acquired gear, XP0 and eight current-tier HP/MP pots, not continuous v31 economy."
+}

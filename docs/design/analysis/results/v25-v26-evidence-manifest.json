@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "fad3dcb68bfe46fca98da78abac1bf1cf395f2a1",
+  "python": "3.14.3",
+  "platform": "Windows",
+  "new_trace_counts": {
+    "basic-skill-policy-v25.json": 240,
+    "basic-skill-policy-adaptive-v25.json": 60,
+    "intermediate-gear-policy-v26.json": 144
+  },
+  "regression": [
+    {
+      "script": "spatial_growth_encounter_trial.py",
+      "exit_code": 0,
+      "seconds": 57.01,
+      "checks": "PASS: bounds, time partition, kill/XP uniqueness, held gear, cast/CD snapshots, fixed replay"
+    },
+    {
+      "script": "boss_counter_window_trial.py",
+      "exit_code": 0,
+      "seconds": 45.481,
+      "checks": "PASS:96 candidate traces, default equivalence; per-run state/snapshot/boundary invariants"
+    }
+  ],
+  "snapshot_note": "Hashes taken after the optional intermediate-gear extension; ten saved default v25 traces matched the latest model exactly. No claim all historical scripts rerun.",
+  "analysis_sources": {
+    "docs/design/analysis/action_warning_timeline_trial.py": "82b4172b6fc729259426bec65b464c70fd84b2b7e3f6b06698427c47f44c1f5a",
+    "docs/design/analysis/active_progression_budget_trial.py": "4a61bb1c5b9a920ede90b13372688f598b45d895a974e4f742080e2f70ebfe75",
+    "docs/design/analysis/basic_skill_policy_trial.py": "4a3fe05d2a689103bc1884f2e0c553658fe3c1d7061a6d330669687448b788dd",
+    "docs/design/analysis/bleed_mitigation_trial.py": "2f49599e5516290b7bbb38c347eedb297dbf4a4e85511abbed06a75373e7d382",
+    "docs/design/analysis/boss_counter_window_trial.py": "05ccbd0cf68ac0df431dd8e892a7e7311434fe04226356d851cdd1f5e3832ff9",
+    "docs/design/analysis/boss_stomp_charge_trial.py": "8acf3072377d061d4e40331fcdb39a61a6445599002c9b52e334212c6917db41",
+    "docs/design/analysis/boss_window_trial.py": "3f7c1eba9e7eed93db5b45cb4aa2b20f1c363482f04a5885bc96082f51f6b0ba",
+    "docs/design/analysis/challenge_lifecycle_trial.py": "1c127757f38a3a6891b0a9c71173202981ad69b32ab2f68ca24b49ae012fc824",
+    "docs/design/analysis/collection_policy_trial.py": "50b2d0dbe125ed13c60f0855f129656e05d9973db708dc673db4d7feeb7e141a",
+    "docs/design/analysis/combat_boundary_integration.py": "7be903287969d9467d5177a300c3605f973e148577a08460cf5a654abe8120ed",
+    "docs/design/analysis/combat_economy_trial.py": "0fbdc7a1f8f690b09b603d80dc5b5d8c0cbabe3e87ffaaa80710938d10e07d1f",
+    "docs/design/analysis/control_timing_trial.py": "ada9d67abd2ec3de7437b63acbfe89c91b009853a4656946c26f643d39ded43c",
+    "docs/design/analysis/current_timing_dungeon_trial.py": "e083264a4170e6e1458ba7da0aae9463081822de8eecc257fca9c4ba39887fcd",
+    "docs/design/analysis/displacement_boundary_trial.py": "76d4480e50d15b303785554848ffe3dcda68f387c5438b6ca0440c7df87fd960",
+    "docs/design/analysis/drop_difficulty_trial.py": "da354dc4302ce6f46033aaa1e6a78ee7996149c04985629d2fba2bcf852e8aca",
+    "docs/design/analysis/dungeon_budget_trial.py": "376765fbc817f447076791473a39067f402d9d766f76e60ea3774b5ee0ed806f",
+    "docs/design/analysis/encounter_time_budget_trial.py": "a38851e9298ecc53cf8461c44654be33e27634781be3f1a116863c976ce2117d",
+    "docs/design/analysis/enemy_action_nodes_trial.py": "24dafb0dda58a0b622007facf73536b6261e47bc74a3186d40bb00c8df7dcbee",
+    "docs/design/analysis/enhancement_combined_trial.py": "ae843c430d97f5ec49648bcc95cd12a39f5a5ad8b3e6c70e313f9ff0ff38131b",
+    "docs/design/analysis/enhancement_memory_trial.py": "76194c019d1f65147242fe5a5cd3dcc9b20a837299691e87d9229b311e1cd639",
+    "docs/design/analysis/enhancement_risk_trial.py": "4df224e65b45ba7892730cd5c65d26590f6b16d49ac9e9dfa0099eb3f7f1d03a",
+    "docs/design/analysis/enhancement_similarity_trial.py": "5ec6a3ce4744bd3926966f9c0298f7382d4119c1582710d0274a4006cbeacaec",
+    "docs/design/analysis/enhancement_weighted_memory_trial.py": "4a12a4139eccc2ba0573188f0c81ab1bd214f4104d62e790450babb72a82cf00",
+    "docs/design/analysis/equipment_contribution_trial.py": "75a2d48d911d858979cf04845e3f95628c7ef37a41fbeb732236d2976ba1bafa",
+    "docs/design/analysis/failed_progression_trial.py": "bd026208cc653b49c888f75a5c06a6899db34423e6ea268919e06a147809d80f",
+    "docs/design/analysis/first_dungeon_sync_trial.py": "e3c1299b3db47bd2e22f6c9910a3d7fcc62a60d63e76222fcc63971655725b38",
+    "docs/design/analysis/group_attack_coordination_trial.py": "7452b4b0c9c256d2f9b8d2f3390d5ab65493aad038586b1899db2d0066dbbb8d",
+    "docs/design/analysis/haste_ceiling_trial.py": "67b84b42fc421efb7bffe7e78cd63fdcdd4b66a61e4023310640887d2c1ddeda",
+    "docs/design/analysis/hit_resolution_trial.py": "bde0d28d2654f9490ec7899d49d7db91758e9790182057e2f19816ca3a725ee2",
+    "docs/design/analysis/intermediate_gear_policy_trial.py": "9757cad7635a54447d2f44e50d35b4da7c7cae522f4303206d7fc939d1d14db2",
+    "docs/design/analysis/joint_spatial_encounter_trial.py": "0daed4ecc115b210ebde48ff6c1337f99758547f8fae3db34f8ec32bd95bcf38",
+    "docs/design/analysis/levelup_encounter_trial.py": "84ce4ee4e03461ff96dab6883a813b093636d632a7d65b66de6b084b177d099a",
+    "docs/design/analysis/progression_award_trial.py": "357c75c5f6cb124125821b00dd20d142623d4bc7d5e338f0e3cdea95033fb91a",
+    "docs/design/analysis/progression_calendar_trial.py": "6f984ed0e74e68ab26b7e63183e32e015b57d79c449fbd610e1257e3913b62f1",
+    "docs/design/analysis/received_hit_spatial_trial.py": "25ecb0e543aaac179d05c8463bdd260f8dec9291e03a3284008f1cc8078b80e7",
+    "docs/design/analysis/segmented_hit_dungeon_trial.py": "987743e7cff063edfa5ee5df0272fbcf3492106cc7d11da841271af694a825ed",
+    "docs/design/analysis/skill_displacement_dodge_trial.py": "b8879360320c726c0c20da1e084507c62e5fd25ec90d0fc55f8f5464304c2c8b",
+    "docs/design/analysis/snapshot_boundary_trial.py": "c05688a5536047fcc346992ca42e74e9a23da60d4562557b14145f4a284cb690",
+    "docs/design/analysis/spatial_dodge_trial.py": "706ac404f193c878fc95616dae2e49812f67a74e6a683392b99ce404b53d8e15",
+    "docs/design/analysis/spatial_growth_encounter_trial.py": "b3254c6663dc8fed6c96102573aae853c282b967fbcbd394ef97547f2cab7b33",
+    "docs/design/analysis/weapon_share_trial.py": "45d546f9115fa779ec557ddab9d7101e8eb74d57c3d2687514c5adea71ea9c1f",
+    "docs/design/analysis/weapon_synergy_trial.py": "6f9c98e07bbf8eb36accfce5ca6e0ff4dfa1af87b8b20ec494a14289be397c47",
+    "docs/design/analysis/weapon_synergy_validation.py": "baf4f6d855d91e42ac73f81cd942ab461555a6604045bf4eb4b4f21d5172d79f"
+  },
+  "results": {
+    "basic-skill-policy-v25.json": "8ca710cefcb49991de8b1b4accb6aca081d21a74e635da5eaa1f61f02f65bf83",
+    "basic-skill-policy-adaptive-v25.json": "74f0dffdc808ead0277c1b6d0a7945546dbd0e8d4bd614f24e2a24565c86ed8d",
+    "intermediate-gear-policy-v26.json": "8bd0fe76b8332eefa7b8ca26bca7ad9a872cdd2778ca05f24eb4f9423c1d1625"
+  }
+}

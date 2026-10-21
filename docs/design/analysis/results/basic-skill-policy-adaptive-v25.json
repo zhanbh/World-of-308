@@ -1,0 +1,7334 @@
+{
+  "schema": 1,
+  "seeds": 12,
+  "results": [
+    {
+      "level": 1,
+      "gear": "starter",
+      "policy": "mixed3_safe",
+      "samples": 12,
+      "clears": 12,
+      "median_seconds": 241.75416666666666,
+      "median_boss_seconds": 152.14166666666668,
+      "mean_hp_pots": 2.6666666666666665,
+      "mean_mp_pots": 0,
+      "mean_mana_spent": 283.3333333333333,
+      "mean_boss_mp_pots": 0,
+      "mean_boss_mana_spent": 188.66666666666666,
+      "mean_net": 439.6666666666667,
+      "mean_rooms": 7,
+      "mean_casts": {
+        "basic": 250.5,
+        "cross": 35.416666666666664,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      }
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "policy": "mixed3_safe",
+      "samples": 12,
+      "clears": 12,
+      "median_seconds": 259.13750000000005,
+      "median_boss_seconds": 168.03750000000002,
+      "mean_hp_pots": 5.166666666666667,
+      "mean_mp_pots": 1,
+      "mean_mana_spent": 671.6666666666666,
+      "mean_boss_mp_pots": 1,
+      "mean_boss_mana_spent": 439.6666666666667,
+      "mean_net": 559.3333333333334,
+      "mean_rooms": 7,
+      "mean_casts": {
+        "basic": 233.33333333333334,
+        "cross": 37.416666666666664,
+        "mountain": 21.25,
+        "draw": 0,
+        "outrage": 0
+      }
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "policy": "mixed3_safe",
+      "samples": 12,
+      "clears": 12,
+      "median_seconds": 253.89166666666665,
+      "median_boss_seconds": 162.14166666666665,
+      "mean_hp_pots": 4.5,
+      "mean_mp_pots": 2.75,
+      "mean_mana_spent": 1063.5,
+      "mean_boss_mp_pots": 2.75,
+      "mean_boss_mana_spent": 702.5,
+      "mean_net": 1148.5,
+      "mean_rooms": 7,
+      "mean_casts": {
+        "basic": 199.58333333333334,
+        "cross": 31.25,
+        "mountain": 18.5,
+        "draw": 19.75,
+        "outrage": 0
+      }
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "policy": "mixed3_safe",
+      "samples": 12,
+      "clears": 12,
+      "median_seconds": 276.9041666666667,
+      "median_boss_seconds": 183.68750000000003,
+      "mean_hp_pots": 4.833333333333333,
+      "mean_mp_pots": 3,
+      "mean_mana_spent": 1505,
+      "mean_boss_mp_pots": 3,
+      "mean_boss_mana_spent": 1024.0833333333333,
+      "mean_net": 2215.6666666666665,
+      "mean_rooms": 7,
+      "mean_casts": {
+        "basic": 214.41666666666666,
+        "cross": 35.333333333333336,
+        "mountain": 20.916666666666668,
+        "draw": 21.5,
+        "outrage": 0
+      }
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "policy": "mixed3_safe",
+      "samples": 12,
+      "clears": 12,
+      "median_seconds": 150.39583333333331,
+      "median_boss_seconds": 79.82916666666667,
+      "mean_hp_pots": 0,
+      "mean_mp_pots": 0.5,
+      "mean_mana_spent": 744,
+      "mean_boss_mp_pots": 0.5,
+      "mean_boss_mana_spent": 442,
+      "mean_net": 1488,
+      "mean_rooms": 7,
+      "mean_casts": {
+        "basic": 145.58333333333334,
+        "cross": 19,
+        "mountain": 13.25,
+        "draw": 15.416666666666666,
+        "outrage": 0
+      }
+    }
+  ],
+  "traces": [
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 0,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 227.325,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 2,
+      "net": 453,
+      "mana_spent": 272,
+      "cast_counts": {
+        "basic": 245,
+        "cross": 34,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.575,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.949999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 10.366666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.925000000000004,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 26.4,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.125,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 16,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 137.98333333333332,
+          "hp_pots": 2,
+          "mp_pots": 0,
+          "mana_spent": 176,
+          "cast_counts": {
+            "basic": 139,
+            "cross": 22,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 1,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 228.33333333333334,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 1,
+      "net": 473,
+      "mana_spent": 256,
+      "cast_counts": {
+        "basic": 251,
+        "cross": 32,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.583333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.6,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.675,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.68333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 25.516666666666673,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 32,
+          "cast_counts": {
+            "basic": 47,
+            "cross": 4,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.566666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 17,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 140.70833333333334,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 168,
+          "cast_counts": {
+            "basic": 145,
+            "cross": 21,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 2,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 241.50833333333333,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 3,
+      "net": 433,
+      "mana_spent": 272,
+      "cast_counts": {
+        "basic": 251,
+        "cross": 34,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 7.375,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.524999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.658333333333335,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.291666666666671,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 25.4,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 32,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 4,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.658333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 17,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 152.6,
+          "hp_pots": 3,
+          "mp_pots": 0,
+          "mana_spent": 184,
+          "cast_counts": {
+            "basic": 144,
+            "cross": 23,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 3,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 242.0,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 3,
+      "net": 433,
+      "mana_spent": 288,
+      "cast_counts": {
+        "basic": 253,
+        "cross": 36,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.575,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.991666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.658333333333335,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.691666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 26.68333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 49,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.291666666666671,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 19,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 152.10833333333335,
+          "hp_pots": 3,
+          "mp_pots": 0,
+          "mana_spent": 192,
+          "cast_counts": {
+            "basic": 143,
+            "cross": 24,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 4,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 238.46666666666667,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 3,
+      "net": 433,
+      "mana_spent": 280,
+      "cast_counts": {
+        "basic": 239,
+        "cross": 35,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.575,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.175,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.658333333333335,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.291666666666671,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 25.758333333333326,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 44,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 10.241666666666674,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 151.76666666666665,
+          "hp_pots": 3,
+          "mp_pots": 0,
+          "mana_spent": 184,
+          "cast_counts": {
+            "basic": 141,
+            "cross": 23,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 5,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 229.675,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 1,
+      "net": 473,
+      "mana_spent": 264,
+      "cast_counts": {
+        "basic": 258,
+        "cross": 33,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.575,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.600000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.675,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.68333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 29.25833333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 53,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.266666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 19,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 137.61666666666667,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 168,
+          "cast_counts": {
+            "basic": 144,
+            "cross": 21,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 6,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 266.60833333333335,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 5,
+      "net": 393,
+      "mana_spent": 312,
+      "cast_counts": {
+        "basic": 246,
+        "cross": 39,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.875,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.699999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.666666666666668,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.291666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 26.40833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.100000000000009,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 20,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 177.56666666666666,
+          "hp_pots": 5,
+          "mp_pots": 0,
+          "mana_spent": 216,
+          "cast_counts": {
+            "basic": 139,
+            "cross": 27,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 7,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 244.23333333333332,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 3,
+      "net": 433,
+      "mana_spent": 288,
+      "cast_counts": {
+        "basic": 249,
+        "cross": 36,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.575,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.75,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 11.55,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 17,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.69166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 25.67499999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 44,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 10.241666666666674,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 154.75,
+          "hp_pots": 3,
+          "mp_pots": 0,
+          "mana_spent": 192,
+          "cast_counts": {
+            "basic": 142,
+            "cross": 24,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 8,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 245.09166666666667,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 3,
+      "net": 433,
+      "mana_spent": 288,
+      "cast_counts": {
+        "basic": 254,
+        "cross": 36,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.575,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.0,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 10.408333333333335,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.408333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 26.775000000000006,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 48,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.308333333333323,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 155.61666666666667,
+          "hp_pots": 3,
+          "mp_pots": 0,
+          "mana_spent": 192,
+          "cast_counts": {
+            "basic": 148,
+            "cross": 24,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 9,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 236.2,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 3,
+      "net": 433,
+      "mana_spent": 280,
+      "cast_counts": {
+        "basic": 257,
+        "cross": 35,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.65,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.374999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 10.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.625,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 26.508333333333326,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.733333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 22,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 144.99166666666667,
+          "hp_pots": 3,
+          "mp_pots": 0,
+          "mana_spent": 184,
+          "cast_counts": {
+            "basic": 145,
+            "cross": 23,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 10,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 269.6,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 4,
+      "net": 413,
+      "mana_spent": 312,
+      "cast_counts": {
+        "basic": 247,
+        "cross": 39,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.575,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.600000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.675,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.408333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 27.333333333333336,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 49,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.674999999999997,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 18,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 180.33333333333337,
+          "hp_pots": 4,
+          "mp_pots": 0,
+          "mana_spent": 216,
+          "cast_counts": {
+            "basic": 140,
+            "cross": 27,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "gear": "starter",
+      "seed": 11,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 242.03333333333333,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 1,
+      "net": 473,
+      "mana_spent": 288,
+      "cast_counts": {
+        "basic": 256,
+        "cross": 36,
+        "mountain": 0,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 7.141666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.241666666666665,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.675,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.63333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 8,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 27.083333333333336,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 40,
+          "cast_counts": {
+            "basic": 49,
+            "cross": 5,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.083333333333329,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 16,
+          "cast_counts": {
+            "basic": 16,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 152.175,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 192,
+          "cast_counts": {
+            "basic": 148,
+            "cross": 24,
+            "mountain": 0,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 0,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 254.90833333333333,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 5,
+      "net": 566,
+      "mana_spent": 664,
+      "cast_counts": {
+        "basic": 221,
+        "cross": 37,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.049999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.200000000000003,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.908333333333335,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 29.583333333333336,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 48,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.024999999999991,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 164.73333333333335,
+          "hp_pots": 4,
+          "mp_pots": 1,
+          "mana_spent": 432,
+          "cast_counts": {
+            "basic": 128,
+            "cross": 25,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 1,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 244.65833333333333,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 5,
+      "net": 566,
+      "mana_spent": 664,
+      "cast_counts": {
+        "basic": 224,
+        "cross": 37,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.750000000000002,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.875,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.533333333333339,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 29.30833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 10.658333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 154.125,
+          "hp_pots": 5,
+          "mp_pots": 1,
+          "mana_spent": 432,
+          "cast_counts": {
+            "basic": 132,
+            "cross": 25,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 2,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 278.19166666666666,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 7,
+      "net": 486,
+      "mana_spent": 718,
+      "cast_counts": {
+        "basic": 223,
+        "cross": 41,
+        "mountain": 22,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 7.066666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.125,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.875,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.80833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 28.316666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.416666666666671,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 188.58333333333331,
+          "hp_pots": 7,
+          "mp_pots": 1,
+          "mana_spent": 486,
+          "cast_counts": {
+            "basic": 130,
+            "cross": 29,
+            "mountain": 14,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 3,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 255.28333333333333,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 6,
+      "net": 526,
+      "mana_spent": 654,
+      "cast_counts": {
+        "basic": 236,
+        "cross": 36,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.533333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.508333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.2,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 31.73333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 54,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.099999999999994,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 16,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 162.8,
+          "hp_pots": 6,
+          "mp_pots": 1,
+          "mana_spent": 422,
+          "cast_counts": {
+            "basic": 136,
+            "cross": 24,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 4,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 258.90833333333336,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 4,
+      "net": 606,
+      "mana_spent": 664,
+      "cast_counts": {
+        "basic": 226,
+        "cross": 37,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.441666666666668,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.541666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.81666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 30.283333333333324,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 49,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.38333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 168.03333333333336,
+          "hp_pots": 4,
+          "mp_pots": 1,
+          "mana_spent": 432,
+          "cast_counts": {
+            "basic": 133,
+            "cross": 25,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 5,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 263.4166666666667,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 5,
+      "net": 566,
+      "mana_spent": 678,
+      "cast_counts": {
+        "basic": 234,
+        "cross": 37,
+        "mountain": 22,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.533333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.508333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.2,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 32.4,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 56,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.88333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 16,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 170.48333333333335,
+          "hp_pots": 5,
+          "mp_pots": 1,
+          "mana_spent": 446,
+          "cast_counts": {
+            "basic": 132,
+            "cross": 25,
+            "mountain": 14,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 6,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 256.18333333333334,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 5,
+      "net": 566,
+      "mana_spent": 654,
+      "cast_counts": {
+        "basic": 239,
+        "cross": 36,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.808333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.408333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.875,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.80833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 31.80833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 55,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.741666666666674,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 16,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 162.73333333333335,
+          "hp_pots": 5,
+          "mp_pots": 1,
+          "mana_spent": 422,
+          "cast_counts": {
+            "basic": 136,
+            "cross": 24,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 7,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 254.9,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 5,
+      "net": 566,
+      "mana_spent": 654,
+      "cast_counts": {
+        "basic": 233,
+        "cross": 36,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.808333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.116666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 11.191666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.80833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 29.90833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 48,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.75,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 162.31666666666666,
+          "hp_pots": 5,
+          "mp_pots": 1,
+          "mana_spent": 422,
+          "cast_counts": {
+            "basic": 135,
+            "cross": 24,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 8,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 259.3666666666667,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 4,
+      "net": 606,
+      "mana_spent": 674,
+      "cast_counts": {
+        "basic": 236,
+        "cross": 38,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.225,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.775000000000002,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.225000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 30.258333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 49,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.38333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 168.09166666666667,
+          "hp_pots": 4,
+          "mp_pots": 1,
+          "mana_spent": 442,
+          "cast_counts": {
+            "basic": 140,
+            "cross": 26,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 9,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 261.925,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 5,
+      "net": 566,
+      "mana_spent": 674,
+      "cast_counts": {
+        "basic": 245,
+        "cross": 38,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.475,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.533333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.425,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 9.133333333333336,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 32.68333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 55,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.63333333333334,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 168.04166666666669,
+          "hp_pots": 4,
+          "mp_pots": 1,
+          "mana_spent": 442,
+          "cast_counts": {
+            "basic": 142,
+            "cross": 26,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 10,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 263.56666666666666,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 4,
+      "net": 606,
+      "mana_spent": 674,
+      "cast_counts": {
+        "basic": 236,
+        "cross": 38,
+        "mountain": 21,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.533333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.508333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.49166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 31.124999999999993,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 53,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.808333333333337,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 171.69166666666666,
+          "hp_pots": 4,
+          "mp_pots": 1,
+          "mana_spent": 442,
+          "cast_counts": {
+            "basic": 137,
+            "cross": 26,
+            "mountain": 13,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gear": "starter",
+      "seed": 11,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 267.675,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 7,
+      "net": 486,
+      "mana_spent": 688,
+      "cast_counts": {
+        "basic": 247,
+        "cross": 38,
+        "mountain": 22,
+        "draw": 0,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.675,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.733333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.875,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.433333333333337,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 24,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 32.05,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 92,
+          "cast_counts": {
+            "basic": 54,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.599999999999994,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 34,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 173.30833333333334,
+          "hp_pots": 7,
+          "mp_pots": 1,
+          "mana_spent": 456,
+          "cast_counts": {
+            "basic": 144,
+            "cross": 26,
+            "mountain": 14,
+            "draw": 0,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 0,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 262.6333333333333,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 1166,
+      "mana_spent": 1092,
+      "cast_counts": {
+        "basic": 190,
+        "cross": 31,
+        "mountain": 20,
+        "draw": 20,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.099999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.583333333333336,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 32.25833333333333,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 150,
+          "cast_counts": {
+            "basic": 53,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.433333333333337,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 170.21666666666664,
+          "hp_pots": 3,
+          "mp_pots": 3,
+          "mana_spent": 744,
+          "cast_counts": {
+            "basic": 97,
+            "cross": 23,
+            "mountain": 13,
+            "draw": 13,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 1,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 241.60833333333332,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 5,
+      "net": 1096,
+      "mana_spent": 1044,
+      "cast_counts": {
+        "basic": 195,
+        "cross": 30,
+        "mountain": 19,
+        "draw": 19,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.274999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 8.89166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.916666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 28.133333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 138,
+          "cast_counts": {
+            "basic": 43,
+            "cross": 4,
+            "mountain": 3,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.825000000000003,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 152.25,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 684,
+          "cast_counts": {
+            "basic": 109,
+            "cross": 21,
+            "mountain": 12,
+            "draw": 12,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 2,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 254.43333333333334,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 5,
+      "net": 1096,
+      "mana_spent": 1098,
+      "cast_counts": {
+        "basic": 194,
+        "cross": 33,
+        "mountain": 19,
+        "draw": 20,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.608333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.616666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.774999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 30.96666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 168,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.658333333333331,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 162.4,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 708,
+          "cast_counts": {
+            "basic": 108,
+            "cross": 23,
+            "mountain": 12,
+            "draw": 12,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 3,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 240.375,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 5,
+      "net": 1096,
+      "mana_spent": 1038,
+      "cast_counts": {
+        "basic": 204,
+        "cross": 31,
+        "mountain": 17,
+        "draw": 20,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.975000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.133333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.683333333333337,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 30.566666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 150,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 5,
+            "mountain": 2,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.216666666666669,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 148.48333333333335,
+          "hp_pots": 5,
+          "mp_pots": 3,
+          "mana_spent": 678,
+          "cast_counts": {
+            "basic": 112,
+            "cross": 22,
+            "mountain": 10,
+            "draw": 13,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 4,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 256.19166666666666,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 1166,
+      "mana_spent": 1074,
+      "cast_counts": {
+        "basic": 196,
+        "cross": 31,
+        "mountain": 20,
+        "draw": 19,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.975000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.133333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.383333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 31.166666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 156,
+          "cast_counts": {
+            "basic": 48,
+            "cross": 4,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.325000000000003,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 162.89166666666665,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 696,
+          "cast_counts": {
+            "basic": 102,
+            "cross": 22,
+            "mountain": 12,
+            "draw": 12,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 5,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 250.13333333333333,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 5,
+      "net": 1096,
+      "mana_spent": 1062,
+      "cast_counts": {
+        "basic": 204,
+        "cross": 30,
+        "mountain": 18,
+        "draw": 21,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.099999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.533333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 34.650000000000006,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 168,
+          "cast_counts": {
+            "basic": 58,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.766666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 155.04166666666666,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 684,
+          "cast_counts": {
+            "basic": 106,
+            "cross": 21,
+            "mountain": 11,
+            "draw": 13,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 6,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 244.425,
+      "rooms": 7,
+      "mp_pots": 2,
+      "hp_pots": 5,
+      "net": 1166,
+      "mana_spent": 1008,
+      "cast_counts": {
+        "basic": 196,
+        "cross": 30,
+        "mountain": 17,
+        "draw": 19,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.066666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.383333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.81666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 29.908333333333324,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 138,
+          "cast_counts": {
+            "basic": 46,
+            "cross": 4,
+            "mountain": 2,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.341666666666669,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 153.5916666666667,
+          "hp_pots": 5,
+          "mp_pots": 2,
+          "mana_spent": 678,
+          "cast_counts": {
+            "basic": 109,
+            "cross": 22,
+            "mountain": 11,
+            "draw": 12,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 7,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 253.35,
+      "rooms": 7,
+      "mp_pots": 2,
+      "hp_pots": 4,
+      "net": 1236,
+      "mana_spent": 1044,
+      "cast_counts": {
+        "basic": 206,
+        "cross": 30,
+        "mountain": 18,
+        "draw": 20,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.083333333333332,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 10.683333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.93333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 28.65833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 138,
+          "cast_counts": {
+            "basic": 45,
+            "cross": 4,
+            "mountain": 2,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.791666666666671,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 161.88333333333333,
+          "hp_pots": 4,
+          "mp_pots": 2,
+          "mana_spent": 684,
+          "cast_counts": {
+            "basic": 114,
+            "cross": 21,
+            "mountain": 11,
+            "draw": 13,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 8,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 252.29166666666666,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 1166,
+      "mana_spent": 1062,
+      "cast_counts": {
+        "basic": 202,
+        "cross": 33,
+        "mountain": 18,
+        "draw": 19,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.60833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.383333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 31.04166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 150,
+          "cast_counts": {
+            "basic": 49,
+            "cross": 5,
+            "mountain": 2,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 10.816666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 161.39999999999998,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 708,
+          "cast_counts": {
+            "basic": 115,
+            "cross": 23,
+            "mountain": 12,
+            "draw": 12,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 9,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 261.5,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 1166,
+      "mana_spent": 1116,
+      "cast_counts": {
+        "basic": 203,
+        "cross": 33,
+        "mountain": 20,
+        "draw": 20,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.608333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.575000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.741666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.850000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 33.458333333333336,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 168,
+          "cast_counts": {
+            "basic": 54,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.016666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 166.25,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 738,
+          "cast_counts": {
+            "basic": 106,
+            "cross": 24,
+            "mountain": 13,
+            "draw": 12,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 10,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 256.96666666666664,
+      "rooms": 7,
+      "mp_pots": 2,
+      "hp_pots": 3,
+      "net": 1306,
+      "mana_spent": 1026,
+      "cast_counts": {
+        "basic": 198,
+        "cross": 30,
+        "mountain": 18,
+        "draw": 19,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.099999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.81666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 28.658333333333324,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 138,
+          "cast_counts": {
+            "basic": 44,
+            "cross": 4,
+            "mountain": 2,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.658333333333346,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 168.69166666666663,
+          "hp_pots": 3,
+          "mp_pots": 2,
+          "mana_spent": 696,
+          "cast_counts": {
+            "basic": 115,
+            "cross": 22,
+            "mountain": 12,
+            "draw": 12,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "starter",
+      "seed": 11,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 258.18333333333334,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 6,
+      "net": 1026,
+      "mana_spent": 1098,
+      "cast_counts": {
+        "basic": 207,
+        "cross": 33,
+        "mountain": 18,
+        "draw": 21,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.608333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.100000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.850000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 33.075,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 168,
+          "cast_counts": {
+            "basic": 54,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.016666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 165.125,
+          "hp_pots": 6,
+          "mp_pots": 3,
+          "mana_spent": 732,
+          "cast_counts": {
+            "basic": 113,
+            "cross": 25,
+            "mountain": 11,
+            "draw": 13,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 0,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 268.9583333333333,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 2299,
+      "mana_spent": 1537,
+      "cast_counts": {
+        "basic": 207,
+        "cross": 35,
+        "mountain": 22,
+        "draw": 22,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.991666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.975000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.783333333333339,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 33.533333333333324,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 54,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.13333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 173.22499999999997,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 1004,
+          "cast_counts": {
+            "basic": 108,
+            "cross": 24,
+            "mountain": 14,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 1,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 276.23333333333335,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 5,
+      "net": 2199,
+      "mana_spent": 1489,
+      "cast_counts": {
+        "basic": 213,
+        "cross": 35,
+        "mountain": 20,
+        "draw": 22,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.099999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.950000000000003,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 32.68333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 52,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.541666666666657,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 182.91666666666669,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 1010,
+          "cast_counts": {
+            "basic": 121,
+            "cross": 26,
+            "mountain": 13,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 2,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 276.4583333333333,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 2299,
+      "mana_spent": 1504,
+      "cast_counts": {
+        "basic": 215,
+        "cross": 36,
+        "mountain": 20,
+        "draw": 22,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.608333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.683333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.775000000000002,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 35.14166666666666,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 55,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.700000000000003,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 180.14166666666665,
+          "hp_pots": 3,
+          "mp_pots": 3,
+          "mana_spent": 1010,
+          "cast_counts": {
+            "basic": 120,
+            "cross": 26,
+            "mountain": 13,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 3,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 277.78333333333336,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 2299,
+      "mana_spent": 1491,
+      "cast_counts": {
+        "basic": 209,
+        "cross": 35,
+        "mountain": 21,
+        "draw": 21,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.099999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.81666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 39,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 33.199999999999996,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 52,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.166666666666671,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 15,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 184.45833333333337,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 1034,
+          "cast_counts": {
+            "basic": 116,
+            "cross": 26,
+            "mountain": 14,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 4,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 265.15,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 2299,
+      "mana_spent": 1448,
+      "cast_counts": {
+        "basic": 211,
+        "cross": 32,
+        "mountain": 22,
+        "draw": 20,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 8.191666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.133333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.358333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 39,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 32.55833333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 50,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 10.633333333333326,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 171.95833333333331,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 967,
+          "cast_counts": {
+            "basic": 116,
+            "cross": 23,
+            "mountain": 14,
+            "draw": 13,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 5,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 286.2083333333333,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 5,
+      "net": 2199,
+      "mana_spent": 1543,
+      "cast_counts": {
+        "basic": 228,
+        "cross": 37,
+        "mountain": 21,
+        "draw": 22,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.616666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.8,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 36.35833333333333,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 228,
+          "cast_counts": {
+            "basic": 57,
+            "cross": 6,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 10.266666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 190.125,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 1049,
+          "cast_counts": {
+            "basic": 132,
+            "cross": 27,
+            "mountain": 14,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 6,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 272.4,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 2299,
+      "mana_spent": 1489,
+      "cast_counts": {
+        "basic": 211,
+        "cross": 35,
+        "mountain": 20,
+        "draw": 22,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.608333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.408333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.100000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.816666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 39,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 32.11666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 51,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 12.0,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 16,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 180.34999999999997,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 1032,
+          "cast_counts": {
+            "basic": 118,
+            "cross": 26,
+            "mountain": 13,
+            "draw": 15,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 7,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 269.2083333333333,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 6,
+      "net": 2099,
+      "mana_spent": 1452,
+      "cast_counts": {
+        "basic": 210,
+        "cross": 34,
+        "mountain": 20,
+        "draw": 21,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.066666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 10.233333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 11,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.200000000000003,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 39,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 31.741666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 48,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 10.816666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 176.83333333333331,
+          "hp_pots": 6,
+          "mp_pots": 3,
+          "mana_spent": 995,
+          "cast_counts": {
+            "basic": 119,
+            "cross": 25,
+            "mountain": 13,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 8,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 289.725,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 6,
+      "net": 2099,
+      "mana_spent": 1536,
+      "cast_counts": {
+        "basic": 214,
+        "cross": 38,
+        "mountain": 21,
+        "draw": 21,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.674999999999997,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.358333333333338,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 39,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 36.43333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 228,
+          "cast_counts": {
+            "basic": 56,
+            "cross": 6,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.274999999999991,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 14,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 192.9416666666667,
+          "hp_pots": 5,
+          "mp_pots": 3,
+          "mana_spent": 1049,
+          "cast_counts": {
+            "basic": 116,
+            "cross": 27,
+            "mountain": 14,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 9,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 286.7416666666667,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 6,
+      "net": 2099,
+      "mana_spent": 1558,
+      "cast_counts": {
+        "basic": 222,
+        "cross": 38,
+        "mountain": 21,
+        "draw": 22,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.975,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.041666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 10.325,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.774999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 34.75833333333333,
+          "hp_pots": 1,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 58,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.658333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 76,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 189.20833333333334,
+          "hp_pots": 5,
+          "mp_pots": 3,
+          "mana_spent": 1049,
+          "cast_counts": {
+            "basic": 121,
+            "cross": 27,
+            "mountain": 14,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 10,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 277.35,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 4,
+      "net": 2299,
+      "mana_spent": 1461,
+      "cast_counts": {
+        "basic": 212,
+        "cross": 33,
+        "mountain": 21,
+        "draw": 21,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 6.316666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.725000000000001,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 37,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.099999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.81666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 39,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 31.71666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 49,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 10.366666666666674,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 187.30833333333334,
+          "hp_pots": 4,
+          "mp_pots": 3,
+          "mana_spent": 1019,
+          "cast_counts": {
+            "basic": 125,
+            "cross": 25,
+            "mountain": 14,
+            "draw": 14,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 15,
+      "gear": "starter",
+      "seed": 11,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 279.35833333333335,
+      "rooms": 7,
+      "mp_pots": 3,
+      "hp_pots": 6,
+      "net": 2099,
+      "mana_spent": 1552,
+      "cast_counts": {
+        "basic": 221,
+        "cross": 36,
+        "mountain": 22,
+        "draw": 22,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 7.258333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 46,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 7.516666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 9.133333333333336,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.366666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 39,
+          "cast_counts": {
+            "basic": 10,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 0,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 32.74166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 213,
+          "cast_counts": {
+            "basic": 52,
+            "cross": 5,
+            "mountain": 3,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 11.058333333333337,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 61,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 185.28333333333336,
+          "hp_pots": 6,
+          "mp_pots": 3,
+          "mana_spent": 1071,
+          "cast_counts": {
+            "basic": 126,
+            "cross": 27,
+            "mountain": 14,
+            "draw": 15,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 0,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 151.43333333333334,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 0,
+      "net": 1453,
+      "mana_spent": 750,
+      "cast_counts": {
+        "basic": 144,
+        "cross": 22,
+        "mountain": 11,
+        "draw": 16,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.824999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.191666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 42,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 2,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 6.541666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 21.29166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 138,
+          "cast_counts": {
+            "basic": 39,
+            "cross": 4,
+            "mountain": 2,
+            "draw": 3,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 8.333333333333329,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 78.88333333333334,
+          "hp_pots": 0,
+          "mp_pots": 1,
+          "mana_spent": 432,
+          "cast_counts": {
+            "basic": 70,
+            "cross": 15,
+            "mountain": 6,
+            "draw": 8,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 1,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 148.04166666666666,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 0,
+      "net": 1523,
+      "mana_spent": 720,
+      "cast_counts": {
+        "basic": 144,
+        "cross": 18,
+        "mountain": 13,
+        "draw": 15,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.041666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.016666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.349999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 18.950000000000003,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 34,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 9.516666666666659,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 76.8,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 414,
+          "cast_counts": {
+            "basic": 76,
+            "cross": 12,
+            "mountain": 7,
+            "draw": 8,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 2,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 143.575,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 0,
+      "net": 1523,
+      "mana_spent": 690,
+      "cast_counts": {
+        "basic": 138,
+        "cross": 17,
+        "mountain": 12,
+        "draw": 15,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.041666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.791666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 6.766666666666669,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 17.424999999999997,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 30,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 9.141666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 74.04166666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 396,
+          "cast_counts": {
+            "basic": 75,
+            "cross": 12,
+            "mountain": 6,
+            "draw": 8,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 3,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 169.425,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 0,
+      "net": 1453,
+      "mana_spent": 798,
+      "cast_counts": {
+        "basic": 142,
+        "cross": 20,
+        "mountain": 14,
+        "draw": 17,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.041666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.791666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.349999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 18.775000000000006,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 32,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 8.483333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 98.61666666666667,
+          "hp_pots": 0,
+          "mp_pots": 1,
+          "mana_spent": 492,
+          "cast_counts": {
+            "basic": 79,
+            "cross": 14,
+            "mountain": 8,
+            "draw": 10,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 4,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 148.06666666666666,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 0,
+      "net": 1523,
+      "mana_spent": 714,
+      "cast_counts": {
+        "basic": 144,
+        "cross": 19,
+        "mountain": 13,
+        "draw": 14,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.116666666666665,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.733333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 5.908333333333335,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 16.90833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 28,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 9.225000000000009,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 78.80833333333332,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 408,
+          "cast_counts": {
+            "basic": 83,
+            "cross": 13,
+            "mountain": 7,
+            "draw": 7,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 5,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 152.74166666666667,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 0,
+      "net": 1453,
+      "mana_spent": 768,
+      "cast_counts": {
+        "basic": 144,
+        "cross": 19,
+        "mountain": 14,
+        "draw": 16,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.041666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.791666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.349999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 19.5,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 120,
+          "cast_counts": {
+            "basic": 33,
+            "cross": 4,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 8.066666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 81.62500000000001,
+          "hp_pots": 0,
+          "mp_pots": 1,
+          "mana_spent": 462,
+          "cast_counts": {
+            "basic": 80,
+            "cross": 13,
+            "mountain": 8,
+            "draw": 9,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 6,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 148.35,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 0,
+      "net": 1523,
+      "mana_spent": 720,
+      "cast_counts": {
+        "basic": 153,
+        "cross": 18,
+        "mountain": 13,
+        "draw": 15,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 6.458333333333332,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 6.324999999999999,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 6.483333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 18.75,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 33,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 9.458333333333336,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 77.50833333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 426,
+          "cast_counts": {
+            "basic": 86,
+            "cross": 13,
+            "mountain": 7,
+            "draw": 8,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 7,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 146.55,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 0,
+      "net": 1523,
+      "mana_spent": 732,
+      "cast_counts": {
+        "basic": 150,
+        "cross": 19,
+        "mountain": 13,
+        "draw": 15,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.516666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 6.933333333333334,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 8.258333333333336,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 60,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 2,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 19.21666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 35,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 9.466666666666676,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 73.79166666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 426,
+          "cast_counts": {
+            "basic": 78,
+            "cross": 13,
+            "mountain": 7,
+            "draw": 8,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 8,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 154.90833333333333,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 0,
+      "net": 1453,
+      "mana_spent": 768,
+      "cast_counts": {
+        "basic": 149,
+        "cross": 19,
+        "mountain": 14,
+        "draw": 16,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.041666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.791666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 6.866666666666671,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 18.33333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 32,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 9.466666666666661,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 13,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 84.04166666666667,
+          "hp_pots": 0,
+          "mp_pots": 1,
+          "mana_spent": 474,
+          "cast_counts": {
+            "basic": 83,
+            "cross": 14,
+            "mountain": 8,
+            "draw": 9,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 9,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 156.85,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 0,
+      "net": 1453,
+      "mana_spent": 762,
+      "cast_counts": {
+        "basic": 157,
+        "cross": 20,
+        "mountain": 14,
+        "draw": 15,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.625,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 4,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.991666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 5,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 6.758333333333333,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 30,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 6.549999999999997,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 8,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 19.125,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 120,
+          "cast_counts": {
+            "basic": 35,
+            "cross": 4,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 7.933333333333337,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 86.86666666666666,
+          "hp_pots": 0,
+          "mp_pots": 1,
+          "mana_spent": 456,
+          "cast_counts": {
+            "basic": 90,
+            "cross": 14,
+            "mountain": 8,
+            "draw": 8,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 10,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 160.36666666666667,
+      "rooms": 7,
+      "mp_pots": 0,
+      "hp_pots": 0,
+      "net": 1523,
+      "mana_spent": 768,
+      "cast_counts": {
+        "basic": 135,
+        "cross": 19,
+        "mountain": 14,
+        "draw": 16,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.041666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.791666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.349999999999998,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 7,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 19.21666666666667,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 34,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 9.158333333333331,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 12,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 88.44166666666668,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 474,
+          "cast_counts": {
+            "basic": 67,
+            "cross": 14,
+            "mountain": 8,
+            "draw": 9,
+            "outrage": 0
+          }
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "gear": "blue",
+      "seed": 11,
+      "skill_policy": "mixed3_safe",
+      "success": true,
+      "seconds": 149.35833333333332,
+      "rooms": 7,
+      "mp_pots": 1,
+      "hp_pots": 0,
+      "net": 1453,
+      "mana_spent": 738,
+      "cast_counts": {
+        "basic": 147,
+        "cross": 18,
+        "mountain": 14,
+        "draw": 15,
+        "outrage": 0
+      },
+      "room_metrics": [
+        {
+          "room": 1,
+          "seconds": 5.366666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 2,
+          "seconds": 5.041666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 18,
+          "cast_counts": {
+            "basic": 3,
+            "cross": 0,
+            "mountain": 0,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 3,
+          "seconds": 7.791666666666664,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 36,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 0,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 4,
+          "seconds": 7.066666666666666,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 6,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 5,
+          "seconds": 17.25,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 108,
+          "cast_counts": {
+            "basic": 29,
+            "cross": 3,
+            "mountain": 2,
+            "draw": 2,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 6,
+          "seconds": 8.066666666666663,
+          "hp_pots": 0,
+          "mp_pots": 0,
+          "mana_spent": 48,
+          "cast_counts": {
+            "basic": 9,
+            "cross": 1,
+            "mountain": 1,
+            "draw": 1,
+            "outrage": 0
+          }
+        },
+        {
+          "room": 7,
+          "seconds": 80.77499999999999,
+          "hp_pots": 0,
+          "mp_pots": 1,
+          "mana_spent": 444,
+          "cast_counts": {
+            "basic": 88,
+            "cross": 13,
+            "mountain": 8,
+            "draw": 8,
+            "outrage": 0
+          }
+        }
+      ]
+    }
+  ],
+  "checks": "PASS: default/replay equivalence, room mana/potion accounting, basic-only no skill spending, 28-kill clears",
+  "limitations": [
+    "Same spatial model, HP, weapon formula, potion fixture and safe-range counter; only scripted skill gating varies.",
+    "mixed3/mixed6 allow next skill after 3/6 basic STARTS, not completed or landed basic hits; interrupted starts still count.",
+    "mixed3_safe relaxes the three-start gate when HP<=50% or an elite/Boss is in recovery; 50% is an unapproved strategy fixture, not a gameplay threshold.",
+    "No optimal-policy or human-play claim. Action choices change RNG draw order; paired seeds are scenarios, not common-hit random numbers.",
+    "Expected crit, candidate AI/control/geometry, up to 8 carried HP/MP potions, no paid resurrection/network/drop equipment acquisition.",
+    "Main timing medians are clear-only; costs and clear counts include all attempts. Failed paths must not be hidden by faster survivors.",
+    "Net is replacement-inventory gold in this model, not actual wallet cash flow or full material/weapon acquisition cost.",
+    "No 1-30 growth, hunter, second/special dungeon or runtime determinism/CloudBase verification."
+  ]
+}
