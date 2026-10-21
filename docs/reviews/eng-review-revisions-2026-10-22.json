@@ -1,0 +1,220 @@
+{
+  "original_baseline": "eng-review-baseline-2026-10-21.json",
+  "date": "2026-10-22",
+  "approved_decisions": [
+    "1A",
+    "2A",
+    "3A"
+  ],
+  "pending_decisions": [
+    "4A",
+    "5A",
+    "6A",
+    "7A",
+    "8A",
+    "9A",
+    "10A",
+    "11A",
+    "P01",
+    "P02"
+  ],
+  "files": [
+    {
+      "path": "docs/backend/access-and-transactions-v2.md",
+      "original_sha256": "0bab7262c5de7c82102e7e0069de6f7daaeb16b00b2f2a4ba69a50257bf17149",
+      "approved_revision_sha256": "b5c4803ea90264948eea9628a3b7abbf9f09be28fcf5dffc1b03d4f18f0df9ef"
+    },
+    {
+      "path": "docs/backend/asset-physical-mapping-v1.md",
+      "original_sha256": "d51c50e79d4ed2c9fbc7ccaf29187aa7a9d49ef7b5c858b95445dfb7af3a201a",
+      "approved_revision_sha256": "78288203b5360af2a249379ecb3e78a8ac065e2ea8b798bebf9495f0d2c986fc"
+    },
+    {
+      "path": "docs/backend/data-dictionary-v2.md",
+      "original_sha256": "5ee366a00e9e6b78b8faaa3fd23ccbd30e3559189d451901fed50a8c14d59889",
+      "approved_revision_sha256": "e90d478cde2b3dae99f8bcf7e46c71c37eff4f198ce3b3a7aeb019693ec1df70"
+    },
+    {
+      "path": "docs/backend/enhancement-terminal-budget-v1.md",
+      "original_sha256": "a32f27d86b5bcfe72763f60c0fac36461c9d98bc671f23e1306c0688ecfd9a31",
+      "approved_revision_sha256": "ded4e83632c4972117ab341513c741f478de62e33a00105eb6e1f54200d85181"
+    },
+    {
+      "path": "docs/backend/identity-adapter-proposal-v1.md",
+      "original_sha256": "9c5c76c49cffe1a736a8c28116ba179b1a711017266f662cad396397e080a7ac",
+      "approved_revision_sha256": "a9e589157dba38f78752c1ca563fd63d3c5c4ef488a6678c7bdfbc04e853e3e5"
+    },
+    {
+      "path": "docs/backend/logical-architecture-v2.md",
+      "original_sha256": "39abd47850eb8a895fed8b86d26488f03f29ab3f8aceb45223bdf1f95a9daa57",
+      "approved_revision_sha256": "5a32d10572e3a82ec42f82a2af9342d367bbb90d7addea9fd11a200e1de0a6c9"
+    },
+    {
+      "path": "docs/backend/recovery-timeline-proposal-v1.md",
+      "original_sha256": "89efe04ef36f06f6af6328d6ded919dacd047e291e79de1e509e5620d9dd9388",
+      "approved_revision_sha256": "eb2927026f812e4c880fea20463e0f8fcb7b3d7a1f170dc09f38fcd739e02dc8"
+    },
+    {
+      "path": "docs/backend/room-loading-handshake-v1.md",
+      "original_sha256": "317c5d2d6c0401bf61209c5f375f98325f069979406168e03b8941ff6f791430",
+      "approved_revision_sha256": "a2ab9ad5c4deb554b3257621e4e19477b6b4ca2a462217deb067b70014c5e7db"
+    },
+    {
+      "path": "docs/backend/simulation-checkpoint-schema-v1.md",
+      "original_sha256": "e88e3d1022f6174911e5dc5394efa56ba5a2d0c6f855823e320df719a0d4748f",
+      "approved_revision_sha256": "2f7d758cf1ef95f0df9bcb112593ba0b2ea313c1b5b97fe2818d0baf15112b33"
+    },
+    {
+      "path": "docs/backend/simulation-content-envelope-v1.md",
+      "original_sha256": "1c0a6f8c9d1038222f422b6caf7bc8846a44da729c98e48f8add8153c9735b4b",
+      "approved_revision_sha256": "f50be0bdaff293b621cb1c46da846e6d64b50be48db6409d1bb131f33f49ba31"
+    },
+    {
+      "path": "docs/backend/state-transitions-v2.md",
+      "original_sha256": "48de05befcb100ffeac7306f4ed090afd69885c1e6a6fa93238165aba88f0a1e",
+      "approved_revision_sha256": "1d069309cb1781226300629ce4aa819f1985c55930b6b9a72868f0b7ddbe7505"
+    },
+    {
+      "path": "docs/backend/town-authority-and-batch-delivery-v1.md",
+      "original_sha256": "8ab84758ff7b0322bc59b27df85e223711019f3b75315b1ba568402086db7c7d",
+      "approved_revision_sha256": "b4581c07a555f31cfa7df833250845fb215f234dcd45a335946baa51250b4eb7"
+    },
+    {
+      "path": "docs/backend/transaction-budget-worksheet-v1.md",
+      "original_sha256": "f85f176fdab34d08d69ff67b2389bb2de705a62ea82b201941b3a4ec95b88200",
+      "approved_revision_sha256": "6d96b30428379f7429c10779af457eb4454a0d57448882789761f8f37ad57797"
+    },
+    {
+      "path": "docs/spec.md",
+      "original_sha256": "695f3ec6daa61742910c8cc17c02d37e6167cef1c424da0683a6e02f02c65415",
+      "approved_revision_sha256": "e5d51c4d0703d4e2db02bf5cf1ed1f76b061793d235ebcfea9489b1df7e8280f"
+    }
+  ],
+  "supplemental_files": [
+    {
+      "path": ".aiassist/review-tasks/tasks-eng-review-20261022-final.jsonl",
+      "sha256": "d9fbda945c4c121b10fd09d5a04217dd603c44ec8b4b7ea3ca9271f8210e680d"
+    },
+    {
+      "path": "docs/backend/collection-holdings-projection-v1.md",
+      "sha256": "53f51ab7b2050c23776a06645a9c220efc48a0d51d84109d3ea0176c08f951aa"
+    },
+    {
+      "path": "docs/design/drop-strategy-proposal-v1.md",
+      "sha256": "a1a3da004825b733e221449636aaa3d658313f7f42e3407c7820d40dd7506a9a"
+    },
+    {
+      "path": "docs/reviews/README.md",
+      "sha256": "0cb63e0e31c301c20af12e621c06e74616d8ec97aa27441f59e39fdf7650dd30"
+    },
+    {
+      "path": "docs/reviews/attack-speed-cancel-review-v1.md",
+      "sha256": "16f776de828d967a3e486c5624b3df89439f9595b1d63150a6400ce2aeb126c1"
+    },
+    {
+      "path": "docs/reviews/bleed-encounter-review-v1.md",
+      "sha256": "c46f6e0de8ebf724316e5d056b630acbadeb49179ed47612ff71438419e4e9a4"
+    },
+    {
+      "path": "docs/reviews/body-motion-review-v1.md",
+      "sha256": "194cb6be4ecb74d469d4ba4e26be0e13f2da48a816c1d836d0716276793c755f"
+    },
+    {
+      "path": "docs/reviews/combat-hit-review-v1.md",
+      "sha256": "6039758c07fd22e9b1cc66c3e643f25b6a92e3aa2b7666f7e91c5e8a503b02c6"
+    },
+    {
+      "path": "docs/reviews/design-review-consolidated-2026-10-21.md",
+      "sha256": "a0dd1fe805032fb5a8dab036dd5cd12f1eb3d2a7c59b5f02d02185f3a25cff99"
+    },
+    {
+      "path": "docs/reviews/design-sync-2026-10-20.md",
+      "sha256": "91865ccf09d5e3be9887f88d70157609eaffc1506f1f2a89619669ceaac68d7b"
+    },
+    {
+      "path": "docs/reviews/difficulty-model-audit-2026-10-21.md",
+      "sha256": "71816319d650809cabdc38abbfdb96e9215104324f0b50efabfbbd94dc8c5b04"
+    },
+    {
+      "path": "docs/reviews/earth-leap-basic-step-review-v1.md",
+      "sha256": "048c4976b96f0a6a3e3114dfee64d41770d9091a9bc3c0a80776baa41ebe9031"
+    },
+    {
+      "path": "docs/reviews/enemy-role-and-policy-review-v46.md",
+      "sha256": "805106bf8c6842d3a58b89a3127a5ec986ef0bb6d368164f872c450f84ccaa4d"
+    },
+    {
+      "path": "docs/reviews/eng-review-coverage-2026-10-22.md",
+      "sha256": "0d045e2de034fc2f5a05a2a45fc793e08b116bfffca5615199e68922838abca5"
+    },
+    {
+      "path": "docs/reviews/eng-review-decisions-2026-10-22.md",
+      "sha256": "e211517d50fe2c841104cb519a0fdaedfd01918102bb181b7c978db88480a2b7"
+    },
+    {
+      "path": "docs/reviews/engineering-rule-delta-review-2026-10-21.md",
+      "sha256": "1727bfcf69cb889daaeedc092f2c68e408a9e1a8ae2991d15bab4569a6991f2d"
+    },
+    {
+      "path": "docs/reviews/first-dungeon-review-v1.md",
+      "sha256": "f5e3f6c0a3d6c2708c6331942367e3767e8e9fb7039e9e2dca420c7128f63b43"
+    },
+    {
+      "path": "docs/reviews/h5-integration-review-v1.md",
+      "sha256": "5e4e34580beabb1f29eec269eb9087c1660f4c8d260ccffb6d40ec01340bf77d"
+    },
+    {
+      "path": "docs/reviews/outside-voice-eng-review-2026-10-22.md",
+      "sha256": "fb3ae7c9f6226e9fad323ce1439219c0615fa686d3faab59f787579c1b4cfa5f"
+    },
+    {
+      "path": "docs/reviews/planning-animation-checkpoint-review-v1.md",
+      "sha256": "d3b43c1be9e812d0a02f82bbba7dbd285a5dbce7fbe6c503d89f2628b1271364"
+    },
+    {
+      "path": "docs/reviews/recovery-low-correction-review-v1.md",
+      "sha256": "53ab67cecdf604622f298c722fcaa5de7968401af9c95fe81e40ac4161590008"
+    },
+    {
+      "path": "docs/reviews/reliability-first-polish-v1.md",
+      "sha256": "6da0d59c745750e1d3933e89cc406be2dbeb25f2ee47624f892654bba7828284"
+    },
+    {
+      "path": "docs/reviews/requirements-eng-review.md",
+      "sha256": "9cadb759864e87d9537a16448e5a55493a55cf4a29145b676d56a6ecd775b51d"
+    },
+    {
+      "path": "docs/reviews/spec.md",
+      "sha256": "aeaf154c10ac412b4b3bc43b0c98b8f9fed89b83bca22ba6ca26ce92913bee64"
+    },
+    {
+      "path": "docs/reviews/test-plan.md",
+      "sha256": "d43a1874898e07a759f4a7ea29dcdc4a6ff9d795589e4fbce9b6d2b79064481d"
+    },
+    {
+      "path": "docs/reviews/town-interactions-review-v1.md",
+      "sha256": "add82e625c201b7e48ff96610916925471955bfbc73f3c04369419459d52fad1"
+    },
+    {
+      "path": "docs/reviews/ui-design-review-v1.md",
+      "sha256": "7d02232b842103e781376c2b933872a29aa253dd73c01a821fe6272b86ce60fe"
+    },
+    {
+      "path": "docs/reviews/ui-integration-alignment-review-v1.md",
+      "sha256": "9909ee7f7abd73bea25118a38ec82479d2c58f7b9c5a45cf4dcfeea43a86f446"
+    },
+    {
+      "path": "docs/reviews/ui-static-evidence-review-2026-10-21.md",
+      "sha256": "5b901f96715ff33695eacd0dc32100da27364bdb944041a128e1931fa2c92a5b"
+    },
+    {
+      "path": "docs/reviews/visual-and-motion-review-v1.md",
+      "sha256": "e5831bb20938068c17bd2e05a1881eb343a68b507bee90fe2101655bd3f42ec3"
+    },
+    {
+      "path": "docs/reviews/wechat-build-review-v1.md",
+      "sha256": "eb5da1afc9586bac941feaf8a54f3980da84d89f68529ba20d1f29095d41c12f"
+    }
+  ],
+  "note": "Hashes identify reviewed content, not approval of pending proposals; original baseline preserved."
+}

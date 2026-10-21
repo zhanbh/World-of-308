@@ -1,0 +1,436 @@
+{
+  "date": "2026-10-21",
+  "head": "414de3e6862fa549925978d2f07bf4348db4f047",
+  "status": "candidate_bundle_ready_for_scope_confirmation_not_formal_review_or_coding_approval",
+  "scope": "warrior_1_to_30_three_dungeon_and_town_asset_engineering_candidates",
+  "authority": "eng-review-readiness-2026-10-21.md and linked current overrides; old UI artifacts are known-deviation visual references",
+  "excluded_local_change": "client/settings/v2/packages/cocos-service.json",
+  "worktree_design_changes": [
+    "docs/backend/README.md",
+    "docs/backend/access-and-transactions-v2.md",
+    "docs/backend/api-contract-v2.md",
+    "docs/backend/asset-physical-mapping-v1.md",
+    "docs/backend/combat-arithmetic-contract-v1.md",
+    "docs/backend/configuration-and-migration-v1.md",
+    "docs/backend/data-dictionary-v2.md",
+    "docs/backend/enhancement-terminal-budget-v1.md",
+    "docs/backend/identity-adapter-proposal-v1.md",
+    "docs/backend/leaderboard-loading-v1.md",
+    "docs/backend/platform-adapter-baseline-v1.md",
+    "docs/backend/ranking-query-baseline-v1.md",
+    "docs/backend/release-and-validation-baseline-v1.md",
+    "docs/backend/room-loading-handshake-v1.md",
+    "docs/backend/scoring-projection-mapping-v1.md",
+    "docs/backend/simulation-checkpoint-schema-v1.md",
+    "docs/backend/simulation-content-envelope-v1.md",
+    "docs/backend/simulation-timing-and-budget-v1.md",
+    "docs/backend/state-transitions-v2.md",
+    "docs/backend/town-authority-and-batch-delivery-v1.md",
+    "docs/backend/transaction-budget-worksheet-v1.md",
+    "docs/design/ui-mockups/README.md",
+    "docs/design/ui-review-authoritative-delta-v1.md",
+    "docs/design/warrior-three-dungeon-baseline-v1.md",
+    "docs/reviews/design-completeness-audit-2026-10-20.md",
+    "docs/reviews/eng-review-readiness-2026-10-21.md",
+    "docs/reviews/engineering-review-pack-v1.md",
+    "docs/reviews/handoff-2026-10-21.md",
+    "docs/spec.md"
+  ],
+  "checks": {
+    "changed_markdown_file_links": 29,
+    "missing_file_links": 0,
+    "git_diff_check": "PASS",
+    "content_counts_and_conservative_budget_arithmetic": "PASS",
+    "ui_pngs_directly_inspected": 14,
+    "new_damage_ai_simulations_run": false,
+    "business_code_changed": false,
+    "sdk_or_cloud_or_device_tests_run": false
+  },
+  "files": [
+    {
+      "path": "GLOSSARY.md",
+      "bytes": 4990,
+      "sha256": "b246c68180b76c4f002db3118eabd87f59a12175b9938673a11197363b6e136e"
+    },
+    {
+      "path": "client/tools/render-mockups.cjs",
+      "bytes": 76068,
+      "sha256": "ada11589b3c40d936eb7d39aafd8b068f69776d236a9c9a80ce658f07019f8bb"
+    },
+    {
+      "path": "client/tools/town-ui-preview.html",
+      "bytes": 92416,
+      "sha256": "4ce3cee6f4b4471f66ed1c0f3c4ed57215975c3484a5579b763c7c13d0e896af"
+    },
+    {
+      "path": "docs/architecture.md",
+      "bytes": 16504,
+      "sha256": "3b7e9a36b4e37407aea1d29894908e840b0fb265907dabdb0193b9430f59c396"
+    },
+    {
+      "path": "docs/backend/README.md",
+      "bytes": 8862,
+      "sha256": "a6e54468a07ecb36d057e1eaf5a6bdaf5c9552836069fbfa632bf2bf81f26775"
+    },
+    {
+      "path": "docs/backend/access-and-transactions-v2.md",
+      "bytes": 20374,
+      "sha256": "0bab7262c5de7c82102e7e0069de6f7daaeb16b00b2f2a4ba69a50257bf17149"
+    },
+    {
+      "path": "docs/backend/action-trust-boundary-proposal-v1.md",
+      "bytes": 5104,
+      "sha256": "c284e5c6af930d5783f748cd808e768879d09e11905b8354f9dbb58a0b100066"
+    },
+    {
+      "path": "docs/backend/api-contract-v2.md",
+      "bytes": 31553,
+      "sha256": "7e9bc06c3f623d068db7b9040dd473cec4bb24f0261a8f44d108a0cc353b5cc7"
+    },
+    {
+      "path": "docs/backend/api-contract.md",
+      "bytes": 11176,
+      "sha256": "9bcb46fa6a3fc1181bdfbaaef1940e2354c0d11e459cc33fc7dfe0145243803e"
+    },
+    {
+      "path": "docs/backend/asset-physical-mapping-v1.md",
+      "bytes": 13825,
+      "sha256": "d51c50e79d4ed2c9fbc7ccaf29187aa7a9d49ef7b5c858b95445dfb7af3a201a"
+    },
+    {
+      "path": "docs/backend/combat-arithmetic-contract-v1.md",
+      "bytes": 4574,
+      "sha256": "af674b6920c0f67b873728f5fb457a48a72704dc624e5fd79dc9f259ff63c050"
+    },
+    {
+      "path": "docs/backend/configuration-and-migration-v1.md",
+      "bytes": 9770,
+      "sha256": "5ebeafda8edca8ebd044543567f6992e9325d8693421a894401b9c2136fd9992"
+    },
+    {
+      "path": "docs/backend/consistency.md",
+      "bytes": 10243,
+      "sha256": "06fc0cee61c466f41d461cb4da1c65e4fccad68244827af9ad059a2d38d6d79d"
+    },
+    {
+      "path": "docs/backend/core-contract-v2.md",
+      "bytes": 15674,
+      "sha256": "300b6dfcb81411ecab7a62bf87d757497b7e022a8321b5c979f53234e527951a"
+    },
+    {
+      "path": "docs/backend/data-dictionary-v2.md",
+      "bytes": 38695,
+      "sha256": "5ee366a00e9e6b78b8faaa3fd23ccbd30e3559189d451901fed50a8c14d59889"
+    },
+    {
+      "path": "docs/backend/data-model.md",
+      "bytes": 8300,
+      "sha256": "415e3ef27df843c880ac694f7d25e3eb6544dc804a8f36b7deda8aaba9361685"
+    },
+    {
+      "path": "docs/backend/enhancement-terminal-budget-v1.md",
+      "bytes": 4473,
+      "sha256": "a32f27d86b5bcfe72763f60c0fac36461c9d98bc671f23e1306c0688ecfd9a31"
+    },
+    {
+      "path": "docs/backend/identity-adapter-proposal-v1.md",
+      "bytes": 14711,
+      "sha256": "9c5c76c49cffe1a736a8c28116ba179b1a711017266f662cad396397e080a7ac"
+    },
+    {
+      "path": "docs/backend/leaderboard-loading-v1.md",
+      "bytes": 4852,
+      "sha256": "be7573a81507dd05db60740fa5e700ea590488c487f6f877ed81bdb1baefe073"
+    },
+    {
+      "path": "docs/backend/logical-architecture-v2.md",
+      "bytes": 13220,
+      "sha256": "39abd47850eb8a895fed8b86d26488f03f29ab3f8aceb45223bdf1f95a9daa57"
+    },
+    {
+      "path": "docs/backend/platform-adapter-baseline-v1.md",
+      "bytes": 5699,
+      "sha256": "d14c667ac7674a533b038b036a7d64e49c7ff740caba77b0ae9a6c9560676386"
+    },
+    {
+      "path": "docs/backend/platform-security-operations-v1.md",
+      "bytes": 11408,
+      "sha256": "88e423296e4460bf658fd0bc3ec763141eeea9f902ae2076239eeb3e20a06d98"
+    },
+    {
+      "path": "docs/backend/ranking-query-baseline-v1.md",
+      "bytes": 3233,
+      "sha256": "0c3b589233c2141d8425e8411d6d46cfa38211a0dd3c6410b7b46064375f018d"
+    },
+    {
+      "path": "docs/backend/recovery-timeline-proposal-v1.md",
+      "bytes": 12050,
+      "sha256": "89efe04ef36f06f6af6328d6ded919dacd047e291e79de1e509e5620d9dd9388"
+    },
+    {
+      "path": "docs/backend/release-and-validation-baseline-v1.md",
+      "bytes": 4018,
+      "sha256": "930d32d653f33351298dca24dac89512dc84275a8adcba939f384d90d11df9c3"
+    },
+    {
+      "path": "docs/backend/retention-and-replay-proposal-v1.md",
+      "bytes": 6533,
+      "sha256": "20d58e68131bc06852ba12403dd8e4a319893e85e9b3f31856987e776b5fad26"
+    },
+    {
+      "path": "docs/backend/room-loading-handshake-v1.md",
+      "bytes": 3949,
+      "sha256": "317c5d2d6c0401bf61209c5f375f98325f069979406168e03b8941ff6f791430"
+    },
+    {
+      "path": "docs/backend/scoring-projection-mapping-v1.md",
+      "bytes": 4865,
+      "sha256": "59d0b911a0f498da4eaadff550860f119c74fbe59fd6e44109532ff3fbaafe2a"
+    },
+    {
+      "path": "docs/backend/simulation-checkpoint-schema-v1.md",
+      "bytes": 5379,
+      "sha256": "e88e3d1022f6174911e5dc5394efa56ba5a2d0c6f855823e320df719a0d4748f"
+    },
+    {
+      "path": "docs/backend/simulation-content-envelope-v1.md",
+      "bytes": 6172,
+      "sha256": "1c0a6f8c9d1038222f422b6caf7bc8846a44da729c98e48f8add8153c9735b4b"
+    },
+    {
+      "path": "docs/backend/simulation-timing-and-budget-v1.md",
+      "bytes": 8790,
+      "sha256": "0ec780e0d9e4d84d0e1df825bdb4800f8d91a2f36aa02dce22c9f8cc055e84c5"
+    },
+    {
+      "path": "docs/backend/state-transitions-v2.md",
+      "bytes": 10870,
+      "sha256": "48de05befcb100ffeac7306f4ed090afd69885c1e6a6fa93238165aba88f0a1e"
+    },
+    {
+      "path": "docs/backend/town-authority-and-batch-delivery-v1.md",
+      "bytes": 5225,
+      "sha256": "8ab84758ff7b0322bc59b27df85e223711019f3b75315b1ba568402086db7c7d"
+    },
+    {
+      "path": "docs/backend/transaction-budget-worksheet-v1.md",
+      "bytes": 4645,
+      "sha256": "f85f176fdab34d08d69ff67b2389bb2de705a62ea82b201941b3a4ec95b88200"
+    },
+    {
+      "path": "docs/backend/verified-action-protocol-v1.md",
+      "bytes": 9456,
+      "sha256": "30c8eea1c83b8f087de4b3381d1c93025aabca8763fbbf3d976a6a48601a94db"
+    },
+    {
+      "path": "docs/challenge-flow.md",
+      "bytes": 14358,
+      "sha256": "9b205de636a497394f4a61c72539892ddb990d9958b2a9499a7b2839d6381366"
+    },
+    {
+      "path": "docs/design/analysis/results/v46-evidence-manifest.json",
+      "bytes": 1803,
+      "sha256": "c08fadea860199028dfbb4c9484e7b36e6457a3e0152bc392452eccb324e3d8c"
+    },
+    {
+      "path": "docs/design/client-logical-architecture-v1.md",
+      "bytes": 6305,
+      "sha256": "04db134c750537fd2ff1067a027f45683d1adf39b34b561b42d2f82eb7fb21f8"
+    },
+    {
+      "path": "docs/design/combat-formulas-proposal-v1.md",
+      "bytes": 12109,
+      "sha256": "a4802fe74874cdeed660b7de9ea864f2e16af5fe8ea0bec4cea98049142711ec"
+    },
+    {
+      "path": "docs/design/combat-numeric-proposal-v1.md",
+      "bytes": 14789,
+      "sha256": "b9aaf6cde49e1398f137e3d496957eb0f4efc281c7a15e51b6fe90194e3a47fd"
+    },
+    {
+      "path": "docs/design/combat-simulation-index.md",
+      "bytes": 13945,
+      "sha256": "5af21155db5c81a53e8f4572981b3aea6f5b6e290b509b5e463f100abc62ed58"
+    },
+    {
+      "path": "docs/design/dungeon-first-proposal-v1.md",
+      "bytes": 19034,
+      "sha256": "ba2128f594c9229f7347ee0cf4512fe1d0ca65c81170f30dd2f9c572fdc5a68d"
+    },
+    {
+      "path": "docs/design/enhancement-combined-review-v7.md",
+      "bytes": 6892,
+      "sha256": "915a4b3a06873914f6e013095baf31db3bf741edc540953cd59d719f948daf43"
+    },
+    {
+      "path": "docs/design/enhancement-similarity-consumption-v6.md",
+      "bytes": 8436,
+      "sha256": "52cd994e3f0042197bc5d367e049e15f55178332ab0f7649b8e9968f4287ac69"
+    },
+    {
+      "path": "docs/design/equipment-proposal-v1.md",
+      "bytes": 18764,
+      "sha256": "65f7142292bea2df1415b4d43f432cbd849e3daf029c41b045d594d7873309e2"
+    },
+    {
+      "path": "docs/design/implementation-slices-v1.md",
+      "bytes": 14659,
+      "sha256": "d76008746f76d355a823845de2f9d8b5917da7a0b358e2ad1dd49c06c681beac"
+    },
+    {
+      "path": "docs/design/town-interactions-acceptance-v1.md",
+      "bytes": 8538,
+      "sha256": "8b4b0de6bc11525791b164252c267123f2ceb07e810aae8fa9620976b9d0a3d8"
+    },
+    {
+      "path": "docs/design/town-interactions-proposal-v1.md",
+      "bytes": 22129,
+      "sha256": "fc1ce6130d627056a5745d5b8050e77968856aa80a91100b5c90d351cf5c624b"
+    },
+    {
+      "path": "docs/design/ui-layout-specification-v1.md",
+      "bytes": 63481,
+      "sha256": "9d4607970f107a339f4fb401682cd6d90e537196300b86d9dc1a5fc8a61a6f23"
+    },
+    {
+      "path": "docs/design/ui-mockups/01-character-profile-c-key.png",
+      "bytes": 179155,
+      "sha256": "da909ba792951a13950c0aeca18fbdcb8f5495d25e9ef54f9865a88b76f015f9"
+    },
+    {
+      "path": "docs/design/ui-mockups/02-character-profile-set-bonuses.png",
+      "bytes": 140341,
+      "sha256": "5dd9e1c66523328c52af31fc8059fd75232677b484ba4d95ebc1fac8f48fcf2f"
+    },
+    {
+      "path": "docs/design/ui-mockups/03-inventory-quickswap-b-key.png",
+      "bytes": 153694,
+      "sha256": "64438f54442a298db5780b4b7a029aa403ca301c1f9cf6452460e0645bd04901"
+    },
+    {
+      "path": "docs/design/ui-mockups/04-blacksmith-repair-ui.png",
+      "bytes": 77401,
+      "sha256": "6b7ec6d6349f05316b5d2480e387860c0ffe495e12f5e5cf23356b5c60b1b9c0"
+    },
+    {
+      "path": "docs/design/ui-mockups/05-blacksmith-enhancement-ui.png",
+      "bytes": 78393,
+      "sha256": "2feed4b3cdb5c390b108157e823f3519888ac820b2d1f740342a8185af53865a"
+    },
+    {
+      "path": "docs/design/ui-mockups/06-merchant-shop-ui.png",
+      "bytes": 61592,
+      "sha256": "5b8e5ac2299f7ab2ffdd16ff6820cf5b4a26687a0d047c5b7b315b283afd788d"
+    },
+    {
+      "path": "docs/design/ui-mockups/07-bank-vault-ui.png",
+      "bytes": 99497,
+      "sha256": "2b7b19a5c043094fe7d5094da887613c174db89d9129c14ce3e247f5b6e03a07"
+    },
+    {
+      "path": "docs/design/ui-mockups/08-mailbox-and-pending-rewards.png",
+      "bytes": 50282,
+      "sha256": "a6bc16a89dd38df7d53451c41b2e9ef38483781885b6e7305eae2defbd78af33"
+    },
+    {
+      "path": "docs/design/ui-mockups/09-leaderboard-inspect-mode.png",
+      "bytes": 42194,
+      "sha256": "c690443060742cf939f495582c947cbb7be1fc8e68f2356899b4fd7de84ba638"
+    },
+    {
+      "path": "docs/design/ui-mockups/10-town-safety-hud.png",
+      "bytes": 64578,
+      "sha256": "44ed0308cd682a293fe92366cf2da4cb6f03c5aeed3564c63ced1a74d8379dd6"
+    },
+    {
+      "path": "docs/design/ui-mockups/11-dungeon-combat-hud.png",
+      "bytes": 73365,
+      "sha256": "577d34973193f42594e84a0f3e4bdf03383a10af0bb8f802ddb23d21923c1809"
+    },
+    {
+      "path": "docs/design/ui-mockups/12-dungeon-difficulty-portal.png",
+      "bytes": 63349,
+      "sha256": "08f351e50ea7cce8186959ce68e2a2d3865e3b87f35754918a635060ae05b358"
+    },
+    {
+      "path": "docs/design/ui-mockups/13-weapon-enhancement-glow-tiers.png",
+      "bytes": 1859460,
+      "sha256": "cfa2320e5be3aec5e369f884e56194811fad0e892e9846042a7a31cba697d025"
+    },
+    {
+      "path": "docs/design/ui-mockups/14-character-stances-town-vs-combat.png",
+      "bytes": 1711293,
+      "sha256": "96ceff4beefc0456dd6b8cd639e76858d5c1af6441f3af76d6797b1f07dfabaf"
+    },
+    {
+      "path": "docs/design/ui-mockups/README.md",
+      "bytes": 10783,
+      "sha256": "29672b0e48abd52a68ce2d2274471df105d6735f3f1592313ed6e08a91ca50a1"
+    },
+    {
+      "path": "docs/design/ui-mockups/item-icons-sheet-v1.png",
+      "bytes": 1627725,
+      "sha256": "9ddf580cfeb423dad769d23c5a66b87e1804264272b24097bbaf04876b7deb44"
+    },
+    {
+      "path": "docs/design/ui-review-authoritative-delta-v1.md",
+      "bytes": 5402,
+      "sha256": "c3de062e3fd1c38246428f16064d3c4dae93eec41c77cbf1ec14369c4602912a"
+    },
+    {
+      "path": "docs/design/ui-state-coverage-v1.md",
+      "bytes": 6576,
+      "sha256": "abd8be1c4fe384433888511e24ae6cd6871a4239363bc9532ffa73987f004451"
+    },
+    {
+      "path": "docs/design/warrior-three-dungeon-baseline-v1.md",
+      "bytes": 8284,
+      "sha256": "7ad12b6f92f40dd11b725d95ba37580f2a24840dc7e15302bf779d5cb74c214f"
+    },
+    {
+      "path": "docs/reviews/decision-register-2026-10-21.md",
+      "bytes": 4499,
+      "sha256": "db55f68690a8d0e8052ba31d7f354a50ad749e86234272d3c96bffdf23b66807"
+    },
+    {
+      "path": "docs/reviews/design-completeness-audit-2026-10-20.md",
+      "bytes": 21793,
+      "sha256": "7137298953f22e575b7b699d6801ca77d9669fa2579abd98159f7372862d8379"
+    },
+    {
+      "path": "docs/reviews/eng-review-readiness-2026-10-21.md",
+      "bytes": 5535,
+      "sha256": "679c6e3bb01488508da37fb9336a08bba866336ca7bf303307917f2243d964a4"
+    },
+    {
+      "path": "docs/reviews/engineering-review-pack-v1.md",
+      "bytes": 30258,
+      "sha256": "beb5a15562a17a35bb5269bdfeb61842215d2e68af45f0ca868a00b388bad5ad"
+    },
+    {
+      "path": "docs/reviews/handoff-2026-10-21.md",
+      "bytes": 3251,
+      "sha256": "d883686d919a088635ae5b0ea66d45184d3c68a7b7901d20ccbb1eddfd826f6c"
+    },
+    {
+      "path": "docs/reviews/platform-facts-review-2026-10-21.md",
+      "bytes": 1724,
+      "sha256": "008129ca6e5d92a056ed872934c03d51f950af325dfe9322b31059bf367350c6"
+    },
+    {
+      "path": "docs/reviews/ui-rule-alignment-2026-10-21.md",
+      "bytes": 3523,
+      "sha256": "56d7f342958c01c47c31c0351fc47294d48eb85ba3078ec17d8be9efd03f408e"
+    },
+    {
+      "path": "docs/spec.md",
+      "bytes": 56083,
+      "sha256": "695f3ec6daa61742910c8cc17c02d37e6167cef1c424da0683a6e02f02c65415"
+    }
+  ],
+  "limitations": [
+    "Manifest excludes itself to avoid recursive hash; regenerate after any baseline file change.",
+    "Hashes identify local files, not formal approval. Mutable official source URLs and uninstalled SDK artifacts are not pinned by this manifest.",
+    "Candidate gameplay/score policies still require scope confirmation and formal review; no gate automatically passed."
+  ]
+}

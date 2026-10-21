@@ -218,7 +218,7 @@ EquipmentLocation候选：container{containerId}、equipped{characterId,slotId}�
 | protectionUntilTick | 可选LogicTick | 复活保护沿既定2秒由内核换算，recovery随模拟暂停；旧protectionUntil命名不得当UTC截止混用，物理映射待E03 |
 | lastEventSeq/lastAcceptedBatch | Int0／可选旧有界摘要 | lastEventSeq仅服务端生成事实游标，不是客户端自报击杀序号；旧事件批摘要只读迁移，新输入游标在检查点、父片段原结果在operations，不接新C25 |
 | controlSeq/lease | Int0/见下表 | 心跳/恢复独立版本，不让无关心跳使业务expected失配 |
-| simulationCheckpointRef/restoreRevision | 权威检查点引用/Version | 已验证玩家/敌人/效果/输入游标，见simulation-checkpoint-schema-v1.md；替代旧最小battleMirror，物理映射待预算 |
+| simulationCheckpointRef/restoreRevision | 权威检查点引用/Version | 已验证玩家/敌人/效果/输入游标，见simulation-checkpoint-schema-v1.md；替代旧最小battleMirror，独立CP头+按需1～8分片（评审决定1A） |
 | equipmentValidity/attributeRevision | 有界失效事实/Version | 武器破损只移除贡献，不限制本局攻击/换房；状态不与暂停/死亡混用 |
 | exitAnchorRef/closedAt/endReason | Ref／可选Time/枚举 | 对应门口；closed需记录原因，旧结算不可改新location |
 
@@ -350,3 +350,24 @@ E02交付为本字典与关系图，状态为草案待收敛/待评审。下一�
 | 领取回执 | H(accountId,operationId,attachmentId)，actualQuantity、目标容器/实例引用、结果版本、committedAt | 同原请求返回原量，不二次执行；逻辑回执可承载于既有operations结果/来源账目，不要求重复存独立余额 |
 
 领取事务共同校验来源、原角色权限、附件时效、版本、当前可容纳量，原子提交附件进度＋背包/装备＋来源状态＋操作回执。发邮件与领入背包是两个不同阶段，不以createdAt或mail.status代替是否已领。邮件过期/手动删除只改变邮件可见生命周期，不能删除礼包已发事实后允许再次生成。暂无真实历史数据缺证据实例，迁移异常仅作未来预检，不向用户请求假设清档授权。
+
+
+## 当前评审物理增量（2026-10-21）
+
+- checkpointHeaders/H(challengeId)：归属、sceneEpoch/timelineEpoch、revision、acceptedSeq/Tick、时间锚点、8块摘要与版本；完整编码≤16KiB。
+- checkpointChunks/H(challengeId,ordinal0..7)：归属、sceneEpoch、独立chunkRevision/schemaVersion、有界紧凑状态；每块完整UTF-8≤80KiB。实际变化块与头/资产同事务提交；头activeChunks保存各在用块版本/摘要/sceneEpoch，未变块不重写；恢复验证引用并复读头，不要求块版本等于头；具体字段编码见[包络](simulation-content-envelope-v1.md)。
+- challenges.pendingRoomAttempt：roomNo、attemptId、manifestHash、configRef、preparedRevision，最多1个；roomPhase=preparing/active/cleared/closed。activate后清pending，并一次写已付房间、代次与CP，prepare不扣费。
+- enhancementMemories/H(characterId,rolePlayEpoch)：已确认会话代次、configRef、最多20个来源等级的定精度补偿量、revision；与金币/材料/装备/纪念品及O/J同笔。
+- rankCaches/H(scope,class,scoreConfigRef)：候选首屏最多20条、asOf/validUntil/staleUntil、refreshToken/leaseUntil、revision；不保存完整私有装备/钱包，不成为资产真相源。
+
+ID、数组、实例/附件编码、最高终局写集采用[事务预算](enhancement-terminal-budget-v1.md)，不是平台已建集合。历史一CP键预算由按需分片、最坏9键替换，不能继续按内嵌或单文档计量。
+
+characters.townState内嵌城镇小检查点≤4KiB；deliveryBatches/H(accountId,batchOperationId)最多20附件、完整≤16KiB，只有协调状态不含第二份可领余额。字段/权限与事务见[城镇与批领合同](town-authority-and-batch-delivery-v1.md)。
+
+
+2026-10-22决定1A：checkpointHeaders.activeChunks为最多8个唯一ordinal引用，unused块不预建；移除引用不删热块，重用ordinal须换chunkRevision并同笔更新头。独立读取块不给予恢复授权。
+
+
+2026-10-22决定2A：pendingRoomAttempt.transitionClock={settledAt:Time,connectedElapsedMs:Int0,timeRemainder:有界定精度余数,transitionRevision:Version}，累计值只在权威转场边界推进。正常联网加载推进角色CD/buff/自然回复，恢复暂停不推进；activate与场景/资产同笔消费未结算区间，不能双算。字段为常数大小，不新增逐心跳流水或无界时间段数组。
+
+collectionHoldings/H(accountId,scope,characterId或空)保存≤64个collectionKey的permanentCounts/mailLatestExpiryAt，每份≤16KiB；mailHoldingContributions/H(mailId,attachmentOrdinal)保存内部索引贡献及固定expiresAt/sourceRevision，每份≤1KiB，无独立可领余额。字段、变动矩阵与过期/删除最大贡献的有界协议见[3A合同](collection-holdings-projection-v1.md)。

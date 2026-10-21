@@ -36,7 +36,7 @@ recovery可叠加active/combat和completed/looting，期间模拟暂停；期限
 | 事件 | 前置 | 同笔决定/后置 | 不能发生 |
 | --- | --- | --- | --- |
 | 新挑战创建 | 当前会话、城镇、无active或looting、至少1体力及可用武器 | active/alive/combat，roomNo=-1，快照锁定；指针/角色reservation/location一致 | 重复start建第二挑战或打开选择页扣费 |
-| 进入下一房 | alive/active/connected、前房全灭；本局武器归零不拦截 | room processed、manifest、扣快照至0、推进roomNo | 本局0被拒、跨刷新补快照、分波当默认 |
+| 准备/激活下一房 | alive/active/connected、前房全灭/出口合法；本局武器归零不拦截 | prepare保留旧房；activate一次扣快照至0、推进roomNo/场景代次与CP | prepare扣费、激活重放重置CP、本局0被拒、分波 |
 | 玩家死亡 | active/alive且合法事件顺序 | dead、deathIndex+1、10秒截止、死亡磨损−5；残留来源有限记录 | 连点/重复报告延长截止或重复磨损 |
 | 普通残留击杀升级 | active/dead、合法已有来源且未到截止 | 收益/等级节点邮件，lifeState仍dead | 满HP/属性重算免费复活 |
 | 手动复活 | active/dead/connected、未到两个截止、有纹章/次数 | alive、消费/次数+1、满HP/MP、2秒保护、职业CD清 | 药品/饰品CD顺带清零、取过期deathIndex重复扣 |
@@ -99,3 +99,9 @@ C23锁快照后尚未enterRoom期间也有租约/关闭路径，避免卡唯一a
 持续无法恢复时显示「网络中断，请重新进入游戏」，停止继续战斗并要求重新进入；沿用既有10秒恢复窗口，不另增宽限或自动续关。未通关超时失败/关闭并保留已保存收益，已通关仅关闭拾取场景、不撤成功；新launch默认旅店，不重启续关。客户端提示不单独改服务端结果，下一请求/清理仍按原持久截止处理。
 
 此前为减少修正提出的持久输入收据不作为本期必需方案；采用原操作结果和权威检查点恢复。秒级是体验尺度，不保证任何弱网都只退1秒；必须限制未确认预测积压，超上界先暂停等待，不允许无限本地刷怪或离线补报。具体积压上界和时间锚点待工程验证。
+
+
+当前roomPhase维度为preparing/active/cleared/closed，独立于挑战sceneState；创建后roomNo=-1且preparing不推进战斗，后续准备只允许前房cleared。完整转换及失败路径见[加载握手](room-loading-handshake-v1.md)；同刻节点分层见[精度合同](combat-arithmetic-contract-v1.md)。均为当前待审候选，无状态机执行通过记录。
+
+
+2026-10-22评审决定2A：roomPhase=preparing仅在已清房后正常加载时推进角色CD/增益/自然回复，不推进旧房敌人或接受攻击；recovery排除计时。activate继承角色状态并结算未计入的加载区间，不清CD/满血蓝，旧房效果和敌人不迁移。

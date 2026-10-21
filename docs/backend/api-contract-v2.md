@@ -106,7 +106,7 @@ C11/C12编号保留作规则追踪，不代表可独立调用的资产端点；�
 | ID／命令 | payload关键字段 | expected与前置 | 成功结果／关键拒绝 |
 | --- | --- | --- | --- |
 | C23 challenge.start | characterId,dungeonId,difficultyId,entryContext | C及装备/解锁事实；至少1体力、可用武器、无旧active/looting | challengeId、配置/等级/装备/体力快照、序号；不开场前额外扣费；固定紫名安排 |
-| C24 challenge.enterRoom | challengeId,roomNo | H；alive/active/connected、上一房全灭；途中武器0不阻止后续房间 | roomToken/sceneEpoch、全房manifest、remaining；0余额仍合法，同房实际或零扣费一次 |
+| C24a challenge.prepareRoom / C24b challenge.activateRoom | prepare:challengeId,nextRoomNo；activate:roomAttemptId,manifestHash | H/C；alive/active/connected、上房全灭及合法出口；途中武器0不拦 | prepare只锁manifest；activate原子扣本局体力/初始化场景；详见加载握手，不保留单次enterRoom旁路 |
 | C25 challenge.reportEvents（旧协议，禁止新调用） | 旧自报事件批结构仅供迁移识别 | 新请求拒绝UNSUPPORTED_PROTOCOL，不重算或发奖 | 新战斗改用simulation.submit有序输入；历史结果仅授权查询原operation |
 | C26 challenge.revive | challengeId,deathIndex | H/B；dead/active/connected、两个截止均有效、纹章及次数 | 原子消费/复活/保护；职业CD清零、药品饰品不清；免费通关后不可再收费 |
 | C27 challenge.leave | challengeId,reason=abandon或finishLoot | H；先确认在途输入/原请求结果，按权威result决定reason | 关闭场景、终态、回城门口、体力一次结算/满HPMP/清CD，不丢已保存收益 |
@@ -157,7 +157,7 @@ playerDied、monsterKilled等为服务端重算生成的领域事实，不是客
 | BINDING_RESTRICTED/ITEM_NOT_ELIGIBLE/UNLOCK_STAGE_MISMATCH | 合法展示的绑定/槽位/等级/阶段原因 | 不消费，更新目标状态 |
 | MAIL_EXPIRED/UNCLAIMED_ATTACHMENTS/ALREADY_DELIVERED | 原角色已授权状态 | 刷新列表；重复领取可返回既有交付状态，不二次发奖 |
 | ACTIVE_CHALLENGE_EXISTS/SCENE_STILL_OPEN | 本账号有效指针 | 先明确结束，不静默丢拾取物 |
-| STAMINA_NOT_ENOUGH/WEAPON_REQUIRED/WEAPON_BROKEN | 仅新开挑战体力检查；武器暂停依具体路径 | 0不能开新本；不能因本局0阻止后续房 |
+| STAMINA_NOT_ENOUGH/WEAPON_REQUIRED/WEAPON_BROKEN | 仅新开挑战体力检查；武器归零只影响属性，不暂停 | 0不能开新本；不能因本局0阻止后续房 |
 | ROOM_NOT_AVAILABLE/INVALID_EVENT/EVENT_GAP/EVENT_ALREADY_ACCEPTED | nextSeq、当前房间和安全裁剪游标 | 对齐原事件，不重抽/重杀；非法事件不伪装成功 |
 | NOT_DEAD/EMBLEM_NOT_ENOUGH/REVIVE_LIMIT_REACHED | 更新允许动作 | 不消费纹章，不替扣金币/点券 |
 | COOLDOWN_NOT_READY/RESOURCE_ALREADY_FULL | 已确认CD或满值原因 | 不消费药品、不清控制；相关状态协议需先闭合 |
@@ -172,7 +172,7 @@ playerDied、monsterKilled等为服务端重算生成的领域事实，不是客
 | 流程 | 必须保持的时序 | 验收依据 |
 | --- | --- | --- |
 | 创角 | 职业占位、白武器/容器、新手来源一致可见 | S03初始化与E03 T02 |
-| 开局 | 入口选择→C23锁快照→C24扣首房/manifest→可战斗 | LOC04–LOC08；资源加载失败后原挑战处理仍需协议时序明确 |
+| 开局 | 入口选择→C23锁快照→C24a准备manifest→本地加载→C24b一次扣首房/初始化→可战斗 | LOC04–LOC08；资源加载失败后原挑战处理仍需协议时序明确 |
 | 死亡与复活 | flush未知事件→权威dead/deathIndex→C26 | 首领残留免费复活优先于后续收费，不自动退已提交纹章 |
 | 回城 | 确认旧事件→C27关闭/快照结算→对应门口；新启动为旅店 | LOC01–LOC03/LOC09与旧结算迟到竞态 |
 | 存取/服务 | 目标/版本/报价→提交→结果或查询→视图按版本合并 | UI01–UI14；他人检视与搜索为后续社交，不属于本期接口交付 |
@@ -215,3 +215,12 @@ C11/C12已按同一有序动作/检查点编排作为设计方向，不能保留
 角色命名最新确认（2026-10-21）：不允许中英混用，只能是纯中文或纯英文；以中文每字2个长度单位、英文字母每个1个单位换算，总上限12，即最多6个汉字或12个英文字母。禁止数字、空格、标点、符号及不可见控制字符。英文采用A–Z/a–z字符集合；中文字符集合按Unicode汉字规则由实现规范明确，不用UTF-16代码单元误计汉字个数。大小写/全半角等名称判重规范化仍按未确认候选处理，不据本条自动允许近似同名。命名唯一、服务端原子占名不变。
 
 所有装备实例必须包含durability字段；是否参与磨损由明确策略区分，不通过字段有无推断。礼包必须记录生成来源、附件总量、累计实领及每次领取原结果，领取进度与资产入包同事务更新。不能因邮件删除/过期或操作响应丢失而重复发放。本轮撤销假设旧数据缺字段作为当前用户待决项，改为新schema必需约束；没有盘点或修改真实旧数据。
+
+
+## 当前评审合同增量（2026-10-21）
+
+C24a/b完整schema、加载失败和竞争按[加载握手](room-loading-handshake-v1.md)。simulation.submit使用[精度顺序](combat-arithmetic-contract-v1.md)与[合法并发包络](simulation-content-envelope-v1.md)，原结果返回acceptedSeq/acceptedTick/checkpointRevision/actionResultsRef及有界摘要，完整恢复视图另查；CP私有分片不直接外传。R11使用[查询基线](ranking-query-baseline-v1.md)，包含rankAsOf/equipmentVersion及名次暂不可用状态，不虚报准确名次。新的引用是待评审候选，不表示shared已实现。
+
+C24a expected包括H/C；C24b包括H/C及prepare返回attempt，不要求客户端持有每块CP版本。客户端不得用新ID对同attempt重建room；同参数重试按原操作，异参拒绝OPERATION_MISMATCH。资源摘要不符用CONFIG_NOT_READY，旧attempt/前房未清用ROOM_NOT_AVAILABLE，旧场景用SCENE_CLOSED，其他版本冲突沿既有VERSION_CONFLICT，不新增平行错误体系。
+
+城镇服务地点的可验证坐标、C05距离/代次校验和邮件批领的20附件/100封扫描/每请求4项边界采用[城镇与批领合同](town-authority-and-batch-delivery-v1.md)。历史“服务位置来源未闭合”由具体候选替代，真实验证仍待实现。
