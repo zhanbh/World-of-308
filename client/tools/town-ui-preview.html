@@ -214,6 +214,7 @@
       justify-content: center;
       color: #5b7c8e;
       font-size: 13px;
+      pointer-events: auto;
     }
     .weapon-slot-wrap {
       width: 140px;
@@ -424,6 +425,7 @@
     <button class="nav-btn" onclick="switchView('townHud')">城镇安全区 HUD</button>
     <button class="nav-btn" onclick="switchView('combatHud')">副本战斗 HUD</button>
     <button class="nav-btn" onclick="switchView('weaponGlow')">武器强化光效·四阶外观图</button>
+    <button class="nav-btn" onclick="switchView('stances')">角色双形态对比 (站街 vs 战斗)</button>
   </nav>
 
   <!-- 960x540 画布 -->
@@ -469,14 +471,17 @@
 
             <!-- 中央立绘与主手武器 -->
             <div class="doll-center">
-              <div class="avatar-box" id="avatar-doll-box">
-                <div style="display:flex;gap:4px;margin-bottom:8px">
-                  <button id="stance-btn-town" class="tab-btn active" style="font-size:10px;padding:2px 8px;border-radius:3px" onclick="setProfileStance('town')">站街形态</button>
-                  <button id="stance-btn-combat" class="tab-btn" style="font-size:10px;padding:2px 8px;border-radius:3px" onclick="setProfileStance('combat')">战斗状态</button>
+              <div class="avatar-box" id="avatar-doll-box" style="pointer-events:auto;justify-content:flex-start;padding-top:10px">
+                <div style="display:flex;gap:6px;margin-bottom:8px">
+                  <button id="stance-btn-town" class="tab-btn active" style="font-size:10px;padding:2px 8px;border-radius:3px;cursor:pointer" onclick="setProfileStance('town')">站街形态</button>
+                  <button id="stance-btn-combat" class="tab-btn" style="font-size:10px;padding:2px 8px;border-radius:3px;cursor:pointer" onclick="setProfileStance('combat')">战斗状态</button>
                 </div>
-                <div id="avatar-icon" style="font-size:40px;margin-bottom:4px">🧍🗡️</div>
-                <div id="avatar-title" style="font-weight:bold;color:#ffca28">[ 站街从容姿态 ]</div>
-                <div id="avatar-desc" style="font-size:11px;color:#8fa2af;margin-top:4px">双刀收鞘 · 挺拔舒缓待机呼吸</div>
+                <div style="position:relative;width:130px;height:160px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:6px;background:rgba(10,16,22,0.6);border:1px solid #2b3a46">
+                  <img id="avatar-img" src="../assets/resources/warrior-stance-town.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 10px rgba(255,64,129,0.4));transition:all 0.25s">
+                  <div id="avatar-glow" class="blade-glow-pink" style="position:absolute;bottom:4px;width:75px;height:12px;background:radial-gradient(ellipse at center, rgba(255,64,129,0.5) 0%, rgba(255,64,129,0) 70%);border-radius:50%"></div>
+                </div>
+                <div id="avatar-title" style="font-weight:bold;color:#ffca28;margin-top:5px;font-size:11px">[ 站街形态 · 从容入鞘 ]</div>
+                <div id="avatar-desc" style="font-size:10px;color:#8fa2af;margin-top:2px;text-align:center;line-height:1.2">双刀收鞘 · 挺拔舒缓呼吸待机</div>
               </div>
               <div class="weapon-slot-wrap">
                 <div class="gear-slot" style="border-color:#ff4081;box-shadow:0 0 14px rgba(255,64,129,0.7);background:rgba(255,64,129,0.08)" onmouseenter="showTooltip('weapon')" onmouseleave="hideTooltip()">
@@ -1021,14 +1026,10 @@
           <span class="text-gold" style="font-weight:bold">狂暴先驱</span> <span style="color:#ff80ab">(【站街形态】· +10 双刀腰间收鞘呼吸光芒中)</span>
         </div>
         <!-- 角色站街姿态与手持双刀动态粉光 -->
-        <div style="position:relative;width:96px;height:140px;display:flex;align-items:center;justify-content:center">
-          <div style="font-size:56px;z-index:2">🗡️🧍🗡️</div>
-          <!-- 左手武器耀眼粉光呼吸脉冲 -->
-          <div class="blade-glow-pink" style="position:absolute;left:-2px;top:22px;width:12px;height:68px;background:linear-gradient(to top, rgba(255,64,129,0.85), rgba(255,128,171,0.95), #ffffff);border-radius:6px;transform:rotate(-22deg);z-index:1"></div>
-          <!-- 右手武器耀眼粉光呼吸脉冲 -->
-          <div class="blade-glow-pink" style="position:absolute;right:-2px;top:22px;width:12px;height:68px;background:linear-gradient(to top, rgba(255,64,129,0.85), rgba(255,128,171,0.95), #ffffff);border-radius:6px;transform:rotate(22deg);z-index:1"></div>
+        <div style="position:relative;width:140px;height:170px;display:flex;align-items:center;justify-content:center">
+          <img src="../assets/resources/warrior-stance-town.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 12px rgba(255,64,129,0.5));z-index:2">
           <!-- 站街地面粉光微影 -->
-          <div style="position:absolute;bottom:4px;width:70px;height:14px;background:radial-gradient(ellipse at center, rgba(255,64,129,0.45) 0%, rgba(255,64,129,0) 70%);border-radius:50%"></div>
+          <div class="blade-glow-pink" style="position:absolute;bottom:4px;width:90px;height:16px;background:radial-gradient(ellipse at center, rgba(255,64,129,0.6) 0%, rgba(255,64,129,0) 70%);border-radius:50%"></div>
         </div>
         <div style="background:rgba(20,31,39,0.85);border:1px solid #344654;padding:4px 12px;border-radius:4px;font-size:11px;color:#8fa2af;margin-top:6px">
           ✨ 站街形态 (Town Stance)：站姿挺拔从容，双刀收鞘入胯/背负，武器以 1.4s 周期一闪一闪温和呼吸闪烁，同屏玩家皆可清晰可见
@@ -1062,12 +1063,11 @@
         <div style="background:rgba(16,24,30,0.85);border:1px solid #ff4081;padding:2px 10px;border-radius:12px;font-size:11px;margin-bottom:8px;box-shadow:0 0 10px rgba(255,64,129,0.4)">
           <span class="text-gold" style="font-weight:bold">狂暴先驱</span> <span style="color:#ff80ab">(【战斗状态】· 双刀出鞘持刃戒备)</span>
         </div>
-        <div style="position:relative;width:140px;height:130px;display:flex;align-items:center;justify-content:center">
-          <!-- 挥斩半月刃气残影 (完全继承 +10 质变粉光) -->
-          <div class="blade-glow-pink" style="position:absolute;top:-10px;right:-15px;width:120px;height:100px;border-right:6px solid #ff4081;border-top:5px solid #ff80ab;border-radius:0 70px 0 0;transform:rotate(-15deg);filter:drop-shadow(0 0 16px #ff4081);opacity:0.9"></div>
-          <div style="font-size:56px;z-index:2">⚔️🤺</div>
+        <div style="position:relative;width:170px;height:150px;display:flex;align-items:center;justify-content:center">
+          <!-- 战斗状态双刀战士立绘与质变粉光 -->
+          <img src="../assets/resources/warrior-stance-combat.png" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 16px rgba(255,64,129,0.85));z-index:2">
           <!-- 暴击爆裂光火 -->
-          <div style="position:absolute;top:8px;right:-25px;color:#ff4081;font-size:13px;font-weight:bold;text-shadow:0 0 10px #ff4081;animation:dnf-spark-float-1 0.8s infinite">CRIT! 4,280</div>
+          <div style="position:absolute;top:6px;right:-15px;color:#ff4081;font-size:13px;font-weight:bold;text-shadow:0 0 10px #ff4081;animation:dnf-spark-float-1 0.8s infinite;z-index:3">CRIT! 4,280</div>
         </div>
         <div style="background:rgba(20,31,39,0.85);border:1px solid #ff4081;padding:4px 12px;border-radius:4px;font-size:11px;color:#ff80ab;margin-top:6px">
           💥 战斗状态 (Combat Stance)：压低重心，双手持刃迎敌，普攻连斩刃气与四大技能完全继承当前 +10 强化粉光
