@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-22",
+  "feature": "warrior-loop-st02",
+  "spec_hash": "4605b8375d337ba356e49e2380fcf8a98e074c584c26f2f542dff20ab80d6e4f",
+  "tickets": 6,
+  "plan_approval": "user-confirmed",
+  "implementation_started": true,
+  "external_actions": false,
+  "checks": {
+    "source_hash_matches": true,
+    "artifact_ids_unique": true,
+    "dependencies_exist_and_acyclic": true,
+    "local_links_valid": true,
+    "criteria_and_evidence_present": true
+  },
+  "edges": {
+    "1": [],
+    "2": [1],
+    "3": [2],
+    "4": [3],
+    "5": [4],
+    "6": [4, 5]
+  }
+}
