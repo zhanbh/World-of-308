@@ -191,3 +191,31 @@ test('character coordinator handles CLASS_EXISTS rejection correctly', async () 
   assert.equal(coordinator.state.status, 'rejected');
   assert.equal(coordinator.state.code, 'CLASS_EXISTS');
 });
+
+test('character coordinator successfully selects character and updates state', async () => {
+  const { coordinator, loginService } = setup();
+  const session = await getSession(loginService);
+
+  await coordinator.start({
+    sessionId: session.sessionId,
+    sessionEpoch: session.sessionEpoch,
+    operationId: 'op-create-coord',
+    classId: 'warrior',
+    characterName: '追风',
+  });
+  assert.equal(coordinator.state.status, 'created');
+  const characterId = coordinator.state.characterId;
+
+  coordinator.reset();
+  await coordinator.select({
+    sessionId: session.sessionId,
+    sessionEpoch: session.sessionEpoch,
+    operationId: 'op-select-coord',
+    characterId,
+  });
+
+  assert.equal(coordinator.state.status, 'selected');
+  assert.equal(coordinator.state.characterId, characterId);
+  assert.equal(coordinator.state.rolePlayEpoch, 2);
+  assert.equal(coordinator.state.innAnchorRef, `inn:${characterId}`);
+});

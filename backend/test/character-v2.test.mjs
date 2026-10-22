@@ -434,3 +434,158 @@ test('lost response restores exact character creation result with replayed true'
   assert.equal(mismatch.outcome.status, 'rejected');
   assert.equal(mismatch.outcome.code, 'OPERATION_MISMATCH');
 });
+
+// ==========================================
+// ST03 Ticket 01: 角色选择与代次控制
+// ==========================================
+
+test('character select validates ownership, increments rolePlayEpoch, isolates in inn, and updates account', async () => {
+  const { loginService, characterService, store } = setupEnvironment();
+  const session1 = await loginUser(loginService, 'launch-user-1', 'op-u1');
+
+  // Create character
+  const createRes = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.create',
+    operationId: 'op-create-sel',
+    sessionId: session1.sessionId,
+    sessionEpoch: session1.sessionEpoch,
+    expected: [],
+    payload: { classId: 'warrior', characterName: '破军' },
+  });
+  assert.equal(createRes.outcome.status, 'committed');
+  const characterId = createRes.outcome.data.characterId;
+
+  // 1. Select character
+  const select1 = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.select',
+    operationId: 'op-sel-1',
+    sessionId: session1.sessionId,
+    sessionEpoch: session1.sessionEpoch,
+    expected: [],
+    payload: { characterId },
+  });
+  assert.equal(select1.outcome.status, 'committed');
+  assert.equal(select1.replayed, false);
+  assert.equal(select1.outcome.data.characterId, characterId);
+  assert.equal(select1.outcome.data.rolePlayEpoch, 2);
+  assert.equal(select1.outcome.data.innAnchorRef, `inn:${characterId}`);
+
+  // Check state in store
+  const charAfter1 = store.inspect(characterId);
+  assert.equal(charAfter1.rolePlayEpoch, 2);
+  assert.deepEqual(charAfter1.location, { kind: 'inn', characterId });
+
+  const account1 = store.inspect(charAfter1.accountId);
+  assert.equal(account1.selectedCharacterId, characterId);
+
+  // 2. Select again -> rolePlayEpoch increments to 3
+  const select2 = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.select',
+    operationId: 'op-sel-2',
+    sessionId: session1.sessionId,
+    sessionEpoch: session1.sessionEpoch,
+    expected: [],
+    payload: { characterId },
+  });
+  assert.equal(select2.outcome.status, 'committed');
+  assert.equal(select2.outcome.data.rolePlayEpoch, 3);
+
+  const charAfter2 = store.inspect(characterId);
+  assert.equal(charAfter2.rolePlayEpoch, 3);
+
+  // 3. Select non-existent character -> NOT_FOUND_OR_FORBIDDEN
+  const notFound = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.select',
+    operationId: 'op-sel-missing',
+    sessionId: session1.sessionId,
+    sessionEpoch: session1.sessionEpoch,
+    expected: [],
+    payload: { characterId: 'c-non-existent' },
+  });
+  assert.equal(notFound.outcome.status, 'rejected');
+  assert.equal(notFound.outcome.code, 'NOT_FOUND_OR_FORBIDDEN');
+
+  // 4. Another user tries to select this character -> NOT_FOUND_OR_FORBIDDEN
+  const otherIdentity = createContextIdentityPort(
+    { appId: 'app', environment: 'test', sources: ['minigame'] },
+    () => ({ APPID: 'app', ENV: 'test', SOURCE: 'minigame', OPENID: 'other-player' })
+  );
+  const otherLoginService = new LoginService({
+    store,
+    identity: otherIdentity,
+    clock: { now: () => 1000 },
+    ticketTtlMs: 60000,
+    initialUnlocks: {},
+    holdingsDomainRef: 'test-collection-domain-v1',
+  });
+  const session2 = await loginUser(otherLoginService, 'launch-user-2', 'op-u2');
+
+  const crossUser = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.select',
+    operationId: 'op-sel-cross',
+    sessionId: session2.sessionId,
+    sessionEpoch: session2.sessionEpoch,
+    expected: [],
+    payload: { characterId },
+  });
+  assert.equal(crossUser.outcome.status, 'rejected');
+  assert.equal(crossUser.outcome.code, 'NOT_FOUND_OR_FORBIDDEN');
+
+  // 5. Stale sessionEpoch -> VERSION_CONFLICT
+  const staleSession = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.select',
+    operationId: 'op-sel-stale-session',
+    sessionId: session1.sessionId,
+    sessionEpoch: session1.sessionEpoch + 99,
+    expected: [],
+    payload: { characterId },
+  });
+  assert.equal(staleSession.outcome.status, 'rejected');
+  assert.equal(staleSession.outcome.code, 'VERSION_CONFLICT');
+
+  // 6. Conflicting expected version -> VERSION_CONFLICT
+  const staleExpected = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.select',
+    operationId: 'op-sel-stale-exp',
+    sessionId: session1.sessionId,
+    sessionEpoch: session1.sessionEpoch,
+    expected: [{ kind: 'character', id: characterId, version: 9999 }],
+    payload: { characterId },
+  });
+  assert.equal(staleExpected.outcome.status, 'rejected');
+  assert.equal(staleExpected.outcome.code, 'VERSION_CONFLICT');
+
+  // 7. Idempotency & lost response recovery
+  const replaySelect2 = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.select',
+    operationId: 'op-sel-2',
+    sessionId: session1.sessionId,
+    sessionEpoch: session1.sessionEpoch,
+    expected: [],
+    payload: { characterId },
+  });
+  assert.equal(replaySelect2.outcome.status, 'committed');
+  assert.equal(replaySelect2.replayed, true);
+  assert.equal(replaySelect2.outcome.data.rolePlayEpoch, 3);
+
+  // 8. Operation mismatch
+  const mismatchSelect = await characterService.execute({
+    protocolVersion: 2,
+    command: 'character.select',
+    operationId: 'op-sel-2',
+    sessionId: session1.sessionId,
+    sessionEpoch: session1.sessionEpoch,
+    expected: [],
+    payload: { characterId: 'c-different' },
+  });
+  assert.equal(mismatchSelect.outcome.status, 'rejected');
+  assert.equal(mismatchSelect.outcome.code, 'OPERATION_MISMATCH');
+});

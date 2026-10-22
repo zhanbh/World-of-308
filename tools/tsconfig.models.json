@@ -10,6 +10,7 @@
     "../client/assets/scripts/WarriorSkillsModel.ts",
     "../client/assets/scripts/UIStateModel.ts",
     "../client/assets/scripts/net/LoginCoordinator.ts",
-    "../client/assets/scripts/net/CharacterCoordinator.ts"
+    "../client/assets/scripts/net/CharacterCoordinator.ts",
+    "../client/assets/scripts/net/TownCoordinator.ts"
   ]
 }

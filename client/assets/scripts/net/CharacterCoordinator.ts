@@ -14,11 +14,21 @@ export type CharacterCreateIntent = Readonly<{
   expected?: Expected[];
 }>;
 
+export type CharacterSelectIntent = Readonly<{
+  sessionId: string;
+  sessionEpoch: number;
+  operationId: string;
+  characterId: string;
+  expected?: Expected[];
+}>;
+
 export type CharacterCoordinatorState =
   | { status: 'idle' }
   | { status: 'creating' }
+  | { status: 'selecting' }
   | { status: 'unknown'; code: 'RESULT_UNKNOWN' }
   | { status: 'created'; characterId: string; classId: 'warrior' | 'hunter'; characterName: string }
+  | { status: 'selected'; characterId: string; rolePlayEpoch: number; innAnchorRef: string }
   | { status: 'rejected'; code: string }
   | { status: 'error'; code: string };
 
@@ -75,6 +85,28 @@ export class CharacterCoordinator {
     await this.send(generation, request);
   }
 
+  async select(intent: CharacterSelectIntent): Promise<void> {
+    if (this.current.status === 'creating' || this.current.status === 'selecting' || this.current.status === 'unknown') {
+      throw new Error('UNRESOLVED_CHARACTER_INTENT');
+    }
+
+    const request: CharacterCommand = {
+      protocolVersion: 2,
+      command: 'character.select',
+      operationId: intent.operationId,
+      sessionId: intent.sessionId,
+      sessionEpoch: intent.sessionEpoch,
+      expected: intent.expected ? [...intent.expected] : [],
+      payload: {
+        characterId: intent.characterId,
+      },
+    };
+
+    this.request = request;
+    const generation = ++this.generation;
+    await this.send(generation, request);
+  }
+
   async retry(): Promise<void> {
     if (this.current.status !== 'unknown' || !this.request) {
       throw new Error('NO_PENDING_CHARACTER_INTENT');
@@ -90,7 +122,7 @@ export class CharacterCoordinator {
   }
 
   private async send(generation: number, request: CharacterCommand): Promise<void> {
-    this.current = { status: 'creating' };
+    this.current = request.command === 'character.select' ? { status: 'selecting' } : { status: 'creating' };
     let text: string;
     try {
       text = await this.transport.send(JSON.stringify(request));
@@ -128,6 +160,13 @@ export class CharacterCoordinator {
         characterId: data.characterId,
         classId: data.classId,
         characterName: data.characterName,
+      };
+    } else if ('innAnchorRef' in data) {
+      this.current = {
+        status: 'selected',
+        characterId: data.characterId,
+        rolePlayEpoch: data.rolePlayEpoch,
+        innAnchorRef: data.innAnchorRef,
       };
     } else {
       this.current = { status: 'error', code: 'UNEXPECTED_RESPONSE_SHAPE' };

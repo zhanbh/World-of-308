@@ -46,7 +46,7 @@ export class CharacterService {
     } catch {
       return {
         protocolVersion: 2,
-        command: 'character.create',
+        command: typeof (value as any)?.command === 'string' && (value as any).command === 'character.select' ? 'character.select' : 'character.create',
         operationId: typeof (value as any)?.operationId === 'string' ? (value as any).operationId : 'op-unknown',
         serverTime: time(this.options.clock.now()),
         replayed: false,
@@ -57,15 +57,8 @@ export class CharacterService {
     const { operationId, sessionId, sessionEpoch } = command;
     const now = time(this.options.clock.now());
 
-    if (command.command !== 'character.create') {
-      return parseCharacterResponse({
-        protocolVersion: 2,
-        command: command.command,
-        operationId,
-        serverTime: now,
-        replayed: false,
-        outcome: { status: 'rejected', code: 'INVALID_ARGUMENT' },
-      });
+    if (command.command === 'character.select') {
+      return this.executeSelect(command);
     }
 
     const { classId, characterName } = command.payload;
@@ -452,6 +445,192 @@ export class CharacterService {
         return parseCharacterResponse({
           protocolVersion: 2,
           command: command.command,
+          operationId,
+          serverTime: time(this.options.clock.now()),
+          replayed: false,
+          outcome: { status: 'rejected', code: 'SERVICE_UNAVAILABLE' },
+        });
+      }
+      throw error;
+    }
+  }
+
+  private async executeSelect(command: Extract<CharacterCommand, { command: 'character.select' }>): Promise<CharacterResponse> {
+    const { operationId, sessionId, sessionEpoch, payload } = command;
+    const targetCharacterId = payload.characterId;
+
+    try {
+      return await this.options.store.run(async tx => {
+        const currentTime = time(this.options.clock.now());
+
+        // 1. Session check
+        const session = await tx.get<LoginSession>(sessionId);
+        if (!session || session.status === 'revoked') {
+          return parseCharacterResponse({
+            protocolVersion: 2,
+            command: 'character.select',
+            operationId,
+            serverTime: currentTime,
+            replayed: false,
+            outcome: { status: 'rejected', code: 'SESSION_REVOKED' },
+          });
+        }
+        if (session.epoch !== sessionEpoch) {
+          return parseCharacterResponse({
+            protocolVersion: 2,
+            command: 'character.select',
+            operationId,
+            serverTime: currentTime,
+            replayed: false,
+            outcome: { status: 'rejected', code: 'VERSION_CONFLICT' },
+          });
+        }
+
+        const accountId = session.accountId;
+        const receiptKey = await characterKey('receipt', [accountId, operationId]);
+        const intentTuple = JSON.stringify([accountId, 'character.select', operationId, targetCharacterId]);
+
+        // 2. Receipt check for idempotency / lost response recovery
+        const previousReceipt = await tx.get<CharacterReceipt>(receiptKey);
+        if (previousReceipt) {
+          if (previousReceipt.tuple !== intentTuple) {
+            return parseCharacterResponse({
+              protocolVersion: 2,
+              command: 'character.select',
+              operationId,
+              serverTime: currentTime,
+              replayed: false,
+              outcome: { status: 'rejected', code: 'OPERATION_MISMATCH' },
+            });
+          }
+          const restored = structuredClone(previousReceipt.result);
+          return parseCharacterResponse({
+            ...restored,
+            replayed: true,
+            serverTime: currentTime,
+          });
+        }
+
+        // 3. Account check
+        const account = await tx.get<LoginAccount>(accountId);
+        if (!account) {
+          return parseCharacterResponse({
+            protocolVersion: 2,
+            command: 'character.select',
+            operationId,
+            serverTime: currentTime,
+            replayed: false,
+            outcome: { status: 'rejected', code: 'NOT_FOUND_OR_FORBIDDEN' },
+          });
+        }
+
+        // Expected versions check on account
+        for (const exp of command.expected) {
+          if (exp.kind === 'account' && exp.id === account.id && exp.version !== account.version) {
+            return parseCharacterResponse({
+              protocolVersion: 2,
+              command: 'character.select',
+              operationId,
+              serverTime: currentTime,
+              replayed: false,
+              outcome: { status: 'rejected', code: 'VERSION_CONFLICT' },
+            });
+          }
+        }
+
+        // 4. Target character check
+        const character = await tx.get<CharacterEntity>(targetCharacterId);
+        if (!character || character.accountId !== accountId) {
+          return parseCharacterResponse({
+            protocolVersion: 2,
+            command: 'character.select',
+            operationId,
+            serverTime: currentTime,
+            replayed: false,
+            outcome: { status: 'rejected', code: 'NOT_FOUND_OR_FORBIDDEN' },
+          });
+        }
+
+        for (const exp of command.expected) {
+          if (exp.kind === 'character' && exp.id === character.id && exp.version !== character.version) {
+            return parseCharacterResponse({
+              protocolVersion: 2,
+              command: 'character.select',
+              operationId,
+              serverTime: currentTime,
+              replayed: false,
+              outcome: { status: 'rejected', code: 'VERSION_CONFLICT' },
+            });
+          }
+        }
+
+        // 5. Monotonically increment rolePlayEpoch & isolate in inn
+        const nextRolePlayEpoch = (character.rolePlayEpoch || 0) + 1;
+        const updatedCharacter: CharacterEntity = {
+          ...character,
+          rolePlayEpoch: nextRolePlayEpoch,
+          location: { kind: 'inn', characterId: character.id },
+          version: character.version + 1,
+          updatedAt: currentTime,
+        };
+
+        const updatedAccount: LoginAccount = {
+          ...account,
+          selectedCharacterId: character.id,
+          version: account.version + 1,
+          updatedAt: currentTime,
+        };
+
+        tx.set(updatedCharacter.id, updatedCharacter);
+        tx.set(updatedAccount.id, updatedAccount);
+
+        const response: CharacterResponse = parseCharacterResponse({
+          protocolVersion: 2,
+          command: 'character.select',
+          operationId,
+          serverTime: currentTime,
+          replayed: false,
+          outcome: {
+            status: 'committed',
+            data: {
+              characterId: updatedCharacter.id,
+              rolePlayEpoch: nextRolePlayEpoch,
+              innAnchorRef: `inn:${updatedCharacter.id}`,
+            },
+            resultVersions: [
+              { kind: 'account', id: updatedAccount.id, version: updatedAccount.version },
+              { kind: 'character', id: updatedCharacter.id, version: updatedCharacter.version },
+            ],
+          },
+        });
+
+        const receipt: CharacterReceipt = {
+          schemaVersion: 2,
+          id: receiptKey,
+          accountId,
+          tuple: intentTuple,
+          result: response,
+          createdAt: currentTime,
+        };
+        tx.set(receiptKey, receipt);
+
+        return response;
+      });
+    } catch (error) {
+      if (error instanceof CommitUnknown) {
+        return parseCharacterResponse({
+          protocolVersion: 2,
+          command: 'character.select',
+          operationId,
+          serverTime: time(this.options.clock.now()),
+          replayed: false,
+          outcome: { status: 'unknown', code: 'RESULT_UNKNOWN' },
+        });
+      }
+      if (error instanceof StoreUnavailable) {
+        return parseCharacterResponse({
+          protocolVersion: 2,
+          command: 'character.select',
           operationId,
           serverTime: time(this.options.clock.now()),
           replayed: false,
