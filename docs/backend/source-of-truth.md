@@ -29,4 +29,4 @@
 
 FR01/FR02/FR03原发现见[最终复核](../reviews/eng-review-final-recheck-2026-10-22.md)。本轮已修正文并补静态反例，见[一致性闭环](../reviews/design-source-consistency-2026-10-22.md)。旧评审“尚未批准”及预算数字是历史状态，不再作为活跃要求。
 
-设计正文一致不等于功能已实现。B0实施范围见[首片计划](../design/implementation-b0-contract-foundation-v1.md)，当前尚无开工授权；SDK/真机/经济与性能门禁按对应阶段执行。本索引不授权安装、部署或操作真实资产。
+设计正文一致不等于功能已实现。B0实施范围见[首片计划](../design/implementation-b0-contract-foundation-v1.md)；用户后续已授权E01本地实现，当前协议/配置/检查基础已交付，实际覆盖与缺口见[E01验证](../reviews/e01-07-integration-verification-2026-10-22.md)。SDK/真机/经济与性能门禁按对应阶段执行。本索引不授权安装、部署或操作真实资产。
