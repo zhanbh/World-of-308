@@ -1,0 +1,441 @@
+{
+  "date": "2026-10-22",
+  "status": "proposed",
+  "executionAuthorized": false,
+  "externalTracking": false,
+  "stories": [
+    {
+      "id": "ST01",
+      "title": "登录、会话接管与原登录结果恢复",
+      "blocked_by": [
+        "E01"
+      ],
+      "covers_us": [
+        "US1",
+        "US13"
+      ],
+      "covers_ac": [
+        "AC12"
+      ],
+      "qa_groups": [
+        "01",
+        "02",
+        "04"
+      ],
+      "file": "st01.md"
+    },
+    {
+      "id": "ST02",
+      "title": "创建战士、隔离成长与初始物品",
+      "blocked_by": [
+        "ST01"
+      ],
+      "covers_us": [
+        "US1",
+        "US7",
+        "US13"
+      ],
+      "covers_ac": [
+        "AC6",
+        "AC8",
+        "AC12"
+      ],
+      "qa_groups": [
+        "03",
+        "04"
+      ],
+      "file": "st02.md"
+    },
+    {
+      "id": "ST03",
+      "title": "城镇步行、服务地点授权与私有读模型",
+      "blocked_by": [
+        "ST02"
+      ],
+      "covers_us": [
+        "US1",
+        "US9",
+        "US13"
+      ],
+      "covers_ac": [
+        "AC12"
+      ],
+      "qa_groups": [
+        "05",
+        "06",
+        "39"
+      ],
+      "file": "st03.md"
+    },
+    {
+      "id": "ST04",
+      "title": "背包整理、堆叠与快捷位",
+      "blocked_by": [
+        "ST02"
+      ],
+      "covers_us": [
+        "US6"
+      ],
+      "covers_ac": [
+        "AC8"
+      ],
+      "qa_groups": [
+        "10",
+        "37"
+      ],
+      "file": "st04.md"
+    },
+    {
+      "id": "ST05",
+      "title": "穿脱装备、属性与套装生效",
+      "blocked_by": [
+        "ST04",
+        "ST03"
+      ],
+      "covers_us": [
+        "US3",
+        "US7"
+      ],
+      "covers_ac": [
+        "AC6"
+      ],
+      "qa_groups": [
+        "09"
+      ],
+      "file": "st05.md"
+    },
+    {
+      "id": "ST06",
+      "title": "商店买卖、共享钱包与整数兑换",
+      "blocked_by": [
+        "ST03",
+        "ST04"
+      ],
+      "covers_us": [
+        "US6",
+        "US12"
+      ],
+      "covers_ac": [
+        "AC11"
+      ],
+      "qa_groups": [
+        "11",
+        "37"
+      ],
+      "file": "st06.md"
+    },
+    {
+      "id": "ST07",
+      "title": "单项邮件与永久待领领取",
+      "blocked_by": [
+        "ST03",
+        "ST04"
+      ],
+      "covers_us": [
+        "US6",
+        "US11",
+        "US13"
+      ],
+      "covers_ac": [
+        "AC5",
+        "AC8",
+        "AC12"
+      ],
+      "qa_groups": [
+        "15",
+        "16",
+        "18",
+        "37"
+      ],
+      "file": "st07.md"
+    },
+    {
+      "id": "ST08",
+      "title": "邮件与待领的可恢复批量领取",
+      "blocked_by": [
+        "ST07"
+      ],
+      "covers_us": [
+        "US11",
+        "US13"
+      ],
+      "covers_ac": [
+        "AC5",
+        "AC8",
+        "AC12"
+      ],
+      "qa_groups": [
+        "17"
+      ],
+      "file": "st08.md"
+    },
+    {
+      "id": "ST09",
+      "title": "银行存取与分档扩容",
+      "blocked_by": [
+        "ST03",
+        "ST04"
+      ],
+      "covers_us": [
+        "US9",
+        "US12"
+      ],
+      "covers_ac": [
+        "AC8",
+        "AC9",
+        "AC11"
+      ],
+      "qa_groups": [
+        "07",
+        "08"
+      ],
+      "file": "st09.md"
+    },
+    {
+      "id": "ST10",
+      "title": "副本入口、体力快照与三步开房",
+      "blocked_by": [
+        "ST03",
+        "ST05"
+      ],
+      "covers_us": [
+        "US4",
+        "US10"
+      ],
+      "covers_ac": [
+        "AC4",
+        "AC10"
+      ],
+      "qa_groups": [
+        "19",
+        "20",
+        "21",
+        "31"
+      ],
+      "file": "st10.md"
+    },
+    {
+      "id": "ST11",
+      "title": "战士移动、三段普攻与技能伤害",
+      "blocked_by": [
+        "ST10",
+        "ST05",
+        "ST04"
+      ],
+      "covers_us": [
+        "US2",
+        "US3"
+      ],
+      "covers_ac": [
+        "AC1",
+        "AC2",
+        "AC3"
+      ],
+      "qa_groups": [
+        "22",
+        "23",
+        "24",
+        "25",
+        "26"
+      ],
+      "file": "st11.md"
+    },
+    {
+      "id": "ST12",
+      "title": "怪物组合、精英与首领阶段",
+      "blocked_by": [
+        "ST11"
+      ],
+      "covers_us": [
+        "US2",
+        "US4"
+      ],
+      "covers_ac": [
+        "AC1",
+        "AC4"
+      ],
+      "qa_groups": [
+        "27"
+      ],
+      "file": "st12.md"
+    },
+    {
+      "id": "ST13",
+      "title": "战斗药品与主动饰品",
+      "blocked_by": [
+        "ST11",
+        "ST06"
+      ],
+      "covers_us": [
+        "US3",
+        "US6"
+      ],
+      "covers_ac": [
+        "AC2",
+        "AC3",
+        "AC8"
+      ],
+      "qa_groups": [
+        "28"
+      ],
+      "file": "st13.md"
+    },
+    {
+      "id": "ST14",
+      "title": "死亡、复活与失败退出",
+      "blocked_by": [
+        "ST12",
+        "ST13"
+      ],
+      "covers_us": [
+        "US3",
+        "US5",
+        "US13"
+      ],
+      "covers_ac": [
+        "AC3",
+        "AC5",
+        "AC14"
+      ],
+      "qa_groups": [
+        "29",
+        "34"
+      ],
+      "file": "st14.md"
+    },
+    {
+      "id": "ST15",
+      "title": "拾取、首领结算与奖励来源",
+      "blocked_by": [
+        "ST12",
+        "ST07",
+        "ST14"
+      ],
+      "covers_us": [
+        "US4",
+        "US5",
+        "US6",
+        "US10",
+        "US11"
+      ],
+      "covers_ac": [
+        "AC5",
+        "AC8",
+        "AC10"
+      ],
+      "qa_groups": [
+        "30",
+        "31",
+        "32",
+        "37"
+      ],
+      "file": "st15.md"
+    },
+    {
+      "id": "ST16",
+      "title": "暂停、完整状态恢复与迟包处理",
+      "blocked_by": [
+        "ST15"
+      ],
+      "covers_us": [
+        "US13"
+      ],
+      "covers_ac": [
+        "AC12",
+        "AC14"
+      ],
+      "qa_groups": [
+        "33",
+        "37"
+      ],
+      "file": "st16.md"
+    },
+    {
+      "id": "ST17",
+      "title": "耐久磨损与林纳克斯修理",
+      "blocked_by": [
+        "ST15",
+        "ST06"
+      ],
+      "covers_us": [
+        "US3",
+        "US7",
+        "US12"
+      ],
+      "covers_ac": [
+        "AC3",
+        "AC6",
+        "AC11"
+      ],
+      "qa_groups": [
+        "12"
+      ],
+      "file": "st17.md"
+    },
+    {
+      "id": "ST18",
+      "title": "玛丽强化、纪念品与会话记忆",
+      "blocked_by": [
+        "ST17",
+        "ST07"
+      ],
+      "covers_us": [
+        "US8",
+        "US12"
+      ],
+      "covers_ac": [
+        "AC7",
+        "AC11"
+      ],
+      "qa_groups": [
+        "13",
+        "37"
+      ],
+      "file": "st18.md"
+    },
+    {
+      "id": "ST19",
+      "title": "特殊副本套装策略与持有检测",
+      "blocked_by": [
+        "ST15",
+        "ST09",
+        "ST07",
+        "ST18"
+      ],
+      "covers_us": [
+        "US5",
+        "US7",
+        "US11"
+      ],
+      "covers_ac": [
+        "AC5",
+        "AC6",
+        "AC8"
+      ],
+      "qa_groups": [
+        "14",
+        "15",
+        "36"
+      ],
+      "file": "st19.md"
+    },
+    {
+      "id": "ST20",
+      "title": "查看当前装备评分排行榜",
+      "blocked_by": [
+        "ST05",
+        "ST18"
+      ],
+      "covers_us": [
+        "US14"
+      ],
+      "covers_ac": [
+        "AC13"
+      ],
+      "qa_groups": [
+        "35"
+      ],
+      "file": "st20.md"
+    }
+  ]
+}

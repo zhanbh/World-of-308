@@ -229,3 +229,8 @@ C24a expected包括H/C；C24b包括H/C及prepare返回attempt，不要求客户�
 ## 2026-10-22批准4A/7A
 
 恢复票据与公开恢复分页绑定sceneEpoch/timelineEpoch/checkpointRevision/publicStateHash/manifestHash及原截止；scene.ready携票据、controlSeq/leaseRevision，不接受客户端上传权威HP或省略页假装服务端通过。激活新房先awaitingReady再ready，沿[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)。HP/MP自然回复余数进入权威CP编码，普通DTO显示取整不回写。
+
+
+## FR01/FR02设计修订
+
+转场唯一计时存H.transitionClock，activate清pending但保留时钟，ready结清未消费联网区间后删除。活动段首次scene.ready原子设置inputGapBaseAt与活动锚点，后续仅新合法输入提交刷新缺口基点；ready重放/心跳不刷新，历史lastAcceptedInputAt不充当首次输入计时起点。活动态差值≥2000ms进入recovery，加载态不判2秒缺口，原死亡/恢复截止不延长。详见加载与恢复权威合同。

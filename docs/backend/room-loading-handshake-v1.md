@@ -40,7 +40,7 @@ H保存pendingRoomAttempt{roomNo,attemptId,manifestHash,configRef,preparedRevisi
 
 正常联网加载期间，职业技能、两组药品、饰品冷却、饰品增益有效时间及既有自然回复继续推进。例：某技能剩5秒、有效联网加载3秒，则新房剩2秒；同增益剩5秒则剩2秒。自然回复按已绑定规则和每个增益到期节点分段应用，溢出舍弃，不改已释放攻击快照，不临时增加回复率。切房本身没有额外回血/回蓝奖励。
 
-H.pendingRoomAttempt同时保存transitionClock{settledAt,connectedElapsedMs,timeRemainder,transitionRevision}；角色原状态来自上一确认CP，不能以客户端加载秒数覆盖。prepare先落实前房最后合法进度并建立转场计时基点；pending期间不接受前房新攻击/用药/饰品或继续模拟敌人，资源预加载意图只在上房清场且到出口后进入该阶段。普通拾取仍按旧房合法场景与来源规则处理，不因此推进一套独立角色时钟。
+H独立保存至多一个transitionClock{settledAt,connectedElapsedMs,timeRemainder,transitionRevision}；角色原状态来自上一确认CP，不能以客户端加载秒数覆盖。prepare先落实前房最后合法进度并建立转场计时基点；pending期间不接受前房新攻击/用药/饰品或继续模拟敌人，资源预加载意图只在上房清场且到出口后进入该阶段。普通拾取仍按旧房合法场景与来源规则处理，不因此推进一套独立角色时钟。
 
 转场计时由服务端根据已记录connected/recovery分段结算：正常有效连接段累计；显式暂停/静默缺口进入恢复后排除，截止与暂停前沿沿恢复合同，不接受客户端倒填物理断线时刻。加载阶段保活仍走现有租约（不套战斗2秒输入缺口），心跳不直接给CP写回血；进入恢复/恢复成功时将转场计时边界与H/头同事务保存。真实断网瞬间不可观测，不承诺零误差计时，也不延长10秒期限。
 
@@ -54,3 +54,10 @@ activate一次将未结算的有效联网时长折算为角色计时/资源变�
 ## 2026-10-22批准4A
 
 activate先扣费并建立awaitingReady状态，就绪前不模拟敌人、不套2秒战斗输入缺口；客户端完整状态/资源就绪后scene.ready才转active。activate响应丢失查原operation，不重复初始化/扣费。ready丢响应查同票据回执、不重启时钟；其后再断线仍沿恢复协议。加载/恢复租约与原死亡截止不延长，详见[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)4A。
+
+
+## FR01闭环：转场时钟的唯一持久归属
+
+transitionClock只存H.transitionClock，含attemptId、phase=prepared/awaitingReady、settledAt、connectedElapsedMs、timeRemainder、transitionRevision；pendingRoomAttempt仅保存下一房manifest/attempt引用，不内嵌时钟。prepare创建唯一时钟；activate同事务消费已累计联网区间并推进settledAt/版本，清pending但保留H.transitionClock且phase=awaitingReady。ready结清activate后的未消费联网区间、把CD/buff/资源及余数写新CP，再在同笔删除H.transitionClock并转active。短恢复保留该时钟且不累计recovery段；恢复ready若回到加载阶段只恢复加载计时，不启动敌人活动。退出/到期/接管按既定结束规则关闭并清转场时钟，不补未确认战斗或额外奖励。
+
+不保留第二份可写时钟，不因重试重设prepare基点。prepare0秒/技能剩5秒，activate2秒消费2秒，ready3秒仅再消费1秒，最终剩2秒。任一步提交丢响应按原回执/当前版本恢复，不再次消费已结清区间。时钟是H内常数大小字段，不新增物理键；ready导致CP变化块按实际d计量。

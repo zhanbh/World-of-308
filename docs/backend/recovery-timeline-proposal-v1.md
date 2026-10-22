@@ -62,7 +62,8 @@
 | timelineEpoch | 绑定当前时间锚点的输入代次；resume成功后递增，拦截旧时钟下的迟到输入 |
 | sceneEpoch | 原房间/场景的有效性；短恢复不改变，不误使地面掉落失效。与timelineEpoch不是同一字段 |
 | lease.lastEvidenceAt/leaseUntil | 最后一次新有效连接证据及其10秒租约；新输入提交或新序号心跳可更新，旧operation/旧心跳重放不续期 |
-| lastAcceptedInputAt | 最近新输入片段的服务端提交时刻；心跳不冒充战斗模拟进度 |
+| lastAcceptedInputAt | 最近新输入片段的服务端提交时刻；仅新合法输入更新，ready/心跳不伪造此事实 |
+| inputGapBaseAt | 当前活动时间段的缺口基点；首次ready设为serverNow，其后新输入提交更新；重放、心跳不更新 |
 | recoveryUntil | 显式暂停时固定为服务端接受暂停时刻+10秒；静默缺口沿原leaseUntil，不再加10秒；进入recovery后不可滚动延长 |
 | deathOccurredAt/deathDeadline | 首次确认该deathIndex时，将死亡节点映射到所属时间段，再固定+10秒；绝不按响应或resume时刻重设 |
 
@@ -113,3 +114,10 @@
 ## 2026-10-22批准4A：恢复准备与就绪分开
 
 scene.resumePrepare固定确认前沿与公开摘要，分页/资源准备期间仍recovery；scene.ready核对票据、revision/hash及全部原截止后才connected。不得提前启动2秒输入缺口或以准备/心跳延长10秒。ready成功丢响应读取同票据状态不重置锚点。新房awaitingReady采用同机制；正常联网角色转场计时依2A继续，真实recovery排除。本文历史“resume直接connected”语句由该两步协议替代，具体字段/失败路径见[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)4A。
+
+
+## FR02闭环：首次输入与时间段缺口
+
+scene.ready首次成功且进入active/combat时，同笔设置inputGapBaseAt=serverNow；保留历史lastAcceptedInputAt、acceptedSeq/Tick，不伪造输入。新片段先验代次及serverNow−inputGapBaseAt；差值≥2000ms进入recovery并拒绝新执行，差值<2000ms才继续验证；成功接受新输入后同时更新inputGapBaseAt与lastAcceptedInputAt。心跳、旧operation和ready重放都不更新inputGapBaseAt。awaitingReady/转场加载与completed/looting不适用该缺口判断。每个活动时间段ready只初始化一次，重放不得换锚点续命。
+
+例：0秒最后旧输入，3秒ready，新输入4.9秒可进入校验，5秒/5.1秒按缺口到期恢复；服务器不因旧lastAcceptedInputAt=0立即判超时。原死亡/恢复墙钟截止优先检查，ready不能越过截止；新恢复的固定租约仍沿既有规则。

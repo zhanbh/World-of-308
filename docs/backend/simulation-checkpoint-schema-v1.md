@@ -56,3 +56,8 @@
 
 
 2026-10-22评审决定2A：切房初始化仅替换场景状态，角色当前HP/MP、装备修订、CD/增益继承；联网转场累计时间按transitionClock原子折算后进入新CP，不加载满状态默认值，recovery段不计。时间精度余数保留，旧房效果不跨场景；角色层与场景层状态明确分开。
+
+
+## FR01/FR02当前字段合同
+
+H.transitionClock是唯一转场计时权威，prepare建立、activate保留并推进已结算边界、ready最终结清后删除；pendingRoomAttempt不承载时钟。CP头时钟新增inputGapBaseAt:Time，活动段首次ready赋值，随后仅新输入成功提交更新，心跳与重放不更新。lastAcceptedInputAt保留实际输入提交事实；输入缺口以inputGapBaseAt为准，≥2000ms到期。场景仍awaitingReady/转场时不启用输入缺口。字段在H/CP已有键内，编码字节计入原上界。

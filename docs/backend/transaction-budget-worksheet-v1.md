@@ -20,7 +20,7 @@
 
 ## 发布前必须具备的预算记录
 
-评分附加键已有[具体候选](scoring-projection-mapping-v1.md)：同步character评分事实与rankingEntry，读取实际13槽实例集合S与原业务已读集合B求差，Kread=|S减B|+1，通常Kwrite=1；原业务不写character时另加该写。背包强化/整理/领取不影响当前穿戴时无需该投影路径；磨损/修理是否重算取决于评分公式的显式依赖，不凭截图假定。
+评分附加键已有[具体候选](scoring-projection-mapping-v1.md)：同步character评分事实与rankingEntry，读取实际13槽实例集合S与原业务已读集合B求差，Kread=|S减B|+1，通常Kwrite=1；原业务不写character时另加该写。背包强化/整理/领取不影响当前穿戴时无需该投影路径；P01已确认磨损/修理不重算固有价值评分，也不读写rankingEntry。
 
 登录不套普通资产共同骨架。按[身份适配§7](identity-adapter-proposal-v1.md)另列：未建号prepare R2/W1，已有账号prepare R3/W1；首次commit R8+P/W8；已有账号无角色/场景且有旧会话commit R6+P/W5；带旧场景增加H/CP/C/J时R10+P/W9。投影及其他物理键另计。prepare不建共享资产、不关闭旧挑战；commit与旧资产写通过A竞争，关闭场景不逐个写历史rooms/drop。上述为唯一键候选，不是SDK限额实证。
 
@@ -34,4 +34,4 @@
 
 邮件一键采用[有界批领](town-authority-and-batch-delivery-v1.md)：最多20附件、扫描100封、每请求执行最多4项，每子项增加batch一读一写。堆叠附件R9+P/W6，装备R10+P/W7；子项O/J与batch进度同笔。
 
-2026-10-22决定3A：通关读角色/账号持有汇总并写角色汇总，含缺件检测最坏R45/W34；原R43/W33不含这项依赖。套装移动/退出持有与邮件贡献附加预算见[汇总合同](collection-holdings-projection-v1.md)。
+2026-10-22决定3A：通关读角色/账号持有汇总并写角色汇总，含缺件检测当前最坏R44/W33=77；历史43/33与45/34已被P01/FR03修订替换。套装移动/退出持有与邮件贡献附加预算见[汇总合同](collection-holdings-projection-v1.md)。

@@ -40,4 +40,4 @@ IdentityPort.verify(invocation)只产VerifiedIdentity；DatabasePort.transact(re
 
 ## 2026-10-22批准10A：隔离验证判据
 
-单次事务尝试数据调用目标≤80（显式commit等额外调用必须计入），应用写集≤1.5MiB；重试累计另计，不把候选79键当实测通过。常态端到端P95≤500ms/P99≤1秒为先验目标，记录冷/热、CPU、字节、重试、预测冻结比例与单人费用。最大8块/8怪/跨级邮件/pending/持有汇总及索引可见性必须覆盖；失败阻断适配，不削收益或信clientHp。不是运营SLA，具体隔离资源操作另授权。见[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)10A。
+单次事务尝试数据调用目标≤80（显式commit等额外调用必须计入），应用写集≤1.5MiB；重试累计另计，不把当前候选77次唯一键读写当实测通过。常态端到端P95≤500ms/P99≤1秒为先验目标，记录冷/热、CPU、字节、重试、预测冻结比例与单人费用。最大8块/8怪/跨级邮件/pending/持有汇总及索引可见性必须覆盖；失败阻断适配，不削收益或信clientHp。不是运营SLA，具体隔离资源操作另授权。见[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)10A。

@@ -75,3 +75,8 @@
 
 
 2026-10-21家中续接：[战斗精度与事件顺序候选](combat-arithmetic-contract-v1.md)补充精确整数入口、分段预算余数、从施放原点映射时间及检查点字段。完全同原始时刻的终局/控制顺序仍待审；加载握手与合法并发上界尚未补齐。仅设计材料，DC04保持开放，未启动正式eng-review或业务编码。
+
+
+## FR01/FR02设计修订
+
+转场唯一计时存H.transitionClock，activate清pending但保留时钟，ready结清未消费联网区间后删除。活动段首次scene.ready原子设置inputGapBaseAt与活动锚点，后续仅新合法输入提交刷新缺口基点；ready重放/心跳不刷新，历史lastAcceptedInputAt不充当首次输入计时起点。活动态差值≥2000ms进入recovery，加载态不判2秒缺口，原死亡/恢复截止不延长。详见加载与恢复权威合同。

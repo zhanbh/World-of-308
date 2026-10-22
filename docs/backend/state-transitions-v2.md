@@ -105,3 +105,8 @@ C23锁快照后尚未enterRoom期间也有租约/关闭路径，避免卡唯一a
 
 
 2026-10-22评审决定2A：roomPhase=preparing仅在已清房后正常加载时推进角色CD/增益/自然回复，不推进旧房敌人或接受攻击；recovery排除计时。activate继承角色状态并结算未计入的加载区间，不清CD/满血蓝，旧房效果和敌人不迁移。
+
+
+## FR01/FR02设计修订
+
+转场唯一计时存H.transitionClock，activate清pending但保留时钟，ready结清未消费联网区间后删除。活动段首次scene.ready原子设置inputGapBaseAt与活动锚点，后续仅新合法输入提交刷新缺口基点；ready重放/心跳不刷新，历史lastAcceptedInputAt不充当首次输入计时起点。活动态差值≥2000ms进入recovery，加载态不判2秒缺口，原死亡/恢复截止不延长。详见加载与恢复权威合同。

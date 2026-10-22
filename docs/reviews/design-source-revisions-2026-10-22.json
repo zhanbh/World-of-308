@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-22",
+  "parent": "eng-review-approved-revisions-2026-10-22.json",
+  "resolved_findings": [
+    "FR01",
+    "FR02",
+    "FR03"
+  ],
+  "evidence_level": "document consistency and arithmetic examples only",
+  "executionAuthorized": false,
+  "files": [
+    {
+      "path": "docs/backend/README.md",
+      "sha256": "264736492a62f60954779afd33494327098ccd1523e134bf743d4dee2dfb32c5"
+    },
+    {
+      "path": "docs/backend/access-and-transactions-v2.md",
+      "sha256": "10b0d1ef855f0f4e6c1d7b9462f4916d20d033224965af238ab9f74170424c3c"
+    },
+    {
+      "path": "docs/backend/api-contract-v2.md",
+      "sha256": "a93008401495cec8d1f25169a32301aafe74616f0902a2e8eff0f2dfc6f0792c"
+    },
+    {
+      "path": "docs/backend/collection-holdings-projection-v1.md",
+      "sha256": "5aeeec6452a52f2df17c46d09e517e678f348671c479fbb928ee1e517f7598ac"
+    },
+    {
+      "path": "docs/backend/data-dictionary-v2.md",
+      "sha256": "2c15181d70120e74dfebaaf7ccb2edf5f099a6006563aaa57c8f037e4d1b9830"
+    },
+    {
+      "path": "docs/backend/enhancement-terminal-budget-v1.md",
+      "sha256": "52cf8730c17ebe7658bbb6efa3e54f064d4c7ec8bb5e54aac956186c058457fa"
+    },
+    {
+      "path": "docs/backend/platform-adapter-baseline-v1.md",
+      "sha256": "267e648b1c43c05482ae4c4c0c8ef16e4a55d7e2da5ef7d6860fb28b35752e23"
+    },
+    {
+      "path": "docs/backend/recovery-timeline-proposal-v1.md",
+      "sha256": "29368ea848466f19752291fbcaa2d0efb84e17f1a9bc1a1424cc286a6f9c865e"
+    },
+    {
+      "path": "docs/backend/room-loading-handshake-v1.md",
+      "sha256": "38689090f6690455e3f64b40d233b98e371964b86ec999e302b3251dd5b862d1"
+    },
+    {
+      "path": "docs/backend/simulation-checkpoint-schema-v1.md",
+      "sha256": "2dc1d79147a9bed55ec7d6e8e4215b97651397cbb4d51814c438a147e8fe40ff"
+    },
+    {
+      "path": "docs/backend/simulation-timing-and-budget-v1.md",
+      "sha256": "250fc9f11a40e665442cae7ba6b645cc57d1ffda9ac76a21b2ff640232bb8940"
+    },
+    {
+      "path": "docs/backend/source-of-truth.md",
+      "sha256": "ed0a1ce59b00e78bcb7441063935748c53dca8de3e720cf1048b312a5d55eb32"
+    },
+    {
+      "path": "docs/backend/state-transitions-v2.md",
+      "sha256": "ae66a9a4d2ab739aa12a4c1903dcf1bc464b6c357a5a0cc3bcd594d888b55e7f"
+    },
+    {
+      "path": "docs/backend/transaction-budget-worksheet-v1.md",
+      "sha256": "67ccd38140e4abc5b03ba7a2d8f6070ceabeb24dfaea5f7ae13e88d6feffcdd0"
+    },
+    {
+      "path": "docs/design/implementation-slices-v1.md",
+      "sha256": "cf278d268354094d928b9cc2cfe6fa6119af26265972d94f919e6a24677ed62b"
+    },
+    {
+      "path": "docs/reviews/design-source-consistency-2026-10-22.md",
+      "sha256": "e3b5dad9006a183fcf6f7aacfb6999b92d4326ea26c6de88ab741358ca74b1d1"
+    },
+    {
+      "path": "docs/reviews/eng-review-approved-contracts-2026-10-22.md",
+      "sha256": "6a2f78b46dad7306d49b64cd75e78fad3adc81f8d6e2e3fbb9e050ba921afe49"
+    },
+    {
+      "path": "docs/reviews/eng-review-final-recheck-2026-10-22.md",
+      "sha256": "704e0550cb6f0daef4d26c426c91cedbe9b40f63c7835de603cb0098d409c225"
+    },
+    {
+      "path": "docs/reviews/handoff-2026-10-22.md",
+      "sha256": "28ba6e4973b85e6acaf43c42bd2035f32202aa1010a606851506d89cec33547d"
+    },
+    {
+      "path": "docs/reviews/spec.md",
+      "sha256": "3fd5ccbb054f3b05fdf0f67fdbfd1d8656b67be07d3a8789dc208f01f9a601ea"
+    },
+    {
+      "path": "docs/reviews/test-plan.md",
+      "sha256": "294ff857ea0855607c2514341c58a424510434865f21408d520a7b3843225bdf"
+    }
+  ]
+}
