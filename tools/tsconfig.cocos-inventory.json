@@ -1,0 +1,23 @@
+{
+  "extends": "../client/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "types": []
+  },
+  "include": [],
+  "files": [
+    "../client/assets/scripts/Prototype.ts",
+    "../client/assets/scripts/ui/InventoryPanel.ts",
+    "../client/temp/declarations/cc.d.ts",
+    "../client/temp/declarations/cc.env.d.ts",
+    "../client/temp/declarations/cc.custom-macro.d.ts",
+    "../client/temp/declarations/jsb.d.ts"
+  ]
+}

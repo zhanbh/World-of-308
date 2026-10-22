@@ -57,6 +57,7 @@ const queryParsers = {
   'account.get': object({}),
   'character.get': object({ characterId: id }),
   'inventory.get': object({ characterId: id, containerKind, contextId: optional(id) }),
+  'quickslot.get': object({ characterId: id }),
   'equipment.get': object({ characterId: id, itemId: id }),
   'dungeon.options': object({ characterId: id, dungeonId: id }),
   'service.get': object({ characterId: id, serviceContextId: id }),
@@ -194,6 +195,7 @@ const queryResults = {
   'account.get': object({ characters: list(characterBrief, 2), selectedCharacterId: nullable(id), wallet, activeChallengeId: nullable(id), openSceneChallengeId: nullable(id) }),
   'character.get': object({ character: characterBrief, version: integer(), equipped: list(equippedEntry, 13), skills: list(object({ skillId: id, level: integer(1, 30), unlocked: boolean }), 4), attributes: list(affix, 32), location: object({ kind: choice('inn', 'town', 'dungeon'), anchorId: id }), stamina: integer(), staminaAsOf: time }),
   'inventory.get': parseContainerView,
+  'quickslot.get': object({ characterId: id, version: integer(), slots: list(object({ slotIndex: integer(0, 2), templateId: nullable(id), quantity: integer(0, 2000) }), 3) }),
   'equipment.get': parseEquipmentView,
   'dungeon.options': object({ dungeonId: id, options: list(object({ difficultyId: id, unlocked: boolean, canEnter: boolean, reason: nullable(choice('LEVEL_REQUIRED', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'STAMINA_NOT_ENOUGH', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN')) }), 4) }),
   'service.get': object({ contextId: id, serviceKind, state: choice('open', 'closed', 'invalid'), locationRevision: integer(), allowedCommands: list(choice(...Object.keys(commandParsers) as AssetCommandName[]), 19) }),
@@ -211,6 +213,10 @@ export type AssetQueryResponse<K extends AssetQueryName = AssetQueryName> =
 export function parseAssetQueryResponse<K extends AssetQueryName>(query: K, value: unknown): AssetQueryResponse<K> {
   if (!Object.hasOwn(queryResults, query)) throw new TypeError('UNSUPPORTED_QUERY');
   const result = bounded(union(object({ requestId: operationId, serverTime: time, versions: parseExpected, data: queryResults[query] }), object({ requestId: operationId, serverTime: time, error: object({ code: publicError }) })), 65536)(value) as AssetQueryResponse<K>;
+  if ('data' in result && query === 'quickslot.get') {
+    const data = result.data as Value<typeof queryResults['quickslot.get']>;
+    if (data.slots.length !== 3 || data.slots.some((s, i) => s.slotIndex !== i || (s.templateId === null && s.quantity !== 0))) throw new TypeError('INVALID_QUICKSLOTS');
+  }
   if ('data' in result && query === 'mail.list') {
     const data = result.data as Value<typeof queryResults['mail.list']>;
     for (const mail of data.entries) {

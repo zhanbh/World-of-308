@@ -1,0 +1,371 @@
+{
+  "base": "5bbcaa5",
+  "branch": "feat/st04-inventory",
+  "date": "2026-10-23",
+  "node": "24.9.0",
+  "typescript": "5.8.2",
+  "checks": "7/7",
+  "tests": {
+    "tooling": 7,
+    "shared": 109,
+    "backend": 194,
+    "st04_added": 54
+  },
+  "cocos": {
+    "strict_types": true,
+    "build_exit": 36,
+    "browser_mouse": "verified",
+    "browser_touch_simulation": "verified",
+    "phone": false
+  },
+  "review": {
+    "spec": "no remaining confirmed findings",
+    "standards": "document contract gap closed",
+    "runtime": "outside-release/blur P2 closed and verified"
+  },
+  "whole_story_done": false,
+  "limitations": [
+    "formal WeChat transport and storage",
+    "real SDK",
+    "phone and performance acceptance"
+  ],
+  "unrelated_change_excluded": "client/settings/v2/packages/cocos-service.json",
+  "files": [
+    {
+      "path": "backend/src/inventory/inventory-service.ts",
+      "sha256": "88571d27d043f0e5bc7a34209db2203dd3e9cc3f5fe36c8f252d1518f2b05d5d"
+    },
+    {
+      "path": "backend/src/inventory/organize.ts",
+      "sha256": "ec23595f08a99f5d2ccf9283bec01d716e4ddfbb3e0d4df5788ebfc09aa0b4c4"
+    },
+    {
+      "path": "backend/test/inventory-coordinator-v2.test.mjs",
+      "sha256": "f64a6c74d4f598ff0153bdf75701f05913e150db667ce864527e2b5a539589bb"
+    },
+    {
+      "path": "backend/test/inventory-gesture.test.mjs",
+      "sha256": "3a4c44a68a9136d6b7a2f916ff808485ae86219a66af167e97d326b80b210a85"
+    },
+    {
+      "path": "backend/test/inventory-organize.test.mjs",
+      "sha256": "de8a01e9e885ee9b7519a76dfafde3dab508860060fecd7ac45f73d017e8a284"
+    },
+    {
+      "path": "backend/test/inventory-preview.test.mjs",
+      "sha256": "b1013ff39a0d46b54293b04d9655cb3863bee0c7352f6be94a2203b8b82f74f7"
+    },
+    {
+      "path": "backend/test/inventory-v2.test.mjs",
+      "sha256": "681d9b7d05d5ffb36eac159dbcb694ac103d1601d2f4f93c6b5e44ebdc78839d"
+    },
+    {
+      "path": "client/README.md",
+      "sha256": "dd1488377b8ffe7e08518e05ee6f93c52ee2c33293267d00ac225f9bb17f869f"
+    },
+    {
+      "path": "client/assets/resources/icons.meta",
+      "sha256": "dcf817334529b3b60c16f525702dd0cbfcb775f4da63f5293e35d1476b86a369"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_belt.png.meta",
+      "sha256": "a05ed4c188494d31fe729c1f798b1b9e355f157da78606c5d530539ae12e8d09"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_belt_64.png.meta",
+      "sha256": "68a66ea9e02de3983aa37a1f1a1cca3eb062de300ba15287e0c1dda4a87fed7c"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_boots.png.meta",
+      "sha256": "e8a3c072f9aaf42fb2a436fb451abb51a4a78084b7c19b85eb60eb4c94194ea5"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_boots_64.png.meta",
+      "sha256": "b0cd31f2090fd9ae6a1235c6ca0f73bacda6b15130faf5e9f16d3545bcecb62a"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_chest.png.meta",
+      "sha256": "b93c7c2650055400a5eab3b04d36aed1516b2d00f3f408209f6ee99505752ac0"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_chest_64.png.meta",
+      "sha256": "672e683768d98ea1250d1d99eb8285507522637bfb274f4691d7227528c8e723"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_pants.png.meta",
+      "sha256": "037406f1db02b332c412f4e439fae5afa6d5d432f83f1ee4b828bcd6d19bae24"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_pants_64.png.meta",
+      "sha256": "851182065ce278be2e767654164f58aff76646d5af1fdf08033c30a19c0d0e74"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_shoulders.png.meta",
+      "sha256": "fb93b483651c6d320247fdc8e10d9554faa10c199eeb6fb27946aae31977bf98"
+    },
+    {
+      "path": "client/assets/resources/icons/armor_shoulders_64.png.meta",
+      "sha256": "6b7dd410b2ab66e14d2baac8e15415dd010f6f1a90cb0f714baaa0ef3e975679"
+    },
+    {
+      "path": "client/assets/resources/icons/consumable_hp_potion.png.meta",
+      "sha256": "eff3210b1e0d6bdd4b9b9a7a96728fce46a81d50e1668a3ffa3aaaa593f5ca0c"
+    },
+    {
+      "path": "client/assets/resources/icons/consumable_hp_potion_64.png.meta",
+      "sha256": "ce48368fc385fad15c0b1c3788e282b139d3bdd9d81eef6f940d97634b30afea"
+    },
+    {
+      "path": "client/assets/resources/icons/consumable_mp_potion.png.meta",
+      "sha256": "77a0a8bfcef79a2e294c95ac6421611a76462827e9e52e30613fe55901bcc48b"
+    },
+    {
+      "path": "client/assets/resources/icons/consumable_mp_potion_64.png.meta",
+      "sha256": "d88ee685fca8f2dddc4e9f2ebea617be851f135d8835464d9ce674554679c371"
+    },
+    {
+      "path": "client/assets/resources/icons/jewelry_bracelet.png.meta",
+      "sha256": "545de841131de3f8eacb4edeb856cf87e3414a51c88f44fa9bd54a593329c972"
+    },
+    {
+      "path": "client/assets/resources/icons/jewelry_bracelet_64.png.meta",
+      "sha256": "86a3706b2a6af1979ab4f70bdcb74c4e3f8faa3ea0c3385d1e01329c33be780e"
+    },
+    {
+      "path": "client/assets/resources/icons/jewelry_necklace.png.meta",
+      "sha256": "58bb6c32a9e911697490b708aedc6b963fb401b2334f815dd0898556b21afbe5"
+    },
+    {
+      "path": "client/assets/resources/icons/jewelry_necklace_64.png.meta",
+      "sha256": "a27e5fdfaf0ae864f734388a9e5f9340706ac8a98b42719025f774c18836616e"
+    },
+    {
+      "path": "client/assets/resources/icons/jewelry_ring.png.meta",
+      "sha256": "dbaab06993d95d82ed27c402046cbfee9cc7b9954706a2015a06bfad86f71bf7"
+    },
+    {
+      "path": "client/assets/resources/icons/jewelry_ring_64.png.meta",
+      "sha256": "34209dd99022ba75bfd51bdc2eb6b45c1e0f39e6e8a870fecf65b6cbeb5a6fff"
+    },
+    {
+      "path": "client/assets/resources/icons/material_adamantite.png.meta",
+      "sha256": "a8359cf79ede97bcf788d854a8a573905fe5e663f4678dc80a4594758d37bb3f"
+    },
+    {
+      "path": "client/assets/resources/icons/material_adamantite_64.png.meta",
+      "sha256": "ba7ecca289cc27f21e729314e1519576ea6aefd79e9df5ad5baf05318bf6fbc1"
+    },
+    {
+      "path": "client/assets/resources/icons/material_souvenir.png.meta",
+      "sha256": "ef6d3010b30fb8c9b4df2b506abd1708da5d9cc1d147766d4c01049763ca043c"
+    },
+    {
+      "path": "client/assets/resources/icons/material_souvenir_64.png.meta",
+      "sha256": "88b4679f6e6e2ec92ca74ea6b825ee56fed18b29dcc5872e3402333c8874e4b3"
+    },
+    {
+      "path": "client/assets/resources/icons/special_book.png.meta",
+      "sha256": "0dd5f8287592d3f473f750ee56fb07bf9af418e589f1b7edaf877b5df04704e5"
+    },
+    {
+      "path": "client/assets/resources/icons/special_book_64.png.meta",
+      "sha256": "6a26386bc47d0f3349af43e1391a5005732aa47fd2bc8e08711b83a8816b566e"
+    },
+    {
+      "path": "client/assets/resources/icons/special_earring.png.meta",
+      "sha256": "7642803f8b5abcc16e3c99c6f23ce4fd271aa3efcb89b4c4ea3bb638454d2a8a"
+    },
+    {
+      "path": "client/assets/resources/icons/special_earring_64.png.meta",
+      "sha256": "385bef17d5ace0dc065a0acfffb6ea4b103d0e5ea0e22fc8f3644f2eef6c978c"
+    },
+    {
+      "path": "client/assets/resources/icons/special_stone.png.meta",
+      "sha256": "92ec0092589acd5e0f817a7bd7a9aefe2d6e582cad730b9b09d21f4f6a6bc8c7"
+    },
+    {
+      "path": "client/assets/resources/icons/special_stone_64.png.meta",
+      "sha256": "f32a60b573594bb8f31d8f7337f8c0f5c36bb9e85e6f5f80b3054f3424284480"
+    },
+    {
+      "path": "client/assets/resources/icons/weapon_dual_blades.png.meta",
+      "sha256": "c6b7f648f9069ad11cf2fa5d509a121f450c5ec805ad04bb003cf0497ae038f4"
+    },
+    {
+      "path": "client/assets/resources/icons/weapon_dual_blades_64.png.meta",
+      "sha256": "ebc34a041afe7eba1a437578bbb7a0416eb2504f25a12d1ebc0cee750b46a381"
+    },
+    {
+      "path": "client/assets/resources/warrior-stance-combat.png.meta",
+      "sha256": "4ed8bf9359f71c196c71de6d8b38fbb330b44f2e7dadca75dfeeb3887201a7fe"
+    },
+    {
+      "path": "client/assets/resources/warrior-stance-town.png.meta",
+      "sha256": "9764eca38c92f13e872ecdf79d27524748653410238bbf11b48db1a5d4ccbfe9"
+    },
+    {
+      "path": "client/assets/scripts/Prototype.ts",
+      "sha256": "37085e2a93a0df606cd681776d6fb136f4f729b20a95f4ca80575d9eedc18de1"
+    },
+    {
+      "path": "client/assets/scripts/UIStateModel.ts.meta",
+      "sha256": "2d388b2efcc9dd080fe22e34d190e6620c42ec2bd6d4614cd9f91e7e9601f2bc"
+    },
+    {
+      "path": "client/assets/scripts/net.meta",
+      "sha256": "7916bea439290ed9246ff7f551ea10598130303eb07f14a37bd0f1248133b125"
+    },
+    {
+      "path": "client/assets/scripts/net/CharacterCoordinator.ts.meta",
+      "sha256": "51d5167f87fca1206b4ffd10b05451c0fa9c93a4ad23964a1d3bdffd0cf4e26c"
+    },
+    {
+      "path": "client/assets/scripts/net/InventoryCoordinator.ts",
+      "sha256": "aa8a369b231e1f5817ac1ada5f282b04e532a440cab5b040073498e5e7611802"
+    },
+    {
+      "path": "client/assets/scripts/net/InventoryCoordinator.ts.meta",
+      "sha256": "0e17fd22b0744126dd848514e073b31edfdf6c3f75962e250e21bf564e746c1e"
+    },
+    {
+      "path": "client/assets/scripts/net/InventoryPreview.ts",
+      "sha256": "12e6cd5430e6a5279dce47126798338fa615fd7df9a85cca4104dcde7a2a655e"
+    },
+    {
+      "path": "client/assets/scripts/net/InventoryPreview.ts.meta",
+      "sha256": "d1bcac95b31304b77fb849a7a82643a843048d718c66ac7a08099615d922a5f7"
+    },
+    {
+      "path": "client/assets/scripts/net/LoginCoordinator.ts.meta",
+      "sha256": "6db9f1f1ceccc69bc4236e32c06aa1ece91003a5dc18c28c8c7ca3745a78e4c7"
+    },
+    {
+      "path": "client/assets/scripts/net/TownCoordinator.ts.meta",
+      "sha256": "76629bc3c5c2274b6e2d9a70cb6f70c0edb9499fb248924cc33b9aa1696e6011"
+    },
+    {
+      "path": "client/assets/scripts/ui.meta",
+      "sha256": "1bc6de4069cbf1f601a7d14508b5247752bab8f23d516d5dd7a27f7601c91246"
+    },
+    {
+      "path": "client/assets/scripts/ui/InventoryGesture.ts",
+      "sha256": "8fc95d68502b6c122f713ded3e1c6f6c4f1841f010c751fd2cb6059112f72a5a"
+    },
+    {
+      "path": "client/assets/scripts/ui/InventoryGesture.ts.meta",
+      "sha256": "234dd2ea6886f1f01d925625c6544dd0875f472979a7acbd12e523bba10c7efc"
+    },
+    {
+      "path": "client/assets/scripts/ui/InventoryPanel.ts",
+      "sha256": "f9d721b78b3a7c6ed8c9e8d08e54b53d6d3f818631116417c3b38df09ce4cfa5"
+    },
+    {
+      "path": "client/assets/scripts/ui/InventoryPanel.ts.meta",
+      "sha256": "eab74c6fae193f0e392089aa62b1f073d102e0bc4c83ef2d197b00ba0d0ed8bd"
+    },
+    {
+      "path": "client/build-configs/web-mobile-inventory.json",
+      "sha256": "5b7d26873bacc08bd418b760b51ff545468604bde89b17cb0c2c82332d3a9e7e"
+    },
+    {
+      "path": "client/settings/v2/packages/engine.json",
+      "sha256": "aeaddb0781e25ee221be2f9db180057a6e8bd2da4a6ccd0a3a9ca1932dabb9ed"
+    },
+    {
+      "path": "client/tools/build-inventory.cjs",
+      "sha256": "5550dfb75dff2b869d4012be51e902828982fdd3738b9bedc608bd65288b02d5"
+    },
+    {
+      "path": "client/tools/inventory-preview-server.mjs",
+      "sha256": "3629ade19f2306c80eb8d0f1d8d4190e793e1bcf4044d9c4cb94c1b374f359f6"
+    },
+    {
+      "path": "docs/backend/api-contract-v2.md",
+      "sha256": "7fc2ff157d95375ce00d76eb1d4dc4d9156722910b9f4eaedb5323ed9379677b"
+    },
+    {
+      "path": "docs/backend/data-dictionary-v2.md",
+      "sha256": "758d21170e3a7e30cc450dd6935b5ca2986d3b68df799528a59e7e8cb9edfc4c"
+    },
+    {
+      "path": "docs/backend/transaction-budget-worksheet-v1.md",
+      "sha256": "d9954956630cca825eb50d76d89908a3a12957fbc90974f37bdf913209330fe9"
+    },
+    {
+      "path": "docs/design/ui-state-coverage-v1.md",
+      "sha256": "22eb9e1e3b2581e1f97b1521c368277f03d15d49736faa568576c7b38972d916"
+    },
+    {
+      "path": "docs/reviews/st04-cocos-browser-state.json",
+      "sha256": "365e3d46d6d89321af482a78945e95e1987c3b57fe23f7151ae0b7e79151c948"
+    },
+    {
+      "path": "docs/reviews/st04-cocos-build-summary.json",
+      "sha256": "a85d803bad3be8c0252f651f70f4c248fb9991fa08de1e9d4475c3d0e7be1940"
+    },
+    {
+      "path": "docs/reviews/st04-cocos-ui.png",
+      "sha256": "4b62ead481cf86099d05dfb692c5af5878de6010dd7e9cd96b75732b94a230c7"
+    },
+    {
+      "path": "docs/reviews/st04-cocos-verification.md",
+      "sha256": "ba878d4d508b59df91c6091966b43777e06089c42779052f12eff2989ec2ab9f"
+    },
+    {
+      "path": "docs/reviews/st04-final-local-check.log",
+      "sha256": "eb03c9174600355534c23ec37d2e221085f5430e1c2be5df89f4f7059afa93de"
+    },
+    {
+      "path": "docs/reviews/st04-local-verification.md",
+      "sha256": "cf0c60da49e6feedeed30e603637b8fc1ca9f322867d6fd532693498cc03caa9"
+    },
+    {
+      "path": "docs/stories/warrior-loop/README.md",
+      "sha256": "54efef8fa9398e92f80a3b51100882fbe3ec7204cfe032a7310b6a2df761aca6"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st04/README.md",
+      "sha256": "5f08b505b332eca59d5c3e2be84ab25fd1d1c05087cd5c85d0c3bb040ce77db2"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st04/acceptance.json",
+      "sha256": "4064e0714a5fb78a78685c88992a6bfc8eb6a29757bf7a05c9c9e00023444ad2"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st04/build-preflight.md",
+      "sha256": "1f8395f31e8b86c55b2727f7ca53cffcd9128032e277e97e0454c958d9beaa40"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st04/issues/01-authoritative-sort.md",
+      "sha256": "41fc67a351cd921d011e31a33052e3c5581892091316b72ea4335377337a4994"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st04/issues/02-merge-and-organize.md",
+      "sha256": "26bc82fe420edf273625f50bbcf29b4c432af170dc3f4f0a0106159922b39b70"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st04/issues/03-template-quickslots.md",
+      "sha256": "5ac72cdc5d041e1a2adec8074a3d439f264f158d4c9e72a1dae5e8203f5d6c14"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st04/spec.md",
+      "sha256": "10a5967302a81abe4f6e46998ca5e83d1a7da059072e15302e2bd61637612543"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st04/task-plan.md",
+      "sha256": "f3faf7fefd4b3861bb616270a4f8ff1daebeb2b16e5dc7d2d2899378d3365f87"
+    },
+    {
+      "path": "shared/src/protocol/asset-v2.ts",
+      "sha256": "94a9429f8dddfa1b137e69f7772646522f3e33728fdc1133c453ab298a601fb7"
+    },
+    {
+      "path": "tools/tsconfig.cocos-inventory.json",
+      "sha256": "ab004f78018c9921ef8629ef0e9cca49dfd4a938756932b8a0b29d92e1766da6"
+    },
+    {
+      "path": "tools/tsconfig.models.json",
+      "sha256": "e6969deae2cdcf28dc6f879b45e6a5c254bd0f19655ddee7304665325cd8777e"
+    }
+  ]
+}

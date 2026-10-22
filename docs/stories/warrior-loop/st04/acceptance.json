@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "story": "ST04",
+  "approval": {
+    "kind": "human",
+    "evidence": "确认，开始吧",
+    "scope": "task granularity, dependency graph and ST04 execution subject to its prerequisites"
+  },
+  "source_sha256": "3f4a1bfeb990f16b7e3da49c6d58203c45a39b589b1b6c47bff69b70240d177c",
+  "spec_sha256": "10a5967302a81abe4f6e46998ca5e83d1a7da059072e15302e2bd61637612543",
+  "tasks": [
+    {
+      "id": "ST04-01",
+      "path": "docs/stories/warrior-loop/st04/issues/01-authoritative-sort.md",
+      "revision": "41fc67a351cd921d011e31a33052e3c5581892091316b72ea4335377337a4994",
+      "blocked_by": [],
+      "status": "accepted",
+      "execution_state": "local-and-Cocos-H5-verified",
+      "approved_definition_sha256": "a308eea480f7b3dbfd5428926e1e8cf3cb554a911f47e43e0bf29cc8cadb57da",
+      "remaining_gates": [
+        "WeChat-transport-and-storage",
+        "real-SDK",
+        "device"
+      ]
+    },
+    {
+      "id": "ST04-02",
+      "path": "docs/stories/warrior-loop/st04/issues/02-merge-and-organize.md",
+      "revision": "26bc82fe420edf273625f50bbcf29b4c432af170dc3f4f0a0106159922b39b70",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted",
+      "execution_state": "local-and-Cocos-H5-verified",
+      "approved_definition_sha256": "4bee11812c1c7760bac0257b27938f77eaa52fc0e2cf9a95cca86de8768774f3",
+      "remaining_gates": [
+        "WeChat-transport-and-storage",
+        "real-SDK",
+        "device"
+      ]
+    },
+    {
+      "id": "ST04-03",
+      "path": "docs/stories/warrior-loop/st04/issues/03-template-quickslots.md",
+      "revision": "5ac72cdc5d041e1a2adec8074a3d439f264f158d4c9e72a1dae5e8203f5d6c14",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted",
+      "execution_state": "local-and-Cocos-H5-verified",
+      "approved_definition_sha256": "2853ef3a9824daf672a8b609a576602969e810d1c35b0f21eae2f606e4642683",
+      "remaining_gates": [
+        "WeChat-transport-and-storage",
+        "real-SDK",
+        "device"
+      ]
+    }
+  ],
+  "gate": {
+    "localArtifactRevisions": "pass",
+    "dependencyGraph": "pass",
+    "externalCapabilities": "local-capabilities-present",
+    "readyToBuild": true,
+    "localVerification": "pass-7-of-7",
+    "wholeStoryDone": false
+  },
+  "externalSystemOperations": false,
+  "implementation_base": "5bbcaa5",
+  "working_branch": "feat/st04-inventory",
+  "evidence": "docs/reviews/st04-local-verification.md",
+  "note": "Approved scope unchanged; task hashes changed only for implementation progress/evidence metadata.",
+  "cocos_evidence": "docs/reviews/st04-cocos-verification.md"
+}

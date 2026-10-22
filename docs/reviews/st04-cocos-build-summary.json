@@ -1,0 +1,10 @@
+{
+  "editor": "Cocos Creator 3.8.8",
+  "platform": "web-mobile",
+  "output": "client/build/web-mobile-inventory",
+  "exit_code": 36,
+  "completed": true,
+  "local_raw_log_sha256": "03b22eb64db44878b628832fd0e0c2da929cc6e1b5fa2ab5e1704fb794d02c02",
+  "source_config": "client/build-configs/web-mobile-inventory.json",
+  "note": "Only sanitized build evidence retained; editor account metadata excluded."
+}

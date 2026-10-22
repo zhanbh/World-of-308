@@ -61,3 +61,32 @@ node client/tools/check-model.cjs 'C:\ProgramData\cocos\editors\Creator\3.8.8'
 ## 微信小游戏构建与导入
 
 已配置本项目AppID，横屏入口为Prototype。执行 `node client/tools/build-wechat.cjs /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/MacOS/CocosCreator` 完成构建、内置资源分包后处理及主包预算检查，再将 `client/build/wechatgame` 导入微信开发者工具，点击预览扫码。仅通过编辑器重建会覆盖后处理结果，需随后运行 `node client/tools/finalize-wechat-build.cjs` 和 `node client/tools/check-wechat-build.cjs`。本轮已成功生成二维码；具体包体、资源加载与待完成的真机验收见[微信构建记录](../docs/reviews/wechat-build-review-v1.md)。
+
+## ST04 背包实际界面试玩
+
+已接入Prototype的背包按钮与B键（Esc关闭），包含5列滚动/锁格、正倒序整理、3个模板快捷位、鼠标拖入与触屏长按拖入；提交中禁写，结果未知保留原操作身份。默认动作样板没有正式登录时不显示虚构背包。
+
+本机隔离试玩仅使用临时数据、真实v2内存服务，不连接微信或真实资产。Node24下分别启动：
+
+```bash
+node client/tools/inventory-preview-server.mjs
+node client/tools/serve.cjs web-mobile-inventory 127.0.0.1 8769
+```
+
+打开[本机背包试玩](http://127.0.0.1:8769/?inventoryPreview=1)，点击右上背包或按B。生命/法力药各8瓶（初始拆堆用于测试合并），滚动后可见锁格；鼠标直接拖药，触屏先长按250ms再拖入右侧快捷位，先滑动则只滚动。关闭不会删除待确认请求。重启试玩服务会重置测试数据及独立持久化命名空间。
+
+构建产物不入库；另一台机器先构建，不要拿历史H5包当本轮代码：
+
+```bash
+node client/tools/build-inventory.cjs /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/MacOS/CocosCreator
+```
+
+Windows传当地已有Creator3.8.8可执行文件路径，无需下载工具。正式登录连接可调用Prototype.attachInventory，注入已认证InventoryCoordinator和模板展示/资格；该注入接缝不宣称正式传输已完成。预览端口固定8788且只绑定127.0.0.1，不开放局域网/手机访问。
+
+当前证据：[Cocos交互验证](../docs/reviews/st04-cocos-verification.md)。统一检查外另有真实Cocos声明类型检查（需要Creator已导入生成temp/declarations）：
+
+```bash
+node tools/check-all.cjs --typescript /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/Resources/app.asar.unpacked/node_modules/typescript --type-project tools/tsconfig.cocos-inventory.json
+```
+
+上述命令从仓库根目录执行。微信真机、正式云SDK和设备性能仍待验收。

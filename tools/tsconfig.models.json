@@ -1,8 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2022", "module": "ESNext", "moduleResolution": "Bundler",
-    "strict": true, "noEmit": true, "skipLibCheck": true,
-    "allowImportingTsExtensions": true, "types": [], "lib": ["ES2022", "DOM"]
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "types": [],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ]
   },
   "files": [
     "../client/assets/scripts/CombatModel.ts",
@@ -11,6 +20,9 @@
     "../client/assets/scripts/UIStateModel.ts",
     "../client/assets/scripts/net/LoginCoordinator.ts",
     "../client/assets/scripts/net/CharacterCoordinator.ts",
-    "../client/assets/scripts/net/TownCoordinator.ts"
+    "../client/assets/scripts/net/TownCoordinator.ts",
+    "../client/assets/scripts/net/InventoryCoordinator.ts",
+    "../client/assets/scripts/ui/InventoryGesture.ts",
+    "../client/assets/scripts/net/InventoryPreview.ts"
   ]
 }

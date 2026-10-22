@@ -1,0 +1,62 @@
+{
+  "cancel": {
+    "mode": "idle",
+    "slot3": null
+  },
+  "final": {
+    "status": "ready",
+    "slots": [
+      {
+        "index": 0,
+        "kind": "stack",
+        "template": "item:hp-potion-small-v1",
+        "quantity": 8
+      },
+      {
+        "index": 1,
+        "kind": "stack",
+        "template": "item:mp-potion-small-v1",
+        "quantity": 8
+      },
+      {
+        "index": 2,
+        "kind": "stack",
+        "template": "preview:ore",
+        "quantity": 7
+      }
+    ],
+    "quick": [
+      {
+        "slotIndex": 0,
+        "templateId": "item:hp-potion-small-v1",
+        "quantity": 8
+      },
+      {
+        "slotIndex": 1,
+        "templateId": "item:mp-potion-small-v1",
+        "quantity": 8
+      },
+      {
+        "slotIndex": 2,
+        "templateId": null,
+        "quantity": 0
+      }
+    ],
+    "gesture": "idle",
+    "profiler": false
+  },
+  "panelOpenAfterEscape": false,
+  "connectionCancel": {
+    "connecting": false,
+    "panelOpen": false,
+    "latencyMs": 1200,
+    "lateResponseDidNotOpen": true
+  },
+  "touchSimulation": {
+    "longPressMs": 250,
+    "slotIndex": 1,
+    "templateId": "item:mp-potion-small-v1",
+    "quantity": 8,
+    "scrollAfterSwipe": 76.76767676767673
+  }
+}

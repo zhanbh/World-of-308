@@ -383,3 +383,7 @@ collectionHoldings的scope由实际物理容器/来源所属决定，绑定只�
 ## FR01/FR02当前字段合同
 
 H.transitionClock是唯一转场计时权威，prepare建立、activate保留并推进已结算边界、ready最终结清后删除；pendingRoomAttempt不承载时钟。CP头时钟新增inputGapBaseAt:Time，活动段首次ready赋值，随后仅新输入成功提交更新，心跳与重放不更新。lastAcceptedInputAt保留实际输入提交事实；输入缺口以inputGapBaseAt为准，≥2000ms到期。场景仍awaitingReady/转场时不启用输入缺口。字段在H/CP已有键内，编码字节计入原上界。
+
+### ST04 本地实现的数量读模型
+
+quickSlots仍只存角色上的3个模板ID或null，不存格子/stackId或第二份道具数量。`quickslot.get`的数量为权威背包当前合法堆的聚合，读模型版本向量同时引用角色与背包；模板耗尽保留绑定。容器公开视图沿既有DTO只传模板ID、公开绑定及traceRef指针，不外传内部accountId或来源流水正文。

@@ -234,3 +234,11 @@ C24a expected包括H/C；C24b包括H/C及prepare返回attempt，不要求客户�
 ## FR01/FR02设计修订
 
 转场唯一计时存H.transitionClock，activate清pending但保留时钟，ready结清未消费联网区间后删除。活动段首次scene.ready原子设置inputGapBaseAt与活动锚点，后续仅新合法输入提交刷新缺口基点；ready重放/心跳不刷新，历史lastAcceptedInputAt不充当首次输入计时起点。活动态差值≥2000ms进入recovery，加载态不判2秒缺口，原死亡/恢复截止不延长。详见加载与恢复权威合同。
+
+## ST04 本地实现入口（v2）
+
+`inventory.organize`与`quickslot.assign`由InventoryService消费；只接受v2公开解析器，不经旧GameService。前者必须携带当前角色及当前背包的expected，后者必须携带当前角色expected；多余/缺少对象拒绝，当前账号、会话与选角归属每次校验。整理成功只返回有界摘要及resultVersions，完整背包再查R03。同ID同参先重放，异参拒绝；操作未知继续沿原ID，notFound不允许另造新意图。
+
+补充私有查询`quickslot.get`：payload为`{characterId}`；返回角色ID、角色version及恰好3个按slotIndex=0/1/2排列的`{slotIndex,templateId|null,quantity}`。quantity从当前背包同模板合法堆汇总，耗尽仍保留模板并返回0；不持久化第二份数量。versions同时包含角色和背包版本，客户端只能与同背包版本的R03视图一起应用，避免绑定未变但数量过期。此查询不返回内部账号绑定ID、审计正文或云身份。
+
+本轮已接入内存适配、平台无关协调器及Cocos Prototype拖拽面板，真实微信传输和手机实机仍未接入验收；本机隔离试玩不视为真机完成。

@@ -1,0 +1,411 @@
+Node 24.9.0; TypeScript 5.8.2; compiler /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/Resources/app.asar.unpacked/node_modules/typescript
+
+CHECK: tooling contracts
+✔ an explicit installed toolchain reports its versions without claiming checks ran (114.291042ms)
+✔ the check command reports a missing explicit compiler instead of downloading one (26.00675ms)
+✔ toolchain preflight cannot silently suppress a requested type check (24.79025ms)
+✔ the existing UI check fails locally when the compiler is missing (25.441959ms)
+✔ an unsupported compiler in a path containing spaces fails before running checks (26.213ms)
+✔ the existing model check never falls back to a package-manager download (27.859708ms)
+✔ a project with a semantic type error fails the type gate instead of passing transpilation (506.995042ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 797.344833
+PASS: tooling contracts
+
+CHECK: shared/backend types
+PASS: shared/backend types
+
+CHECK: shared value contracts
+✔ scene.exitInn validates its own public intent and rejects missing/extra fields (5.64325ms)
+✔ service.open validates its own public intent and rejects missing/extra fields (0.342833ms)
+✔ service.close validates its own public intent and rejects missing/extra fields (0.150167ms)
+✔ inventory.transfer validates its own public intent and rejects missing/extra fields (0.125333ms)
+✔ inventory.expand validates its own public intent and rejects missing/extra fields (0.088125ms)
+✔ inventory.organize validates its own public intent and rejects missing/extra fields (0.880542ms)
+✔ equipment.equip validates its own public intent and rejects missing/extra fields (0.489167ms)
+✔ equipment.unequip validates its own public intent and rejects missing/extra fields (0.207084ms)
+✔ quickslot.assign validates its own public intent and rejects missing/extra fields (0.609ms)
+✔ shop.buy validates its own public intent and rejects missing/extra fields (0.442292ms)
+✔ shop.sell validates its own public intent and rejects missing/extra fields (0.837041ms)
+✔ wallet.exchange validates its own public intent and rejects missing/extra fields (0.109333ms)
+✔ equipment.repair validates its own public intent and rejects missing/extra fields (0.089917ms)
+✔ equipment.enhance validates its own public intent and rejects missing/extra fields (0.083083ms)
+✔ mail.markRead validates its own public intent and rejects missing/extra fields (0.048625ms)
+✔ mail.claimAttachment validates its own public intent and rejects missing/extra fields (0.055125ms)
+✔ mail.claimAvailable validates its own public intent and rejects missing/extra fields (0.053375ms)
+✔ mail.delete validates its own public intent and rejects missing/extra fields (0.048042ms)
+✔ reward.claim validates its own public intent and rejects missing/extra fields (0.041292ms)
+✔ asset commands reject invalid quantities, duplicates and battle-consumption bypasses (1.112875ms)
+✔ account.get separates query envelope from write/identity fields (0.303292ms)
+✔ character.get separates query envelope from write/identity fields (0.127042ms)
+✔ inventory.get separates query envelope from write/identity fields (0.106417ms)
+✔ equipment.get separates query envelope from write/identity fields (2.264625ms)
+✔ dungeon.options separates query envelope from write/identity fields (0.124417ms)
+✔ service.get separates query envelope from write/identity fields (0.057041ms)
+✔ service.quote separates query envelope from write/identity fields (0.110583ms)
+✔ mail.list separates query envelope from write/identity fields (1.311416ms)
+✔ reward.list separates query envelope from write/identity fields (0.208833ms)
+✔ delivery.summary separates query envelope from write/identity fields (0.136875ms)
+✔ ranking.list separates query envelope from write/identity fields (0.105959ms)
+✔ operation.get separates query envelope from write/identity fields (0.09175ms)
+✔ configuration.public separates query envelope from write/identity fields (0.175875ms)
+✔ query pages and bank context are bounded and required (0.329208ms)
+✔ equipment public views keep thirteen slots, required durability and exclusive source/location (0.655875ms)
+✔ containers validate capacity, stack bounds and explicit character/account ownership (0.552708ms)
+✔ holdings are an explicit scoped summary, never a claimable balance (0.445792ms)
+✔ original results are bounded versioned summaries, not current balance snapshots (1.079ms)
+✔ empty lists stay distinct from query failures and pending never duplicates equipment payload (0.136167ms)
+✔ caller wire boundary binds original operation and request IDs before exposing views (0.502833ms)
+✔ operation.get recognizes the new verified-input receipt without accepting v1 event results (1.202416ms)
+✔ scene.exitInn result summary validates independently from current state (0.28ms)
+✔ service.open result summary validates independently from current state (0.224458ms)
+✔ service.close result summary validates independently from current state (0.202125ms)
+✔ inventory.transfer result summary validates independently from current state (0.177709ms)
+✔ inventory.expand result summary validates independently from current state (0.193708ms)
+✔ inventory.organize result summary validates independently from current state (0.406625ms)
+✔ equipment.equip result summary validates independently from current state (0.207791ms)
+✔ equipment.unequip result summary validates independently from current state (0.130375ms)
+✔ quickslot.assign result summary validates independently from current state (0.166833ms)
+✔ shop.buy result summary validates independently from current state (0.141042ms)
+✔ shop.sell result summary validates independently from current state (0.128667ms)
+✔ wallet.exchange result summary validates independently from current state (0.133792ms)
+✔ equipment.repair result summary validates independently from current state (0.267334ms)
+✔ equipment.enhance result summary validates independently from current state (0.144333ms)
+✔ mail.markRead result summary validates independently from current state (0.147167ms)
+✔ mail.claimAttachment result summary validates independently from current state (0.131208ms)
+✔ mail.claimAvailable result summary validates independently from current state (0.809916ms)
+✔ mail.delete result summary validates independently from current state (0.187833ms)
+✔ reward.claim result summary validates independently from current state (0.130041ms)
+✔ mail progress and batch summaries cannot claim impossible partial results (0.518709ms)
+✔ quotes expose deterministic effects and failure consequences without enhancement probabilities (0.465ms)
+✔ account.get public response validates its typed view and rejects private fields (0.306333ms)
+✔ character.get public response validates its typed view and rejects private fields (0.339042ms)
+✔ inventory.get public response validates its typed view and rejects private fields (0.162875ms)
+✔ equipment.get public response validates its typed view and rejects private fields (0.149958ms)
+✔ dungeon.options public response validates its typed view and rejects private fields (0.091417ms)
+✔ service.get public response validates its typed view and rejects private fields (0.055958ms)
+✔ service.quote public response validates its typed view and rejects private fields (0.048625ms)
+✔ mail.list public response validates its typed view and rejects private fields (0.055792ms)
+✔ reward.list public response validates its typed view and rejects private fields (0.041166ms)
+✔ delivery.summary public response validates its typed view and rejects private fields (0.048958ms)
+✔ ranking.list public response validates its typed view and rejects private fields (0.053875ms)
+✔ operation.get public response validates its typed view and rejects private fields (0.049042ms)
+✔ configuration.public public response validates its typed view and rejects private fields (0.045375ms)
+✔ approved local plan retains its source hash, seven tickets and dependency edges (6.522ms)
+✔ release, login, room intent and input share usable public references without running business services (10.615584ms)
+✔ asset consumer preserves versioned original results and distinguishes notFound from unknown (1.938ms)
+✔ u64 resources round trip without losing precision (7.053958ms)
+✔ regeneration remainder reduces exactly and wire decoding requires canonical form (1.430125ms)
+✔ wire remainder rejects accessors and symbol fields without invoking code (0.283583ms)
+✔ time and logic ticks accept safe nonnegative integer boundaries (0.140584ms)
+✔ caller contract binds a parsed response to the original login intent without a fake server (10.268042ms)
+✔ prepare replies must match the launch and errors never serialize platform secrets (1.985708ms)
+✔ schema-selected public fields have stable digest input and exact round trips (5.383958ms)
+✔ invalid public values, excessive payloads and malformed schemas fail closed (0.60075ms)
+✔ wire resources require decimal strings and schema mutation cannot change an existing codec (0.172791ms)
+✔ a test-authorized consumer loads the immutable minimal warrior release and public projection (14.66975ms)
+✔ dictionary room numbers are zero-based and purple candidates exclude the final room (16.63775ms)
+✔ missing, wrong-version, wrong-kind and recursive references fail before configuration is usable (1.459125ms)
+✔ test profiles enforce current warrior, equipment, visibility and encounter invariants (3.062833ms)
+✔ manifest verification detects tampering and independent illegal fixtures remain unusable (6.318583ms)
+✔ unsupported code and durability policy references fail closed instead of becoming defaults (0.364709ms)
+✔ wire fields, resource precision, quality, binding and declared collection bounds are strict (2.9125ms)
+✔ scene controls are distinct from business writes and bound to the full ready view (2.158791ms)
+✔ challenge and ground commands express intent and cannot supply drops or revive outcomes (0.427291ms)
+✔ room responses and recovery queries carry references and cannot be confused with control or input results (0.262667ms)
+✔ recovery pages are bounded public projections tied to one ticket and revision (0.492916ms)
+✔ room writes require challenge and character expected objects while a loading clock remains independent (0.960875ms)
+✔ caller encodes each channel and correlates results without treating parsing as a server operation (3.312084ms)
+✔ challenge reads distinguish an authorized read failure from an empty successful view (1.432417ms)
+✔ ready responses cannot substitute another challenge or a different ticket view (0.640959ms)
+✔ two-step login accepts pre-session requests but never body identity or v1 (5.892708ms)
+✔ character creation and selection results retain initialization references and role epochs (0.359084ms)
+✔ login responses distinguish tickets, unknown outcomes and superseded historical sessions (0.238667ms)
+✔ character commands require current session envelope, bounded unique expected objects and legal names (1.120542ms)
+✔ ordered input wire accepts a bounded one-second segment and rejects self-reported battle facts (2.271792ms)
+✔ input count, continuous sequence and UTF-8 request budget hold at boundaries (0.498875ms)
+✔ room numbering uses zero-based protocol values and rejects the eighth room (0.133125ms)
+ℹ tests 109
+ℹ suites 0
+ℹ pass 109
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 259.38925
+PASS: shared value contracts
+
+CHECK: client pure-model types
+PASS: client pure-model types
+
+CHECK: backend regression (legacy and v2)
+(node:80550) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/client/assets/scripts/net/CharacterCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ character coordinator successfully creates warrior and exposes created state (20.4525ms)
+✔ character coordinator validates invalid name locally and immediately rejects (2.959459ms)
+✔ character coordinator handles transport loss as unknown and retry uses original intent (42.5885ms)
+✔ late response from reset coordinator is ignored and does not overwrite idle state (7.576125ms)
+✔ character coordinator handles CLASS_EXISTS rejection correctly (4.073709ms)
+✔ character coordinator successfully selects character and updates state (3.86325ms)
+✔ character name validation enforces length and script exclusivity (5.723291ms)
+✔ character creation with invalid name is rejected (17.287ms)
+✔ global atomic name occupancy prevents duplicate name across different accounts (24.912625ms)
+✔ account cannot create more than one character of the same class (24.760083ms)
+✔ hunter class creation is rejected in current release profile (9.02875ms)
+✔ character entity is initialized with level 1, 0 xp, 308 stamina, and inn location (7.504583ms)
+✔ containers are created with 20 capacity each and shared account assets remain intact (3.049375ms)
+✔ initial level 10 white weapon is equipped, character-bound and at max durability (6.509625ms)
+✔ novice mail contains 8 hp, 8 mp and 10 emblems and creates immutable source stub (4.492333ms)
+✔ character creation atomically writes exactly 9 keys into store (11.663166ms)
+✔ failure injection at any write point rolls back all changes with zero residue (23.526583ms)
+✔ lost response restores exact character creation result with replayed true (8.135375ms)
+✔ character select validates ownership, increments rolePlayEpoch, isolates in inn, and updates account (6.64975ms)
+✔ death + ordinary DOT kill can level up but cannot resurrect; monster level stays locked (7.047167ms)
+✔ dead player wins via lingering boss damage: free resurrection, all mob rewards exactly once (1.223458ms)
+✔ manual revive consumes one emblem, preserves cooldowns and provides protection plus non-damaging control (10.3255ms)
+✔ two different revive intents racing consume one emblem (1.093625ms)
+✔ no emblem: stable rejection cannot become a debit when replayed later (0.66275ms)
+✔ special dungeon cap is cumulative and free completion resurrection does not use it (4.909208ms)
+✔ death deadline boundary offset -1 (1.389708ms)
+✔ death deadline boundary offset 0 (2.644458ms)
+✔ death deadline boundary offset 1 (0.552625ms)
+✔ death clock expires during 6-second disconnection after 4 seconds dead (3.1465ms)
+✔ repeated background notifications and heartbeat replay cannot extend recovery (0.700458ms)
+✔ heartbeat sequence replay does not renew lease; late new heartbeat cannot revive it (0.586834ms)
+✔ recovery pauses events, then resumes without resetting original death deadline (0.7855ms)
+✔ transaction conflict retry rechecks the death deadline and does not spend emblem (0.9035ms)
+✔ room payment is business-idempotent across distinct requests and stamina refresh (0.378416ms)
+✔ insufficient stamina does not create a paid room (0.556417ms)
+✔ same operation ID with different payload is rejected; caller cannot submit reward amounts (0.346959ms)
+✔ event gap, stale room token, unknown monster and new direct attacks after death give no reward (0.777917ms)
+✔ invalid trailing event rolls back earlier kill and generated reward in the same batch (2.595417ms)
+✔ new event sequence cannot award the same spawn twice; latest identical batch can replay with a new ID (3.267667ms)
+✔ completion full bag becomes original-character pending reward; claim delivers once (1.764917ms)
+✔ ground full bag remains on ground and cannot be converted into pending reward (1.524333ms)
+✔ two different collection intents cannot duplicate a ground item; collected assets survive exit (1.404125ms)
+✔ online completed looting can continue indefinitely; disconnect only closes scene (4.002125ms)
+✔ new launch does not resume unfinished challenge or refund stamina; old session cannot write/replay (2.976916ms)
+✔ restart after completion preserves success and rewards but cannot resume ground pickup (0.793042ms)
+✔ concurrent first login creates one account and one effective session; same launch retries are idempotent (0.214292ms)
+✔ account fence resolves concurrent takeover vs old-session kill without losing committed assets (0.477958ms)
+✔ one active challenge per account; completed but open scene must be explicitly closed before new challenge (0.613333ms)
+✔ trusted principal and account/character ownership are checked independently of client IDs (1.454ms)
+✔ committed response loss returns unknown; same operation can be queried and retried without reroll (1.536625ms)
+✔ every final-settlement write point rolls back fully on failure (9.615041ms)
+✔ invalid special limits are rejected; external config mutation cannot change an active challenge (6.739084ms)
+✔ ordinary living completion does not heal unless it actually levels the character (0.843042ms)
+✔ delayed asynchronous repository reads crossing the deadline cannot charge for resurrection (18.018208ms)
+✔ stale death index cannot consume an emblem for a later death (1.322416ms)
+✔ boss transaction retry reuses reward candidates and does not reroll on write conflict (0.559875ms)
+✔ room progression, fixed refill and payment replay preserve the correct total stamina (3.408459ms)
+✔ material pickup fills compatible stacks before allocating a slot and preserves overflow on ground (1.130667ms)
+✔ two concurrent challenge starts across two owned characters admit only one (0.528375ms)
+✔ session open response loss can retry without a second takeover (0.4335ms)
+✔ malformed auth, missing expected version and non-finite event numbers are rejected without effects (1.569042ms)
+✔ unknown random reward definition fails the entire boss settlement without consuming or partially rewarding (6.255584ms)
+✔ session.open operation ID cannot be reused to silently take over with different launch parameters (0.303792ms)
+(node:80553) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/client/assets/scripts/net/InventoryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ loads explicit empty backpack and three authoritative template quickslots; receipt triggers refreshed views (15.743875ms)
+✔ lost response persists exact command across controller recreation; notFound never resends mutation (0.62475ms)
+✔ restored pending intent queries original operation and merges original outcome then authoritative views (0.448333ms)
+✔ malformed or mismatched mutation receipt remains unknown rather than clearing persisted intent (0.18375ms)
+✔ late view response cannot overwrite a switched character or closed page (0.169208ms)
+✔ persistence failure stops transmission; malformed quickslot and foreign backpack fail loading (0.248541ms)
+✔ older refresh never replaces newer accepted container or character view (0.194291ms)
+✔ known committed version prevents a stale read from enabling another command (1.349375ms)
+✔ quickslot quantity snapshot must match container version and cannot overwrite with stale bag vector (1.015625ms)
+✔ closing during mutation preserves unresolved intent and ignores late reply; reopening permits recovery (3.955375ms)
+✔ invalid slot is rejected locally before persistence or transport (0.215625ms)
+✔ packet lost before backend: notFound stays unknown until explicit retry resends exact original operation (0.406166ms)
+✔ explicit retry is guarded on closed or switched roles; late reply preserves pending storage (4.379708ms)
+✔ recovery serializes lookup and blocks concurrent recovery or resend while original lookup is pending (1.18ms)
+✔ stale notFound lookup after closing and starting a new recovery cannot undo the completed recovery (1.483ms)
+(node:80554) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/client/assets/scripts/ui/InventoryGesture.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ short touch selects; 250 ms hold arms drag without any movement (3.04275ms)
+✔ early touch scroll locks and cannot turn into drag after long hold (0.455666ms)
+✔ cancel discards touch; secondary touch cannot end or overwrite owner (0.091708ms)
+✔ mouse requires movement threshold rather than hold and retains source snapshot (0.078458ms)
+✔ empty and locked sources never arm drag for touch or mouse (0.422375ms)
+✔ out of order and nonfinite samples cannot move or prematurely arm active gesture (0.217666ms)
+✔ sorts equipment by fixed slot, quality, level with stable ties and stacks by category (1.288584ms)
+✔ merges full participating quantities and traces every output including remainder; repeated organize no-op (0.596042ms)
+✔ redistribution with same number of stacks is traced, full and singleton stacks are untouched (0.4235ms)
+✔ does not merge different binding scopes or templates; preserves exact source references (0.205125ms)
+✔ rejects malformed trusted data instead of silently sorting or merging it (0.715375ms)
+✔ maximum capacity bounded merge conserves 100 independent input traces (6.290584ms)
+✔ repeated reverse sorting never retraces already compact groups (2.628042ms)
+✔ rejects colliding equipment/stack identities and malformed container versions (4.350333ms)
+✔ isolated preview boots through real login/create/select and serves valid backpack and bindings (107.964333ms)
+✔ preview has distinct ephemeral storage namespaces and never exposes arbitrary asset commands (7.475875ms)
+(node:80557) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/client/assets/scripts/net/InventoryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ organize conserves each binding pool, compacts stacks, records lineage, and reverses full ordering (18.671625ms)
+✔ merge reduces stack count and replay remains immutable after later version changes (6.480792ms)
+✔ exact expected set rejects missing/additional objects and persists refusal without journal (5.906875ms)
+✔ orphan journal fails closed and operation queries isolate stored outcomes (4.709583ms)
+✔ organize write failure 1 leaves no partial bag/account/journal/receipt (5.557916ms)
+✔ organize write failure 2 leaves no partial bag/account/journal/receipt (28.429958ms)
+✔ organize write failure 3 leaves no partial bag/account/journal/receipt (41.026209ms)
+✔ organize write failure 4 leaves no partial bag/account/journal/receipt (41.877875ms)
+✔ commit response loss is recovered by operation.get without applying intent twice (13.756291ms)
+✔ two concurrent intents with same bag version commit at most once (3.685333ms)
+✔ quickslots reference templates, aggregate all bindings, retain zero then restore, and never consume (25.630416ms)
+✔ identity, revoked session, and selected-character authorization fail closed (7.281958ms)
+✔ 100-slot public DTO stays bounded and redacts private account binding while preserving contracted trace pointers (11.80675ms)
+✔ real coordinator wire path opens, assigns, organizes, and recovers committed unknown outcome (5.1315ms)
+✔ quickslot accepts character-only expectation and rejects foreign container expectations or invalid indices before mutation (4.224417ms)
+✔ quickslot replay and concurrent organize leave template selection and total quantity consistent (4.023458ms)
+✔ quickslot write failure 1 leaves no partial selection/account/journal/receipt (2.499042ms)
+✔ quickslot write failure 2 leaves no partial selection/account/journal/receipt (3.797875ms)
+✔ quickslot write failure 3 leaves no partial selection/account/journal/receipt (3.33225ms)
+✔ quickslot write failure 4 leaves no partial selection/account/journal/receipt (1.650792ms)
+✔ strict public command boundaries reject forged authority and oversized or malformed envelopes before writes (2.919042ms)
+✔ single organize uses seven keyed reads and four atomic writes without equipment or ancestry scans (2.37ms)
+✔ an original request still in flight and its exact retry share one receipt and one asset change (2.849ms)
+(node:80558) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/client/assets/scripts/net/LoginCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ coordinator consumes real local prepare/commit responses and exposes an isolated current session (9.135417ms)
+✔ unknown commit retries the same original key and blocks starting a replacement intent (7.319166ms)
+✔ cancelled late prepare never sends commit or overwrites idle state (1.607625ms)
+✔ replacing a still-preparing flow ignores its late ticket while the new flow logs in (2.221334ms)
+✔ cancel during a committed in-flight response preserves its unknown intent until explicit retry (3.049083ms)
+✔ a superseded original commit is never exposed as an authenticated session (5.32625ms)
+✔ unknown prepare retries its exact original intent without creating another ticket (2.948792ms)
+✔ invalid open intent is rejected before any prepare is sent (0.371291ms)
+✔ pending states are explicit and a trusted-adapter rejection is a terminal public error (2.25125ms)
+✔ malformed committed response is unknown and explicit retry restores the real original result (1.914834ms)
+✔ selected character returns to its isolated inn with a new role epoch and preserves current-window stamina (17.639375ms)
+✔ active handoff closes H and CP head, settles remaining once and never rewrites chunks or wallet (4.916333ms)
+✔ completed scenes keep success and a crossed refresh window loads 308 only at handoff (2.903792ms)
+✔ stale closed pointer never replays an old settlement over current character stamina (5.287417ms)
+✔ a stale settled pointer still applies a genuinely newer town refill window (5.978958ms)
+✔ an explicitly unactivated first room closes without inventing a checkpoint (8.173708ms)
+✔ an unselected owned challenge character is still closed and reset without selecting it (1.561625ms)
+✔ corrupt handoff missingChunk rejects with no partially closed scene (1.792459ms)
+✔ corrupt handoff chunkHash rejects with no partially closed scene (0.841459ms)
+✔ corrupt handoff chunkRevision rejects with no partially closed scene (0.476042ms)
+✔ corrupt handoff chunkScene rejects with no partially closed scene (0.69ms)
+✔ corrupt handoff bodyTamper rejects with no partially closed scene (1.284583ms)
+✔ corrupt handoff splitPointers rejects with no partially closed scene (1.95375ms)
+✔ corrupt handoff wrongOwner rejects with no partially closed scene (0.914792ms)
+✔ corrupt handoff missingReservation rejects with no partially closed scene (2.236375ms)
+✔ corrupt handoff missingHeadAccess rejects with no partially closed scene (0.549708ms)
+✔ handoff write 1 fails atomically across character, H, CP head, journal and account (2.079583ms)
+✔ handoff write 2 fails atomically across character, H, CP head, journal and account (1.565083ms)
+✔ handoff write 3 fails atomically across character, H, CP head, journal and account (0.95475ms)
+✔ handoff write 4 fails atomically across character, H, CP head, journal and account (0.629833ms)
+✔ handoff write 5 fails atomically across character, H, CP head, journal and account (0.693041ms)
+✔ account fence resolves competing terminal and handoff when handoff attempts first (2.351875ms)
+✔ account fence resolves competing terminal and handoff when terminal attempts first (3.278625ms)
+✔ trusted-context adapter verifies each invocation without accepting body identity (2.022458ms)
+✔ typed tuple keys are bounded, stable and unambiguous without disclosing subject (23.26225ms)
+✔ context identity rejects accessor fields without invoking them (0.43825ms)
+✔ prepare creates only one stable ticket and never initializes assets or extends its deadline (14.388833ms)
+✔ first commit atomically initializes one account and replays its original result (5.080125ms)
+✔ commit ticket deadline boundary -1 (1.289084ms)
+✔ commit ticket deadline boundary 0 (0.873ms)
+✔ commit ticket deadline boundary 1 (1.831541ms)
+✔ two first-login tickets race to one account and cannot automatically steal back the session (1.304625ms)
+✔ new launch replaces an existing account session while historical receipt cannot reactivate it (1.979666ms)
+✔ initialization write 1 failure leaves only the original ticket (0.840833ms)
+✔ initialization write 2 failure leaves only the original ticket (1.81375ms)
+✔ initialization write 3 failure leaves only the original ticket (2.812084ms)
+✔ initialization write 4 failure leaves only the original ticket (6.976167ms)
+✔ initialization write 5 failure leaves only the original ticket (2.319542ms)
+✔ initialization write 6 failure leaves only the original ticket (2.054708ms)
+✔ initialization write 7 failure leaves only the original ticket (2.577292ms)
+✔ initialization write 8 failure leaves only the original ticket (1.68175ms)
+✔ initialization write 9 failure leaves only the original ticket (1.944209ms)
+✔ commit response loss returns unknown and same intent restores the once-committed result (1.839ms)
+✔ body identity cannot reach the identity port or store, and fabricated port identities are rejected (0.258625ms)
+✔ ticket cannot cross identities or launches, and double commit of one ticket cannot initialize twice (6.318458ms)
+✔ prepare response loss restores the same ticket, and a retry crossing deadline cannot commit (8.491667ms)
+✔ account fence overflow fails closed rather than persisting an unsafe integer (2.152916ms)
+✔ login commit uses real character handoff in the same transaction and returns its new role epoch (2.140041ms)
+✔ real login takeover atomically closes active challenge and CP access and settles stamina once (4.694416ms)
+✔ takeover that observes an already committed completion preserves its reward and completed result (4.553167ms)
+✔ any write failure during integrated takeover preserves the old session, character and challenge (23.639417ms)
+✔ a rejected open intent retains its original result and cannot be reused with a new ticket (1.109375ms)
+✔ ticket expiry during transaction reads is checked again before publishing any initialization (0.82225ms)
+✔ expiry while verifying old CP discards every planned handoff write and preserves the old session (1.615083ms)
+✔ snapshot conflict on missing document retries concurrent creation instead of overwriting it (0.881333ms)
+✔ transactions read their own staged writes without exposing uncommitted data (0.33325ms)
+✔ reads/inspection return detached values and thrown callbacks discard all staged writes (0.739625ms)
+✔ blind writes also conflict; retry budget cannot silently commit stale data (0.726708ms)
+✔ a lost response happens after commit and never rolls the data back (0.287583ms)
+(node:80563) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/client/assets/scripts/net/TownCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ town coordinator manages inn exit and position synchronization (17.81475ms)
+✔ town coordinator closes active panel on movement and predicts position (10.9985ms)
+✔ town coordinator locally rejects service open when beyond 24px distance (6.228375ms)
+✔ town coordinator generation isolation drops late responses after reset (0.319291ms)
+✔ scene.exitInn transitions character from inn to town anchor and initializes townState (17.080833ms)
+✔ town.move verifies ordered sequential steps, bounds and speed limits (3.957958ms)
+✔ service.open checks 24px radius, issues context, and service.close terminates it (3.741084ms)
+✔ private read models enforce context authorization and HUD summary does not leak bodies (5.937375ms)
+ℹ tests 194
+ℹ suites 0
+ℹ pass 194
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 527.291125
+PASS: backend regression (legacy and v2)
+
+CHECK: client model regression
+PASS: tap, timeout, buffer, hold loop, reset, axis speeds, diagonal and facing
+PASS: four warrior skills, shared mana, independent cooldowns, one impact, lunge/jump motion and reset
+PASS: skill frame/contact alignment, takeoff, pre-impact interruption and persistent effect cleanup
+PASS: skill-specific stun/knockdown, ultimate recovery, 5s refresh-only bleeding, heartbeat and death/miss cleanup
+PASS: per-cast/target/stage knockdown ledger, normal/elite boundaries, boss immunity and death fade
+PASS: 2/3/1/4 phases, preserved damage, independent ground origin, interruption, piercing projectile and reset
+PASS: moving/knockback targets at 30/60/120Hz and fractional lethal damage
+PASS: hit-stop coalescing, no idle retriggers, heavy/light timing, pixel sparks, cleanup and multi-hit integration
+PASS: independent feedback A/B controls, immediate release, no retroactive hits and reset retention
+PASS: per-hit damage popups, simultaneous events, overkill amount, formatting, bounded pools, independent toggle and cleanup
+PASS: retained preview targets do not replay old hit feedback after cast/reset
+PASS: ground-impact-only shake, bounded integer offsets, independent disable/reset and unchanged ground coordinates
+PASS: versioned fragment crop preserves source scale and shared foot anchor for both facings
+PASS: bounded charge/emission cues with unchanged 200ms charge and hit schedules
+PASS: eight-slot two-half stride playback, walk/run cadence, brake, hurt/action priorities and reset (art requires visual review)
+PASS: additive attack-speed sources, 1/1.25/1.5 timings, stage snapshot, scaled movement, fixed combo/buffer and atomic basic-to-skill cancellation
+PASS: immediate skill cancellation releases previous hit-stop only on success
+PASS: default/forward earth leaps, facing/deadzone/FPS/bounds, landing-origin damage, cancellation and held-basic microstep
+PASS: bleed cadence/expiry/refresh/FPS/periodic feedback/death and ready/fighting/result/retry rounds
+PASS: client model regression
+
+CHECK: client UI-model regression
+PASS: 13 equipment slots verified without head slot
+PASS: 7 durability slots and 3-color status ladder verified
+PASS: dungeon entrance gatekeeper verified (no weapon, 0 durability, 0 stamina)
+PASS: full bag in-place swap and full bag unequip prevention verified (UI01)
+PASS: account vault soulbound rejection verified (UI04)
+PASS: repair batch failure and full deduction verified (UI08)
+PASS: stats computation and 0-durability attribute expiry verified
+
+ALL UI MODEL TESTS PASSED (100% SUCCESS)
+PASS: client UI-model regression
+
+SUMMARY: 7/7 checks passed.
+Local checks only: v2 business behavior, cloud SDK, Cocos scene types/build and device acceptance are not covered.
