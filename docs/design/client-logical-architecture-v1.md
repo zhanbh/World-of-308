@@ -1,6 +1,6 @@
 # 客户端逻辑架构与引入关系 v1
 
-更新：2026-10-20。状态：E05设计提案，未实现、未完成eng-review。依据：[逻辑架构](../backend/logical-architecture-v2.md)、[D05验收](town-interactions-acceptance-v1.md)、[D04](dungeon-first-proposal-v1.md)。不修改独立会话的UI视觉稿。
+更新：2026-10-20。状态：E05设计提案，未实现；工程初审已完成，4A～11A已批准，尚无编码授权。依据：[逻辑架构](../backend/logical-architecture-v2.md)、[D05验收](town-interactions-acceptance-v1.md)、[D04](dungeon-first-proposal-v1.md)。不修改独立会话的UI视觉稿。
 
 ## 1. 分层与依赖
 
@@ -30,9 +30,9 @@ flowchart TD
 | Module | Interface与职责 | Implementation需隐藏/约束 |
 | --- | --- | --- |
 | Input | 摇杆/按键/触控转规范意图 | X力度走跑、Y定速、触控归属；服务面板开时停移动，不误触战斗动作 |
-| CombatSimulation | tick输入→角色/怪物状态与展示事件 | 三段普攻、技能取消、运动/碰撞、控制/流血、怪物AI；仅本地即时结果，不写永久资产 |
+| CombatSimulation | tick输入→角色/怪物状态与展示事件 | 当前战士普攻合同、技能取消、运动/碰撞、控制/流血、怪物AI；仅本地即时结果，不写永久资产 |
 | BattlePresentation | 接收只读状态/事件，播放身体、技能、特效和UI | Cocos节点/图集/动画；伤害节点与动画对齐，不靠某帧贴图决定服务端发奖 |
-| ChallengeCoordinator | 场景进入/合法事件顺序/升级复活指令/结束 | 与服务端challenge版本、roomToken、事件游标同步；原型胜败重开不替代正式终态 |
+| ChallengeCoordinator | 场景进入/有序输入提交/权威升级复活/结束 | 与服务端challenge版本、roomToken、输入确认游标同步；原型胜败重开不替代正式终态 |
 | TownCoordinator | 场景落点、NPC交互、入口触发、服务打开关闭 | 上线旅店/在线回城门口/短暂重连分开；退出范围才重触发 |
 | ServiceUseCases | 银行/商人/修理/强化/领取/换装的用户意图 | 意图ID、待确认状态、拒绝原因；本地不扣最终金币、不生成装备 |
 | AssetReadModel | 按服务端对象版本合并公开视图 | 旧回包不覆盖新状态；不是可整包上传的客户端存档 |
@@ -44,9 +44,11 @@ flowchart TD
 
 ## 3. 两类时钟与事件处理
 
-战斗模拟时钟控制动作、CD和周期效果；墙钟展示死亡/恢复截止，用serverTime校正，不能用客户端时间变更权限。断线/后台暂停即时战斗，服务端截止仍继续；死亡继续合法残留及CD，详见挑战规格。武器0耐久的暂停时钟细节仍待产品规则收敛，不自行复用断线截止。
+输入意图、预测表现、权威确认分层：Input产生连续输入序号与场景/时间代次；CombatSimulation只生成本地状态及展示事件，ChallengeCoordinator提交有序输入，不上报权威死亡/击杀/HP。服务端重算后返回acceptedSeq/acceptedTick、checkpointRevision和相关资产版本，按版本合并；旧事件只作诊断，C25新调用拒绝，不能用动画事件作为资产凭据。
 
-模型先产生有序事件，协调层附挑战/房间上下文形成批次，服务端确认acceptedThrough后推进已确认游标。回包丢失先查询/重放同批，不把本地掉落展示视为入包；复活先flush已有合法事件，避免首领通关/付费复活时序错误。模型不能在网络回调随机插入一段“补奖励”。
+战斗模拟时钟控制动作、CD和周期效果；服务端墙钟控制死亡/恢复截止。死亡继续既定合法残留/CD，武器途中归0仅属性失效、不暂停、不拦换房；新挑战入口另检可用武器。正常联网加载的角色计时沿2A，recovery暂停，回复余数跨CP/切房保存。
+
+片段响应丢失先查询原operation，确认前沿恢复后再提交新输入；复活先解析在途原结果与权威生死，不将本地击杀补成收益。恢复/新房完整状态与资源就绪后提交scene.ready才启动活动锚点，沿[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)4A，不在分页未齐时进入2秒输入计时。
 
 ## 4. UI状态与资产意图
 

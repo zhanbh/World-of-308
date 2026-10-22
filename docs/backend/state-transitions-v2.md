@@ -44,7 +44,7 @@ recovery可叠加active/combat和completed/looting，期间模拟暂停；期限
 | 非末房清场武器磨损归0 | active | 房清成立、武器属性失效、非阻断破损提示；允许继续本局 | 自动回城/判败、因本局武器归零拒绝下一房 |
 | 末房通关后磨损武器归0 | completed | 保留通关/奖励，下一开本前修理 | 用破损覆盖completed为failed |
 | suspend/静默租约恢复中 | 有效未关闭场景 | recovery及固定截止，不滚动延期，模拟暂停 | 将dead改alive、刷新本局体力 |
-| resume | 同launch/epoch，所有有效期限未过 | connected，保留原dead/结果/快照/CD | 重连重新给死亡窗口、重新随机怪物 |
+| resumePrepare / scene.ready | 同launch/epoch，所有有效期限未过；完整版本化视图/资源就绪 | prepare保持recovery并固定前沿；ready才connected/重建锚点，保留原dead/结果/快照/CD | 分页未齐先开战、重新给死亡窗口、重新随机怪物 |
 | active到期/放弃 | active，合法截止或leave | failed/closed、一次体力回城结算、指针清除、满状态/清CD | 退体力、撤已保存收益、迟报首领改判成功 |
 | completed退出/恢复超时 | completed/looting | completed/closed、失效地面物、一次加载体力/回城 | 转failed、撤通关奖励 |
 | 新launch/设备接管 | 可信身份，C01票据commit通过epoch比较；prepare不接管 | 同事务撤旧会话、旧场景按终态结束结算、建立新会话上线旅店，消费票据及保存open回执 | 跨设备续关、prepare关闭旧挑战、旧会话通过历史请求抢写权 |

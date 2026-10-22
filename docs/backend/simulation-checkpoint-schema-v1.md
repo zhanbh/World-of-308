@@ -13,7 +13,7 @@
 | 身份与场景 | accountId、characterId、sessionEpoch、rolePlayEpoch、sceneEpoch、challengeId/roomNo或城镇anchorRef；全由服务端绑定 |
 | 版本 | schemaVersion、revision、rulesRef、mapRef、contentRef、acceptedSeq、acceptedTick、timelineEpoch、lastOperationRef；timelineEpoch随重建时间锚点递增，与场景有效性sceneEpoch分开 |
 | 时钟 | anchorWallAt、anchorTick、lastAcceptedInputAt及累计允许/已接受进度、暂停控制版本；死亡/恢复截止引用挑战权威，不另存可独立延长的副本；见恢复时序第6节 |
-| 玩家 | 位置/速度余数、面向、动作与阶段、生死、HP/MP及上限、属性修订引用、控制状态、目标/输入状态 |
+| 玩家 | 位置/速度余数、面向、动作与阶段、生死、HP/MP及上限、分别约分的HP/MP自然回复余数、属性修订引用、控制状态、目标/输入状态 |
 | CD与增益 | 四职业技能CD、生命药/法力药两组CD、独立饰品CD/增益、复活保护等；区分逻辑时间和墙钟期限 |
 | 敌人 | 有限spawnId集合，模板/等级/角色分类引用、位置、HP、生死、AI/技能阶段与目标锁定、控制/免疫/倒地进度 |
 | 持续效果 | 来源castId/阶段、攻击端快照、目标、剩余预算/跳数/调度、有效时间、残留/出血标识；目标当前防御仍逐次读取 |

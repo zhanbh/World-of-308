@@ -347,7 +347,18 @@ const icons = {
   souvenir: getIconDataUrl('material_souvenir_64.png')
 };
 
-// 12 Mockup Page Builders
+function getArtDataUrl(name) {
+  const p = path.resolve(__dirname, '../../docs/art', name);
+  if (fs.existsSync(p)) {
+    return 'data:image/png;base64,' + fs.readFileSync(p).toString('base64');
+  }
+  return '';
+}
+const stanceTownBase64 = getArtDataUrl('warrior-stance-town.png');
+const stanceCombatBase64 = getArtDataUrl('warrior-stance-combat.png');
+const stancesFullBase64 = getArtDataUrl('warrior-stances-comparison-v1.png');
+
+// Mockup Page Builders
 const pages = [
   {
     filename: '01-character-profile-c-key.png',
@@ -389,14 +400,17 @@ const pages = [
               </div>
 
               <div class="doll-center">
-                <div class="avatar-box">
-                  <div style="display:flex;gap:4px;margin-bottom:8px">
+                <div class="avatar-box" style="height:270px;justify-content:flex-start;padding-top:8px">
+                  <div style="display:flex;gap:4px;margin-bottom:6px">
                     <span style="font-size:10px;padding:2px 8px;background:#ffca28;color:#10181e;border-radius:3px;font-weight:bold">站街形态</span>
                     <span style="font-size:10px;padding:2px 8px;background:#243644;color:#8fa2af;border-radius:3px">战斗状态</span>
                   </div>
-                  <div style="font-size:40px;margin-bottom:4px">🧍🗡️</div>
-                  <div style="font-weight:bold;color:#ffca28">[ 站街从容姿态 ]</div>
-                  <div style="font-size:11px;color:#8fa2af;margin-top:4px">双刀收鞘 · 挺拔舒缓待机呼吸</div>
+                  <div style="position:relative;width:130px;height:160px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:6px;background:rgba(10,16,22,0.6);border:1px solid #2b3a46">
+                    <img src="${stanceTownBase64}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 10px rgba(255,64,129,0.4))">
+                    <div class="blade-glow-pink" style="position:absolute;bottom:4px;width:75px;height:12px;background:radial-gradient(ellipse at center, rgba(255,64,129,0.5) 0%, rgba(255,64,129,0) 70%);border-radius:50%"></div>
+                  </div>
+                  <div style="font-weight:bold;color:#ffca28;font-size:11px;margin-top:5px">[ 站街形态 · 从容入鞘 ]</div>
+                  <div style="font-size:10px;color:#8fa2af;margin-top:2px;text-align:center">双刀收鞘 · 挺拔舒缓待机呼吸</div>
                 </div>
                 <div class="weapon-slot-wrap">
                   <div class="gear-slot" style="border-color:#ff4081;background:rgba(255,64,129,0.08);box-shadow:0 0 12px rgba(255,64,129,0.6)">
@@ -1129,11 +1143,9 @@ const pages = [
           <div style="background:rgba(16,24,30,0.85);border:1px solid #ff4081;padding:2px 10px;border-radius:12px;font-size:11px;margin-bottom:8px;box-shadow:0 0 10px rgba(255,64,129,0.4)">
             <span class="text-gold" style="font-weight:bold">狂暴先驱</span> <span style="color:#ff80ab">(【站街形态】· +10 双刀腰间收鞘呼吸光芒中)</span>
           </div>
-          <div style="position:relative;width:96px;height:140px;display:flex;align-items:center;justify-content:center">
-            <div style="font-size:56px;z-index:2">🗡️🧍🗡️</div>
-            <div class="blade-glow-pink" style="position:absolute;left:-2px;top:22px;width:12px;height:68px;background:linear-gradient(to top, rgba(255,64,129,0.85), rgba(255,128,171,0.95), #ffffff);border-radius:6px;transform:rotate(-22deg);z-index:1"></div>
-            <div class="blade-glow-pink" style="position:absolute;right:-2px;top:22px;width:12px;height:68px;background:linear-gradient(to top, rgba(255,64,129,0.85), rgba(255,128,171,0.95), #ffffff);border-radius:6px;transform:rotate(22deg);z-index:1"></div>
-            <div style="position:absolute;bottom:4px;width:70px;height:14px;background:radial-gradient(ellipse at center, rgba(255,64,129,0.45) 0%, rgba(255,64,129,0) 70%);border-radius:50%"></div>
+          <div style="position:relative;width:140px;height:170px;display:flex;align-items:center;justify-content:center">
+            <img src="${stanceTownBase64}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 12px rgba(255,64,129,0.55));z-index:2">
+            <div class="blade-glow-pink" style="position:absolute;bottom:4px;width:90px;height:16px;background:radial-gradient(ellipse at center, rgba(255,64,129,0.6) 0%, rgba(255,64,129,0) 70%);border-radius:50%"></div>
           </div>
           <div style="background:rgba(20,31,39,0.85);border:1px solid #344654;padding:4px 12px;border-radius:4px;font-size:11px;color:#8fa2af;margin-top:6px">
             ✨ 站街形态 (Town Stance)：站姿挺拔从容，双刀收鞘入胯/背负，武器以 1.4s 周期一闪一闪温和呼吸闪烁，同屏玩家皆可清晰可见
@@ -1178,12 +1190,9 @@ const pages = [
           <div style="background:rgba(16,24,30,0.85);border:1px solid #ff4081;padding:2px 10px;border-radius:12px;font-size:11px;margin-bottom:8px;box-shadow:0 0 10px rgba(255,64,129,0.4)">
             <span class="text-gold" style="font-weight:bold">狂暴先驱</span> <span style="color:#ff80ab">(【战斗状态】· 双刀出鞘持刃戒备)</span>
           </div>
-          <div style="position:relative;width:140px;height:130px;display:flex;align-items:center;justify-content:center">
-            <!-- 挥斩半月刃气残影 (完全继承 +10 质变粉光) -->
-            <div class="blade-glow-pink" style="position:absolute;top:-10px;right:-15px;width:120px;height:100px;border-right:6px solid #ff4081;border-top:5px solid #ff80ab;border-radius:0 70px 0 0;transform:rotate(-15deg);filter:drop-shadow(0 0 16px #ff4081);opacity:0.9"></div>
-            <div style="font-size:56px;z-index:2">⚔️🤺</div>
-            <!-- 暴击爆裂光火 -->
-            <div style="position:absolute;top:8px;right:-25px;color:#ff4081;font-size:13px;font-weight:bold;text-shadow:0 0 10px #ff4081">CRIT! 4,280</div>
+          <div style="position:relative;width:170px;height:150px;display:flex;align-items:center;justify-content:center">
+            <img src="${stanceCombatBase64}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 18px rgba(255,64,129,0.85));z-index:2">
+            <div style="position:absolute;top:6px;right:-15px;color:#ff4081;font-size:13px;font-weight:bold;text-shadow:0 0 10px #ff4081;z-index:3">CRIT! 4,280</div>
           </div>
           <div style="background:rgba(20,31,39,0.85);border:1px solid #ff4081;padding:4px 12px;border-radius:4px;font-size:11px;color:#ff80ab;margin-top:6px">
             💥 战斗状态 (Combat Stance)：压低重心，双手持刃迎敌，普攻挥砍与四大技能完全继承当前 +10 强化粉光
@@ -1291,6 +1300,33 @@ const pages = [
 
         <div class="modal-footer">
           <span class="text-dim">温馨提示：进入副本需穿戴完好武器；通关可获得丰厚经验与装备奖励。</span>
+        </div>
+      </div>
+    `)
+  },
+  {
+    filename: '14-character-stances-town-vs-combat.png',
+    title: '角色双形态对比 (站街 vs 战斗)',
+    html: wrapHTML('角色双形态对比 (站街 vs 战斗)', `
+      <div class="modal-frame">
+        <div class="modal-header">
+          <span>双刀战士角色双形态对比规范 (Town Stance vs Combat Stance)</span>
+          <span class="text-gold">站街从容入鞘 · 战斗出鞘瞬发 (0ms 延迟)</span>
+        </div>
+        <div class="modal-body" style="padding:14px;flex-direction:column;align-items:center">
+          <div style="width:100%;border:1px solid #344654;border-radius:6px;overflow:hidden;background:#0d1419;box-shadow:0 4px 20px rgba(0,0,0,0.6);display:flex;justify-content:center">
+            <img src="${stancesFullBase64}" style="max-width:100%;max-height:340px;object-fit:contain;display:block">
+          </div>
+          <div style="display:flex;gap:14px;width:100%;margin-top:10px">
+            <div style="flex:1;background:#141f27;border:1px solid #344654;padding:10px;border-radius:4px">
+              <div style="font-weight:bold;color:#ffca28;margin-bottom:4px;font-size:12px">【站街形态 (Town Stance)】</div>
+              <div style="font-size:11px;color:#8fa2af;line-height:1.5">挺拔站姿从容展现身形，双刀收鞘入胯两侧；1.4s 舒缓周期在刀鞘处呼吸微闪，同屏玩家清晰可见。</div>
+            </div>
+            <div style="flex:1;background:#141f27;border:1px solid #ff4081;padding:10px;border-radius:4px">
+              <div style="font-weight:bold;color:#ff4081;margin-bottom:4px;font-size:12px">【战斗状态 (Combat Stance)】</div>
+              <div style="font-size:11px;color:#ff80ab;line-height:1.5">压低重心微屈膝前倾，双手持刃戒备；刀刃全域炽粉流光迸发；脱战5s自动收刀，任何攻击0ms瞬发切入！</div>
+            </div>
+          </div>
         </div>
       </div>
     `)

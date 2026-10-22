@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "e62f5c7",
+  "parent_revision_manifest": "eng-review-revisions-2026-10-22.json",
+  "approved_decisions": [
+    "1A",
+    "2A",
+    "3A",
+    "4A",
+    "5A",
+    "6A",
+    "7A",
+    "8A",
+    "9A",
+    "10A",
+    "11A",
+    "P01",
+    "P02"
+  ],
+  "pending_decisions": [],
+  "executionAuthorized": false,
+  "validation": "static consistency and links only; no new runtime or independent review claims",
+  "files": [
+    {
+      "path": ".aiassist/review-tasks/tasks-eng-review-20261022-final.jsonl",
+      "sha256": "555b9af76625a83fdc3dd62e6a5a1a86ea4a07a8bde2dd63542780fcfd176b71"
+    },
+    {
+      "path": "docs/backend/api-contract-v2.md",
+      "sha256": "cb9805530bda182e5a94289ecac861fe88869c96215d9bc375ac26186142178c"
+    },
+    {
+      "path": "docs/backend/asset-physical-mapping-v1.md",
+      "sha256": "f16d69d5fd2264f7e4b980979c0f093671c10ac58ba9ca31b3e6690b5d912646"
+    },
+    {
+      "path": "docs/backend/collection-holdings-projection-v1.md",
+      "sha256": "f85a1191eca17c29a226bbbe956cf3a38865153d2cdb15484672baa96848a688"
+    },
+    {
+      "path": "docs/backend/combat-arithmetic-contract-v1.md",
+      "sha256": "b2beb491fa7bf755df612b6599f315e89f42f6ac5532a4144bf3a9982859b788"
+    },
+    {
+      "path": "docs/backend/data-dictionary-v2.md",
+      "sha256": "664399ef1adff3af628166ca9fad1a6c6237329f5b0a625a6705ea2d3e780d7e"
+    },
+    {
+      "path": "docs/backend/platform-adapter-baseline-v1.md",
+      "sha256": "4f339353e41dae9f361f225ff9226eb18648f32883fc7b8ae6f7338b371d27b2"
+    },
+    {
+      "path": "docs/backend/ranking-query-baseline-v1.md",
+      "sha256": "c78b099ac1f5494f4d2cfd7d0ecd8228a32a53ee96e93102e0813c27e642e83b"
+    },
+    {
+      "path": "docs/backend/recovery-timeline-proposal-v1.md",
+      "sha256": "0bf6741d3396c75b1ebb89007cd78c9b48ced4137b3a588ac5da9bf35fd0adb5"
+    },
+    {
+      "path": "docs/backend/release-and-validation-baseline-v1.md",
+      "sha256": "a4c9aef3d9bd72433f91499f95a9ff3af25ee24498e244d810436ca870f84417"
+    },
+    {
+      "path": "docs/backend/room-loading-handshake-v1.md",
+      "sha256": "b7ff286051a1d5c7a962972c333d3f2d6928578753b618ace5745a7df6f5c0c8"
+    },
+    {
+      "path": "docs/backend/scoring-projection-mapping-v1.md",
+      "sha256": "d9f5059c0cda9e7e6a49f7cd81fa2548ca63fabd7e0584d1fdf041a53c3c5a7f"
+    },
+    {
+      "path": "docs/backend/simulation-checkpoint-schema-v1.md",
+      "sha256": "494257935ebe329decc9dbf58c1d3776400aa6a32a5a11c8d5dd24c598107659"
+    },
+    {
+      "path": "docs/backend/state-transitions-v2.md",
+      "sha256": "7953619ce872f083769297f26830ba84e5f062c523c0539a1d73091382aa7535"
+    },
+    {
+      "path": "docs/design/client-logical-architecture-v1.md",
+      "sha256": "08e0c5fd1ede80b2f23f6c4eb6014b08eeee6556d02bf253b01c4ff479584ed1"
+    },
+    {
+      "path": "docs/design/drop-strategy-proposal-v1.md",
+      "sha256": "3a6e9dc0551830b444f339c47defd59e2b0c908481a3045b6e798851eb610404"
+    },
+    {
+      "path": "docs/design/warrior-three-dungeon-baseline-v1.md",
+      "sha256": "65b7d8b35de97a3e0b727185429c80f6fca252b37b7e74ad18cc4c37bcc71fd1"
+    },
+    {
+      "path": "docs/reviews/eng-review-approved-contracts-2026-10-22.md",
+      "sha256": "3c988d56b2b15d81d29824a1a4b6380c61af458d4f5744291891382cd1aa5ce6"
+    },
+    {
+      "path": "docs/reviews/eng-review-decisions-2026-10-22.md",
+      "sha256": "65c23de7c1c5e78171d911fb3faf4ae9f53aa9fedd06a2e4d50ee83518cf922a"
+    },
+    {
+      "path": "docs/reviews/engineering-review-pack-v1.md",
+      "sha256": "dfbbcd8e15bb6c5f003019fceb8ec24a0ac9d609d38254d0c6624f4e3e1e305a"
+    },
+    {
+      "path": "docs/reviews/handoff-2026-10-22.md",
+      "sha256": "7950c05e48ee04d757e825dff2112d40f30c29485e29c3197dae9b3f38e5a65b"
+    },
+    {
+      "path": "docs/reviews/requirements-eng-review.md",
+      "sha256": "794045fc280c2dd3c54fbe785141b4b880b83f5fa75ea84310fc1e989eca83fe"
+    },
+    {
+      "path": "docs/reviews/test-plan.md",
+      "sha256": "700f900d5a3286356cc173a5cb7ef165e1dd2f26465cbaa4f4def72030f36d02"
+    },
+    {
+      "path": "docs/spec.md",
+      "sha256": "a2b4b10b2f02f5dcdc1d64bec2564df99d288e1cc13188f0bfc4640a6c4aec42"
+    }
+  ]
+}

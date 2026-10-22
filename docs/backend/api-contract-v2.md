@@ -106,7 +106,7 @@ C11/C12编号保留作规则追踪，不代表可独立调用的资产端点；�
 | ID／命令 | payload关键字段 | expected与前置 | 成功结果／关键拒绝 |
 | --- | --- | --- | --- |
 | C23 challenge.start | characterId,dungeonId,difficultyId,entryContext | C及装备/解锁事实；至少1体力、可用武器、无旧active/looting | challengeId、配置/等级/装备/体力快照、序号；不开场前额外扣费；固定紫名安排 |
-| C24a challenge.prepareRoom / C24b challenge.activateRoom | prepare:challengeId,nextRoomNo；activate:roomAttemptId,manifestHash | H/C；alive/active/connected、上房全灭及合法出口；途中武器0不拦 | prepare只锁manifest；activate原子扣本局体力/初始化场景；详见加载握手，不保留单次enterRoom旁路 |
+| C24a challenge.prepareRoom / C24b challenge.activateRoom | prepare:challengeId,nextRoomNo；activate:roomAttemptId,manifestHash | H/C；alive/active/connected、上房全灭及合法出口；途中武器0不拦 | prepare只锁manifest；activate原子扣本局体力/初始化awaitingReady场景，完整状态就绪后scene.ready开战；详见加载握手，不保留单次enterRoom旁路 |
 | C25 challenge.reportEvents（旧协议，禁止新调用） | 旧自报事件批结构仅供迁移识别 | 新请求拒绝UNSUPPORTED_PROTOCOL，不重算或发奖 | 新战斗改用simulation.submit有序输入；历史结果仅授权查询原operation |
 | C26 challenge.revive | challengeId,deathIndex | H/B；dead/active/connected、两个截止均有效、纹章及次数 | 原子消费/复活/保护；职业CD清零、药品饰品不清；免费通关后不可再收费 |
 | C27 challenge.leave | challengeId,reason=abandon或finishLoot | H；先确认在途输入/原请求结果，按权威result决定reason | 关闭场景、终态、回城门口、体力一次结算/满HPMP/清CD，不丢已保存收益 |
@@ -130,7 +130,7 @@ playerDied、monsterKilled等为服务端重算生成的领域事实，不是客
 
 输入片段不能跨未确认房间边界。格式/版本/序号错误拒绝整段，不推进游标；满值用药、CD未到等合法动作拒绝则记录逐动作结果并按输入协议推进合法时间，不把无效动作当成功消费。重复父operation返回原结果，缺片段返回期望序号/检查点，不补发收益。死亡后不得生成新直接攻击，残留存续由权威检查点和既有技能生命周期决定，不接受客户端声明作为唯一证据。
 
-控制通道独立：heartbeat、scene.suspend、scene.resume、scene.status，按递增controlSeq/heartbeatSeq及leaseRevision处理，不制造无限业务operations，也不让心跳无故推进challenge业务version。显式recovery只有resume能解除，重复suspend不能延长原截止。
+控制通道独立：heartbeat、scene.suspend、scene.resumePrepare、scene.ready、scene.status，按递增controlSeq/heartbeatSeq及leaseRevision处理，不制造无限业务operations，也不让心跳无故推进challenge业务version。显式recovery只有同票据scene.ready成功才解除，重复suspend不能延长原截止。
 
 租约按最后新有效连接证据lease.lastEvidenceAt+10秒；有效输入可承载保活，新心跳另有序号去重，旧请求重放不续期。静默缺口沿原leaseUntil，不在到期后另加10秒；显式暂停/恢复与timelineEpoch统一见恢复时序第6节。真实断网瞬间不可观测，工程频率/阈值不是平台或体验实测承诺。
 
@@ -224,3 +224,8 @@ C24a/b完整schema、加载失败和竞争按[加载握手](room-loading-handsha
 C24a expected包括H/C；C24b包括H/C及prepare返回attempt，不要求客户端持有每块CP版本。客户端不得用新ID对同attempt重建room；同参数重试按原操作，异参拒绝OPERATION_MISMATCH。资源摘要不符用CONFIG_NOT_READY，旧attempt/前房未清用ROOM_NOT_AVAILABLE，旧场景用SCENE_CLOSED，其他版本冲突沿既有VERSION_CONFLICT，不新增平行错误体系。
 
 城镇服务地点的可验证坐标、C05距离/代次校验和邮件批领的20附件/100封扫描/每请求4项边界采用[城镇与批领合同](town-authority-and-batch-delivery-v1.md)。历史“服务位置来源未闭合”由具体候选替代，真实验证仍待实现。
+
+
+## 2026-10-22批准4A/7A
+
+恢复票据与公开恢复分页绑定sceneEpoch/timelineEpoch/checkpointRevision/publicStateHash/manifestHash及原截止；scene.ready携票据、controlSeq/leaseRevision，不接受客户端上传权威HP或省略页假装服务端通过。激活新房先awaitingReady再ready，沿[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)。HP/MP自然回复余数进入权威CP编码，普通DTO显示取整不回写。

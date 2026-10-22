@@ -356,7 +356,7 @@ E02交付为本字典与关系图，状态为草案待收敛/待评审。下一�
 
 - checkpointHeaders/H(challengeId)：归属、sceneEpoch/timelineEpoch、revision、acceptedSeq/Tick、时间锚点、8块摘要与版本；完整编码≤16KiB。
 - checkpointChunks/H(challengeId,ordinal0..7)：归属、sceneEpoch、独立chunkRevision/schemaVersion、有界紧凑状态；每块完整UTF-8≤80KiB。实际变化块与头/资产同事务提交；头activeChunks保存各在用块版本/摘要/sceneEpoch，未变块不重写；恢复验证引用并复读头，不要求块版本等于头；具体字段编码见[包络](simulation-content-envelope-v1.md)。
-- challenges.pendingRoomAttempt：roomNo、attemptId、manifestHash、configRef、preparedRevision，最多1个；roomPhase=preparing/active/cleared/closed。activate后清pending，并一次写已付房间、代次与CP，prepare不扣费。
+- challenges.pendingRoomAttempt：roomNo、attemptId、manifestHash、configRef、preparedRevision，最多1个；roomPhase=preparing/awaitingReady/active/cleared/closed。activate后清pending，并一次写已付房间、代次与CP，prepare不扣费。
 - enhancementMemories/H(characterId,rolePlayEpoch)：已确认会话代次、configRef、最多20个来源等级的定精度补偿量、revision；与金币/材料/装备/纪念品及O/J同笔。
 - rankCaches/H(scope,class,scoreConfigRef)：候选首屏最多20条、asOf/validUntil/staleUntil、refreshToken/leaseUntil、revision；不保存完整私有装备/钱包，不成为资产真相源。
 
@@ -371,3 +371,10 @@ characters.townState内嵌城镇小检查点≤4KiB；deliveryBatches/H(accountI
 2026-10-22决定2A：pendingRoomAttempt.transitionClock={settledAt:Time,connectedElapsedMs:Int0,timeRemainder:有界定精度余数,transitionRevision:Version}，累计值只在权威转场边界推进。正常联网加载推进角色CD/buff/自然回复，恢复暂停不推进；activate与场景/资产同笔消费未结算区间，不能双算。字段为常数大小，不新增逐心跳流水或无界时间段数组。
 
 collectionHoldings/H(accountId,scope,characterId或空)保存≤64个collectionKey的permanentCounts/mailLatestExpiryAt，每份≤16KiB；mailHoldingContributions/H(mailId,attachmentOrdinal)保存内部索引贡献及固定expiresAt/sourceRevision，每份≤1KiB，无独立可领余额。字段、变动矩阵与过期/删除最大贡献的有界协议见[3A合同](collection-holdings-projection-v1.md)。
+
+
+## 2026-10-22集中批准4A/7A/11A/P01
+
+CP玩家状态保存hpRegenRemainder/mpRegenRemainder约分分数；满值/明确设满清余数，切房/短恢复保留，精确生命周期见combat-arithmetic-contract-v1.md及批准合同。H/CP控制状态新增至多一个readyTicket（场景/时间代次、确认revision、公开基础状态hash、资源hash、适用截止、controlSeq）及最近ready回执；恢复准备不connected，新房awaitingReady不启动战斗，ready成功才开活动锚点。联网转场ready消费的时间增量属于从已校验基础状态推导的权威修订，公开hash校验基线而非把该增量当客户端预先拥有。字段大小计入原H/CP预算，实际编码需验证。
+
+collectionHoldings的scope由实际物理容器/来源所属决定，绑定只判断资格，其他角色私有容器中未绑定资产不进入共享汇总。评分按固有价值，不随耐久变化，不因磨损/修理递增评分输入equipmentVersion或scoreReachedAt。

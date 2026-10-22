@@ -4,13 +4,13 @@
 
 ## 状态与命令
 
-挑战创建C23锁定角色、难度、配置和体力快照，创建挑战但不生成已付费首房。增加roomPhase=preparing/active/cleared/closed；连接/生死/挑战终态仍为独立维度。首次与后续房间使用同一C24协议。
+挑战创建C23锁定角色、难度、配置和体力快照，创建挑战但不生成已付费首房。增加roomPhase=preparing/awaitingReady/active/cleared/closed；连接/生死/挑战终态仍为独立维度。首次与后续房间使用同一C24协议。
 
 C24拆成prepare和activate两个明确步骤，原单次enterRoom不再同时承担资源加载与开战。prepare输入challengeId、nextRoomNo、expectedRevision、operationId；校验首房或上一房全灭、活着、连接有效及出口合法位置（首房无需上一出口），预留唯一roomAttemptId，返回绑定release/map/资源摘要的manifest。此步不扣房费、不推进战斗、不删除旧房。相同意图返回同一manifest，不能重新随机紫名或刷站位。
 
-客户端预加载并校验必需资源后activate，携带roomAttemptId、manifestHash及expected版本。服务端不相信ready能证明客户端实际加载，只把它作为开始权威场景的意图。事务内重验全部条件，创建确定room记录、一次扣本局体力至最低0、初始化检查点、递增sceneEpoch及timelineEpoch，设置活动锚点；旧房地面随场景转换失效。prepare票据不另设玩法倒计时，仍受原会话/恢复租约和挑战终态约束。
+客户端预加载并校验必需资源后activate，携带roomAttemptId、manifestHash及expected版本。服务端不相信ready能证明客户端实际加载，只把它作为开始权威场景的意图。事务内重验全部条件，创建确定room记录、一次扣本局体力至最低0、初始化检查点、递增sceneEpoch及timelineEpoch，设置awaitingReady与就绪票据、暂不启动敌方活动锚点；旧房地面随场景转换失效。prepare票据不另设玩法倒计时，仍受原会话/恢复租约和挑战终态约束。
 
-activate后的活动时间从权威提交采用的锚点开始；客户端收到响应才允许本地预测，不补报加载前输入。往返延迟造成的差异沿允许秒级修正处理，不增设免费攻击延迟。首次activate尚未完成时无活动怪物；这是场景尚未开始，不是可反复手动暂停。后续prepare只允许前房cleared，不能在战斗中调用以冻结敌人。
+activate提交后先读取完整公开状态并校验资源，scene.ready成功才建立活动锚点并允许本地预测，不补报加载前输入。往返延迟造成的差异沿允许秒级修正处理，不增设免费攻击延迟。首次activate尚未完成时无活动怪物；这是场景尚未开始，不是可反复手动暂停。后续prepare只允许前房cleared，不能在战斗中调用以冻结敌人。
 
 ## 故障与原子性
 
@@ -44,8 +44,13 @@ H.pendingRoomAttempt同时保存transitionClock{settledAt,connectedElapsedMs,tim
 
 转场计时由服务端根据已记录connected/recovery分段结算：正常有效连接段累计；显式暂停/静默缺口进入恢复后排除，截止与暂停前沿沿恢复合同，不接受客户端倒填物理断线时刻。加载阶段保活仍走现有租约（不套战斗2秒输入缺口），心跳不直接给CP写回血；进入恢复/恢复成功时将转场计时边界与H/头同事务保存。真实断网瞬间不可观测，不承诺零误差计时，也不延长10秒期限。
 
-activate一次将未结算的有效联网时长折算为角色计时/资源变化，和场景、房费、CP及原结果同笔提交；已结算累计与transitionRevision同笔推进，重试不重复回复或多减CD。新房锚点从activate提交时刻开始，已计入的加载时段不再以补输入形式重放；逻辑游标/时间余数延续，不把角色CD变成永久墙钟截止。状态查询若展示倒计时可计算只读预测，不能另外写一笔回血。
+activate一次将未结算的有效联网时长折算为角色计时/资源变化，和场景、房费、CP及原结果同笔提交；已结算累计与transitionRevision同笔推进，重试不重复回复或多减CD。新房活动锚点从scene.ready提交时刻开始，activate到ready期间有效联网角色计时仍按转场合同累计并在ready同笔结清，已计入的加载时段不再以补输入形式重放；逻辑游标/时间余数延续，不把角色CD变成永久墙钟截止。状态查询若展示倒计时可计算只读预测，不能另外写一笔回血。
 
 资源重试不重建transitionClock基点或刷新buff；activate成功但响应丢失，原结果/当前CP恢复，不再补算从首次prepare到重试的全部时长。旧房拾取若引发资产版本冲突则重验重算，但转场计时只能消费原尚未结算区间。新房sceneEpoch变更使原房效果失效，旧释放快照只作来源审计，不跨房继续打新怪。
 
 待实现验收：5秒CD/3秒联网加载→2秒；buff在加载中途到期且回复分段正确；血蓝未满不自动补满；9秒加载中4秒recovery仅累计合法connected段；暂停/恢复边界重试与activate丢响应不重复计时；旧房输入拒绝；原地拾取/换房并发；体力刷新不进入本局快照。以上不是运行测试结果。
+
+
+## 2026-10-22批准4A
+
+activate先扣费并建立awaitingReady状态，就绪前不模拟敌人、不套2秒战斗输入缺口；客户端完整状态/资源就绪后scene.ready才转active。activate响应丢失查原operation，不重复初始化/扣费。ready丢响应查同票据回执、不重启时钟；其后再断线仍沿恢复协议。加载/恢复租约与原死亡截止不延长，详见[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)4A。

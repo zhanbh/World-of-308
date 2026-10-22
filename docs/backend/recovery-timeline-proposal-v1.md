@@ -16,7 +16,7 @@
 | 无suspend的连接缺口 | 有效恢复截止沿原leaseUntil；发现缺口时冻结确认前沿，不在租约到期后额外加10秒 | 每个查询/扫描重新给10秒或形成20秒窗口 |
 | 重复suspend、旧心跳迟到 | 按原控制序号返回已定状态；不能从recovery自动变connected | 靠持续重发保活旧场景 |
 | 相同输入片段晚到 | 先查询原operation，同摘要已提交则返回原结果；新执行必须受场景/游标与截止约束 | 因HTTP晚到就重复发奖，或对已提交结果谎称未执行 |
-| resume到达 | 授权、先恢复未决请求结果、核对所有独立截止，再CAS转换connected并返回检查点/新锚点 | 默认沿客户端预测继续或重置死亡截止 |
+| resume到达 | 授权、先恢复未决请求结果、核对所有独立截止，再准备绑定确认前沿的恢复票据并保持recovery；完整视图/资源就绪后scene.ready才CAS切connected及建立新锚点 | 默认沿客户端预测继续或重置死亡截止 |
 | 新launch/切角色/接管 | 沿既定结束旧场景/角色代次规则，不当短恢复 | 用恢复票据让新设备续关 |
 | 到期查询或后台清理 | 事务内重读截止/状态后按active失败、completed仅关闭处理 | 清理先删来源，或将completed改failed |
 
@@ -81,10 +81,10 @@
 ### 6.3 恢复栅栏与在途写
 
 1. 客户端停止预测与新业务写，查询在途原operation；notFound不等于原请求不可能随后提交。
-2. 同一launch/session/rolePlayEpoch下提交幂等resume意图。事务内读取当前检查点、场景、租约和全部适用截止，并与旧输入提交争用同一检查点/挑战版本。
-3. 旧片段先提交：恢复读到其最新状态及资产，不能回滚；resume先提交：递增timelineEpoch与检查点revision，旧锚点下尚未提交的片段拒绝，无消费/收益。
-4. 返回当前确认前沿、新锚点及必要恢复视图。短恢复不改rolePlayEpoch、sceneEpoch、roomToken或dropId，不重抽紫名/奖励，不清CD或复活；旧原结果仍可授权查询，但不能覆盖更新的读模型。
-5. resume响应丢失，查询同一resume operation，不再次延长窗口或重复递增。只有恢复成功后新的有效连接阶段才更新leaseUntil，原deathDeadline保持。
+2. 同一launch/session/rolePlayEpoch下提交幂等resumePrepare控制意图。事务内读取当前检查点、场景、租约和全部适用截止，并与旧输入提交争用同一检查点/挑战版本。
+3. 旧片段先提交：恢复读到其最新状态及资产，不能回滚；resumePrepare先提交：递增timelineEpoch与检查点revision，旧锚点下尚未提交的片段拒绝，无消费/收益。
+4. 返回冻结确认前沿、ready票据及版本化恢复视图；此时不connected、不建立活动锚点。完整状态/资源就绪后scene.ready才建立新锚点。短恢复不改rolePlayEpoch、sceneEpoch、roomToken或dropId，不重抽紫名/奖励，不清CD或复活；旧原结果仍可授权查询，但不能覆盖更新的读模型。
+5. resumePrepare或ready响应丢失，按控制序号/票据查询原控制回执，不重复递增或刷新锚点。只有ready成功后的新有效连接阶段才更新leaseUntil，准备期间保留原恢复/死亡截止。
 
 暂停与resume均是版本化控制事件，不是普通玩家按键；不为减少回溯增加持久输入收据体系，也不新增断线补偿/免费复活/离线续关。该方案不能证明真实物理断线瞬间或识别故意断线原因，反复暂停辅助操作仍需风控观察；不擅自增加恢复次数限制或惩罚。
 
@@ -108,3 +108,8 @@
 
 
 2026-10-22评审决定2A：正常联网转场的角色CD/buff/既有自然回复继续计时，recovery段排除；transitionClock与恢复边界同笔保存，不以恢复重建锚点清除或重复计入已累计转场时间。详见[加载握手](room-loading-handshake-v1.md)，死亡/恢复10秒墙钟截止不变。
+
+
+## 2026-10-22批准4A：恢复准备与就绪分开
+
+scene.resumePrepare固定确认前沿与公开摘要，分页/资源准备期间仍recovery；scene.ready核对票据、revision/hash及全部原截止后才connected。不得提前启动2秒输入缺口或以准备/心跳延长10秒。ready成功丢响应读取同票据状态不重置锚点。新房awaitingReady采用同机制；正常联网角色转场计时依2A继续，真实recovery排除。本文历史“resume直接connected”语句由该两步协议替代，具体字段/失败路径见[批准合同](../reviews/eng-review-approved-contracts-2026-10-22.md)4A。

@@ -1264,10 +1264,43 @@
       </div>
     </div>
 
+    <!-- 界面 13：角色双形态对比 (站街 vs 战斗) -->
+    <div id="panel-stances" class="modal-frame" style="display:none">
+      <div class="modal-header">
+        <span>双刀战士角色双形态对比规范 (Town Stance vs Combat Stance)</span>
+        <span class="text-gold">站街从容入鞘 · 战斗出鞘瞬发 (0ms 延迟)</span>
+      </div>
+      <div class="modal-body" style="padding:14px;flex-direction:column;align-items:center;overflow-y:auto">
+        <div style="width:100%;max-width:920px;border:1px solid #344654;border-radius:6px;overflow:hidden;background:#0d1419;box-shadow:0 4px 20px rgba(0,0,0,0.6)">
+          <img src="../../docs/art/warrior-stances-comparison-v1.png" style="width:100%;height:auto;display:block">
+        </div>
+        <div style="display:flex;gap:16px;width:100%;max-width:920px;margin-top:12px">
+          <div style="flex:1;background:#141f27;border:1px solid #344654;padding:12px;border-radius:4px">
+            <div style="font-weight:bold;color:#ffca28;margin-bottom:6px;font-size:13px">【站街形态 (Town Stance)】</div>
+            <ul style="font-size:11px;color:#8fa2af;padding-left:18px;line-height:1.6;margin:0">
+              <li><strong>武器呈现</strong>：双刀收鞘入胯两侧，双手自然下垂或轻搭刀柄</li>
+              <li><strong>姿态重心</strong>：站姿挺拔从容，双肩自然舒展，呼吸平缓起伏 (1.4s 循环)</li>
+              <li><strong>强化光效</strong>：武器以 1.4s 舒缓周期在剑鞘/剑柄温和呼吸闪烁，同屏玩家清晰可见</li>
+              <li><strong>适用场景</strong>：城镇安全区、NPC 交互、个人信息 C 键时装展示</li>
+            </ul>
+          </div>
+          <div style="flex:1;background:#141f27;border:1px solid #ff4081;padding:12px;border-radius:4px">
+            <div style="font-weight:bold;color:#ff4081;margin-bottom:6px;font-size:13px">【战斗状态 (Combat Stance)】</div>
+            <ul style="font-size:11px;color:#ff80ab;padding-left:18px;line-height:1.6;margin:0">
+              <li><strong>武器呈现</strong>：双手紧握双刃交叉于身前，刀刃斜指前方警戒</li>
+              <li><strong>姿态重心</strong>：压低重心微屈膝前倾，短促紧绷呼吸 (0.8s 循环)，随时爆发连招</li>
+              <li><strong>强化光效</strong>：刀刃全域炽粉流光迸发，普攻连斩与四大技能继承强化色粒子拖尾</li>
+              <li><strong>核心手感红线</strong>：脱战 5s 自动归鞘；任何攻击/技能/移动<strong>0ms 延迟瞬发切入</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    const panels = ['profile', 'inventory', 'repair', 'enhance', 'merchant', 'vault', 'mail', 'leaderboard', 'townHud', 'combatHud', 'weaponGlow'];
+    const panels = ['profile', 'inventory', 'repair', 'enhance', 'merchant', 'vault', 'mail', 'leaderboard', 'townHud', 'combatHud', 'weaponGlow', 'stances'];
     function switchView(id) {
       panels.forEach(p => {
         const el = document.getElementById('panel-' + p);
@@ -1287,11 +1320,24 @@
 
     function setProfileStance(mode) {
       const isTown = mode === 'town';
-      document.getElementById('stance-btn-town').classList.toggle('active', isTown);
-      document.getElementById('stance-btn-combat').classList.toggle('active', !isTown);
-      document.getElementById('avatar-icon').innerHTML = isTown ? '🧍🗡️' : '⚔️🤺';
-      document.getElementById('avatar-title').innerHTML = isTown ? '[ 站街从容姿态 ]' : '[ 战斗警戒姿态 ]';
-      document.getElementById('avatar-desc').innerHTML = isTown ? '双刀收鞘 · 挺拔舒缓待机呼吸' : '双刀出鞘持握 · 压低重心戒备';
+      const btnTown = document.getElementById('stance-btn-town');
+      const btnCombat = document.getElementById('stance-btn-combat');
+      const avatarImg = document.getElementById('avatar-img');
+      const avatarTitle = document.getElementById('avatar-title');
+      const avatarDesc = document.getElementById('avatar-desc');
+      if (btnTown) btnTown.classList.toggle('active', isTown);
+      if (btnCombat) btnCombat.classList.toggle('active', !isTown);
+      if (avatarImg) {
+        avatarImg.src = isTown ? '../assets/resources/warrior-stance-town.png' : '../assets/resources/warrior-stance-combat.png';
+        avatarImg.style.filter = isTown ? 'drop-shadow(0 0 10px rgba(255,64,129,0.4))' : 'drop-shadow(0 0 16px rgba(255,64,129,0.85))';
+      }
+      if (avatarTitle) {
+        avatarTitle.innerHTML = isTown ? '[ 站街形态 · 从容入鞘 ]' : '[ 战斗状态 · 双刃戒备 ]';
+        avatarTitle.style.color = isTown ? '#ffca28' : '#ff4081';
+      }
+      if (avatarDesc) {
+        avatarDesc.innerHTML = isTown ? '双刀收鞘 · 挺拔舒缓呼吸待机' : '双刀出鞘持握 · 压低重心戒备 (0ms延迟切入)';
+      }
     }
 
     function showTooltip(slot) {
