@@ -1,0 +1,35 @@
+{
+  "entries": [
+    {
+      "path": "D:/IdeaProjects/soflow/skills/soflow",
+      "exclude": [
+        "plan-reviews",
+        "upstream-adapters"
+      ]
+    },
+    {
+      "path": "D:/IdeaProjects/soflow/skills/soflow/upstream-adapters"
+    },
+    {
+      "path": "D:/IdeaProjects/soflow/skills/soflow/plan-reviews"
+    },
+    {
+      "path": "D:/IdeaProjects/soflow/upstream/mattpocock-skills/skills/engineering",
+      "exclude": [
+        "code-review",
+        "domain-modeling",
+        "improve-codebase-architecture",
+        "to-tickets"
+      ]
+    },
+    {
+      "path": "D:/IdeaProjects/soflow/upstream/mattpocock-skills/skills/productivity"
+    },
+    {
+      "path": "D:/IdeaProjects/soflow/upstream/mattpocock-skills/skills/in-progress",
+      "include_only": [
+        "loop-me"
+      ]
+    }
+  ]
+}
