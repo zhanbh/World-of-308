@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-22",
+  "feature": "warrior-loop-e01",
+  "tracker": "local-markdown",
+  "spec_hash": "60c59008592904d0f81d4c8796bfe4f93e98bd9b65418d8e7e3db70cdfbccc57",
+  "tickets": 7,
+  "plan_approval": "user-confirmed",
+  "checks": {
+    "artifact_ids_unique": true,
+    "source_hash_matches": true,
+    "story_coverage_complete": true,
+    "dependency_edges_match_approved_plan": true,
+    "dependency_graph_acyclic": true,
+    "prose_frontmatter_edges_match": true,
+    "criteria_and_evidence_present": true,
+    "local_links_valid": true
+  },
+  "implementation_started": false,
+  "external_actions": false,
+  "note": "Local read-only plan checks; no Jira script/gate invoked; draft is not implemented or accepted output."
+}

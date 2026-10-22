@@ -1,0 +1,583 @@
+{
+  "schemaVersion": 1,
+  "releaseId": "warrior-first-normal-e01-v1",
+  "manifestHash": "c37472b285fd1618c8f4328f90434efdde74ff72600bf43915b1a05ed6333516",
+  "profileId": "warrior-e01-test",
+  "environmentScope": "local-test",
+  "purpose": "contract-fixture-only",
+  "codeCompatibility": "e01-contract-v1",
+  "protocolRange": {
+    "min": 2,
+    "max": 2
+  },
+  "units": {
+    "positionScale": 1000,
+    "resourceScale": 1000,
+    "time": "integer-microseconds",
+    "logicStepMs": 10
+  },
+  "provenance": [
+    "docs/design/warrior-three-dungeon-baseline-v1.md",
+    "docs/backend/simulation-content-envelope-v1.md",
+    "TEST VALUES: level-1 contract fixture, not a balance table"
+  ],
+  "entryDungeonRef": {
+    "id": "first-normal",
+    "version": 1
+  },
+  "strategy": {
+    "id": "test-fill-missing",
+    "testOnly": true
+  },
+  "nodes": [
+    {
+      "id": "warrior",
+      "version": 1,
+      "kind": "class",
+      "visibility": "public",
+      "data": {
+        "classId": "warrior",
+        "enabled": true,
+        "skillRefs": [
+          {
+            "id": "cross",
+            "version": 1
+          },
+          {
+            "id": "bengshan",
+            "version": 1
+          },
+          {
+            "id": "badao",
+            "version": 1
+          },
+          {
+            "id": "earth",
+            "version": 1
+          }
+        ],
+        "initialHp": "1000000",
+        "initialMp": "100000",
+        "attackPower": "120000"
+      }
+    },
+    {
+      "id": "hunter-disabled",
+      "version": 1,
+      "kind": "class",
+      "visibility": "public",
+      "data": {
+        "classId": "hunter",
+        "enabled": true,
+        "skillRefs": [],
+        "initialHp": "0",
+        "initialMp": "0",
+        "attackPower": "0"
+      }
+    },
+    {
+      "id": "cross",
+      "version": 1,
+      "kind": "skill",
+      "visibility": "public",
+      "data": {
+        "owner": "warrior",
+        "nodeOffsetsUs": [
+          200000,
+          400000
+        ],
+        "cooldownUs": 6000000,
+        "manaCost": "8000",
+        "minimumStartGapUs": 240000,
+        "bleed": {
+          "ticks": 5,
+          "durationUs": 5000000
+        }
+      }
+    },
+    {
+      "id": "bengshan",
+      "version": 1,
+      "kind": "skill",
+      "visibility": "public",
+      "data": {
+        "owner": "warrior",
+        "nodeOffsetsUs": [
+          200000,
+          400000,
+          600000
+        ],
+        "cooldownUs": 10000000,
+        "manaCost": "14000",
+        "minimumStartGapUs": 240000,
+        "bleed": {
+          "ticks": 5,
+          "durationUs": 5000000
+        }
+      }
+    },
+    {
+      "id": "badao",
+      "version": 1,
+      "kind": "skill",
+      "visibility": "public",
+      "data": {
+        "owner": "warrior",
+        "nodeOffsetsUs": [
+          400000
+        ],
+        "cooldownUs": 12000000,
+        "manaCost": "18000",
+        "minimumStartGapUs": 240000,
+        "bleed": {
+          "ticks": 5,
+          "durationUs": 5000000
+        }
+      }
+    },
+    {
+      "id": "earth",
+      "version": 1,
+      "kind": "skill",
+      "visibility": "public",
+      "data": {
+        "owner": "warrior",
+        "nodeOffsetsUs": [
+          800000,
+          1000000,
+          1200000,
+          1400000
+        ],
+        "cooldownUs": 30000000,
+        "manaCost": "32000",
+        "minimumStartGapUs": 240000,
+        "bleed": {
+          "ticks": 5,
+          "durationUs": 5000000
+        }
+      }
+    },
+    {
+      "id": "monster-strike",
+      "version": 1,
+      "kind": "skill",
+      "visibility": "public",
+      "data": {
+        "owner": "monster",
+        "nodeOffsetsUs": [
+          100000
+        ],
+        "cooldownUs": 1500000,
+        "manaCost": "0",
+        "minimumStartGapUs": 500000,
+        "bleed": null
+      }
+    },
+    {
+      "id": "room-map",
+      "version": 1,
+      "kind": "map",
+      "visibility": "public",
+      "data": {
+        "bounds": {
+          "left": -218000,
+          "right": 218000,
+          "bottom": -35000,
+          "top": 78000
+        },
+        "entrance": {
+          "x": -180000,
+          "y": 20000
+        },
+        "exit": {
+          "x": 200000,
+          "y": 20000
+        },
+        "spawnPoints": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 50000,
+            "y": 0
+          },
+          {
+            "x": 100000,
+            "y": 0
+          },
+          {
+            "x": 150000,
+            "y": 0
+          }
+        ],
+        "obstacles": []
+      }
+    },
+    {
+      "id": "humanoid",
+      "version": 1,
+      "kind": "monster",
+      "visibility": "public",
+      "data": {
+        "category": "humanoid",
+        "hp": "100000",
+        "attackPower": "10000",
+        "skillRefs": [
+          {
+            "id": "monster-strike",
+            "version": 1
+          }
+        ],
+        "immuneToBleed": false,
+        "immuneToControl": false
+      }
+    },
+    {
+      "id": "white-weapon",
+      "version": 1,
+      "kind": "equipment",
+      "visibility": "public",
+      "data": {
+        "slot": "weapon",
+        "quality": "white",
+        "itemLevel": 10,
+        "attackPower": "120000",
+        "bindingPolicy": "none",
+        "durability": {
+          "wearEnabled": true,
+          "max": 100,
+          "policyRef": "test-weapon-wear-v1"
+        }
+      }
+    },
+    {
+      "id": "initial-reward",
+      "version": 1,
+      "kind": "reward",
+      "visibility": "private",
+      "data": {
+        "equipmentWeights": [
+          {
+            "equipmentRef": {
+              "id": "white-weapon",
+              "version": 1
+            },
+            "weight": 1
+          }
+        ],
+        "gold": "1000",
+        "xp": "1000",
+        "maxEquipment": 1
+      }
+    },
+    {
+      "id": "weapon-price",
+      "version": 1,
+      "kind": "price",
+      "visibility": "public",
+      "data": {
+        "equipmentRef": {
+          "id": "white-weapon",
+          "version": 1
+        },
+        "currency": "gold",
+        "amount": "10000",
+        "serviceKind": "repair"
+      }
+    },
+    {
+      "id": "first-normal",
+      "version": 1,
+      "kind": "dungeon",
+      "visibility": "private",
+      "data": {
+        "difficulty": "normal",
+        "playerLevel": 1,
+        "rewardRef": {
+          "id": "initial-reward",
+          "version": 1
+        },
+        "priceRefs": [
+          {
+            "id": "weapon-price",
+            "version": 1
+          }
+        ],
+        "rooms": [
+          {
+            "roomNo": 0,
+            "mapRef": {
+              "id": "room-map",
+              "version": 1
+            },
+            "spawns": [
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              }
+            ]
+          },
+          {
+            "roomNo": 1,
+            "mapRef": {
+              "id": "room-map",
+              "version": 1
+            },
+            "spawns": [
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              }
+            ]
+          },
+          {
+            "roomNo": 2,
+            "mapRef": {
+              "id": "room-map",
+              "version": 1
+            },
+            "spawns": [
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              }
+            ]
+          },
+          {
+            "roomNo": 3,
+            "mapRef": {
+              "id": "room-map",
+              "version": 1
+            },
+            "spawns": [
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              }
+            ]
+          },
+          {
+            "roomNo": 4,
+            "mapRef": {
+              "id": "room-map",
+              "version": 1
+            },
+            "spawns": [
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "elite"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              }
+            ]
+          },
+          {
+            "roomNo": 5,
+            "mapRef": {
+              "id": "room-map",
+              "version": 1
+            },
+            "spawns": [
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              }
+            ]
+          },
+          {
+            "roomNo": 6,
+            "mapRef": {
+              "id": "room-map",
+              "version": 1
+            },
+            "spawns": [
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "boss"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              },
+              {
+                "monsterRef": {
+                  "id": "humanoid",
+                  "version": 1
+                },
+                "role": "ordinary"
+              }
+            ]
+          }
+        ],
+        "purpleNamed": {
+          "count": 1,
+          "experienceMultiplier": 2,
+          "eligibleRooms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    }
+  ]
+}

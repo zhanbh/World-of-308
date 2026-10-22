@@ -1,0 +1,9 @@
+{
+  "name": "world-of-308-workspace",
+  "private": true,
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "check:all": "node tools/check-all.cjs",
+    "test:tooling": "node --test tools/test/*.test.cjs"
+  }
+}

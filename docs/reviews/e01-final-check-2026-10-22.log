@@ -1,0 +1,240 @@
+Node 24.19.0; TypeScript 5.8.2; compiler C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar.unpacked\node_modules\typescript
+
+CHECK: tooling contracts
+✔ an explicit installed toolchain reports its versions without claiming checks ran (241.6727ms)
+✔ the check command reports a missing explicit compiler instead of downloading one (56.3643ms)
+✔ toolchain preflight cannot silently suppress a requested type check (50.6157ms)
+✔ the existing UI check fails locally when the compiler is missing (59.563ms)
+✔ an unsupported compiler in a path containing spaces fails before running checks (56.4221ms)
+✔ the existing model check never falls back to a package-manager download (55.9621ms)
+✔ a project with a semantic type error fails the type gate instead of passing transpilation (1046.6211ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1650.5733
+PASS: tooling contracts
+
+CHECK: shared/backend types
+PASS: shared/backend types
+
+CHECK: shared value contracts
+✔ scene.exitInn validates its own public intent and rejects missing/extra fields (15.7577ms)
+✔ service.open validates its own public intent and rejects missing/extra fields (0.7343ms)
+✔ service.close validates its own public intent and rejects missing/extra fields (5.7047ms)
+✔ inventory.transfer validates its own public intent and rejects missing/extra fields (0.5442ms)
+✔ inventory.expand validates its own public intent and rejects missing/extra fields (0.5833ms)
+✔ inventory.organize validates its own public intent and rejects missing/extra fields (1.0367ms)
+✔ equipment.equip validates its own public intent and rejects missing/extra fields (0.474ms)
+✔ equipment.unequip validates its own public intent and rejects missing/extra fields (0.249ms)
+✔ quickslot.assign validates its own public intent and rejects missing/extra fields (1.3719ms)
+✔ shop.buy validates its own public intent and rejects missing/extra fields (0.4413ms)
+✔ shop.sell validates its own public intent and rejects missing/extra fields (0.2968ms)
+✔ wallet.exchange validates its own public intent and rejects missing/extra fields (0.246ms)
+✔ equipment.repair validates its own public intent and rejects missing/extra fields (0.2818ms)
+✔ equipment.enhance validates its own public intent and rejects missing/extra fields (0.2753ms)
+✔ mail.markRead validates its own public intent and rejects missing/extra fields (0.2422ms)
+✔ mail.claimAttachment validates its own public intent and rejects missing/extra fields (0.3132ms)
+✔ mail.claimAvailable validates its own public intent and rejects missing/extra fields (0.2815ms)
+✔ mail.delete validates its own public intent and rejects missing/extra fields (0.1886ms)
+✔ reward.claim validates its own public intent and rejects missing/extra fields (0.2484ms)
+✔ asset commands reject invalid quantities, duplicates and battle-consumption bypasses (6.546ms)
+✔ account.get separates query envelope from write/identity fields (0.5155ms)
+✔ character.get separates query envelope from write/identity fields (0.2315ms)
+✔ inventory.get separates query envelope from write/identity fields (0.2038ms)
+✔ equipment.get separates query envelope from write/identity fields (1.5633ms)
+✔ dungeon.options separates query envelope from write/identity fields (0.2711ms)
+✔ service.get separates query envelope from write/identity fields (0.2109ms)
+✔ service.quote separates query envelope from write/identity fields (0.3518ms)
+✔ mail.list separates query envelope from write/identity fields (0.2215ms)
+✔ reward.list separates query envelope from write/identity fields (0.2178ms)
+✔ delivery.summary separates query envelope from write/identity fields (0.1956ms)
+✔ ranking.list separates query envelope from write/identity fields (0.1818ms)
+✔ operation.get separates query envelope from write/identity fields (0.1763ms)
+✔ configuration.public separates query envelope from write/identity fields (0.1722ms)
+✔ query pages and bank context are bounded and required (0.3964ms)
+✔ equipment public views keep thirteen slots, required durability and exclusive source/location (1.1599ms)
+✔ containers validate capacity, stack bounds and explicit character/account ownership (0.8497ms)
+✔ holdings are an explicit scoped summary, never a claimable balance (0.6868ms)
+✔ original results are bounded versioned summaries, not current balance snapshots (1.3674ms)
+✔ empty lists stay distinct from query failures and pending never duplicates equipment payload (0.4986ms)
+✔ caller wire boundary binds original operation and request IDs before exposing views (0.8995ms)
+✔ operation.get recognizes the new verified-input receipt without accepting v1 event results (7.7656ms)
+✔ scene.exitInn result summary validates independently from current state (0.3984ms)
+✔ service.open result summary validates independently from current state (0.2712ms)
+✔ service.close result summary validates independently from current state (0.359ms)
+✔ inventory.transfer result summary validates independently from current state (0.5228ms)
+✔ inventory.expand result summary validates independently from current state (0.282ms)
+✔ inventory.organize result summary validates independently from current state (0.2525ms)
+✔ equipment.equip result summary validates independently from current state (0.2852ms)
+✔ equipment.unequip result summary validates independently from current state (0.2281ms)
+✔ quickslot.assign result summary validates independently from current state (0.2455ms)
+✔ shop.buy result summary validates independently from current state (0.5617ms)
+✔ shop.sell result summary validates independently from current state (0.4387ms)
+✔ wallet.exchange result summary validates independently from current state (0.2612ms)
+✔ equipment.repair result summary validates independently from current state (1.4685ms)
+✔ equipment.enhance result summary validates independently from current state (0.2659ms)
+✔ mail.markRead result summary validates independently from current state (0.2452ms)
+✔ mail.claimAttachment result summary validates independently from current state (0.2257ms)
+✔ mail.claimAvailable result summary validates independently from current state (1.4943ms)
+✔ mail.delete result summary validates independently from current state (0.2454ms)
+✔ reward.claim result summary validates independently from current state (0.2228ms)
+✔ mail progress and batch summaries cannot claim impossible partial results (0.605ms)
+✔ quotes expose deterministic effects and failure consequences without enhancement probabilities (0.5513ms)
+✔ account.get public response validates its typed view and rejects private fields (0.3992ms)
+✔ character.get public response validates its typed view and rejects private fields (0.3555ms)
+✔ inventory.get public response validates its typed view and rejects private fields (0.2827ms)
+✔ equipment.get public response validates its typed view and rejects private fields (0.4194ms)
+✔ dungeon.options public response validates its typed view and rejects private fields (0.2495ms)
+✔ service.get public response validates its typed view and rejects private fields (0.2321ms)
+✔ service.quote public response validates its typed view and rejects private fields (0.3882ms)
+✔ mail.list public response validates its typed view and rejects private fields (0.572ms)
+✔ reward.list public response validates its typed view and rejects private fields (0.2491ms)
+✔ delivery.summary public response validates its typed view and rejects private fields (0.2318ms)
+✔ ranking.list public response validates its typed view and rejects private fields (0.2451ms)
+✔ operation.get public response validates its typed view and rejects private fields (0.1742ms)
+✔ configuration.public public response validates its typed view and rejects private fields (0.2144ms)
+✔ approved local plan retains its source hash, seven tickets and dependency edges (5.8085ms)
+✔ release, login, room intent and input share usable public references without running business services (26.5118ms)
+✔ asset consumer preserves versioned original results and distinguishes notFound from unknown (2.9128ms)
+✔ u64 resources round trip without losing precision (1.9818ms)
+✔ regeneration remainder reduces exactly and wire decoding requires canonical form (1.5508ms)
+✔ wire remainder rejects accessors and symbol fields without invoking code (0.3277ms)
+✔ time and logic ticks accept safe nonnegative integer boundaries (0.427ms)
+✔ caller contract binds a parsed response to the original login intent without a fake server (5.3642ms)
+✔ prepare replies must match the launch and errors never serialize platform secrets (0.5705ms)
+✔ schema-selected public fields have stable digest input and exact round trips (4.3149ms)
+✔ invalid public values, excessive payloads and malformed schemas fail closed (0.78ms)
+✔ wire resources require decimal strings and schema mutation cannot change an existing codec (6.4399ms)
+✔ a test-authorized consumer loads the immutable minimal warrior release and public projection (8.1835ms)
+✔ missing, wrong-version, wrong-kind and recursive references fail before configuration is usable (12.1707ms)
+✔ test profiles enforce current warrior, equipment, visibility and encounter invariants (9.2294ms)
+✔ manifest verification detects tampering and independent illegal fixtures remain unusable (20.215ms)
+✔ unsupported code and durability policy references fail closed instead of becoming defaults (1.6538ms)
+✔ wire fields, resource precision, quality, binding and declared collection bounds are strict (5.1882ms)
+✔ scene controls are distinct from business writes and bound to the full ready view (6.8179ms)
+✔ challenge and ground commands express intent and cannot supply drops or revive outcomes (6.4449ms)
+✔ room responses and recovery queries carry references and cannot be confused with control or input results (2.4973ms)
+✔ recovery pages are bounded public projections tied to one ticket and revision (2.7753ms)
+✔ room writes require challenge and character expected objects while a loading clock remains independent (2.1695ms)
+✔ caller encodes each channel and correlates results without treating parsing as a server operation (5.2018ms)
+✔ challenge reads distinguish an authorized read failure from an empty successful view (0.5973ms)
+✔ ready responses cannot substitute another challenge or a different ticket view (0.6012ms)
+✔ two-step login accepts pre-session requests but never body identity or v1 (3.4457ms)
+✔ character creation and selection results retain initialization references and role epochs (1.2841ms)
+✔ login responses distinguish tickets, unknown outcomes and superseded historical sessions (0.924ms)
+✔ character commands require current session envelope, bounded unique expected objects and legal names (3.0871ms)
+✔ ordered input wire accepts a bounded one-second segment and rejects self-reported battle facts (6.1293ms)
+✔ input count, continuous sequence and UTF-8 request budget hold at boundaries (4.7785ms)
+ℹ tests 107
+ℹ suites 0
+ℹ pass 107
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 357.1686
+PASS: shared value contracts
+
+CHECK: client pure-model types
+PASS: client pure-model types
+
+CHECK: backend legacy regression
+✔ death + ordinary DOT kill can level up but cannot resurrect; monster level stays locked (6.6269ms)
+✔ dead player wins via lingering boss damage: free resurrection, all mob rewards exactly once (2.2245ms)
+✔ manual revive consumes one emblem, preserves cooldowns and provides protection plus non-damaging control (3.6249ms)
+✔ two different revive intents racing consume one emblem (2.4696ms)
+✔ no emblem: stable rejection cannot become a debit when replayed later (1.7116ms)
+✔ special dungeon cap is cumulative and free completion resurrection does not use it (4.2589ms)
+✔ death deadline boundary offset -1 (1.6682ms)
+✔ death deadline boundary offset 0 (1.1603ms)
+✔ death deadline boundary offset 1 (1.2919ms)
+✔ death clock expires during 6-second disconnection after 4 seconds dead (2.7273ms)
+✔ repeated background notifications and heartbeat replay cannot extend recovery (1.2875ms)
+✔ heartbeat sequence replay does not renew lease; late new heartbeat cannot revive it (0.9414ms)
+✔ recovery pauses events, then resumes without resetting original death deadline (1.7513ms)
+✔ transaction conflict retry rechecks the death deadline and does not spend emblem (1.9969ms)
+✔ room payment is business-idempotent across distinct requests and stamina refresh (0.8967ms)
+✔ insufficient stamina does not create a paid room (1.0599ms)
+✔ same operation ID with different payload is rejected; caller cannot submit reward amounts (0.8861ms)
+✔ event gap, stale room token, unknown monster and new direct attacks after death give no reward (1.8243ms)
+✔ invalid trailing event rolls back earlier kill and generated reward in the same batch (1.7702ms)
+✔ new event sequence cannot award the same spawn twice; latest identical batch can replay with a new ID (1.7824ms)
+✔ completion full bag becomes original-character pending reward; claim delivers once (3.3056ms)
+✔ ground full bag remains on ground and cannot be converted into pending reward (1.5108ms)
+✔ two different collection intents cannot duplicate a ground item; collected assets survive exit (2.4101ms)
+✔ online completed looting can continue indefinitely; disconnect only closes scene (4.3616ms)
+✔ new launch does not resume unfinished challenge or refund stamina; old session cannot write/replay (1.3684ms)
+✔ restart after completion preserves success and rewards but cannot resume ground pickup (1.0772ms)
+✔ concurrent first login creates one account and one effective session; same launch retries are idempotent (0.3984ms)
+✔ account fence resolves concurrent takeover vs old-session kill without losing committed assets (1.0526ms)
+✔ one active challenge per account; completed but open scene must be explicitly closed before new challenge (3.351ms)
+✔ trusted principal and account/character ownership are checked independently of client IDs (0.8905ms)
+✔ committed response loss returns unknown; same operation can be queried and retried without reroll (1.1899ms)
+✔ every final-settlement write point rolls back fully on failure (13.8879ms)
+✔ invalid special limits are rejected; external config mutation cannot change an active challenge (1.628ms)
+✔ ordinary living completion does not heal unless it actually levels the character (1.9165ms)
+✔ delayed asynchronous repository reads crossing the deadline cannot charge for resurrection (2.0693ms)
+✔ stale death index cannot consume an emblem for a later death (1.5411ms)
+✔ boss transaction retry reuses reward candidates and does not reroll on write conflict (1.3902ms)
+✔ room progression, fixed refill and payment replay preserve the correct total stamina (2.0817ms)
+✔ material pickup fills compatible stacks before allocating a slot and preserves overflow on ground (2.6069ms)
+✔ two concurrent challenge starts across two owned characters admit only one (1.2657ms)
+✔ session open response loss can retry without a second takeover (0.237ms)
+✔ malformed auth, missing expected version and non-finite event numbers are rejected without effects (0.8962ms)
+✔ unknown random reward definition fails the entire boss settlement without consuming or partially rewarding (3.6287ms)
+✔ session.open operation ID cannot be reused to silently take over with different launch parameters (0.2302ms)
+✔ snapshot conflict on missing document retries concurrent creation instead of overwriting it (2.4251ms)
+✔ transactions read their own staged writes without exposing uncommitted data (0.2272ms)
+✔ reads/inspection return detached values and thrown callbacks discard all staged writes (0.6228ms)
+✔ blind writes also conflict; retry budget cannot silently commit stale data (0.7596ms)
+✔ a lost response happens after commit and never rolls the data back (0.2445ms)
+ℹ tests 49
+ℹ suites 0
+ℹ pass 49
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 275.3089
+PASS: backend legacy regression
+
+CHECK: client model regression
+PASS: tap, timeout, buffer, hold loop, reset, axis speeds, diagonal and facing
+PASS: four warrior skills, shared mana, independent cooldowns, one impact, lunge/jump motion and reset
+PASS: skill frame/contact alignment, takeoff, pre-impact interruption and persistent effect cleanup
+PASS: skill-specific stun/knockdown, ultimate recovery, 5s refresh-only bleeding, heartbeat and death/miss cleanup
+PASS: per-cast/target/stage knockdown ledger, normal/elite boundaries, boss immunity and death fade
+PASS: 2/3/1/4 phases, preserved damage, independent ground origin, interruption, piercing projectile and reset
+PASS: moving/knockback targets at 30/60/120Hz and fractional lethal damage
+PASS: hit-stop coalescing, no idle retriggers, heavy/light timing, pixel sparks, cleanup and multi-hit integration
+PASS: independent feedback A/B controls, immediate release, no retroactive hits and reset retention
+PASS: per-hit damage popups, simultaneous events, overkill amount, formatting, bounded pools, independent toggle and cleanup
+PASS: retained preview targets do not replay old hit feedback after cast/reset
+PASS: ground-impact-only shake, bounded integer offsets, independent disable/reset and unchanged ground coordinates
+PASS: versioned fragment crop preserves source scale and shared foot anchor for both facings
+PASS: bounded charge/emission cues with unchanged 200ms charge and hit schedules
+PASS: eight-slot two-half stride playback, walk/run cadence, brake, hurt/action priorities and reset (art requires visual review)
+PASS: additive attack-speed sources, 1/1.25/1.5 timings, stage snapshot, scaled movement, fixed combo/buffer and atomic basic-to-skill cancellation
+PASS: immediate skill cancellation releases previous hit-stop only on success
+PASS: default/forward earth leaps, facing/deadzone/FPS/bounds, landing-origin damage, cancellation and held-basic microstep
+PASS: bleed cadence/expiry/refresh/FPS/periodic feedback/death and ready/fighting/result/retry rounds
+PASS: client model regression
+
+CHECK: client UI-model regression
+PASS: 13 equipment slots verified without head slot
+PASS: 7 durability slots and 3-color status ladder verified
+PASS: dungeon entrance gatekeeper verified (no weapon, 0 durability, 0 stamina)
+PASS: full bag in-place swap and full bag unequip prevention verified (UI01)
+PASS: account vault soulbound rejection verified (UI04)
+PASS: repair batch failure and full deduction verified (UI08)
+PASS: stats computation and 0-durability attribute expiry verified
+
+ALL UI MODEL TESTS PASSED (100% SUCCESS)
+PASS: client UI-model regression
+
+SUMMARY: 7/7 checks passed.
+Local checks only: v2 business behavior, cloud SDK, Cocos scene types/build and device acceptance are not covered.

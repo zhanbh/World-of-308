@@ -2,17 +2,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
-const { execFileSync } = require('node:child_process');
-
-function transpileCode(code, filename) {
-    const esbuildCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-    return execFileSync(esbuildCmd, ['esbuild', '--loader=ts', '--target=es2020', '--format=cjs'], {
-        input: code,
-        encoding: 'utf8',
-        shell: true,
-        maxBuffer: 10 * 1024 * 1024,
-    });
-}
+const { loadTypeScript, transpile } = require('../../tools/local-typescript.cjs');
+let ts;
+try { ({ ts } = loadTypeScript(process.argv[2] || process.env.WORLD308_TYPESCRIPT)); }
+catch (error) { console.error(error.message); process.exit(1); }
+function transpileCode(code, filename) { return transpile(ts, code, filename); }
 
 const file = path.join(__dirname, '../assets/scripts/UIStateModel.ts');
 const output = transpileCode(fs.readFileSync(file, 'utf8'), file);

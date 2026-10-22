@@ -1,0 +1,249 @@
+{
+  "date": "2026-10-22",
+  "branch": "feat/e01-repeatable-checks",
+  "baselineHead": "ab195410928f3f887f928d87e56d5d4ad61f71e5",
+  "implementationLocation": "uncommitted-working-tree",
+  "specHash": "60c59008592904d0f81d4c8796bfe4f93e98bd9b65418d8e7e3db70cdfbccc57",
+  "artifacts": [
+    {
+      "id": "ticket:warrior-loop-e01-01",
+      "revision": 1,
+      "implements": [
+        "e01-contract-foundation"
+      ],
+      "implementationStatus": "local-verified",
+      "acceptanceStatus": "draft"
+    },
+    {
+      "id": "ticket:warrior-loop-e01-02",
+      "revision": 1,
+      "implements": [
+        "e01-contract-foundation"
+      ],
+      "implementationStatus": "local-verified",
+      "acceptanceStatus": "draft"
+    },
+    {
+      "id": "ticket:warrior-loop-e01-03",
+      "revision": 1,
+      "implements": [
+        "e01-contract-foundation"
+      ],
+      "implementationStatus": "local-verified",
+      "acceptanceStatus": "draft"
+    },
+    {
+      "id": "ticket:warrior-loop-e01-04",
+      "revision": 1,
+      "implements": [
+        "e01-contract-foundation"
+      ],
+      "implementationStatus": "local-verified",
+      "acceptanceStatus": "draft"
+    },
+    {
+      "id": "ticket:warrior-loop-e01-05",
+      "revision": 1,
+      "implements": [
+        "e01-contract-foundation"
+      ],
+      "implementationStatus": "local-verified",
+      "acceptanceStatus": "draft"
+    },
+    {
+      "id": "ticket:warrior-loop-e01-06",
+      "revision": 1,
+      "implements": [
+        "e01-contract-foundation"
+      ],
+      "implementationStatus": "local-verified",
+      "acceptanceStatus": "draft"
+    },
+    {
+      "id": "ticket:warrior-loop-e01-07",
+      "revision": 1,
+      "implements": [
+        "e01-contract-foundation"
+      ],
+      "implementationStatus": "local-verified",
+      "acceptanceStatus": "draft"
+    }
+  ],
+  "tools": {
+    "node": "24.19.0",
+    "typescript": "5.8.2",
+    "creatorPackage": "3.8.8"
+  },
+  "results": {
+    "groups": {
+      "passed": 7,
+      "total": 7
+    },
+    "shared": {
+      "passed": 107,
+      "total": 107
+    },
+    "tooling": {
+      "passed": 7,
+      "total": 7
+    },
+    "backendLegacy": {
+      "passed": 49,
+      "total": 49
+    },
+    "types": "passed",
+    "clientModels": "passed"
+  },
+  "independentReview": {
+    "standardsFindings": 1,
+    "specFindings": 3,
+    "reportedFindingsClosed": 4
+  },
+  "notValidated": [
+    "business-services",
+    "trusted-wechat-identity",
+    "cloud-sdk",
+    "maximum-cp-encoding",
+    "device",
+    "remote-ci",
+    "deployment"
+  ],
+  "codeFiles": [
+    {
+      "path": "backend/tools/check-types.cjs",
+      "sha256": "4a6825a1a5b8b543949fd0cdc469d3e647ff85bb50ca8aef15a38c0cd31a0262"
+    },
+    {
+      "path": "client/tools/check-model.cjs",
+      "sha256": "bc2745fcf2146d32cf29cd4e1b0296fab0d17d93e8a6d9d1288deae0fcf12039"
+    },
+    {
+      "path": "client/tools/check-ui-model.cjs",
+      "sha256": "77396255e9c6fb983ea89de0e817a4388c3743d21fa12fa2b2a3553627bc2cd0"
+    },
+    {
+      "path": "package.json",
+      "sha256": "0ea7bb9ee65a136f21991d2cf6979e44e9c3bbe3e895d6cd1bc3735072fc0b2c"
+    },
+    {
+      "path": "shared/fixtures/build-release-fixtures.cjs",
+      "sha256": "dc7b810d07c867064c3f59acce8ca24c415b4f2e4fdbb3d8d19307307ce1e482"
+    },
+    {
+      "path": "shared/fixtures/enabled-hunter.invalid.json",
+      "sha256": "eab2dd2168f467558aae6ddf0696ab0fd71799a1e21facf8cad0aa2568e9db3b"
+    },
+    {
+      "path": "shared/fixtures/illegal-equipment-level.invalid.json",
+      "sha256": "01361a96612e90515569511243f33d28a238ca26743f0349f64927af6dff765b"
+    },
+    {
+      "path": "shared/fixtures/missing-price.invalid.json",
+      "sha256": "8271d924183ce9311c13dc0c1350d5032f7406ef912e4bbe3210efcb604c801b"
+    },
+    {
+      "path": "shared/fixtures/warrior-first-normal.test.json",
+      "sha256": "19f05d19dabde5b89587c96f5f578beed6a846322715beb8de51a5a05dbb272e"
+    },
+    {
+      "path": "shared/src/config/release-v1.ts",
+      "sha256": "aabd749ccd9877f986d28f7767edcc50a135df07984fa658546ce1b394d92ded"
+    },
+    {
+      "path": "shared/src/exact-values.ts",
+      "sha256": "ce57ad639539771623d167a331278b39ff3b68c58059cdc001dd9aaaf38a7fa9"
+    },
+    {
+      "path": "shared/src/protocol/asset-schema.ts",
+      "sha256": "35cd1a1e4935d9f62ad28d996140565b72ef4414d808d6768e6156fd84ac85c9"
+    },
+    {
+      "path": "shared/src/protocol/asset-v2.ts",
+      "sha256": "869328b309915ad64dbdfeb8e2b96c2e4642b13c809f636eb7594822f46c6a06"
+    },
+    {
+      "path": "shared/src/protocol/login-wire.ts",
+      "sha256": "55f505eebaa5b4477febd997901f7fc42a08f2b5995475afb1a871bb225f2806"
+    },
+    {
+      "path": "shared/src/protocol/scene-v2.ts",
+      "sha256": "276e4546868a86e295bca72a5f36e3ff088a92068ec7df519ee1577ec095877f"
+    },
+    {
+      "path": "shared/src/protocol/scene-wire.ts",
+      "sha256": "15c9f89b137ab87a7454823826072e38150dc07c785b89a81e0150f43457ee36"
+    },
+    {
+      "path": "shared/src/protocol/session-v2.ts",
+      "sha256": "a66efbb247691fc3246397b04332e3a9d381b6bdba2c9f0685ed779933772e8f"
+    },
+    {
+      "path": "shared/src/protocol/simulation-v2.ts",
+      "sha256": "2cbc0c05a93fb46ca62bb8efbeaec3ef3e79a3cebf43d3aba56b670510048dde"
+    },
+    {
+      "path": "shared/src/protocol/types.ts",
+      "sha256": "0013f66fefe07d988924cca2577bd1f473255734dceeff09c89594982eed027e"
+    },
+    {
+      "path": "shared/src/public-codec.ts",
+      "sha256": "ecb09935b6c503d157690a99f50e665c6dc6eb22c02d03135afac1f79b8e5fd3"
+    },
+    {
+      "path": "shared/test/asset-v2.test.mjs",
+      "sha256": "9dd2f972a600fb4246e1e51dcd0ff3fcd7e044b45d417055367d9dabdcdc495e"
+    },
+    {
+      "path": "shared/test/e01-integration.test.mjs",
+      "sha256": "973cbf0322b6dbedb717972d85f1c16a14383daec70ceb701821bf1f2ad5a5ae"
+    },
+    {
+      "path": "shared/test/exact-values.test.mjs",
+      "sha256": "6ab0039827246c9fd78f67164d86eb1fa7ab8f3f1338264e0532bc67a30b8380"
+    },
+    {
+      "path": "shared/test/login-wire.test.mjs",
+      "sha256": "8d9d5f06317b26a9a910a37437690251099fcce21fbc261682bda739be6b278b"
+    },
+    {
+      "path": "shared/test/public-codec.test.mjs",
+      "sha256": "ce2236bd0e896ce608fd7535d20d246f0f28355acf47f0eb967db487ba228cb4"
+    },
+    {
+      "path": "shared/test/release-v1.test.mjs",
+      "sha256": "7135f38eef0926744e48670317fb7e8d33c9979fece7057d856da2cba08d5672"
+    },
+    {
+      "path": "shared/test/scene-v2.test.mjs",
+      "sha256": "d4941cb604bff051332bb7e4e9bc9986a8c8f4a7678fee57c57e25965751d167"
+    },
+    {
+      "path": "shared/test/scene-wire.test.mjs",
+      "sha256": "c6761dda1d5a1405722eff93f41ccff83108e638ff91268daeeb374c72b68827"
+    },
+    {
+      "path": "shared/test/session-v2.test.mjs",
+      "sha256": "203eec99948e38914184b8ac683a2a12e93a23137afc09444061c5264c847de5"
+    },
+    {
+      "path": "shared/test/simulation-v2.test.mjs",
+      "sha256": "63e1331cebf1bea91800179b508de0ef5de352fb8161d17efa2be999f731fe0b"
+    },
+    {
+      "path": "tools/check-all.cjs",
+      "sha256": "eda61faf6a12e4adb13548586ab90fd610a322d68e36200ecfc7c58d2788da1b"
+    },
+    {
+      "path": "tools/local-typescript.cjs",
+      "sha256": "868c7f4c6c6a6b5c27002fef6731a22a1e433f293f6468ecab880c1f35a59095"
+    },
+    {
+      "path": "tools/test/check-all.test.cjs",
+      "sha256": "6df63793519352e0623f1a1b46a5f657cd822c88a6c3f5c0d086b6abc6a02ea5"
+    },
+    {
+      "path": "tools/tsconfig.models.json",
+      "sha256": "b95fe2c92f7b3a5601da39bbf1b67ea17815df12f48b38bfac1978f5df776162"
+    }
+  ]
+}

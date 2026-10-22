@@ -1,8 +1,10 @@
 # 技术前置与联合验收
 
-2026-10-22。全部为proposed、executionAuthorized=false。本文件不创建Jira、不执行安装/云操作、不替代业务故事。源规则见[真相源索引](../../backend/source-of-truth.md)。
+2026-10-22。E01已获后续开工授权并完成本地协议基础交付；E02/VT01仍为proposed、executionAuthorized=false。本文件不创建Jira、不执行安装/云操作、不替代业务故事。源规则见[真相源索引](../../backend/source-of-truth.md)。
 
 ## E01 协议配置与检查基础
+
+用户已确认首批7项实施任务及依赖并授权实现，见[E01本地spec与任务图](e01/README.md)。01～07已完成本地实现/验证，两轴评审4项发现已修复复核，证据见[交付报告](../../reviews/e01-07-integration-verification-2026-10-22.md)。ticket仍draft代表未人工接受/合并，不代表未实现；无Jira操作。
 
 目标：为所有业务故事提供可重复的公开协议、最小合法配置及检查入口。对应[B0范围](../../design/implementation-b0-contract-foundation-v1.md)，不是另建一套规范。覆盖US2/US13、AC12/AC15的技术支撑及QA22/36/39/41。
 
