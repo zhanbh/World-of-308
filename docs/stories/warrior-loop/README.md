@@ -67,3 +67,7 @@
 ST04已获任务图及实施授权，接续公司端`5bbcaa5`，本地背包整理/快捷位服务与纯协调器已实现；验收状态与平台/展示GAP见[ST04交付记录](../../reviews/st04-local-verification.md)及[任务入口](st04/README.md)。旧故事卡的proposed为拆分时快照，当前实施进度看本条链接，不要求重复批准已确认图。
 
 ST04后续状态（2026-10-23）：[Cocos实际面板交付](../../reviews/st04-cocos-verification.md)已完成本机鼠标与触屏模拟验证；下一验收边界为正式微信/SDK/设备，不再重复从面板未接入阶段开始。
+
+## ST05 本地实施续接
+
+ST05已获任务图及实施授权，当前工作分支 `feat/st05-equipment`，接续 `feat/st04-inventory`；13槽位装备穿脱、满包同部位原格置换、紫装穿戴角色绑定、0耐久属性与套装失效、饰品CD阻断、固有评分与排行榜投影同事务同步及纯模型 `EquipmentCoordinator` 已全部实现并通过本地验证；验收状态与双轴独立评审见[ST05交付记录](../../reviews/st05-06-local-verification-2026-10-23.md)、[Standards 独立复核](../../reviews/st05-standards-independent-review-2026-10-23.md)、[Spec 独立评审](../../reviews/st05-spec-independent-review-2026-10-23.md)与[任务入口](st05/README.md)。

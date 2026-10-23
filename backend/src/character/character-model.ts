@@ -26,6 +26,10 @@ export interface CharacterEntity extends CharacterSummary {
   quickSlots: (string | null)[];
   location: { kind: 'inn'; characterId: string } | { kind: 'town'; mapId: string; anchorId: string } | { kind: 'challenge'; challengeId: string };
   townState?: import('../town/town-model.ts').TownState;
+  score?: number;
+  scoreReachedAt?: number;
+  scoreConfigRef?: string;
+  trinketCooldownUntil?: number;
   progressionConfigRef: { id: string; version: number };
   createdAt: number;
   updatedAt: number;
@@ -72,6 +76,7 @@ export interface EquipmentEntity {
   sourceOrdinal: number;
   sourceLocator: { kind: string; [key: string]: unknown };
   templateRef: { id: string; version: number };
+  slotKind: 'weapon' | 'shoulder' | 'chest' | 'pants' | 'belt' | 'boots' | 'bracelet' | 'necklace' | 'ring' | 'subEquip' | 'magicStone' | 'earring' | 'trinket';
   itemLevel: number;
   quality: 'white' | 'green' | 'blue' | 'purple' | 'orange';
   rolledAffixes: Array<{ stat: string; value: number }>;

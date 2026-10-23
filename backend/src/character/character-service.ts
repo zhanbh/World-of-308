@@ -296,6 +296,7 @@ export class CharacterService {
           sourceOrdinal: 0,
           sourceLocator: { kind: 'initialEquip', characterId },
           templateRef: { ...this.options.initialWeaponTemplateRef },
+          slotKind: 'weapon',
           itemLevel: 10,
           quality: 'white',
           rolledAffixes: [],
