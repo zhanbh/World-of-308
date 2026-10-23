@@ -10,6 +10,8 @@ import type {
   EquipmentEntity,
   MailEntity,
   RewardGrantEntity,
+  DeliveryBatchEntity,
+  DeliveryBatchItemRecord,
 } from '../character/character-model.ts';
 import type { ServiceContextEntity } from '../town/town-model.ts';
 import { characterKey } from '../character/character-service.ts';
@@ -20,6 +22,15 @@ import {
   canClaimEquipmentAttachment,
   MAX_STACK_QUANTITY,
 } from './mail-rules.ts';
+import {
+  planBatchFromMails,
+  planBatchFromSelection,
+  sliceBatchStep,
+  MAX_BATCH_SCAN_MAILS,
+  MAX_BATCH_CANDIDATES,
+  BATCH_STEP_SIZE,
+} from './batch-planning.ts';
+
 import {
   parseAssetCommand,
   parseAssetResponse,
@@ -655,6 +666,494 @@ export class MailService {
                 { kind: 'equipment' as const, id: equipment.id, version: equipment.version },
               ],
             };
+          } else if (cmdName === 'mail.claimAvailable') {
+            const p = payload as
+              | { characterId: string; contextId: string; cursor: string | null; batchIntentId: string }
+              | { characterId: string; contextId: string; selection: Array<{ mailId: string; attachmentId: string }>; batchIntentId: string };
+            await this.verifyMailboxContext(tx, account, character, p.contextId);
+
+            const batchKey = `v2:batch:${account.id}:${p.batchIntentId}`;
+            let batch = await tx.get<DeliveryBatchEntity>(batchKey);
+
+            if (!batch) {
+              let plan;
+              if ('selection' in p && Array.isArray(p.selection)) {
+                const mails = await this.getMailsForCharacter(tx, account, character);
+                const mailsMap = new Map<string, MailEntity>(mails.map(m => [m.id, m]));
+                plan = planBatchFromSelection(p.batchIntentId, p.selection, mailsMap, MAX_BATCH_CANDIDATES);
+              } else {
+                const mails = await this.getMailsForCharacter(tx, account, character);
+                plan = planBatchFromMails(p.batchIntentId, mails, nowMs, MAX_BATCH_SCAN_MAILS, MAX_BATCH_CANDIDATES);
+              }
+
+              batch = {
+                schemaVersion: 2,
+                id: batchKey,
+                accountId: account.id,
+                characterId: character.id,
+                batchIntentId: p.batchIntentId,
+                candidates: plan.candidates,
+                items: [],
+                cursor: null,
+                state: plan.candidates.length === 0 ? 'completed' : 'pending',
+                createdAt: nowMs,
+                updatedAt: nowMs,
+              };
+            } else {
+              requireValue(
+                batch.schemaVersion === 2 &&
+                  batch.accountId === account.id &&
+                  batch.characterId === character.id,
+                'NOT_FOUND_OR_FORBIDDEN',
+              );
+            }
+
+            if (batch.state === 'completed') {
+              outcome = {
+                status: 'committed',
+                data: {
+                  batchIntentId: batch.batchIntentId,
+                  state: 'completed',
+                  items: [],
+                  nextCursor: null,
+                },
+                resultVersions: [],
+              };
+              tx.set(batchKey, batch);
+            } else {
+              const currentCursor = 'cursor' in p && p.cursor !== undefined ? p.cursor : batch.cursor;
+              const { stepItems, nextCursor } = sliceBatchStep(batch.candidates, currentCursor, BATCH_STEP_SIZE);
+
+              const bag = await this.getBag(tx, account, character);
+
+              for (const exp of command.expected) {
+                if (exp.kind === 'container' && exp.id === bag.id && exp.version !== bag.version) {
+                  return reply({ status: 'rejected', code: 'VERSION_CONFLICT' });
+                }
+              }
+
+              const stepResultItems: DeliveryBatchItemRecord[] = [];
+              const modifiedMails = new Map<string, MailEntity>();
+              const newEquipmentIds: string[] = [];
+
+              for (const cand of stepItems) {
+                let mail = modifiedMails.get(cand.mailId);
+                if (!mail) {
+                  mail = await tx.get<MailEntity>(cand.mailId);
+                }
+
+                if (!mail || mail.schemaVersion !== 2 || mail.characterId !== character.id || mail.status === 'deleted') {
+                  stepResultItems.push({
+                    childOperationId: cand.childOperationId,
+                    mailId: cand.mailId,
+                    attachmentId: cand.attachmentId,
+                    status: 'rejected',
+                    deliveredQuantity: 0,
+                  });
+                  continue;
+                }
+
+                if (isMailExpired(mail, nowMs)) {
+                  if (mail.status !== 'expired') {
+                    mail.status = 'expired';
+                    mail.version = (mail.version ?? 0) + 1;
+                    mail.updatedAt = nowMs;
+                    tx.set(mail.id, mail);
+                    modifiedMails.set(mail.id, mail);
+                  }
+                  stepResultItems.push({
+                    childOperationId: cand.childOperationId,
+                    mailId: cand.mailId,
+                    attachmentId: cand.attachmentId,
+                    status: 'rejected',
+                    deliveredQuantity: 0,
+                  });
+                  const childReceiptId = `op:${account.id}:${cand.childOperationId}`;
+                  tx.set(childReceiptId, {
+                    schemaVersion: 2,
+                    id: childReceiptId,
+                    accountId: account.id,
+                    command: 'mail.claimAttachment',
+                    tuple: canonical({ characterId: character.id, contextId: p.contextId, mailId: cand.mailId, attachmentId: cand.attachmentId }),
+                    result: {
+                      operationId: cand.childOperationId,
+                      serverTime: time(nowMs),
+                      replayed: false,
+                      outcome: { status: 'rejected', code: 'MAIL_EXPIRED' },
+                    },
+                  });
+                  continue;
+                }
+
+                const attachment = mail.attachments.find(a => a.attachmentId === cand.attachmentId);
+                if (!attachment || attachment.quantityClaimed >= attachment.quantityGranted || attachment.state === 'claimed') {
+                  stepResultItems.push({
+                    childOperationId: cand.childOperationId,
+                    mailId: cand.mailId,
+                    attachmentId: cand.attachmentId,
+                    status: 'rejected',
+                    deliveredQuantity: 0,
+                  });
+                  const childReceiptId = `op:${account.id}:${cand.childOperationId}`;
+                  tx.set(childReceiptId, {
+                    schemaVersion: 2,
+                    id: childReceiptId,
+                    accountId: account.id,
+                    command: 'mail.claimAttachment',
+                    tuple: canonical({ characterId: character.id, contextId: p.contextId, mailId: cand.mailId, attachmentId: cand.attachmentId }),
+                    result: {
+                      operationId: cand.childOperationId,
+                      serverTime: time(nowMs),
+                      replayed: false,
+                      outcome: { status: 'rejected', code: 'ALREADY_DELIVERED' },
+                    },
+                  });
+                  continue;
+                }
+
+                if (attachment.kind === 'equipment') {
+                  if (!canClaimEquipmentAttachment(bag)) {
+                    stepResultItems.push({
+                      childOperationId: cand.childOperationId,
+                      mailId: cand.mailId,
+                      attachmentId: cand.attachmentId,
+                      status: 'rejected',
+                      deliveredQuantity: 0,
+                    });
+                    const childReceiptId = `op:${account.id}:${cand.childOperationId}`;
+                    tx.set(childReceiptId, {
+                      schemaVersion: 2,
+                      id: childReceiptId,
+                      accountId: account.id,
+                      command: 'mail.claimAttachment',
+                      tuple: canonical({ characterId: character.id, contextId: p.contextId, mailId: cand.mailId, attachmentId: cand.attachmentId }),
+                      result: {
+                        operationId: cand.childOperationId,
+                        serverTime: time(nowMs),
+                        replayed: false,
+                        outcome: { status: 'rejected', code: 'BAG_FULL' },
+                      },
+                    });
+                    continue;
+                  }
+
+                  let emptySlot = -1;
+                  for (let i = 0; i < bag.capacity; i++) {
+                    if (bag.slots[i] === undefined) {
+                      emptySlot = i;
+                      break;
+                    }
+                  }
+                  if (emptySlot === -1) {
+                    stepResultItems.push({
+                      childOperationId: cand.childOperationId,
+                      mailId: cand.mailId,
+                      attachmentId: cand.attachmentId,
+                      status: 'rejected',
+                      deliveredQuantity: 0,
+                    });
+                    const childReceiptId = `op:${account.id}:${cand.childOperationId}`;
+                    tx.set(childReceiptId, {
+                      schemaVersion: 2,
+                      id: childReceiptId,
+                      accountId: account.id,
+                      command: 'mail.claimAttachment',
+                      tuple: canonical({ characterId: character.id, contextId: p.contextId, mailId: cand.mailId, attachmentId: cand.attachmentId }),
+                      result: {
+                        operationId: cand.childOperationId,
+                        serverTime: time(nowMs),
+                        replayed: false,
+                        outcome: { status: 'rejected', code: 'BAG_FULL' },
+                      },
+                    });
+                    continue;
+                  }
+
+                  const itemId = `eq-mail-${mail.id}-${attachment.attachmentId}`;
+                  newEquipmentIds.push(itemId);
+                  const pEquipment = attachment.equipmentPayload;
+
+                  const equipment: EquipmentEntity = {
+                    schemaVersion: 2,
+                    id: itemId,
+                    accountId: account.id,
+                    holderCharacterId: character.id,
+                    sourceKey: mail.sourceKey,
+                    sourceOrdinal: 0,
+                    sourceLocator: {
+                      kind: 'mailAttachment',
+                      mailId: mail.id,
+                      attachmentId: attachment.attachmentId,
+                    },
+                    templateRef: { ...attachment.templateRef },
+                    slotKind: pEquipment?.slotKind ?? 'weapon',
+                    itemLevel: pEquipment?.itemLevel ?? 10,
+                    quality: pEquipment?.quality ?? 'white',
+                    rolledAffixes: pEquipment?.affixes ?? [],
+                    setRef: null,
+                    binding: { ...attachment.binding },
+                    enhancementLevel: pEquipment?.enhancementLevel ?? 0,
+                    durability: {
+                      wearEnabled: true,
+                      current: 100,
+                      max: 100,
+                      policyRef: 'test-wear-v1',
+                    },
+                    location: { kind: 'container', containerId: bag.id },
+                    lifecycle: 'active',
+                    version: 0,
+                    createdAt: nowMs,
+                    updatedAt: nowMs,
+                  };
+                  tx.set(itemId, equipment);
+
+                  bag.slots[emptySlot] = {
+                    kind: 'equipment',
+                    itemId,
+                    sortHeader: {
+                      itemLevel: equipment.itemLevel,
+                      quality: equipment.quality,
+                      slotKind: equipment.slotKind,
+                    },
+                  };
+
+                  attachment.quantityClaimed = 1;
+                  attachment.state = 'claimed';
+                  const deliveredQuantity = 1;
+
+                  mail.version = (mail.version ?? 0) + 1;
+                  mail.updatedAt = nowMs;
+                  tx.set(mail.id, mail);
+                  modifiedMails.set(mail.id, mail);
+
+                  bag.version++;
+                  bag.updatedAt = nowMs;
+
+                  const childJournalId = `j:${account.id}:${cand.childOperationId}`;
+                  const childJournal: AssetJournalEntity = {
+                    schemaVersion: 2,
+                    id: childJournalId,
+                    accountId: account.id,
+                    operationId: cand.childOperationId,
+                    asset: 'mail',
+                    entries: [
+                      {
+                        sourceLocator: {
+                          kind: 'mailAttachment',
+                          mailId: mail.id,
+                          attachmentId: attachment.attachmentId,
+                        },
+                        deliveredQuantity,
+                      },
+                    ],
+                    createdAt: nowMs,
+                  };
+                  tx.set(childJournalId, childJournal);
+
+                  const childReceiptId = `op:${account.id}:${cand.childOperationId}`;
+                  tx.set(childReceiptId, {
+                    schemaVersion: 2,
+                    id: childReceiptId,
+                    accountId: account.id,
+                    command: 'mail.claimAttachment',
+                    tuple: canonical({ characterId: character.id, contextId: p.contextId, mailId: mail.id, attachmentId: attachment.attachmentId }),
+                    result: {
+                      operationId: cand.childOperationId,
+                      serverTime: time(nowMs),
+                      replayed: false,
+                      outcome: {
+                        status: 'committed',
+                        data: {
+                          mailId: mail.id,
+                          attachmentId: attachment.attachmentId,
+                          deliveredQuantity,
+                        },
+                        resultVersions: [
+                          { kind: 'mail', id: mail.id, version: mail.version },
+                          { kind: 'container', id: bag.id, version: bag.version },
+                          { kind: 'equipment', id: itemId, version: 0 },
+                        ],
+                      },
+                    },
+                  });
+
+                  stepResultItems.push({
+                    childOperationId: cand.childOperationId,
+                    mailId: cand.mailId,
+                    attachmentId: cand.attachmentId,
+                    status: 'committed',
+                    deliveredQuantity,
+                  });
+                } else if (attachment.kind === 'stack') {
+                  const remaining = attachment.quantityGranted - attachment.quantityClaimed;
+                  const deliveredQuantity = calculateStackClaimQuantity(
+                    remaining,
+                    attachment.templateRef,
+                    attachment.binding,
+                    bag,
+                  );
+
+                  if (deliveredQuantity <= 0) {
+                    stepResultItems.push({
+                      childOperationId: cand.childOperationId,
+                      mailId: cand.mailId,
+                      attachmentId: cand.attachmentId,
+                      status: 'rejected',
+                      deliveredQuantity: 0,
+                    });
+                    const childReceiptId = `op:${account.id}:${cand.childOperationId}`;
+                    tx.set(childReceiptId, {
+                      schemaVersion: 2,
+                      id: childReceiptId,
+                      accountId: account.id,
+                      command: 'mail.claimAttachment',
+                      tuple: canonical({ characterId: character.id, contextId: p.contextId, mailId: cand.mailId, attachmentId: cand.attachmentId }),
+                      result: {
+                        operationId: cand.childOperationId,
+                        serverTime: time(nowMs),
+                        replayed: false,
+                        outcome: { status: 'rejected', code: 'BAG_FULL' },
+                      },
+                    });
+                    continue;
+                  }
+
+                  let toDistribute = deliveredQuantity;
+
+                  for (const slot of Object.values(bag.slots)) {
+                    if (toDistribute <= 0) break;
+                    if (
+                      slot &&
+                      slot.kind === 'stack' &&
+                      slot.templateRef.id === attachment.templateRef.id &&
+                      slot.binding.kind === attachment.binding.kind &&
+                      slot.binding.accountId === attachment.binding.accountId &&
+                      slot.binding.characterId === attachment.binding.characterId &&
+                      slot.quantity < MAX_STACK_QUANTITY
+                    ) {
+                      const take = Math.min(toDistribute, MAX_STACK_QUANTITY - slot.quantity);
+                      slot.quantity += take;
+                      toDistribute -= take;
+                    }
+                  }
+
+                  if (toDistribute > 0) {
+                    for (let i = 0; i < bag.capacity && toDistribute > 0; i++) {
+                      if (bag.slots[i] === undefined) {
+                        const take = Math.min(toDistribute, MAX_STACK_QUANTITY);
+                        const stackId = `stk-mail-${mail.id}-${attachment.attachmentId}-${i}`;
+                        bag.slots[i] = {
+                          kind: 'stack',
+                          stackId,
+                          templateRef: { ...attachment.templateRef },
+                          quantity: take,
+                          binding: { ...attachment.binding },
+                          traceRef: `tr-mail-${cand.childOperationId}`,
+                        };
+                        toDistribute -= take;
+                      }
+                    }
+                  }
+
+                  attachment.quantityClaimed += deliveredQuantity;
+                  attachment.state =
+                    attachment.quantityClaimed === attachment.quantityGranted
+                      ? 'claimed'
+                      : 'partially_claimed';
+
+                  mail.version = (mail.version ?? 0) + 1;
+                  mail.updatedAt = nowMs;
+                  tx.set(mail.id, mail);
+                  modifiedMails.set(mail.id, mail);
+
+                  bag.version++;
+                  bag.updatedAt = nowMs;
+
+                  const childJournalId = `j:${account.id}:${cand.childOperationId}`;
+                  const childJournal: AssetJournalEntity = {
+                    schemaVersion: 2,
+                    id: childJournalId,
+                    accountId: account.id,
+                    operationId: cand.childOperationId,
+                    asset: 'mail',
+                    entries: [
+                      {
+                        sourceLocator: {
+                          kind: 'mailAttachment',
+                          mailId: mail.id,
+                          attachmentId: attachment.attachmentId,
+                        },
+                        deliveredQuantity,
+                      },
+                    ],
+                    createdAt: nowMs,
+                  };
+                  tx.set(childJournalId, childJournal);
+
+                  const childReceiptId = `op:${account.id}:${cand.childOperationId}`;
+                  tx.set(childReceiptId, {
+                    schemaVersion: 2,
+                    id: childReceiptId,
+                    accountId: account.id,
+                    command: 'mail.claimAttachment',
+                    tuple: canonical({ characterId: character.id, contextId: p.contextId, mailId: mail.id, attachmentId: attachment.attachmentId }),
+                    result: {
+                      operationId: cand.childOperationId,
+                      serverTime: time(nowMs),
+                      replayed: false,
+                      outcome: {
+                        status: 'committed',
+                        data: {
+                          mailId: mail.id,
+                          attachmentId: attachment.attachmentId,
+                          deliveredQuantity,
+                        },
+                        resultVersions: [
+                          { kind: 'mail', id: mail.id, version: mail.version },
+                          { kind: 'container', id: bag.id, version: bag.version },
+                        ],
+                      },
+                    },
+                  });
+
+                  stepResultItems.push({
+                    childOperationId: cand.childOperationId,
+                    mailId: cand.mailId,
+                    attachmentId: cand.attachmentId,
+                    status: 'committed',
+                    deliveredQuantity,
+                  });
+                }
+              }
+
+              tx.set(bag.id, bag);
+
+              batch.items.push(...stepResultItems);
+              batch.cursor = nextCursor;
+              batch.state = nextCursor === null ? 'completed' : 'partial';
+              batch.updatedAt = nowMs;
+              tx.set(batchKey, batch);
+
+              const resultVersionsMap = new Map<string, import('../../../shared/src/protocol/session-v2.ts').Expected>();
+              resultVersionsMap.set(`container:${bag.id}`, { kind: 'container', id: bag.id, version: bag.version });
+              for (const m of modifiedMails.values()) {
+                resultVersionsMap.set(`mail:${m.id}`, { kind: 'mail', id: m.id, version: m.version });
+              }
+              for (const eqId of newEquipmentIds) {
+                resultVersionsMap.set(`equipment:${eqId}`, { kind: 'equipment', id: eqId, version: 0 });
+              }
+
+              outcome = {
+                status: 'committed',
+                data: {
+                  batchIntentId: batch.batchIntentId,
+                  state: batch.state,
+                  items: stepResultItems,
+                  nextCursor: batch.cursor,
+                },
+                resultVersions: Array.from(resultVersionsMap.values()),
+              };
+            }
           } else {
             throw new MailRefusal('UNSUPPORTED_PROTOCOL');
           }
@@ -890,4 +1389,67 @@ export class MailService {
       });
     });
   }
+
+  async getOperation(rawInput: unknown): Promise<AssetQueryResponse<'operation.get'>> {
+    const query = parseAssetQuery(rawInput);
+    if (query.query !== 'operation.get') throw new TypeError('UNSUPPORTED_QUERY');
+
+    const { requestId, sessionId, sessionEpoch, payload } = query;
+    const { operationId } = payload;
+    const caller = await this.caller();
+    const nowMs = this.options.clock.now();
+
+    return await this.options.store.run(async tx => {
+      let account: LoginAccount;
+      try {
+        account = await this.authorize(tx, caller, sessionId, sessionEpoch);
+      } catch (e: any) {
+        return parseAssetQueryResponse('operation.get', {
+          requestId,
+          serverTime: time(nowMs),
+          error: { code: e instanceof MailRefusal ? (e.code as any) : 'AUTH_REQUIRED' },
+        });
+      }
+
+      const receiptId = `op:${account.id}:${operationId}`;
+      const receipt = await tx.get<Receipt>(receiptId);
+      if (!receipt) {
+        return parseAssetQueryResponse('operation.get', {
+          requestId,
+          serverTime: time(nowMs),
+          versions: [],
+          data: { status: 'notFound' },
+        });
+      }
+
+      return parseAssetQueryResponse('operation.get', {
+        requestId,
+        serverTime: time(nowMs),
+        versions: [],
+        data: {
+          status: 'found',
+          command: receipt.command as any,
+          result: receipt.result,
+        },
+      });
+    });
+  }
+
+  async query(rawInput: unknown): Promise<AssetQueryResponse> {
+    const parsed = parseAssetQuery(rawInput);
+    if (parsed.query === 'mail.list') {
+      return this.getMailList(rawInput);
+    }
+    if (parsed.query === 'reward.list') {
+      return this.getRewardList(rawInput);
+    }
+    if (parsed.query === 'delivery.summary') {
+      return this.getDeliverySummary(rawInput);
+    }
+    if (parsed.query === 'operation.get') {
+      return this.getOperation(rawInput);
+    }
+    throw new TypeError('UNSUPPORTED_QUERY');
+  }
 }
+

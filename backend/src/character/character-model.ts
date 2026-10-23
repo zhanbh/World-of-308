@@ -169,3 +169,31 @@ export interface CharacterReceipt {
   result: CharacterResponse;
   createdAt: number;
 }
+
+export interface DeliveryBatchItemRecord {
+  childOperationId: string;
+  mailId: string;
+  attachmentId: string;
+  status: 'committed' | 'rejected' | 'unknown';
+  deliveredQuantity: number;
+}
+
+export interface DeliveryBatchEntity {
+  schemaVersion: 2;
+  id: string; // v2:batch:${accountId}:${batchIntentId}
+  accountId: string;
+  characterId: string;
+  batchIntentId: string;
+  candidates: Array<{
+    mailId: string;
+    attachmentId: string;
+    kind: 'equipment' | 'stack';
+    childOperationId: string;
+  }>;
+  items: DeliveryBatchItemRecord[];
+  cursor: string | null;
+  state: 'pending' | 'partial' | 'completed';
+  createdAt: number;
+  updatedAt: number;
+}
+

@@ -48,7 +48,7 @@ export type DeliverySummary = {
   asOf: number;
 };
 
-type MailMutation = Extract<AssetCommand, { command: 'mail.markRead' | 'mail.delete' | 'mail.claimAttachment' | 'reward.claim' }>;
+type MailMutation = Extract<AssetCommand, { command: 'mail.markRead' | 'mail.delete' | 'mail.claimAttachment' | 'reward.claim' | 'mail.claimAvailable' }>;
 
 export type MailCoordinatorState = {
   status: 'closed' | 'loading' | 'ready' | 'submitting' | 'unknown' | 'failed';
@@ -335,6 +335,121 @@ export class MailCoordinator {
       },
     };
     await this.submit(command);
+  }
+
+  async claimAvailable(
+    selection?: Array<{ mailId: string; attachmentId: string }>,
+  ): Promise<{ totalDelivered: number; skippedCount: number; completed: boolean }> {
+    const identity = this.requireReady();
+    if (!this.current.contextId) throw new Error('CONTEXT_REQUIRED');
+
+    const batchIntentId = `batch-${++this.sequence}`;
+    let cursor: string | null = null;
+    let isCompleted = false;
+    let totalDelivered = 0;
+    let skippedCount = 0;
+    let isFirst = true;
+    const runGeneration = this.generation;
+
+    while (!isCompleted) {
+      if (this.current.status === 'closed' || this.generation !== runGeneration) {
+        break;
+      }
+
+      const command: MailMutation = {
+        protocolVersion: 2,
+        command: 'mail.claimAvailable',
+        operationId: `mail-batch-step-${++this.sequence}`,
+        sessionId: identity.sessionId,
+        sessionEpoch: identity.sessionEpoch,
+        expected: [
+          { kind: 'character', id: identity.characterId, version: this.current.characterVersion },
+        ],
+        payload:
+          isFirst && selection && selection.length > 0
+            ? {
+                characterId: identity.characterId,
+                contextId: this.current.contextId,
+                selection,
+                batchIntentId,
+              }
+            : {
+                characterId: identity.characterId,
+                contextId: this.current.contextId,
+                cursor,
+                batchIntentId,
+              },
+      };
+
+      isFirst = false;
+      this.pending = command;
+      this.persistence.save(this.key(), JSON.stringify(command));
+      this.current.status = 'submitting';
+      this.current.pendingOperationId = command.operationId;
+      this.current.code = null;
+
+      let raw: string;
+      try {
+        raw = await this.transport.send(encodeAssetRequest(command));
+      } catch {
+        if (this.generation === runGeneration) {
+          this.current.status = 'unknown';
+        }
+        return { totalDelivered, skippedCount, completed: false };
+      }
+
+      if (this.generation !== runGeneration) {
+        return { totalDelivered, skippedCount, completed: false };
+      }
+
+      const res = decodeAssetResponse(command, raw) as AssetResponse<'mail.claimAvailable'>;
+      if (res.outcome.status === 'unknown') {
+        this.current.status = 'unknown';
+        return { totalDelivered, skippedCount, completed: false };
+      }
+
+      if (res.outcome.status === 'rejected') {
+        this.current.status = 'failed';
+        this.current.code = res.outcome.code;
+        this.pending = null;
+        this.current.pendingOperationId = null;
+        this.persistence.save(this.key(), null);
+        return { totalDelivered, skippedCount, completed: false };
+      }
+
+      const data = res.outcome.data;
+      for (const item of data.items) {
+        if (item.status === 'committed') {
+          totalDelivered += item.deliveredQuantity;
+        } else {
+          skippedCount++;
+        }
+      }
+
+      for (const v of res.outcome.resultVersions) {
+        if (v.kind === 'character' && v.id === this.identity?.characterId) {
+          this.current.characterVersion = Math.max(this.current.characterVersion, v.version);
+        }
+      }
+
+      cursor = data.nextCursor;
+      if (data.state === 'completed' || cursor === null) {
+        isCompleted = true;
+      }
+
+      this.pending = null;
+      this.current.pendingOperationId = null;
+      this.persistence.save(this.key(), null);
+    }
+
+    if (this.generation === runGeneration) {
+      await this.refresh(this.generation);
+      if (this.generation === runGeneration) {
+        this.current.status = 'ready';
+      }
+    }
+
+    return { totalDelivered, skippedCount, completed: isCompleted };
   }
 
   private async submit(command: MailMutation): Promise<void> {
