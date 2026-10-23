@@ -353,7 +353,7 @@ test('novice mail contains 8 hp, 8 mp and 10 emblems and creates immutable sourc
 // Ticket 04: 创角原子事务与故障回滚
 // ==========================================
 
-test('character creation atomically writes exactly 9 keys into store', async () => {
+test('character creation atomically initializes assets and personal holdings into store', async () => {
   const { loginService, characterService, store } = setupEnvironment();
   const session = await loginUser(loginService);
 
@@ -370,13 +370,13 @@ test('character creation atomically writes exactly 9 keys into store', async () 
 
   assert.equal(res.outcome.status, 'committed');
   const sizeAfter = store.snapshot().size;
-  // 8 new keys added (name, character, backpack, personalVault, weapon, mail, grantStub, receipt) while account is updated in-place
-  assert.equal(sizeAfter - sizeBefore, 8);
+  // 9 new keys: existing initial assets plus the character holdings summary; account updates in place
+  assert.equal(sizeAfter - sizeBefore, 9);
 });
 
 test('failure injection at any write point rolls back all changes with zero residue', async () => {
-  const failNames = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬'];
-  for (let failIndex = 1; failIndex <= 9; failIndex++) {
+  const failNames = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+  for (let failIndex = 1; failIndex <= 10; failIndex++) {
     const { loginService, characterService, store } = setupEnvironment();
     const session = await loginUser(loginService);
     const snapshotBefore = store.snapshot();

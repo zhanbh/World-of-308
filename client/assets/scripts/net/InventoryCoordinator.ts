@@ -5,11 +5,13 @@ export interface InventoryTransport { send(jsonText: string): Promise<string> }
 /** Adapter must persist pending commands before transmitting them. */
 export interface InventoryPendingStore { load(key: string): string | null; save(key: string, value: string | null): void }
 export type InventoryIdentity = { sessionId: string; sessionEpoch: number; characterId: string };
-type Mutation = Extract<AssetCommand, { command: 'inventory.organize' | 'quickslot.assign' }>;
+type Mutation = Extract<AssetCommand, { command: 'inventory.organize' | 'quickslot.assign' | 'inventory.expand' }>;
+export type InventoryExpansionQuote = Extract<AssetQueryResponse<'inventory.expansionQuote'>, { data: unknown }>['data'];
 type QuickSlots = { characterId: string; version: number; slots: { slotIndex: number; templateId: string | null; quantity: number }[] };
 export type InventoryCoordinatorState = {
   status: 'closed' | 'loading' | 'ready' | 'empty' | 'submitting' | 'unknown' | 'failed';
   backpack: ContainerView | null; quickSlots: QuickSlots | null; code: string | null;
+  quote: InventoryExpansionQuote | null;
   lastMergeCount: number | null; pendingOperationId: string | null;
 };
 
@@ -19,6 +21,7 @@ export class InventoryCoordinator {
   private pending: Mutation | null = null;
   private generation = 0;
   private sequence = 0;
+  private quoteExpected: AssetCommand['expected'] | null = null;
   private minimumBagVersion = 0;
   private minimumCharacterVersion = 0;
   private current: InventoryCoordinatorState = this.initial();
@@ -26,21 +29,22 @@ export class InventoryCoordinator {
   private readonly persistence: InventoryPendingStore;
   constructor(transport: InventoryTransport, persistence: InventoryPendingStore) { this.transport = transport; this.persistence = persistence; }
   get state(): InventoryCoordinatorState { return structuredClone(this.current); }
-  private initial(): InventoryCoordinatorState { return { status: 'closed', backpack: null, quickSlots: null, code: null, lastMergeCount: null, pendingOperationId: null }; }
+  private initial(): InventoryCoordinatorState { return { status: 'closed', backpack: null, quickSlots: null, code: null, quote: null, lastMergeCount: null, pendingOperationId: null }; }
   private key(): string { const i = this.identity!; return JSON.stringify([i.sessionId, i.sessionEpoch, i.characterId]); }
   init(identity: InventoryIdentity): void {
     ++this.generation;
     this.minimumBagVersion = 0; this.minimumCharacterVersion = 0;
+    this.quoteExpected = null;
     this.identity = { ...identity }; this.current = this.initial(); this.pending = null;
     const saved = this.persistence.load(this.key());
     if (saved !== null) {
       const command = parseAssetCommand(JSON.parse(saved));
-      if (!['inventory.organize', 'quickslot.assign'].includes(command.command) || command.sessionId !== identity.sessionId || command.sessionEpoch !== identity.sessionEpoch || !('characterId' in command.payload) || command.payload.characterId !== identity.characterId) throw new Error('INVALID_PENDING_INVENTORY_COMMAND');
+      if (!['inventory.organize', 'quickslot.assign', 'inventory.expand'].includes(command.command) || command.sessionId !== identity.sessionId || command.sessionEpoch !== identity.sessionEpoch || !('characterId' in command.payload) || command.payload.characterId !== identity.characterId) throw new Error('INVALID_PENDING_INVENTORY_COMMAND');
       this.pending = command as Mutation;
       this.current.pendingOperationId = command.operationId;
     }
   }
-  close(): void { ++this.generation; this.current.status = 'closed'; }
+  close(): void { ++this.generation; this.current.status = 'closed'; this.current.quote = null; this.quoteExpected = null; }
   reset(): void { this.close(); this.identity = null; this.pending = null; this.current = this.initial(); }
   async open(): Promise<void> {
     if (!this.identity) throw new Error('NO_ACTIVE_CHARACTER');
@@ -59,6 +63,33 @@ export class InventoryCoordinator {
     await this.submit(parseAssetCommand({ protocolVersion: 2, command: 'quickslot.assign', operationId, sessionId: i.sessionId, sessionEpoch: i.sessionEpoch,
       expected: [{ kind: 'character', id: i.characterId, version: this.current.quickSlots!.version }], payload: { characterId: i.characterId, slotIndex, templateId } }) as Mutation);
   }
+  /** Backpack unlock is available anywhere in town and never invents a bank context. */
+  async expansionQuote(): Promise<InventoryExpansionQuote | null> {
+    const identity = this.requireReady(), bag = this.current.backpack!, quick = this.current.quickSlots!;
+    if (bag.unlockStage === null || bag.unlockStage >= 4) throw new Error('CONTAINER_NOT_EXPANDABLE');
+    const generation = this.generation;
+    this.current.status = 'loading'; this.current.quote = null; this.quoteExpected = null;
+    try {
+      const result = await this.query('inventory.expansionQuote', { characterId: identity.characterId, containerId: bag.containerId, targetStage: bag.unlockStage + 1, contextId: undefined });
+      if (generation !== this.generation) return null;
+      if ('error' in result) throw new Error(result.error.code);
+      const quote = result.data;
+      if (quote.containerId !== bag.containerId || quote.targetStage !== bag.unlockStage + 1 || quote.costs.length !== 1 || quote.costs[0].currency !== 'gold') throw new Error('QUOTE_MISMATCH');
+      if (result.versions.length !== 3 || !result.versions.some(v => v.kind === 'character' && v.id === identity.characterId && v.version === quick.version) || !result.versions.some(v => v.kind === 'container' && v.id === bag.containerId && v.version === bag.version) || result.versions.filter(v => v.kind === 'wallet').length !== 1) throw new Error('QUOTE_STALE');
+      this.current.quote = quote; this.quoteExpected = result.versions;
+      this.current.status = bag.slots.length ? 'ready' : 'empty'; this.current.code = null;
+      return structuredClone(quote);
+    } catch (error) {
+      if (generation === this.generation) { this.current.status = 'failed'; this.current.code = error instanceof Error ? error.message : 'QUOTE_FAILED'; }
+      return null;
+    }
+  }
+  async expand(operationId: string): Promise<void> {
+    const identity = this.requireReady(), quote = this.current.quote;
+    if (!quote || !this.quoteExpected) throw new Error('NO_EXPANSION_QUOTE');
+    await this.submit(parseAssetCommand({ protocolVersion: 2, command: 'inventory.expand', operationId, sessionId: identity.sessionId, sessionEpoch: identity.sessionEpoch,
+      expected: this.quoteExpected, payload: { characterId: identity.characterId, containerId: quote.containerId, targetStage: quote.targetStage, paymentCurrency: 'gold', quoteRef: quote.quoteRef } }) as Mutation);
+  }
   private requireReady(): InventoryIdentity {
     if (!this.identity || !this.current.backpack || !this.current.quickSlots || !['ready', 'empty'].includes(this.current.status) || this.pending) throw new Error('INVENTORY_NOT_READY');
     return this.identity;
@@ -66,6 +97,7 @@ export class InventoryCoordinator {
   private async submit(command: Mutation): Promise<void> {
     const text = encodeAssetRequest(command);
     this.persistence.save(this.key(), text); // Failure here prevents mutation transmission.
+    this.current.quote = null; this.quoteExpected = null;
     this.pending = structuredClone(command); this.current.pendingOperationId = command.operationId;
     await this.sendPending(command, text);
   }
@@ -113,6 +145,7 @@ export class InventoryCoordinator {
     return decodeAssetResponse(request, await this.transport.send(encodeAssetRequest(request))) as AssetQueryResponse<K>;
   }
   private async refresh(generation: number): Promise<void> {
+    this.current.quote = null; this.quoteExpected = null;
     const characterId = this.identity!.characterId;
     try {
       const [bagResult, quickResult] = await Promise.all([this.query('inventory.get', { characterId, containerKind: 'backpack', contextId: undefined }), this.query('quickslot.get', { characterId })]);

@@ -7,6 +7,9 @@ import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuni
 import { WarriorSpriteSheetView } from './WarriorSpriteSheetView';
 import { WarriorSkillEffects } from './WarriorSkillEffects';
 import { skillCuePixels, WarriorBodyAnimation } from './WarriorSkillAnimation';
+import { BankPanel } from './ui/BankPanel';
+import { connectBankPreview } from './net/BankPreview';
+import type { BankCoordinator } from './net/BankCoordinator';
 import { InventoryPanel } from './ui/InventoryPanel';
 import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
@@ -47,6 +50,11 @@ export class Prototype extends Component {
     private mode: 1 | 3 = 1;
     private encounter = new EncounterModel();
     private roundLabel!: Label;
+    private bankPanel: BankPanel | null = null;
+    private bankConnecting = false;
+    private bankGeneration = 0;
+    private bankKeyHeld = false;
+    private bankHadStats = false;
     private inventoryPanel: InventoryPanel | null = null;
     private inventoryConnecting = false;
     private inventoryConnectGeneration = 0;
@@ -65,7 +73,8 @@ export class Prototype extends Component {
         this.controls = this.makeGraphics('Controls');
         this.text('308 动作样板 · 战士技能动画', -30, 242, 22, 730);
         this.text('背包 B', 430, 242, 16, 80);
-        this.inventoryNotice = this.text('', 0, 150, 17, 800);
+        this.text('银行 N', 430, 198, 16, 80);
+        this.inventoryNotice = this.text('N：银行（需本机预览服务）', 0, 150, 17, 800);
         this.text('WASD移动 · 空格普攻 · E十字斩 · F崩山击 · Q拔刀斩 · G崩山裂地斩 · R重置 · 1/3敌人 · B背包', 0, 212, 14);
         this.healthStatus = this.text('', -130, 178, 17, 660);
         this.healthStatus.horizontalAlign = Label.HorizontalAlign.LEFT;
@@ -106,6 +115,8 @@ export class Prototype extends Component {
         input.off(Input.EventType.KEY_DOWN, this.keyDown, this);
         input.off(Input.EventType.KEY_UP, this.keyUp, this);
         game.off(Game.EVENT_HIDE, this.onHideInput, this);
+        ++this.bankGeneration;
+        this.bankPanel?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
     }
@@ -125,7 +136,29 @@ export class Prototype extends Component {
         this.inventoryNotice.string = preview ? '本机背包试玩 · 临时数据' : '';
     }
 
+    public attachBank(coordinator: BankCoordinator, contextId: string, labels: Record<string, string>): void {
+        this.bankPanel?.dispose();
+        this.bankPanel = new BankPanel(this.node, coordinator, { contextId,
+            nextOperationId: () => `bank-${Date.now().toString(36)}-${++this.operationSequence}-${Math.random().toString(36).slice(2, 10)}`,
+            templateLabel: id => labels[id] ?? id,
+            onVisibility: visible => { if (visible) { this.clearInput(); this.bankHadStats = profiler.isShowingStats(); profiler.hideStats(); } else if (this.bankHadStats) profiler.showStats(); },
+        });
+    }
+    private async toggleBank(): Promise<void> {
+        if (this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting) return;
+        if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
+        if (!this.bankPanel) {
+            const generation = ++this.bankGeneration; this.bankConnecting = true; this.inventoryNotice.string = '正在连接银行…';
+            try { const preview = await connectBankPreview(); if (!this.isValid || generation !== this.bankGeneration) return; this.attachBank(preview.coordinator, preview.contextId, preview.labels); this.inventoryNotice.string = '本机银行试玩 · 临时数据与测试价格'; }
+            catch { if (this.isValid && generation === this.bankGeneration) this.inventoryNotice.string = '银行尚未连接；本机试玩需启用 bankPreview 并启动银行服务'; return; }
+            finally { if (generation === this.bankGeneration) this.bankConnecting = false; }
+        }
+        await this.bankPanel?.open();
+    }
+
     private async toggleInventory(): Promise<void> {
+        if (this.bankPanel?.isOpen || this.bankConnecting) return;
         if (this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
         if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (!this.inventoryPanel) {
@@ -173,12 +206,13 @@ export class Prototype extends Component {
     }
 
     private touchStart(e: EventTouch): void {
-        if (this.inventoryPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen) return;
         const id = e.getID();
         if (id === null) return;
         const p = this.point(e);
+        if (p.x >= 390 && p.x <= 470 && p.y >= 180 && p.y <= 215) { void this.toggleBank(); return; }
         if (p.x >= 390 && p.x <= 470 && p.y >= 225 && p.y <= 260) { void this.toggleInventory(); return; }
-        if (this.inventoryConnecting) return;
+        if (this.inventoryConnecting || this.bankConnecting) return;
         if (Math.abs(p.x) < 410 && p.y > 45 && p.y < 105 && this.encounter.state !== 'fighting') {
             if (this.encounter.state !== 'ready') this.restartEncounter();
             this.encounter.start();
@@ -207,7 +241,7 @@ export class Prototype extends Component {
     }
 
     private touchMove(e: EventTouch): void {
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting) return;
         if (e.getID() !== this.stickId) return;
         const p = this.point(e);
         const x = (p.x + 345) / 68;
@@ -217,7 +251,7 @@ export class Prototype extends Component {
     }
 
     private touchEnd(e: EventTouch): void {
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting) return;
         const id = e.getID();
         if (id === null) return;
         if (e.getID() === this.stickId) {
@@ -229,10 +263,13 @@ export class Prototype extends Component {
     }
 
     private keyDown(e: EventKeyboard): void {
+        if (e.keyCode === KeyCode.KEY_N) { if (!this.bankKeyHeld) { this.bankKeyHeld = true; void this.toggleBank(); } return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
         if (e.keyCode === KeyCode.KEY_B) { if (!this.inventoryKeyHeld) { this.inventoryKeyHeld = true; void this.toggleInventory(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting) return;
         if (e.keyCode === KeyCode.ENTER && this.encounter.state !== 'fighting') {
             if (this.encounter.state !== 'ready') this.restartEncounter();
             this.encounter.start(); return;
@@ -252,12 +289,13 @@ export class Prototype extends Component {
     }
 
     private keyUp(e: EventKeyboard): void {
+        if (e.keyCode === KeyCode.KEY_N) this.bankKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_B) this.inventoryKeyHeld = false;
         this.keys.delete(e.keyCode);
         if (e.keyCode === KeyCode.SPACE && this.attackIds.size === 0) this.model.release();
     }
 
-    private onHideInput(): void { this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.clearInput(); }
+    private onHideInput(): void { this.bankKeyHeld = false; if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; } this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.clearInput(); }
 
     private clearInput(): void {
         this.keys.clear(); this.attackIds.clear(); this.stickId = null;
@@ -266,10 +304,11 @@ export class Prototype extends Component {
 
     update(dt: number): void {
         this.inventoryPanel?.update();
+        this.bankPanel?.update();
         this.frames++; this.fpsTime += dt;
         if (this.fpsTime >= 0.5) { this.fps = Math.round(this.frames / this.fpsTime); this.frames = this.fpsTime = 0; }
         const has = (a: KeyCode, b: KeyCode) => Number(this.keys.has(a) || this.keys.has(b));
-        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting;
+        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting;
         const x = inventoryBlocked ? 0 : this.horizontalInput();
         const y = inventoryBlocked ? 0 : this.stickId !== null ? this.axis.y : has(KeyCode.KEY_W, KeyCode.ARROW_UP) - has(KeyCode.KEY_S, KeyCode.ARROW_DOWN);
         this.accumulator += Math.min(dt, 0.1);

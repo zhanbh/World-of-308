@@ -10,6 +10,7 @@ import type {
   ServiceContextEntity,
 } from './town-model.ts';
 import { DEFAULT_TOWN_MAP } from './town-model.ts';
+import { bankContainerView } from '../bank/bank-service.ts';
 import { parseAssetResponse, parseAssetQueryResponse } from '../../../shared/src/protocol/asset-v2.ts';
 import type { AssetResponse, AssetQueryResponse } from '../../../shared/src/protocol/asset-v2.ts';
 
@@ -628,132 +629,35 @@ export class TownService {
     const currentTime = time(this.options.clock.now());
 
     return await this.options.store.run(async tx => {
+      const reject = (code: string) => parseAssetQueryResponse('inventory.get', { requestId, serverTime: currentTime, error: { code } });
       const session = await tx.get<LoginSession>(sessionId);
-      if (!session || session.status === 'revoked') {
-        return parseAssetQueryResponse('inventory.get', {
-          requestId,
-          serverTime: currentTime,
-          error: { code: 'SESSION_REVOKED' },
-        });
-      }
-      if (session.epoch !== sessionEpoch) {
-        return parseAssetQueryResponse('inventory.get', {
-          requestId,
-          serverTime: currentTime,
-          error: { code: 'VERSION_CONFLICT' },
-        });
-      }
-
+      if (!session || session.schemaVersion !== 2 || session.id !== sessionId || session.status !== 'active') return reject('SESSION_REVOKED');
+      if (session.epoch !== sessionEpoch) return reject('VERSION_CONFLICT');
+      const account = await tx.get<LoginAccount>(session.accountId);
+      if (!account || account.schemaVersion !== 2 || account.id !== session.accountId || account.currentSessionId !== sessionId || account.sessionEpoch !== sessionEpoch) return reject('SESSION_REVOKED');
       const character = await tx.get<CharacterEntity>(characterId);
-      if (!character || character.accountId !== session.accountId) {
-        return parseAssetQueryResponse('inventory.get', {
-          requestId,
-          serverTime: currentTime,
-          error: { code: 'NOT_FOUND_OR_FORBIDDEN' },
-        });
-      }
-
-      if (containerKind === 'personalVault') {
-        if (!contextId) {
-          return parseAssetQueryResponse('inventory.get', {
-            requestId,
-            serverTime: currentTime,
-            error: { code: 'CONTEXT_INVALID' },
-          });
-        }
-
+      if (!character || character.schemaVersion !== 2 || character.id !== characterId || character.accountId !== account.id || account.selectedCharacterId !== characterId || !Object.values(account.characterIdsByClass).includes(characterId)) return reject('NOT_FOUND_OR_FORBIDDEN');
+      if (!['backpack', 'personalVault', 'accountVault'].includes(containerKind)) return reject('INVALID_ARGUMENT');
+      if (containerKind !== 'backpack') {
+        if (!contextId) return reject('CONTEXT_INVALID');
         const context = await tx.get<ServiceContextEntity>(contextId);
-        if (
-          !context ||
-          context.status !== 'open' ||
-          context.serviceKind !== 'bank' ||
-          context.characterId !== character.id ||
-          context.rolePlayEpoch !== character.rolePlayEpoch ||
-          (character.townState && context.locationRevision !== character.townState.locationRevision)
-        ) {
-          return parseAssetQueryResponse('inventory.get', {
-            requestId,
-            serverTime: currentTime,
-            error: { code: 'CONTEXT_INVALID' },
-          });
-        }
-
-        // Verify character is still within bank range
-        if (character.townState) {
-          const bankAnchor = manifest.serviceAnchors[context.anchorId];
-          if (bankAnchor) {
-            const distSq =
-              (character.townState.position.x - bankAnchor.x) ** 2 +
-              (character.townState.position.y - bankAnchor.y) ** 2;
-            if (distSq > 576) {
-              return parseAssetQueryResponse('inventory.get', {
-                requestId,
-                serverTime: currentTime,
-                error: { code: 'LOCATION_NOT_ALLOWED' },
-              });
-            }
-          }
-        }
-
-        const vault = await tx.get<ContainerEntity>(character.personalVaultId);
-        if (!vault) {
-          return parseAssetQueryResponse('inventory.get', {
-            requestId,
-            serverTime: currentTime,
-            error: { code: 'NOT_FOUND_OR_FORBIDDEN' },
-          });
-        }
-
-        const slots = Object.entries(vault.slots).map(([idx, entry]) => ({
-          index: Number(idx),
-          entry,
-        }));
-
-        return parseAssetQueryResponse('inventory.get', {
-          requestId,
-          serverTime: currentTime,
-          versions: [{ kind: 'container', id: vault.id, version: vault.version }],
-          data: {
-            containerId: vault.id,
-            version: vault.version,
-            kind: 'personalVault',
-            owner: { kind: 'character', characterId: character.id },
-            capacity: vault.capacity,
-            unlockStage: vault.stage,
-            slots,
-          },
-        });
+        const town = character.townState;
+        if (!context || context.schemaVersion !== 2 || context.id !== contextId || context.status !== 'open' || context.serviceKind !== 'bank' || context.accountId !== account.id || context.characterId !== character.id || context.rolePlayEpoch !== character.rolePlayEpoch || !town || context.sceneEpoch !== town.sceneEpoch || context.locationRevision !== town.locationRevision) return reject('CONTEXT_INVALID');
+        const anchor = manifest.serviceAnchors[context.anchorId];
+        if (character.location.kind !== 'town' || character.location.mapId !== manifest.mapId || town.mapRef !== manifest.mapId || !anchor || anchor.serviceKind !== 'bank') return reject('CONTEXT_INVALID');
+        const distance = (town.position.x - anchor.x) ** 2 + (town.position.y - anchor.y) ** 2;
+        if (!Number.isFinite(distance) || distance > 576) return reject('LOCATION_NOT_ALLOWED');
       }
-
-      // Backpack
-      const backpack = await tx.get<ContainerEntity>(character.backpackId);
-      if (!backpack) {
+      const id = containerKind === 'backpack' ? character.backpackId : containerKind === 'personalVault' ? character.personalVaultId : account.accountVaultId;
+      const container = await tx.get<ContainerEntity>(id);
+      if (!container || container.schemaVersion !== 2 || container.id !== id || container.kind !== containerKind || container.accountId !== account.id || (containerKind === 'accountVault' ? container.characterId !== undefined : container.characterId !== character.id)) return reject('NOT_FOUND_OR_FORBIDDEN');
+      try {
         return parseAssetQueryResponse('inventory.get', {
-          requestId,
-          serverTime: currentTime,
-          error: { code: 'NOT_FOUND_OR_FORBIDDEN' },
+          requestId, serverTime: currentTime,
+          versions: [{ kind: 'container', id: container.id, version: container.version }],
+          data: bankContainerView(container),
         });
-      }
-
-      const slots = Object.entries(backpack.slots).map(([idx, entry]) => ({
-        index: Number(idx),
-        entry,
-      }));
-
-      return parseAssetQueryResponse('inventory.get', {
-        requestId,
-        serverTime: currentTime,
-        versions: [{ kind: 'container', id: backpack.id, version: backpack.version }],
-        data: {
-          containerId: backpack.id,
-          version: backpack.version,
-          kind: 'backpack',
-          owner: { kind: 'character', characterId: character.id },
-          capacity: backpack.capacity,
-          unlockStage: backpack.stage,
-          slots,
-        },
-      });
+      } catch { return reject('CONFIG_NOT_READY'); }
     });
   }
 

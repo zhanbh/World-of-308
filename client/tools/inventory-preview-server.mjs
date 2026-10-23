@@ -6,6 +6,9 @@ import { createContextIdentityPort, loginKey } from '../../backend/src/identity/
 import { LoginService } from '../../backend/src/identity/login-service.ts';
 import { CharacterService } from '../../backend/src/character/character-service.ts';
 import { InventoryService } from '../../backend/src/inventory/inventory-service.ts';
+import { BankService } from '../../backend/src/bank/bank-service.ts';
+import { TownService } from '../../backend/src/town/town-service.ts';
+import { BANK_TEST_CONFIG } from '../../backend/test/fixtures/bank-fixture.mjs';
 
 export async function createInventoryPreview() {
   const store = new MemoryStore(), clock = { now: () => Date.now() };
@@ -23,6 +26,9 @@ export async function createInventoryPreview() {
   const characterId = created.outcome.data.characterId;
   const selected = await characters.execute({ ...auth, command: 'character.select', operationId: 'select-preview', expected: [], payload: { characterId } });
   if (selected.outcome.status !== 'committed') throw new Error('PREVIEW_SELECT_FAILED');
+  const town = new TownService({ store, clock });
+  const exited = await town.exitInn({ ...auth, command: 'scene.exitInn', operationId: 'exit-preview', expected: [], payload: { characterId, exitAnchorId: 'inn-door' } });
+  if (exited.outcome.status !== 'committed') throw new Error('PREVIEW_TOWN_FAILED');
   const catalog = {
     'item:hp-potion-small-v1': { version: 1, kind: 'consumable', quickAssignable: true },
     'item:mp-potion-small-v1': { version: 1, kind: 'consumable', quickAssignable: true },
@@ -37,11 +43,18 @@ export async function createInventoryPreview() {
     const slots = { 1: stack('preview-hp-a', 'item:hp-potion-small-v1', 3, 0), 6: stack('preview-mp-a', 'item:mp-potion-small-v1', 2, 1), 9: stack('preview-hp-b', 'item:hp-potion-small-v1', 5, 2), 13: stack('preview-mp-b', 'item:mp-potion-small-v1', 6, 3), 18: stack('preview-ore', 'preview:ore', 7, 4) };
     tx.set(journalId, { schemaVersion: 2, id: journalId, accountId: character.accountId, characterId, command: 'isolated-preview.seed', changes: { outputs: Object.values(slots).map((s, ordinal) => ({ ...s, ordinal })) } });
     tx.set(bag.id, { ...bag, slots, version: bag.version + 1 });
+    const account = await tx.get(character.accountId), wallet = await tx.get(account.walletId);
+    tx.set(wallet.id, { ...wallet, gold: '10000', points: '0' });
   });
   const service = new InventoryService({ store, clock, identity, catalog });
+  const bank = new BankService({ store, clock, identity, catalog, expansionConfig: BANK_TEST_CONFIG });
   return {
     bootstrap: { previewInstanceId: globalThis.crypto.randomUUID(), identity: { sessionId: session.sessionId, sessionEpoch: session.sessionEpoch, characterId }, templateLabels: { 'item:hp-potion-small-v1': '生命药水', 'item:mp-potion-small-v1': '法力药水', 'preview:ore': '矿石' }, assignableTemplates: ['item:hp-potion-small-v1', 'item:mp-potion-small-v1'] },
-    async rpc(value) { return value && Object.hasOwn(value, 'query') ? service.query(value) : service.execute(value); },
+    async rpc(value) {
+      if (value?.query === 'inventory.expansionQuote') return bank.query(value);
+      if (value?.command === 'inventory.expand') return bank.execute(value);
+      return value && Object.hasOwn(value, 'query') ? service.query(value) : service.execute(value);
+    },
   };
 }
 

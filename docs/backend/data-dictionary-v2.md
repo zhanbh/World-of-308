@@ -128,7 +128,7 @@ Location候选：`inn{characterId}`、`town{mapId,anchorId,originChallengeId?}`�
 | kind | backpack/personalVault/accountVault | 三种明确区分，不能只写vault |
 | capacity/unlockStage | Int，按kind初始化 | 背包与个人20/0，stage0–4且capacity=20+20×stage；账号100且stage不适用 |
 | slots | BoundedMap<slotIndex,Slot>，空 | 只允许0≤index<capacity，最多100；空格缺省，不用假物品占锁格 |
-| unlockConfigRef | Ref，背包/个人必填 | 当前阶段价格来源；历史支付流水保留原引用，账号库无解锁价格 |
+| unlockConfigRef | Ref，已付费扩容后必填 | stage0未支付可缺省；记录当前阶段所用版本，历史支付流水保留原引用，账号库无解锁价格 |
 
 Slot为判别联合：`equipment{itemId,sortHeader}`或`stack{stackId,templateRef,quantity,binding,traceRef}`。sortHeader只含可信生成的不可变itemLevel/quality/slotKind，不含可变装备属性。quantity为1–20，同模板不同绑定/归属不合堆。stackId是容器内可寻址单位，拆分/合并可产生新ID，来源账本守恒，不能当作永不变化的模板ID。
 
@@ -387,3 +387,15 @@ H.transitionClock是唯一转场计时权威，prepare建立、activate保留并
 ### ST04 本地实现的数量读模型
 
 quickSlots仍只存角色上的3个模板ID或null，不存格子/stackId或第二份道具数量。`quickslot.get`的数量为权威背包当前合法堆的聚合，读模型版本向量同时引用角色与背包；模板耗尽保留绑定。容器公开视图沿既有DTO只传模板ID、公开绑定及traceRef指针，不外传内部accountId或来源流水正文。
+
+## ST09 字段实施补充（2026-10-23）
+
+内部 `ContainerEntity` 的私有容器使用 `stage:0..4`，公开 `ContainerView` 使用 `unlockStage`；capacity严格等于20+20×stage。账号库容量100，公开unlockStage=null，内部初始化无stage（兼容已有stage=0载体）；不能为兼容生成可付费账号库档位。内部unlockConfigRef在实际解锁后记录该次配置；初始stage0尚未消费价格，不凭空捏造正式价格引用，修正上表“背包/个人必填”的初始化描述。
+
+内部stack.templateRef为 `{id,version}`，公开为模板ID字符串；内部account/character绑定带accountId，公开account绑定仅kind，character绑定仅kind及characterId。内部traceRef仍保留单个有界输出引用；转移流水inputs记录所有参与堆的完整旧quantity/traceRef及containerId，outputs含源余量和全部受影响目标堆、稳定ordinal及新traceRef。容器余额是唯一数量权威。
+
+`BankExpansionConfig`为显式注入不可变配置：`ref:{id,version}`、`profile:test或release`、`backpack[stage]:{gold}`、`personalVault[stage]:{gold,points}`；币价是正的规范uint64十进制字符串，不是number，不提供缺省价。扩容成功写container.unlockConfigRef、stage/capacity/version，钱包仅扣所选币并推进version；J保留charged/paymentCurrency/configRef/quoteRef及前后stage。
+
+创角同事务创建角色持有零汇总：`loginKey('holdings',[accountId,'character',characterId])`，`schemaVersion:2,id,accountId,scope:character,characterId,revision:0,domainRef,entries:[]`；domainRef取账号已存在的合法域。账号初始化对应`loginKey('holdings',[accountId,'account'])`。缺失/冲突不把旧资产当作零持有；真实旧数据需受控盘点重建。ST09跨scope转移按发布域映射更新entries中的`collectionKey/permanentCount/mailLatestExpiryAt`，保留邮件最大到期值，不扫描历史邮件。
+
+账号汇总保存账号库资产在所有允许职业上的适用key，不能只按当前登录职业过滤，否则换角色后会漏计共享物；角色汇总仅保存当前角色可用的key。跨scope转移对每个scope的适用key分别±1，未适用该角色时可不写角色汇总；同角色个人库↔背包不改汇总。每份entries≤64键、完整内部编码≤16KiB，未知域、负数或缺摘要均失败关闭。装备holderCharacterId在账号库移除，回本角色私有容器设为当前角色；不改绑定、词条、强化和耐久（耐久0仍持有）。

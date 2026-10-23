@@ -54,6 +54,9 @@ const serviceIntent = (value: unknown) => {
   return { command, payload: commandParsers[command](r.payload) };
 };
 const queryParsers = {
+  'bank.get': object({ characterId: id, contextId: id, vaultKind: choice('personalVault', 'accountVault') }),
+  'bank.itemVersion': object({ characterId: id, contextId: id, containerId: id, itemId: id }),
+  'inventory.expansionQuote': object({ characterId: id, containerId: id, targetStage: integer(1, 4), contextId: optional(id) }),
   'account.get': object({}),
   'character.get': object({ characterId: id }),
   'inventory.get': object({ characterId: id, containerKind, contextId: optional(id) }),
@@ -153,13 +156,14 @@ const resultParsers = {
   'mail.delete': object({ mailId: id, deleted: choice(true) }),
   'reward.claim': object({ grantId: id, itemId: id, state: choice('delivered') }),
 };
-type AssetFailure = { status: 'unknown'; code: 'RESULT_UNKNOWN' } | { status: 'rejected'; code: Value<typeof publicError> };
+type AssetFailure = { status: 'unknown'; code: 'RESULT_UNKNOWN' } | { status: 'rejected'; code: Value<typeof publicError>; availableCapacity?: number };
 export type AssetResponse<K extends AssetCommandName = AssetCommandName> = { operationId: string; serverTime: ReturnType<typeof time>; replayed: boolean;
   outcome: AssetFailure | { status: 'committed'; data: Value<typeof resultParsers[K]>; resultVersions: ReturnType<typeof parseExpected> } };
 export function parseAssetResponse<K extends AssetCommandName>(command: K, value: unknown): AssetResponse<K> {
   if (!Object.hasOwn(resultParsers, command)) throw new TypeError('UNSUPPORTED_COMMAND');
-  const outcome = union(object({ status: choice('unknown'), code: choice('RESULT_UNKNOWN') }), object({ status: choice('rejected'), code: publicError }), object({ status: choice('committed'), data: resultParsers[command], resultVersions: parseExpected }));
+  const outcome = union(object({ status: choice('unknown'), code: choice('RESULT_UNKNOWN') }), object({ status: choice('rejected'), code: publicError, availableCapacity: optional(integer(0, 2000)) }), object({ status: choice('committed'), data: resultParsers[command], resultVersions: parseExpected }));
   const result = bounded(object({ operationId, serverTime: time, replayed: boolean, outcome }), 16384)(value) as AssetResponse<K>;
+  if (result.outcome.status === 'rejected' && result.outcome.availableCapacity !== undefined && (command !== 'inventory.transfer' || !['BAG_FULL', 'CONTAINER_FULL'].includes(result.outcome.code))) throw new TypeError('INVALID_CAPACITY_HINT');
   if (command === 'inventory.expand' && result.outcome.status === 'committed') {
     const data = result.outcome.data as Value<typeof resultParsers['inventory.expand']>;
     if (data.capacity !== 20 + 20 * data.targetStage) throw new TypeError('INVALID_CONTAINER_CAPACITY');
@@ -192,6 +196,9 @@ const originalResult = (value: unknown) => {
   return { status: r.status, command, result: parseAssetResponse(command, r.result) };
 };
 const queryResults = {
+  'bank.get': object({ characterId: id, characterVersion: integer(), backpack: parseContainerView, vault: parseContainerView, wallet: object({ walletId: id, version: integer(), gold: resourceWire, points: resourceWire }) }),
+  'bank.itemVersion': object({ itemId: id, version: integer() }),
+  'inventory.expansionQuote': object({ containerId: id, targetStage: integer(1, 4), nextCapacity: choice(40, 60, 80, 100), configRef: object({ id, version: integer(1) }), quoteRef: id, costs: list(object({ currency, amount: resourceWire }), 2) }),
   'account.get': object({ characters: list(characterBrief, 2), selectedCharacterId: nullable(id), wallet, activeChallengeId: nullable(id), openSceneChallengeId: nullable(id) }),
   'character.get': object({ character: characterBrief, version: integer(), equipped: list(equippedEntry, 13), skills: list(object({ skillId: id, level: integer(1, 30), unlocked: boolean }), 4), attributes: list(affix, 32), location: object({ kind: choice('inn', 'town', 'dungeon'), anchorId: id }), stamina: integer(), staminaAsOf: time }),
   'inventory.get': parseContainerView,
@@ -212,7 +219,17 @@ export type AssetQueryResponse<K extends AssetQueryName = AssetQueryName> =
   | { requestId: string; serverTime: ReturnType<typeof time>; error: { code: Value<typeof publicError> } };
 export function parseAssetQueryResponse<K extends AssetQueryName>(query: K, value: unknown): AssetQueryResponse<K> {
   if (!Object.hasOwn(queryResults, query)) throw new TypeError('UNSUPPORTED_QUERY');
-  const result = bounded(union(object({ requestId: operationId, serverTime: time, versions: parseExpected, data: queryResults[query] }), object({ requestId: operationId, serverTime: time, error: object({ code: publicError }) })), 65536)(value) as AssetQueryResponse<K>;
+  const result = bounded(union(object({ requestId: operationId, serverTime: time, versions: parseExpected, data: queryResults[query] }), object({ requestId: operationId, serverTime: time, error: object({ code: publicError }) })), query === 'bank.get' ? 131072 : 65536)(value) as AssetQueryResponse<K>;
+  if ('data' in result && query === 'bank.get') {
+    const d = result.data as Value<typeof queryResults['bank.get']>;
+    if (d.backpack.kind !== 'backpack' || d.vault.kind === 'backpack' || d.backpack.owner.kind !== 'character' || d.backpack.owner.characterId !== d.characterId || (d.vault.owner.kind === 'character' && d.vault.owner.characterId !== d.characterId)) throw new TypeError('INVALID_BANK_SCOPE');
+    const expected = [{ kind: 'character', id: d.characterId, version: d.characterVersion }, { kind: 'container', id: d.backpack.containerId, version: d.backpack.version }, { kind: 'container', id: d.vault.containerId, version: d.vault.version }, { kind: 'wallet', id: d.wallet.walletId, version: d.wallet.version }];
+    if (result.versions.length !== 4 || expected.some(e => !result.versions.some(v => v.kind === e.kind && v.id === e.id && v.version === e.version))) throw new TypeError('INVALID_BANK_VERSIONS');
+  }
+  if ('data' in result && query === 'inventory.expansionQuote') {
+    const d = result.data as Value<typeof queryResults['inventory.expansionQuote']>;
+    if (d.nextCapacity !== 20 + d.targetStage * 20 || d.costs.length === 0 || new Set(d.costs.map(c => c.currency)).size !== d.costs.length || d.costs.some(c => c.amount === '0')) throw new TypeError('INVALID_EXPANSION_QUOTE');
+  }
   if ('data' in result && query === 'quickslot.get') {
     const data = result.data as Value<typeof queryResults['quickslot.get']>;
     if (data.slots.length !== 3 || data.slots.some((s, i) => s.slotIndex !== i || (s.templateId === null && s.quantity !== 0))) throw new TypeError('INVALID_QUICKSLOTS');
@@ -236,7 +253,7 @@ export function encodeAssetRequest(request: AssetCommand | AssetQuery): string {
 export function decodeAssetResponse(request: AssetCommand | AssetQuery, textValue: string): AssetResponse | AssetQueryResponse {
   if (request && typeof request === 'object' && Object.hasOwn(request, 'query')) {
     const intent = parseAssetQuery(request);
-    const response = parseAssetQueryResponse(intent.query, wire(textValue, 65536));
+    const response = parseAssetQueryResponse(intent.query, wire(textValue, intent.query === 'bank.get' ? 131072 : 65536));
     if (response.requestId !== intent.requestId) throw new TypeError('REQUEST_MISMATCH');
     if (intent.query === 'operation.get' && 'data' in response) {
       const data = response.data as Value<typeof queryResults['operation.get']>;

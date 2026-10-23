@@ -1,0 +1,31 @@
+import { MemoryStore } from '../../src/adapters/memory-store.ts';
+import { createContextIdentityPort, loginKey } from '../../src/identity/identity-v2.ts';
+import { LoginService } from '../../src/identity/login-service.ts';
+import { CharacterService } from '../../src/character/character-service.ts';
+import { TownService } from '../../src/town/town-service.ts';
+import { BankService } from '../../src/bank/bank-service.ts';
+export const BANK_TEST_CONFIG={ref:{id:'isolated-bank-test-prices',version:1},profile:'test',backpack:{1:{gold:'100'},2:{gold:'200'},3:{gold:'400'},4:{gold:'800'}},personalVault:{1:{gold:'150',points:'2'},2:{gold:'300',points:'4'},3:{gold:'600',points:'8'},4:{gold:'1200',points:'16'}}};
+export async function createBankFixture(options={}){
+ const store=new MemoryStore(),clock={now:()=>1000};let subject='bank-player';
+ const identity=createContextIdentityPort({appId:'app',environment:'test',sources:['minigame']},()=>({APPID:'app',ENV:'test',SOURCE:'minigame',OPENID:subject}));
+ const login=new LoginService({store,clock,identity,ticketTtlMs:60000,initialUnlocks:{},holdingsDomainRef:'bank-test-domain'});
+ const prep=await login.execute({protocolVersion:2,command:'session.prepare',payload:{launchId:'bank-launch',prepareOperationId:'bank-prepare'}});
+ const opened=await login.execute({protocolVersion:2,command:'session.commit',payload:{launchId:'bank-launch',ticketId:prep.outcome.data.ticketId,openOperationId:'bank-open'}});
+ const session=opened.outcome.data,auth={protocolVersion:2,sessionId:session.sessionId,sessionEpoch:session.sessionEpoch};
+ const characters=new CharacterService({store,clock,initialProgressionRef:{id:'progression-warrior-v1',version:1},initialWeaponTemplateRef:{id:'equipment:warrior-sword-white-v1',version:1}});
+ const created=await characters.execute({...auth,command:'character.create',operationId:'bank-create',expected:[],payload:{classId:'warrior',characterName:'银行'}});const characterId=created.outcome.data.characterId;
+ await characters.execute({...auth,command:'character.select',operationId:'bank-select',expected:[],payload:{characterId}});
+ const town=new TownService({store,clock});await town.exitInn({...auth,command:'scene.exitInn',operationId:'bank-exit',expected:[],payload:{characterId,exitAnchorId:'inn-door'}});
+ const context=await town.openService({...auth,command:'service.open',operationId:'bank-service',expected:[],payload:{characterId,serviceKind:'bank',anchorId:'bank'}});const contextId=context.outcome.data.contextId;
+ const character=()=>store.inspect(characterId),account=()=>store.inspect(character().accountId),bag=()=>store.inspect(character().backpackId),vault=(kind='personalVault')=>store.inspect(kind==='accountVault'?account().accountVaultId:character().personalVaultId),wallet=()=>store.inspect(account().walletId);
+ const catalog={potion:{version:1,kind:'consumable',quickAssignable:true},ore:{version:1,kind:'material',quickAssignable:false}};
+ const service=new BankService({store,clock,identity,catalog,expansionConfig:BANK_TEST_CONFIG,...options});let serial=0;
+ const query=(name,payload={})=>service.query({...auth,query:name,requestId:`bank-q-${++serial}`,payload:name==='operation.get'?payload:{characterId,contextId,...payload}});
+ const expected=(s,t,item)=>[{kind:'character',id:characterId,version:character().version},{kind:'container',id:s.id,version:s.version},{kind:'container',id:t.id,version:t.version},...(item?[{kind:'equipment',id:item.id,version:item.version}]:[])];
+ const transfer=(target,quantity=1,kind='personalVault',reverse=false)=>{const s=reverse?vault(kind):bag(),t=reverse?bag():vault(kind),item=target.kind==='equipment'?store.inspect(target.itemId):null;return {...auth,command:'inventory.transfer',operationId:`bank-op-${++serial}`,expected:expected(s,t,item),payload:{characterId,contextId,sourceContainerId:s.id,targetContainerId:t.id,target,quantity}};};
+ const stack=(id,quantity=10,binding={kind:'none'})=>({kind:'stack',stackId:id,templateRef:{id:'potion',version:1},quantity,binding,traceRef:`admitted:${id}`});
+ const seed=async(slots,kind='backpack')=>store.run(async tx=>{const v=kind==='backpack'?bag():vault(kind);tx.set(v.id,{...v,slots});for(const s of Object.values(slots))if(s.kind==='stack')tx.set(s.traceRef,{id:s.traceRef,command:'isolated-admitted-source',outputs:[s]});});
+ const fund=async(gold='10000',points='100')=>store.run(tx=>tx.set(wallet().id,{...wallet(),gold,points}));
+ const expand=async(kind='backpack',currency='gold')=>{const v=kind==='backpack'?bag():vault(kind),q=await query('inventory.expansionQuote',{containerId:v.id,targetStage:v.stage+1});if(q.error)return q;return{...auth,command:'inventory.expand',operationId:`bank-expand-${++serial}`,expected:q.versions,payload:{characterId,contextId,containerId:v.id,targetStage:v.stage+1,paymentCurrency:currency,quoteRef:q.data.quoteRef}};};
+ return{store,clock,identity,catalog,service,auth,session,characterId,contextId,character,account,bag,vault,wallet,query,transfer,stack,seed,fund,expand,town,characters,setSubject:s=>{subject=s;},keys:async op=>({o:await loginKey('assetOp',[account().id,op]),j:await loginKey('assetJournal',[account().id,op])})};
+}

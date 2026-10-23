@@ -45,7 +45,7 @@ sessionId/epoch不是独立身份凭证；可信平台身份由传输Adapter取�
 | R13 operation.get | operationId | 本账号原意图结果/未找到；当前合法会话可查自己旧会话结果，不赋予旧会话写权 | Q09 |
 | R14 configuration.public | manifestId或服务端分配引用 | 客户端渲染/计算需要的公开内容和摘要；无私有权重、策略秘密/凭证，客户端不能选旧版获利 | Q13 |
 
-自己的银行/邮件服务数据是否可在未靠近时预取，具体服务许可范围需E07明确；不能为了HUD提醒把完整库存/领取权限全部开放。列表空、服务不可用和未授权是不同状态。
+银行完整库存读取和存取均要求有效银行上下文及服务端24px范围；不允许远程预取金库。邮件服务按城镇与批领合同执行；HUD摘要不开放完整库存/领取权限。列表空、服务不可用和未授权是不同状态。
 
 ## 3. 命令Interface目录
 
@@ -116,7 +116,7 @@ C11/C12编号保留作规则追踪，不代表可独立调用的资产端点；�
 
 ## 4. 服务上下文与授权约束
 
-服务上下文候选字段为contextId、accountId、characterId、sessionEpoch、locationRevision、serviceKind、anchorId、issuedAt及状态。服务端签发并验证，不接受客户端换NPC名称就调用强化/银行。
+已实现服务上下文字段为id（公开contextId）、schemaVersion、accountId、characterId、rolePlayEpoch、sceneEpoch、locationRevision、serviceKind、anchorId、issuedAt及状态。sessionEpoch由当前会话和账号指针核验，不另在上下文复制；服务端签发并验证，不接受客户端换NPC名称就调用强化/银行。
 
 上下文根据服务端最后确认的城镇位置/地点版本及合法移动输入签发，沿可验证动作协议，不信任客户端自报“已到NPC”。地图/出生锚点、移动时间及距离校验、签发/消费的版本竞争仍需联调；已有方案不等于已实现可信坐标源，不能仅持contextId就绕过地点校验。
 
@@ -242,3 +242,23 @@ C24a expected包括H/C；C24b包括H/C及prepare返回attempt，不要求客户�
 补充私有查询`quickslot.get`：payload为`{characterId}`；返回角色ID、角色version及恰好3个按slotIndex=0/1/2排列的`{slotIndex,templateId|null,quantity}`。quantity从当前背包同模板合法堆汇总，耗尽仍保留模板并返回0；不持久化第二份数量。versions同时包含角色和背包版本，客户端只能与同背包版本的R03视图一起应用，避免绑定未变但数量过期。此查询不返回内部账号绑定ID、审计正文或云身份。
 
 本轮已接入内存适配、平台无关协调器及Cocos Prototype拖拽面板，真实微信传输和手机实机仍未接入验收；本机隔离试玩不视为真机完成。
+
+## ST09 本地实现增量（2026-10-23）
+
+以下为 `shared/src/protocol/asset-v2.ts` 与 `BankService` 已实现的 v2 边界，补充上述查询目录；不会将本机内存验证等同微信 SDK/真机接入。
+
+| 查询 | payload | data / versions |
+| --- | --- | --- |
+| `bank.get` | `{characterId,contextId,vaultKind:personalVault或accountVault}` | 同一事务读取 `{characterId,characterVersion,backpack:ContainerView,vault:ContainerView,wallet:{walletId,version,gold,points}}`；versions恰含角色、两个容器、钱包，与data逐项同版 |
+| `bank.itemVersion` | `{characterId,contextId,containerId,itemId}` | 仅 `{itemId,version}` 及该装备版本；要求装备确实处于所选合法容器，不批读全部实例，不返回完整装备或来源正文 |
+| `inventory.expansionQuote` | `{characterId,containerId,targetStage,contextId?}` | `{containerId,targetStage,nextCapacity,configRef:{id,version},quoteRef,costs:[{currency,amount}]}`；versions含角色、该容器、钱包；背包城镇/个人库银行，账号库不可扩 |
+
+查询统一使用v2 envelope（requestId、sessionId/sessionEpoch等）。`bank.get` 因一次返回两份完整容器，完整公开响应UTF-8上限为128KiB；其他资产查询仍64KiB，普通写响应仍16KiB。单个内部容器64KiB、流水128KiB、原结果16KiB不随组合查询放宽。解析器验证银行组合的owner/kind与版本向量，私有绑定账号ID、模板内部版本对象和流水正文不外传。
+
+R03 `inventory.get` 的金库查询必须携contextId；账号库按account.accountVaultId取，不得回退成背包。两类金库都验证当前会话/选角、上下文账号/角色/rolePlayEpoch/sceneEpoch/locationRevision及银行锚点和24px距离。ST09保留旧TownService读入口并修正同样的账号库分支和公开投影，生产接入使用可信身份适配的BankService。
+
+C06的target为 `{kind:equipment,itemId}` 或 `{kind:stack,stackId}`，quantity为1～20且装备必须1。expected恰含当前角色、源/目标容器；装备另含实例。仅背包↔一个金库，不提供库↔库。按模板版本及完整绑定归属兼容填叠；所选量放不下，整笔返回 `rejected` + `code:BAG_FULL或CONTAINER_FULL` + 可选 `availableCapacity`（0～2000），无部分转移。该提示仅允许这两个错误码，其他拒绝仍仅status/code。
+
+C07 expected恰含角色、目标容器、钱包。quoteRef绑定配置id/version、容器及钱包/角色版本、targetStage与全部候选币价；确认选一种paymentCurrency。`BankExpansionConfig`显式注入test/release及各档价格，无内置默认价；背包每档必须金币价，个人库每档必须金币和点券价，均为正的规范uint64十进制字符串。缺项/非法配置CONFIG_NOT_READY，旧报价QUOTE_CHANGED、越档UNLOCK_STAGE_MISMATCH、余额不足CURRENCY_NOT_ENOUGH；不从兑换汇率推算价格。正式经济价格与实际发布配置仍待后续门禁。
+
+存取和扩容都在当前可信身份授权后查原O，同ID异参拒绝；同参原结果重放不再消费。资产、钱包（如适用）、持有投影（如适用）、A.writeRevision、J/O同笔；明确拒绝只留O，J孤立而O缺失拒绝继续消费。unknown沿原ID查operation.get或显式重发原文，notFound不是新建支付的许可。

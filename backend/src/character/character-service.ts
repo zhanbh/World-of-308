@@ -4,6 +4,7 @@ import { time } from '../../../shared/src/exact-values.ts';
 import type { Store, Clock } from '../ports/store.ts';
 import { CommitUnknown, StoreUnavailable } from '../ports/store.ts';
 import type { LoginAccount, LoginSession } from '../identity/login-model.ts';
+import { loginKey } from '../identity/identity-v2.ts';
 import type {
   CharacterNameOccupancy,
   CharacterEntity,
@@ -214,6 +215,11 @@ export class CharacterService {
           throw new Error('CHARACTER_ENTITY_INTEGRITY_VIOLATION');
         }
 
+        // A newly created role has no set equipment. Do not infer a zero summary for existing roles.
+        const holdingsId = await loginKey('holdings', [accountId, 'character', characterId]);
+        const accountHoldings = await tx.get<{ domainRef: string }>(await loginKey('holdings', [accountId, 'account']));
+        if (!accountHoldings || typeof accountHoldings.domainRef !== 'string' || await tx.get(holdingsId)) throw new Error('CHARACTER_ENTITY_INTEGRITY_VIOLATION');
+
         // 7. Construct entities
         // Write 1: Name occupancy
         const nameOccupancy: CharacterNameOccupancy = {
@@ -253,6 +259,7 @@ export class CharacterService {
           updatedAt: currentTime,
         };
         tx.set(characterId, character);
+        tx.set(holdingsId, { schemaVersion: 2, id: holdingsId, accountId, scope: 'character', characterId, revision: 0, domainRef: accountHoldings.domainRef, entries: [] });
 
         // Write 3: Backpack (capacity 20)
         const backpack: ContainerEntity = {

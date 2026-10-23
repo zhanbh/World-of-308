@@ -4,7 +4,7 @@
 
 ## 资产权威与有界汇总
 
-新增collectionHoldings/H(accountId,scope,characterId或空)，角色与账号共享各一份；字段为owner、revision、domainRef、按collectionKey的permanentCounts与mailLatestExpiryAt。collectionKey=(setId,itemLevel,slotId,可用职业)，只统计当前角色可用的套装部位。当前三类30档套装为11个部位，配置发布限制本期域最多64个collectionKey、每份完整编码≤16KiB；新套装/职业使域超界时先改域与预算，不运行时漏统计或清旧物。
+新增collectionHoldings/H(accountId,scope,characterId或空)，角色与账号共享各一份；字段为owner、revision、domainRef、按collectionKey的permanentCounts与mailLatestExpiryAt。collectionKey=(setId,itemLevel,slotId,可用职业)；角色scope只统计该角色可用的套装部位，账号scope保留账号库资产对所有允许职业的适用key，查询当前角色缺件时再选择该职业key。当前三类30档套装为11个部位，配置发布限制本期域最多64个collectionKey、每份完整编码≤16KiB；新套装/职业使域超界时先改域与预算，不运行时漏统计或清旧物。
 
 permanentCounts覆盖角色穿戴/背包/个人库/永久待领，账号scope覆盖账号库中合法共享物；其他角色绑定资产不混入当前角色范围。按职业可用性区分；scope仅按实际位置/来源所属决定，只有账号库中的物品进入账号共享汇总。角色背包/穿戴/个人库/待领/有效邮件即使未绑定或账号绑定，也只计其所属角色；绑定与职业仅决定资格，不扩大共享范围（用户批准11A）。缺件判断为角色永久数+可用共享数>0，或角色该key的mailLatestExpiryAt>业务判定时刻。耐久0仍是已持有，损毁/出售移出持有；未拾取地面不算持有。
 
@@ -46,3 +46,11 @@ permanentCounts覆盖角色穿戴/背包/个人库/永久待领，账号scope覆
 ## 验收出口
 
 覆盖：同件在包/穿戴/库/待领来回不重复计数；跨scope移转、其他角色绑定排除；卖最后一件/损毁最后一件恢复缺件；pending生成即计、领取不再加；邮件过期−1/恰到/＋1、删除最大贡献后仍有次大贡献、重复同期限贡献、查询与新发/领取竞争；累计大量待领时通关仍只读两份汇总；摘要损坏不补发；事务任一写失败全回滚。当前是设计测试要求，未运行。
+
+## ST09 本地实现与初始化补充（2026-10-23）
+
+`CharacterService`创角同一事务读取账号域摘要、验证角色零摘要不存在，并写scope=character/revision=0/entries=[]；不另扫描初始白武器或将非套装赠品当套装。账号零摘要仍由LoginService初始化。实际键为`loginKey('holdings',[accountId,'account'])`及`loginKey('holdings',[accountId,'character',characterId])`，内部entries字段为`{collectionKey,permanentCount,mailLatestExpiryAt}`，每份≤64键/16KiB。
+
+BankService的显式`BankHoldingsDomain`含ref及≤64个唯一collectionKey到(setId,setVersion,itemLevel,slotId,classId)的映射。套装跨账号库时先匹配所有职业适用key；账号摘要维护全部匹配项，角色摘要仅维护classId等于该角色职业的项。不能以当前角色职业筛掉账号库中的其他职业共享key。对某职业不适用的物品仍可合法存取，但该角色scope不虚增不适用部位。domainRef不符、缺摘要、未知key、负数或超预算整笔拒绝，不把完整性失败当作缺件补发。
+
+同角色包↔个人库不写持有；非套装不读取摘要；跨scope且当前角色适用时最多额外R2/W2，只有账号scope有适用key时R1/W1。实例、双容器、相关摘要、A/J/O同笔；邮件最大到期原值保留，本路径不查询邮件贡献索引。操作预算详见[物理映射ST09补充](asset-physical-mapping-v1.md)。本地实现不替代真实SDK一致性与正式域发布验证，也未宣称其他尚未实施来源已完整维护全部投影。

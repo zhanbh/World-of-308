@@ -1,0 +1,55 @@
+{
+  "feature": "warrior-loop-st09",
+  "date": "2026-10-23",
+  "base": "04a1cc7",
+  "branch": "feat-1.0.0",
+  "status": "local-capability-verified-platform-device-pending",
+  "approval_evidence": "好的，开始吧",
+  "accepted_spec_revision": "9394d40b88d29d4203c7deda0a5418e20f644557fef7cf1c7b54795635794bec",
+  "tickets": [
+    {
+      "id": "ST09-01",
+      "accepted_revision": "5fc2b51810a24e28e213f9d490a0314c078b6845e12938a5463f6fafcc9d82c4",
+      "execution_state": "local-verified",
+      "evidence": "docs/reviews/st09-local-verification.md"
+    },
+    {
+      "id": "ST09-02",
+      "accepted_revision": "cfb08691cda768b199fbf8e7d4cce584a58ef2314db1fb2ea601f1d2b30af315",
+      "execution_state": "local-verified",
+      "evidence": "docs/reviews/st09-local-verification.md"
+    },
+    {
+      "id": "ST09-03",
+      "accepted_revision": "02d29be2a7c18635a10eee90af0c2c7bb85052aec4a69db65f10737c5ee7126b",
+      "execution_state": "local-verified",
+      "evidence": "docs/reviews/st09-local-verification.md"
+    },
+    {
+      "id": "ST09-04",
+      "accepted_revision": "5cc1e442431aaf9b4d3e10a3e330177435c4ec9004c5d938c92900a5c5c2ce1b",
+      "execution_state": "local-verified",
+      "evidence": "docs/reviews/st09-local-verification.md"
+    }
+  ],
+  "checks": {
+    "all": "7/7",
+    "tooling_tests": 7,
+    "shared_tests": 112,
+    "backend_tests": 335,
+    "cocos_types": "passed",
+    "cocos_h5": "passed",
+    "browser_mouse": "passed",
+    "browser_touch_emulation": "passed",
+    "unknown_close_reopen": "passed"
+  },
+  "gaps": [
+    "formal-expansion-prices",
+    "wechat-sdk-identity-and-transactions",
+    "device-acceptance",
+    "town-ST05-ST08-ui-integration"
+  ],
+  "external_actions": false,
+  "committed": false,
+  "pushed": false
+}

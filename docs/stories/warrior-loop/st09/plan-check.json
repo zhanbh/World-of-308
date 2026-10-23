@@ -1,0 +1,48 @@
+{
+  "feature": "warrior-loop-st09",
+  "base": "04a1cc7",
+  "branch": "feat-1.0.0",
+  "approval_evidence": "好的，开始吧",
+  "plan_approval": "user-confirmed",
+  "spec_hash": "9394d40b88d29d4203c7deda0a5418e20f644557fef7cf1c7b54795635794bec",
+  "source_hash": "85bc040f2af20530698a415bd76cc2301c72df73d6307e8f8b2f7872730f9ec8",
+  "tickets": [
+    {
+      "id": "ST09-01",
+      "path": "docs/stories/warrior-loop/st09/issues/01-bank-access.md",
+      "revision": "5fc2b51810a24e28e213f9d490a0314c078b6845e12938a5463f6fafcc9d82c4",
+      "blocked_by": [],
+      "status": "accepted"
+    },
+    {
+      "id": "ST09-02",
+      "path": "docs/stories/warrior-loop/st09/issues/02-stack-transfer.md",
+      "revision": "cfb08691cda768b199fbf8e7d4cce584a58ef2314db1fb2ea601f1d2b30af315",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted"
+    },
+    {
+      "id": "ST09-03",
+      "path": "docs/stories/warrior-loop/st09/issues/03-equipment-transfer.md",
+      "revision": "02d29be2a7c18635a10eee90af0c2c7bb85052aec4a69db65f10737c5ee7126b",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted"
+    },
+    {
+      "id": "ST09-04",
+      "path": "docs/stories/warrior-loop/st09/issues/04-container-expansion.md",
+      "revision": "5cc1e442431aaf9b4d3e10a3e330177435c4ec9004c5d938c92900a5c5c2ce1b",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted"
+    }
+  ],
+  "dependencies_acyclic": true,
+  "implementation_started": true,
+  "external_actions": false
+}

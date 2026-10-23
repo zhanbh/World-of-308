@@ -16,6 +16,10 @@ export class InventoryPanel {
     private readonly ghost: Label;
     private readonly controls: Array<{ node: Node; width: number; always: boolean; mode: 'write' | 'refresh' | 'recovery' }> = [];
     private readonly gesture = new InventoryGesture();
+    private expansionModal: Node;
+    private expansionText: Label;
+    private expansionOpen = false;
+    private tappedIndex: number | null = null;
     private visible = false;
     private scroll = 0;
     private rendered = '';
@@ -42,7 +46,7 @@ export class InventoryPanel {
             window.addEventListener('pointermove', this.releaseOnReturn, true);
             window.addEventListener('blur', this.cancel);
         }
-        game.on(Game.EVENT_HIDE, this.cancel, this);
+        game.on(Game.EVENT_HIDE, this.onHide, this);
         this.state = coordinator.state;
         this.root = this.node(parent, 'InventoryPanel', 0, 0, 960, 540);
         this.root.active = false;
@@ -71,6 +75,13 @@ export class InventoryPanel {
         this.button('刷新视图', -6, -218, () => { if (this.state.status !== 'unknown') this.run(() => this.coordinator.open(), true); }, false, 126, 'refresh');
         this.button('确认操作结果', 140, -252, () => { if (this.state.status === 'unknown') this.run(() => this.coordinator.recover(), true); }, false, 126, 'recovery');
         this.button('继续此操作', 306, -252, () => { if (this.state.status === 'unknown') this.run(() => this.coordinator.retryOriginal(), true); }, false, 126, 'recovery');
+        this.button('扩容 +20', 0, 134, () => { void this.quoteExpansion(); }, false, 126);
+        this.expansionModal = this.node(this.root, 'BackpackExpansionConfirmation', 0, 0, 620, 230);
+        const quoteBg = this.expansionModal.addComponent(Graphics); quoteBg.fillColor = new Color(24, 34, 46); quoteBg.rect(-310, -115, 620, 230); quoteBg.fill();
+        this.expansionText = this.label(this.expansionModal, '', 0, 32, 21, 570, 110);
+        this.button('金币支付', -120, -65, () => { if (!this.expansionOpen) return; this.dismissExpansion(); void this.run(() => this.coordinator.expand(this.options.nextOperationId())); }, true, 150, 'write', this.expansionModal);
+        this.button('取消', 120, -65, () => this.dismissExpansion(), true, 150, 'write', this.expansionModal);
+        this.expansionModal.active = false;
         this.ghost = this.label(this.root, '', 0, 0, 16, 150, 50); this.ghost.node.active = false;
         this.root.on(Node.EventType.TOUCH_START, this.touchStart, this);
         this.root.on(Node.EventType.TOUCH_MOVE, this.touchMove, this);
@@ -90,15 +101,15 @@ export class InventoryPanel {
         try { await this.coordinator.open(); } catch { this.localError = '暂时无法读取背包，请刷新重试'; }
         this.update();
     }
-    close(): void { this.cancel(); this.visible = false; this.root.active = false; this.coordinator.close(); this.options.onVisibility(false); }
-    dispose(): void { this.close(); game.off(Game.EVENT_HIDE, this.cancel, this); if (sys.isBrowser && typeof window !== 'undefined') {
+    close(): void { this.dismissExpansion(); this.cancel(); this.visible = false; this.root.active = false; this.coordinator.close(); this.options.onVisibility(false); }
+    dispose(): void { this.close(); game.off(Game.EVENT_HIDE, this.onHide, this); if (sys.isBrowser && typeof window !== 'undefined') {
         window.removeEventListener('pointerdown', this.trackPointer, true); window.removeEventListener('pointerup', this.releaseOutside, true); window.removeEventListener('pointercancel', this.cancelPointer, true); window.removeEventListener('pointermove', this.releaseOnReturn, true); window.removeEventListener('blur', this.cancel);
     } this.root.destroy(); }
     update(): void {
         if (!this.visible) return;
         this.state = this.coordinator.state;
-        const stamp = `${this.state.backpack?.containerId}:${this.state.backpack?.version}:${this.state.status}`;
-        if (stamp !== this.bagStamp) { this.cancel(); this.bagStamp = stamp; }
+        const stamp = `${this.state.backpack?.containerId}:${this.state.backpack?.version}`;
+        if (stamp !== this.bagStamp) { this.dismissExpansion(); this.cancel(); this.bagStamp = stamp; }
         this.gesture.updateHold(Date.now());
         this.ghost.node.active = this.gesture.state.mode === 'drag';
         if (this.ghost.node.active) { this.ghost.string = '拖入道具快捷位'; this.ghost.node.setPosition(this.pointerPosition.x, this.pointerPosition.y + 30); }
@@ -130,10 +141,18 @@ export class InventoryPanel {
     }
     private ready(): boolean { return ['ready', 'empty'].includes(this.state.status); }
     private async run(action: () => Promise<void>, recovery = false): Promise<void> {
-        if (!this.visible || (!recovery && !this.ready()) || this.state.status === 'submitting' || this.state.status === 'loading') return;
+        if (!this.visible || this.expansionOpen || (!recovery && !this.ready()) || this.state.status === 'submitting' || this.state.status === 'loading') return;
         this.cancel(); this.localError = '';
         try { const promise = action(); this.update(); await promise; } catch { this.localError = '操作未完成，请刷新视图后重试'; }
         this.update();
+    }
+    private dismissExpansion(): void { this.expansionOpen = false; if (this.expansionModal) this.expansionModal.active = false; }
+    private async quoteExpansion(): Promise<void> {
+        if (!this.ready() || this.expansionOpen) return;
+        await this.run(async () => { const q = await this.coordinator.expansionQuote(); if (!q || !this.visible) return;
+            this.expansionOpen = true; this.expansionModal.active = true; this.expansionModal.setSiblingIndex(this.root.children.length - 1);
+            this.expansionText.string = `背包扩容：${q.nextCapacity - 20} → ${q.nextCapacity} 格\n金币 ${q.costs.find(c => c.currency === 'gold')?.amount ?? '?'}\n取消不会扣款`;
+        });
     }
     private point(event: EventTouch | EventMouse): { x: number; y: number } {
         const p = event.getUILocation(); const local = this.root.getComponent(UITransform)!.convertToNodeSpaceAR(new Vec3(p.x, p.y, 0));
@@ -144,29 +163,36 @@ export class InventoryPanel {
         const col = Math.floor((x - LEFT + 32) / ROW), row = Math.floor((102 - y + this.scroll) / ROW);
         const index = row * 5 + col;
         if (Math.abs(x - (LEFT + col * ROW)) > CELL / 2 || Math.abs(y - (68 - row * ROW + this.scroll)) > CELL / 2) return null;
-        return col >= 0 && col < 5 && index >= 0 && index < (this.state.backpack?.capacity ?? 0) ? index : null;
+        return col >= 0 && col < 5 && index >= 0 && index < 100 ? index : null;
     }
     private entryKey(entry?: Entry): string | null { return !entry ? null : entry.kind === 'stack' ? entry.stackId : entry.itemId; }
     private start(id: number, p: { x: number; y: number }, mouse: boolean): void {
-        if (!this.ready() || p.x < -376 || p.x > -36 || p.y < -170 || p.y > 102) return;
+        if (!this.ready() || this.expansionOpen || this.gesture.state.id !== null || p.x < -376 || p.x > -36 || p.y < -170 || p.y > 102) return;
         if (mouse && this.gesture.state.id === -1) this.cancel();
         const sourceIndex = this.sourceAt(p.x, p.y);
         const entry = this.state.backpack?.slots.find(slot => slot.index === sourceIndex)?.entry;
         this.gesture.pointerStart({ id, ...p, timeMs: Date.now(), sourceIndex, sourceKey: this.entryKey(entry), bagVersion: this.state.backpack?.version ?? -1, mouse });
+        if (this.gesture.state.id === id) this.tappedIndex = sourceIndex;
         this.pointerPosition = p;
     }
     private move(id: number, p: { x: number; y: number }): void { this.pointerPosition = p; const move = this.gesture.pointerMove(id, p.x, p.y, Date.now()); if (move.scrollDelta) this.scrollBy(move.scrollDelta); this.update(); }
     private end(id: number, p: { x: number; y: number }): void {
+        if (this.gesture.state.id !== id) return;
+        const tappedIndex = this.tappedIndex;
         const result = this.gesture.pointerEnd(id, p.x, p.y, Date.now()); this.ghost.node.active = false;
         this.state = this.coordinator.state;
-        if (!result || result.mode !== 'drag' || !this.ready()) return;
+        if (!result) return;
+        this.tappedIndex = null;
+        if (result.mode === 'tap' && tappedIndex !== null && tappedIndex >= (this.state.backpack?.capacity ?? 100)) { void this.quoteExpansion(); return; }
+        if (result.mode !== 'drag' || !this.ready()) return;
         const bag = this.coordinator.state.backpack;
         const entry = bag?.slots.find(slot => slot.index === result.sourceIndex)?.entry;
         if (bag?.version !== result.bagVersion || this.entryKey(entry) !== result.sourceKey || entry?.kind !== 'stack' || !this.options.canAssign(entry.templateRef)) return;
         const target = [52, -30, -112].findIndex(y => Math.abs(p.y - y) <= 30 && p.x >= 103 && p.x <= 323);
         if (target >= 0) void this.run(() => this.coordinator.assign(this.options.nextOperationId(), target, entry.templateRef));
     }
-    private cancel = (): void => { ++this.inputEpoch; this.gesture.cancel(); for (const reset of this.buttonResets) reset(); if (this.ghost) this.ghost.node.active = false; };
+    private onHide = (): void => { this.cancel(); this.dismissExpansion(); };
+    private cancel = (): void => { ++this.inputEpoch; this.gesture.cancel(); this.tappedIndex = null; for (const reset of this.buttonResets) reset(); if (this.ghost) this.ghost.node.active = false; };
     private touchStart = (e: EventTouch): void => { if (this.isMouseTouch(e) || e.getID() === null) return; this.suppressMouseUntil = Date.now() + 500; this.start(e.getID()!, this.point(e), false); e.propagationStopped = true; };
     private touchMove = (e: EventTouch): void => { if (this.isMouseTouch(e) || e.getID() === null) return; this.move(e.getID()!, this.point(e)); e.propagationStopped = true; };
     private touchEnd = (e: EventTouch): void => { if (this.isMouseTouch(e) || e.getID() === null) return; this.end(e.getID()!, this.point(e)); e.propagationStopped = true; };
@@ -180,8 +206,8 @@ export class InventoryPanel {
     };
     private node(parent: Node, name: string, x: number, y: number, width: number, height: number): Node { const n = new Node(name); n.layer = parent.layer; parent.addChild(n); n.setPosition(x, y); n.addComponent(UITransform).setContentSize(width, height); return n; }
     private label(parent: Node, value: string, x: number, y: number, size: number, width: number, height = 32): Label { const n = this.node(parent, 'Text', x, y, width, height); const label = n.addComponent(Label); label.string = value; label.fontSize = size; label.lineHeight = size + 4; label.horizontalAlign = Label.HorizontalAlign.CENTER; label.verticalAlign = Label.VerticalAlign.CENTER; label.overflow = Label.Overflow.SHRINK; label.color = new Color(236, 229, 208); return label; }
-    private button(value: string, x: number, y: number, action: () => void, always = false, width = 126, mode: 'write' | 'refresh' | 'recovery' = 'write'): void {
-        const n = this.node(this.root, value, x, y, width, 32); const g = n.addComponent(Graphics); g.fillColor = new Color(62, 78, 89); g.rect(-width / 2, -16, width, 32); g.fill(); this.label(n, value, 0, 0, 15, width - 4);
+    private button(value: string, x: number, y: number, action: () => void, always = false, width = 126, mode: 'write' | 'refresh' | 'recovery' = 'write', parent: Node = this.root): void {
+        const n = this.node(parent, value, x, y, width, 32); const g = n.addComponent(Graphics); g.fillColor = new Color(62, 78, 89); g.rect(-width / 2, -16, width, 32); g.fill(); this.label(n, value, 0, 0, 15, width - 4);
         this.controls.push({ node: n, width, always, mode });
         let touchedUntil = 0;
         let touchId: number | null = null;

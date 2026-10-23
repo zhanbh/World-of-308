@@ -75,3 +75,7 @@ ST05已获任务图及实施授权，当前工作分支 `feat/st05-equipment`，
 ## ST06 本地实施续接
 
 ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接续 `feat/st05-equipment`；商店药剂与白装购买、满包整笔拒绝（`BAG_FULL`）零扣款、报价变化校验（`QUOTE_CHANGED`）、穿戴中与商城绑定道具禁售、强化不涨价固定回收、双向法定比率（`10000 gold ⇄ 1 points`）整数兑换与纯模型 `ShopCoordinator` 已全部实现并通过本地验证；验收状态与双轴独立评审见[ST06交付记录](../../reviews/st06-06-local-verification-2026-10-23.md)、[Standards 独立复核](../../reviews/st06-standards-independent-review-2026-10-23.md)、[Spec 独立评审](../../reviews/st06-spec-independent-review-2026-10-23.md)与[任务入口](st06/README.md)。
+
+## ST09 本地实施续接
+
+2026-10-23，`feat-1.0.0`：用户确认的四项任务已完成本地能力验收，含实际Cocos银行、普通背包扩容、原结果恢复及独立评审修复。详见[任务入口](st09/README.md)及[试玩与验证](../../reviews/st09-local-verification.md)。正式价格/SDK/真机待验，不以本机通过标全平台Done。下一可玩检查节点仍是[城镇界面联调包](../../reviews/player-preview-milestones-v1.md)，ST05～08服务存在不代表面板已接入。
