@@ -1,3 +1,4 @@
+import { ASSET_CONTAINER_MAX_BYTES } from '../../../shared/src/asset-budgets.ts';
 import { parseAssetCommand, parseAssetQuery, parseAssetResponse, parseAssetQueryResponse, parseContainerView, parseHoldingsView } from '../../../shared/src/protocol/asset-v2.ts';
 import type { AssetCommand, AssetResponse, AssetQueryResponse, ContainerView } from '../../../shared/src/protocol/asset-v2.ts';
 import { resource, time } from '../../../shared/src/exact-values.ts';
@@ -95,7 +96,7 @@ export class BankService {
         const v = await tx.get<ContainerEntity>(id);
         requireValue(v?.schemaVersion === 2 && v.id === id && v.accountId === a.id && v.kind === kind && (kind === 'accountVault' ? v.characterId === undefined : v.characterId === c.id), 'NOT_FOUND_OR_FORBIDDEN');
         validateBankContainer(v, this.options.catalog);
-        budget(v, 65536);
+        budget(v, ASSET_CONTAINER_MAX_BYTES);
         return v;
     }
     private async wallet(tx: Transaction, a: LoginAccount) { const w = await tx.get<WalletEntity>(a.walletId); requireValue(w?.schemaVersion === 2 && w.id === a.walletId && w.accountId === a.id && Number.isSafeInteger(w.version) && w.version >= 0, 'CONFIG_NOT_READY'); try {
@@ -219,8 +220,8 @@ export class BankService {
                             changes = { itemId: item.id, beforeLocation: item.location, afterLocation: next.location, beforeVersion: item.version, afterVersion: next.version };
                         }
                         const ns = { ...s, slots: sourceSlots, version: inc(s.version), updatedAt: now }, nt = { ...t, slots: targetSlots, version: inc(t.version), updatedAt: now };
-                        budget(ns, 65536);
-                        budget(nt, 65536);
+                        budget(ns, ASSET_CONTAINER_MAX_BYTES);
+                        budget(nt, ASSET_CONTAINER_MAX_BYTES);
                         writes.push([s.id, ns], [t.id, nt]);
                         outcome = { status: 'committed', data: { sourceContainerId: s.id, targetContainerId: t.id, transferredQuantity: cmd.payload.quantity }, resultVersions: [{ kind: 'character', id: c.id, version: c.version }, { kind: 'container', id: s.id, version: ns.version }, { kind: 'container', id: t.id, version: nt.version }, ...writes.filter(([id]) => cmd.payload.target.kind === 'equipment' && id === cmd.payload.target.itemId).map(([id, e]) => ({ kind: 'equipment', id, version: (e as EquipmentEntity).version }))] };
                     }

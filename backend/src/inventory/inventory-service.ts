@@ -1,3 +1,4 @@
+import { ASSET_CONTAINER_MAX_BYTES, ASSET_ORGANIZE_JOURNAL_MAX_BYTES } from '../../../shared/src/asset-budgets.ts';
 import { parseAssetCommand, parseAssetQuery, parseAssetResponse, parseAssetQueryResponse, parseContainerView } from '../../../shared/src/protocol/asset-v2.ts';
 import type { AssetCommand, AssetResponse, AssetQueryResponse, ContainerView } from '../../../shared/src/protocol/asset-v2.ts';
 import { time } from '../../../shared/src/exact-values.ts';
@@ -48,7 +49,7 @@ export class InventoryService {
     requireValue(bag?.schemaVersion === 2 && bag.id === character.backpackId && bag.kind === 'backpack' && bag.accountId === account.id && bag.characterId === character.id, 'NOT_FOUND_OR_FORBIDDEN');
     // Pure validation includes bounds/headers/quantity/bindings; no old ancestor or equipment scans.
     validateBackpack(bag, this.options.catalog);
-    budget(bag, 65536);
+    budget(bag, ASSET_CONTAINER_MAX_BYTES);
     return bag;
   }
   private view(bag: ContainerEntity): ContainerView {
@@ -91,7 +92,7 @@ export class InventoryService {
           if (command.command === 'inventory.organize') {
             const organized = organizeBackpack(bag, command.payload.direction, this.options.catalog, journalId);
             const next = { ...bag, slots: organized.slots, version: increment(bag.version), updatedAt: now };
-            budget(next, 65536);
+            budget(next, ASSET_CONTAINER_MAX_BYTES);
             writes.push([bag.id, next]);
             changes = { containerId: bag.id, beforeVersion: bag.version, afterVersion: next.version, beforePositions: Object.entries(bag.slots).map(([index, s]) => [Number(index), s.kind === 'stack' ? s.stackId : s.itemId]), afterPositions: Object.entries(next.slots).map(([index, s]) => [Number(index), s.kind === 'stack' ? s.stackId : s.itemId]), lineage: organized.lineage };
             outcome = { status: 'committed', data: { containerId: bag.id, direction: command.payload.direction, mergedStacks: organized.mergedStacks }, resultVersions: [{ kind: 'container', id: bag.id, version: next.version }, { kind: 'character', id: character.id, version: character.version }] };
@@ -110,7 +111,7 @@ export class InventoryService {
             outcome = { status: 'committed', data: { slotIndex, templateId }, resultVersions: [{ kind: 'character', id: character.id, version: next.version }] };
           }
           const journal = { schemaVersion: 2, id: journalId, accountId: account.id, characterId: character.id, operationId: command.operationId, command: command.command, changes, createdAt: now };
-          budget(journal, 131072);
+          budget(journal, command.command === 'inventory.organize' ? ASSET_ORGANIZE_JOURNAL_MAX_BYTES : 131072);
           writes.push([account.id, { ...account, writeRevision: increment(account.writeRevision), updatedAt: now }], [journalId, journal]);
         } catch (error) {
           if (error instanceof Refusal || (error instanceof Error && ['CONFIG_NOT_READY', 'ITEM_NOT_ELIGIBLE'].includes(error.message))) {

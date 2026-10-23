@@ -399,3 +399,7 @@ quickSlots仍只存角色上的3个模板ID或null，不存格子/stackId或第�
 创角同事务创建角色持有零汇总：`loginKey('holdings',[accountId,'character',characterId])`，`schemaVersion:2,id,accountId,scope:character,characterId,revision:0,domainRef,entries:[]`；domainRef取账号已存在的合法域。账号初始化对应`loginKey('holdings',[accountId,'account'])`。缺失/冲突不把旧资产当作零持有；真实旧数据需受控盘点重建。ST09跨scope转移按发布域映射更新entries中的`collectionKey/permanentCount/mailLatestExpiryAt`，保留邮件最大到期值，不扫描历史邮件。
 
 账号汇总保存账号库资产在所有允许职业上的适用key，不能只按当前登录职业过滤，否则换角色后会漏计共享物；角色汇总仅保存当前角色可用的key。跨scope转移对每个scope的适用key分别±1，未适用该角色时可不写角色汇总；同角色个人库↔背包不改汇总。每份entries≤64键、完整内部编码≤16KiB，未知域、负数或缺摘要均失败关闭。装备holderCharacterId在账号库移除，回本角色私有容器设为当前角色；不改绑定、词条、强化和耐久（耐久0仍持有）。
+
+## ST09 编码预算补核（2026-10-24）
+
+完整UTF-8 JSON（含字段、所有权、绑定、来源头及转义）：容器文档≤256KiB，整理流水≤512KiB、其余资产流水≤128KiB，原结果≤16KiB；inventory.get≤128KiB、bank.get≤256KiB、其他资产查询≤64KiB。ID仍为已声明128字符ASCII，不以缩短ID或减少100格适配预算。协议解析与网络解码以及银行/背包/装备内部容器校验使用共享预算；实测见[补核验证](../reviews/st09-build-fix-verification.md)。

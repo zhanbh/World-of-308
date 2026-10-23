@@ -1,3 +1,4 @@
+import { assetQueryMaxBytes } from '../asset-budgets.ts';
 import { parseExpected, parseCharacterResponse } from './session-v2.ts';
 import { object, optional, nullable, choice, boolean, integer, id, operationId, text, list, union, bounded, wire } from './asset-schema.ts';
 import type { Value, Parse } from './asset-schema.ts';
@@ -219,7 +220,7 @@ export type AssetQueryResponse<K extends AssetQueryName = AssetQueryName> =
   | { requestId: string; serverTime: ReturnType<typeof time>; error: { code: Value<typeof publicError> } };
 export function parseAssetQueryResponse<K extends AssetQueryName>(query: K, value: unknown): AssetQueryResponse<K> {
   if (!Object.hasOwn(queryResults, query)) throw new TypeError('UNSUPPORTED_QUERY');
-  const result = bounded(union(object({ requestId: operationId, serverTime: time, versions: parseExpected, data: queryResults[query] }), object({ requestId: operationId, serverTime: time, error: object({ code: publicError }) })), query === 'bank.get' ? 131072 : 65536)(value) as AssetQueryResponse<K>;
+  const result = bounded(union(object({ requestId: operationId, serverTime: time, versions: parseExpected, data: queryResults[query] }), object({ requestId: operationId, serverTime: time, error: object({ code: publicError }) })), assetQueryMaxBytes(query))(value) as AssetQueryResponse<K>;
   if ('data' in result && query === 'bank.get') {
     const d = result.data as Value<typeof queryResults['bank.get']>;
     if (d.backpack.kind !== 'backpack' || d.vault.kind === 'backpack' || d.backpack.owner.kind !== 'character' || d.backpack.owner.characterId !== d.characterId || (d.vault.owner.kind === 'character' && d.vault.owner.characterId !== d.characterId)) throw new TypeError('INVALID_BANK_SCOPE');
@@ -253,7 +254,7 @@ export function encodeAssetRequest(request: AssetCommand | AssetQuery): string {
 export function decodeAssetResponse(request: AssetCommand | AssetQuery, textValue: string): AssetResponse | AssetQueryResponse {
   if (request && typeof request === 'object' && Object.hasOwn(request, 'query')) {
     const intent = parseAssetQuery(request);
-    const response = parseAssetQueryResponse(intent.query, wire(textValue, intent.query === 'bank.get' ? 131072 : 65536));
+    const response = parseAssetQueryResponse(intent.query, wire(textValue, assetQueryMaxBytes(intent.query)));
     if (response.requestId !== intent.requestId) throw new TypeError('REQUEST_MISMATCH');
     if (intent.query === 'operation.get' && 'data' in response) {
       const data = response.data as Value<typeof queryResults['operation.get']>;

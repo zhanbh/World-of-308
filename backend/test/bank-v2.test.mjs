@@ -113,3 +113,32 @@ test('second-role isolation fixture shares only account vault, never other role 
  const personal=await f.query('bank.get',{characterId:second,contextId,vaultKind:'personalVault'});assert.equal(personal.data.vault.slots.length,0);const shared=await f.query('bank.get',{characterId:second,contextId,vaultKind:'accountVault'});assert.equal(shared.data.vault.slots[0].entry.quantity,7);
  const q=await f.query('inventory.expansionQuote',{characterId:second,contextId,containerId:f.vault().id,targetStage:1});assert.equal(q.error.code,'NOT_FOUND_OR_FORBIDDEN');
 });
+
+for (const currency of ['gold','points']) test(`personal vault expands four stages with ${currency} and never charges past 100`,async()=>{
+ const f=await createBankFixture();await f.fund('10000','100');const balances=currency==='gold'?['9850','9550','8950','7750']:['98','94','86','70'];let last;
+ for(let stage=1;stage<=4;stage++){
+  last=await f.expand('personalVault',currency);assert.equal((await f.service.execute(last)).outcome.status,'committed');
+  const view=await f.query('bank.get',{vaultKind:'personalVault'});assert.equal(view.data.vault.capacity,[40,60,80,100][stage-1]);assert.equal(view.data.vault.unlockStage,stage);
+  assert.equal(view.data.wallet[currency],balances[stage-1]);assert.equal(view.data.wallet[currency==='gold'?'points':'gold'],currency==='gold'?'100':'10000');
+ }
+ const before=f.store.snapshot();assert.equal((await f.query('inventory.expansionQuote',{containerId:f.vault().id,targetStage:4})).error.code,'UNLOCK_STAGE_MISMATCH');assert.deepEqual(f.store.snapshot(),before);
+ assert.equal((await f.service.execute(last)).replayed,true);assert.deepEqual(f.store.snapshot(),before);
+ const retry={...last,operationId:`exhausted-${currency}`,expected:[{kind:'character',id:f.characterId,version:f.character().version},{kind:'container',id:f.vault().id,version:f.vault().version},{kind:'wallet',id:f.wallet().id,version:f.wallet().version}]};
+ const wallet=f.wallet(),vault=f.vault();assert.equal((await f.service.execute(retry)).outcome.code,'UNLOCK_STAGE_MISMATCH');assert.deepEqual(f.wallet(),wallet);assert.deepEqual(f.vault(),vault);
+});
+
+for(const first of ['deposit','withdraw'])test(`opposite equipment transfers serialize ${first} first and retry preserves both summaries`,async()=>{
+ const f=await createBankFixture({holdingsDomain:domain}),outgoing=await seedEquipment(f,true),role=await seedHolding(f);
+ const {loginKey}=await import('../src/identity/identity-v2.ts'),account=await loginKey('holdings',[f.account().id,'account']);
+ const incoming={...structuredClone(outgoing),id:'incoming-gear',holderCharacterId:undefined,location:{kind:'container',containerId:f.vault('accountVault').id}};
+ await f.store.run(async tx=>{tx.set(incoming.id,incoming);tx.set(f.vault('accountVault').id,{...f.vault('accountVault'),slots:{0:{kind:'equipment',itemId:incoming.id,sortHeader:{itemLevel:30,quality:'orange',slotKind:'weapon'}}}});const h=await tx.get(account);tx.set(account,{...h,entries:[{collectionKey:'warrior-set-weapon',permanentCount:1,mailLatestExpiryAt:null}]});});
+ const cmds={deposit:f.transfer({kind:'equipment',itemId:outgoing.id},1,'accountVault'),withdraw:f.transfer({kind:'equipment',itemId:incoming.id},1,'accountVault',true)};
+ let arrivals=0,ready,releaseFirst,releaseSecond;const both=new Promise(r=>ready=r),gate1=new Promise(r=>releaseFirst=r),gate2=new Promise(r=>releaseSecond=r);
+ f.store.beforeCommit=async attempt=>{if(attempt!==0)return;const index=arrivals++;if(arrivals===2)ready();await(index===0?gate1:gate2);};
+ const other=first==='deposit'?'withdraw':'deposit',a=f.service.execute(cmds[first]),b=f.service.execute(cmds[other]);await both;releaseFirst();assert.equal((await a).outcome.status,'committed');releaseSecond();assert.equal((await b).outcome.code,'VERSION_CONFLICT');f.store.beforeCommit=undefined;assert.ok(f.store.conflicts>=1);
+ const read=await f.query('bank.get',{vaultKind:'accountVault'});assert.equal(read.data.backpack.slots.length+read.data.vault.slots.length,2);
+ const retry=f.transfer({kind:'equipment',itemId:other==='deposit'?outgoing.id:incoming.id},1,'accountVault',other==='withdraw');assert.equal((await f.service.execute(retry)).outcome.status,'committed');
+ const final=await f.query('bank.get',{vaultKind:'accountVault'});assert.deepEqual(final.data.backpack.slots.map(s=>s.entry.itemId),[incoming.id]);assert.deepEqual(final.data.vault.slots.map(s=>s.entry.itemId),[outgoing.id]);
+ assert.equal(f.store.inspect(role).entries[0].permanentCount,1);assert.equal(f.store.inspect(account).entries[0].permanentCount,1);assert.equal(f.store.inspect(role).entries[0].mailLatestExpiryAt,5000);
+ for(const[item,container]of[[outgoing,final.data.vault],[incoming,final.data.backpack]])assert.deepEqual(f.store.inspect(item.id).location,{kind:'container',containerId:container.containerId});
+});

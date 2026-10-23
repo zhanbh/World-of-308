@@ -150,7 +150,7 @@ export class BankPanel {
     private scrollBy(side: Side, delta: number): void { this.scroll[side] = Math.max(0, Math.min(1200 - HEIGHT, this.scroll[side] + delta)); this.content[side].setPosition(0, this.scroll[side]); this.cells[side].forEach(({ g }, i) => { const y = 85 - Math.floor(i / 5) * ROW + this.scroll[side]; g.node.active = y + 28 > -125 && y - 28 < 115; }); }
     private node(parent: Node, name: string, x: number, y: number, width: number, height: number): Node { const n = new Node(name); n.layer = parent.layer; parent.addChild(n); n.setPosition(x, y); n.addComponent(UITransform).setContentSize(width, height); return n; }
     private label(parent: Node, value: string, x: number, y: number, size: number, width: number, height = 32): Label { const n = this.node(parent, 'Text', x, y, width, height); const label = n.addComponent(Label); label.string = value; label.fontSize = size; label.lineHeight = size + 4; label.horizontalAlign = Label.HorizontalAlign.CENTER; label.verticalAlign = Label.VerticalAlign.CENTER; label.overflow = Label.Overflow.SHRINK; label.color = new Color(236, 229, 208); return label; }
-    private button(value: string, x: number, y: number, action: () => void, always = false, width = 126, mode: 'write' | 'refresh' | 'recovery' = 'write'): void {
+    private button(value: string, x: number, y: number, action: () => void, always = false, width = 126): void {
         const n = this.node(this.root, value, x, y, width, 32); const g = n.addComponent(Graphics); g.fillColor = new Color(62, 78, 89); g.rect(-width / 2, -16, width, 32); g.fill(); this.label(n, value, 0, 0, 15, width - 4);
 
         let touchedUntil = 0;

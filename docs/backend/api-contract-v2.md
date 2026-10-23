@@ -253,7 +253,7 @@ C24a expected包括H/C；C24b包括H/C及prepare返回attempt，不要求客户�
 | `bank.itemVersion` | `{characterId,contextId,containerId,itemId}` | 仅 `{itemId,version}` 及该装备版本；要求装备确实处于所选合法容器，不批读全部实例，不返回完整装备或来源正文 |
 | `inventory.expansionQuote` | `{characterId,containerId,targetStage,contextId?}` | `{containerId,targetStage,nextCapacity,configRef:{id,version},quoteRef,costs:[{currency,amount}]}`；versions含角色、该容器、钱包；背包城镇/个人库银行，账号库不可扩 |
 
-查询统一使用v2 envelope（requestId、sessionId/sessionEpoch等）。`bank.get` 因一次返回两份完整容器，完整公开响应UTF-8上限为128KiB；其他资产查询仍64KiB，普通写响应仍16KiB。单个内部容器64KiB、流水128KiB、原结果16KiB不随组合查询放宽。解析器验证银行组合的owner/kind与版本向量，私有绑定账号ID、模板内部版本对象和流水正文不外传。
+查询统一使用v2 envelope（requestId、sessionId/sessionEpoch等）。`bank.get` 因一次返回两份完整容器，完整公开响应UTF-8上限为256KiB；inventory.get为128KiB，其他资产查询仍64KiB，普通写响应仍16KiB。单个内部容器256KiB、整理流水512KiB、其他流水128KiB、原结果16KiB。解析与网络解码共用shared/src/asset-budgets.ts，预算覆盖ASCII ID的JSON转义。解析器验证银行组合的owner/kind与版本向量，私有绑定账号ID、模板内部版本对象和流水正文不外传。
 
 R03 `inventory.get` 的金库查询必须携contextId；账号库按account.accountVaultId取，不得回退成背包。两类金库都验证当前会话/选角、上下文账号/角色/rolePlayEpoch/sceneEpoch/locationRevision及银行锚点和24px距离。ST09保留旧TownService读入口并修正同样的账号库分支和公开投影，生产接入使用可信身份适配的BankService。
 

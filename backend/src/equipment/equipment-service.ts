@@ -1,3 +1,4 @@
+import { ASSET_CONTAINER_MAX_BYTES } from '../../../shared/src/asset-budgets.ts';
 import {
   parseAssetCommand,
   parseAssetQuery,
@@ -184,7 +185,7 @@ export class EquipmentService {
         bag.characterId === character.id,
       'NOT_FOUND_OR_FORBIDDEN',
     );
-    budget(bag, 65536);
+    budget(bag, ASSET_CONTAINER_MAX_BYTES);
     return bag;
   }
 
@@ -454,7 +455,7 @@ export class EquipmentService {
             version: increment(bag.version),
             updatedAt: now,
           };
-          budget(nextBag, 65536);
+          budget(nextBag, ASSET_CONTAINER_MAX_BYTES);
           writes.push([bag.id, nextBag]);
 
           const changes = {
