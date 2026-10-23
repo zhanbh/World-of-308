@@ -246,6 +246,8 @@ export class CharacterService {
           stamina: { value: 308, refillWindow: 0 },
           quickSlots: [null, null, null],
           location: { kind: 'inn', characterId },
+          mailIds: [mailId],
+          pendingGrantIds: [],
           progressionConfigRef: { ...this.options.initialProgressionRef },
           createdAt: currentTime,
           updatedAt: currentTime,
@@ -330,6 +332,8 @@ export class CharacterService {
           parameters: {},
           expiresAt,
           status: 'active',
+          readAt: null,
+          version: 0,
           attachments: [
             {
               attachmentId: 'att-hp-potion',

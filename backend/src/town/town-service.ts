@@ -2,7 +2,7 @@ import { time } from '../../../shared/src/exact-values.ts';
 import type { Store, Clock } from '../ports/store.ts';
 import { CommitUnknown, StoreUnavailable } from '../ports/store.ts';
 import type { LoginAccount, LoginSession } from '../identity/login-model.ts';
-import type { CharacterEntity, ContainerEntity, MailEntity } from '../character/character-model.ts';
+import type { CharacterEntity, ContainerEntity, MailEntity, RewardGrantEntity } from '../character/character-model.ts';
 import { characterKey } from '../character/character-service.ts';
 import type {
   TownMapManifest,
@@ -836,12 +836,127 @@ export class TownService {
         }
       }
 
+      const mailIds = new Set<string>(character.mailIds ?? []);
+      const noviceMailId = await characterKey('mail', [character.accountId, character.classId, 'novice-gift']);
+      mailIds.add(noviceMailId);
+
+      const mails: MailEntity[] = [];
+      for (const mailId of mailIds) {
+        const mail = await tx.get<MailEntity>(mailId);
+        if (mail && mail.schemaVersion === 2 && mail.characterId === character.id && mail.status !== 'deleted') {
+          mails.push(mail);
+        }
+      }
+      mails.sort((a, b) => b.createdAt - a.createdAt);
+
+      const entries = mails.map(mail => ({
+        mailId: mail.id,
+        characterId: mail.characterId,
+        createdAt: time(mail.createdAt),
+        expiresAt: time(mail.expiresAt),
+        read: mail.readAt != null,
+        attachments: mail.attachments.map(a => ({
+          attachmentId: a.attachmentId,
+          kind: a.kind,
+          templateRef: a.templateRef.id,
+          quantityGranted: a.quantityGranted,
+          quantityClaimed: a.quantityClaimed,
+          binding:
+            a.binding.kind === 'character'
+              ? { kind: 'character' as const, characterId: a.binding.characterId! }
+              : { kind: a.binding.kind as 'none' | 'account' },
+        })),
+      }));
+
       return parseAssetQueryResponse('mail.list', {
         requestId,
         serverTime: currentTime,
         versions: [],
         data: {
-          entries: [],
+          entries,
+          nextCursor: null,
+        },
+      });
+    });
+  }
+
+  async getRewardList(query: {
+    protocolVersion: 2;
+    query: 'reward.list';
+    requestId: string;
+    sessionId: string;
+    sessionEpoch: number;
+    payload: { characterId: string; contextId: string; cursor: string | null; pageRequest: number };
+  }): Promise<AssetQueryResponse<'reward.list'>> {
+    const { requestId, sessionId, sessionEpoch, payload } = query;
+    const { characterId, contextId } = payload;
+    const currentTime = time(this.options.clock.now());
+
+    return await this.options.store.run(async tx => {
+      const session = await tx.get<LoginSession>(sessionId);
+      if (!session || session.status === 'revoked') {
+        return parseAssetQueryResponse('reward.list', {
+          requestId,
+          serverTime: currentTime,
+          error: { code: 'SESSION_REVOKED' },
+        });
+      }
+      if (session.epoch !== sessionEpoch) {
+        return parseAssetQueryResponse('reward.list', {
+          requestId,
+          serverTime: currentTime,
+          error: { code: 'VERSION_CONFLICT' },
+        });
+      }
+
+      const character = await tx.get<CharacterEntity>(characterId);
+      if (!character || character.accountId !== session.accountId) {
+        return parseAssetQueryResponse('reward.list', {
+          requestId,
+          serverTime: currentTime,
+          error: { code: 'NOT_FOUND_OR_FORBIDDEN' },
+        });
+      }
+
+      const context = await tx.get<ServiceContextEntity>(contextId);
+      if (
+        !context ||
+        context.status !== 'open' ||
+        context.serviceKind !== 'mailbox' ||
+        context.characterId !== character.id ||
+        context.rolePlayEpoch !== character.rolePlayEpoch ||
+        (character.townState && context.locationRevision !== character.townState.locationRevision)
+      ) {
+        return parseAssetQueryResponse('reward.list', {
+          requestId,
+          serverTime: currentTime,
+          error: { code: 'CONTEXT_INVALID' },
+        });
+      }
+
+      const grants: RewardGrantEntity[] = [];
+      for (const grantId of character.pendingGrantIds ?? []) {
+        const grant = await tx.get<RewardGrantEntity>(grantId);
+        if (grant && grant.schemaVersion === 2 && grant.characterId === character.id) {
+          grants.push(grant);
+        }
+      }
+      grants.sort((a, b) => b.createdAt - a.createdAt);
+
+      const entries = grants.map(grant => ({
+        grantId: grant.id,
+        itemId: grant.payload.itemId,
+        characterId: grant.characterId,
+        createdAt: time(grant.createdAt),
+        state: grant.deliveryState === 'available' ? ('pending' as const) : ('delivered' as const),
+      }));
+
+      return parseAssetQueryResponse('reward.list', {
+        requestId,
+        serverTime: currentTime,
+        versions: [],
+        data: {
+          entries,
           nextCursor: null,
         },
       });
@@ -889,14 +1004,39 @@ export class TownService {
         });
       }
 
-      // HUD summary returns counts only, never prefetching full mail bodies/attachments
+      const mailIds = new Set<string>(character.mailIds ?? []);
+      const noviceMailId = await characterKey('mail', [character.accountId, character.classId, 'novice-gift']);
+      mailIds.add(noviceMailId);
+
+      let unreadMailCount = 0;
+      for (const mailId of mailIds) {
+        const mail = await tx.get<MailEntity>(mailId);
+        if (mail && mail.schemaVersion === 2 && mail.characterId === character.id && mail.status !== 'deleted') {
+          if (currentTime < mail.expiresAt) {
+            const isUnread = mail.readAt == null;
+            const hasUnclaimed = mail.attachments.some(a => a.quantityClaimed < a.quantityGranted);
+            if (isUnread || hasUnclaimed) {
+              unreadMailCount++;
+            }
+          }
+        }
+      }
+
+      let pendingCount = 0;
+      for (const grantId of character.pendingGrantIds ?? []) {
+        const grant = await tx.get<RewardGrantEntity>(grantId);
+        if (grant && grant.characterId === character.id && grant.deliveryState === 'available') {
+          pendingCount++;
+        }
+      }
+
       return parseAssetQueryResponse('delivery.summary', {
         requestId,
         serverTime: currentTime,
         versions: [],
         data: {
-          unreadMailCount: 1, // novice mail from creation
-          pendingCount: 0,
+          unreadMailCount,
+          pendingCount,
           asOf: currentTime,
         },
       });

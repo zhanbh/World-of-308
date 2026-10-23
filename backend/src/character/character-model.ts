@@ -26,6 +26,8 @@ export interface CharacterEntity extends CharacterSummary {
   quickSlots: (string | null)[];
   location: { kind: 'inn'; characterId: string } | { kind: 'town'; mapId: string; anchorId: string } | { kind: 'challenge'; challengeId: string };
   townState?: import('../town/town-model.ts').TownState;
+  mailIds?: string[];
+  pendingGrantIds?: string[];
   score?: number;
   scoreReachedAt?: number;
   scoreConfigRef?: string;
@@ -103,7 +105,14 @@ export interface MailAttachment {
   quantityGranted: number;
   quantityClaimed: number;
   binding: { kind: 'none' | 'account' | 'character'; accountId?: string; characterId?: string };
-  state: 'available' | 'claimed';
+  state: 'available' | 'claimed' | 'partially_claimed';
+  equipmentPayload?: {
+    itemLevel: number;
+    quality: 'white' | 'green' | 'blue' | 'purple' | 'orange';
+    slotKind: 'weapon' | 'shoulder' | 'chest' | 'pants' | 'belt' | 'boots' | 'bracelet' | 'necklace' | 'ring' | 'subEquip' | 'magicStone' | 'earring' | 'trinket';
+    enhancementLevel?: number;
+    affixes?: Array<{ stat: string; value: number }>;
+  };
 }
 
 export interface MailEntity {
@@ -117,9 +126,26 @@ export interface MailEntity {
   parameters: Record<string, string | number>;
   expiresAt: number;
   status: 'active' | 'deleted' | 'expired';
+  readAt?: number | null;
+  version: number;
   attachments: MailAttachment[];
   createdAt: number;
   updatedAt: number;
+}
+
+export interface RewardGrantEntity {
+  schemaVersion: 2;
+  id: string;
+  accountId: string;
+  characterId: string;
+  sourceType: string;
+  sourceTuple: string;
+  route: 'pending';
+  payload: { kind: 'equipment'; itemId: string };
+  deliveryState: 'available' | 'delivered';
+  createdAt: number;
+  deliveredAt: number | null;
+  version: number;
 }
 
 export interface NoviceGrantStub {
