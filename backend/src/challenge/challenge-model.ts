@@ -7,6 +7,9 @@ export interface ChallengeContent {
     profile: 'local-test' | 'release';
     purpose: 'contract-fixture-only' | 'published';
     release?: TestRelease;
+    /** Explicit local-test rule; E01 has no production interaction radius. */
+    regeneration?: {profile:'local-test';ref:string;unit:'internal-per-second';hp:{numerator:number;denominator:number};mp:{numerator:number;denominator:number};buffs:{templateRef:string;hp:{numerator:number;denominator:number};mp:{numerator:number;denominator:number}}[]};
+    exitInteraction?: {profile:'local-test';rulesRef:string;radius:number};
     dungeons: {
         dungeonId: string;
         kind: 'first' | 'second' | 'special';
@@ -44,6 +47,7 @@ export interface DungeonEntryContext {
     releaseRef: string;
 }
 export interface EntryChallenge extends HandoffChallenge {
+    currentRoomNo:number;
     dungeonId: string;
     difficultyId: string;
     rolePlayEpoch: number;
@@ -76,6 +80,6 @@ export interface EntryChallenge extends HandoffChallenge {
     recoveryTicket?:unknown;
     connection?: 'connected' | 'recovery' | 'closed';
     timelineEpoch?: number;
-    pendingRoomAttempt?: {roomNo:number;attemptId:string;manifestHash:string;configRef:string;preparedRevision:number;manifestRef:string};
+    pendingRoomAttempt?: {roomNo:number;attemptId:string;manifestHash:string;configRef:string;preparedRevision:number;manifestRef:string;exitRuleHash?:string};
     transitionClock?: {attemptId:string;phase:'prepared'|'awaitingReady';settledAt:number;connectedElapsedMs:number;consumedElapsedMs:number;timeRemainder:{numerator:number;denominator:number};transitionRevision:number};
 }

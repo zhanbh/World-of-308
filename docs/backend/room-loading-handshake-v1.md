@@ -85,3 +85,9 @@ activate 创建 awaitingReady，CP.acceptingInputs=false、anchorWallAt/anchorTi
 完整公开状态摘要为完整**有序公开记录数组**的递归键排序 JSON UTF-8 SHA-256；记录顺序 player、manifest 顺序敌人、固定七组 CD。分页边界不进入摘要；客户端在语法/完整分页/引用检查后自行重算，删/改/重排记录都不能沿用旧 hash。ready 绑定此基础状态；其后服务端逻辑后缀可形成新修订。资源验证、全量摘要和 ready 成功都满足后，客户端还读取当前 challenge.get 检查可预测状态；历史原 ready 回执不能授权已过期、换代或关闭场景。
 
 客户端 ActivationCoordinator 持久化原 activate 命令、票据、原 ready controlSeq/leaseRevision 和已验证公开分页。未知结果重载先 operation.get/原 ready 回执查询；不存在才重发原命令，不换 ID/序号/票据。重载重新验证资源和完整摘要；已提交 ready 后服务端基础页不可再读取时，可以重验持久化的原基础页，但仍必须查询原回执及当前场景。异步流程代次隔离迟到回调。
+
+## ST10-05 本地实现边界（2026-10-24）
+
+后续prepare为严格currentRoomNo+1，旧CP玩家存活、旧room manifest完整敌人集合（含紫名）全部死亡，且权威玩家位置在旧manifest绑定地图出口交互范围内。E01没有出口交互半径，必须显式注入与锁定release相同rulesRef的local-test exitInteraction；缺配置返回CONFIG_NOT_READY，不借用城镇半径。prepare保留旧CP与已确认收益，H进入preparing并拥有唯一transitionClock；控制恢复投影同一preparing阶段，activate才替换旧场景。角色沿CP逻辑毫秒及10ms步余数推进，H只消费未消费联网水位，恢复段排除。
+
+客户端连续下一房仅在前房完整资源/公开证明/ready及当前场景已确认后退役旧持久意图，并先禁用预测及失效异步代次；unknown意图不能因此退役。旧资源回调和旧operation原结果不覆盖新房。ST15尚无实际v2拾取服务，本轮竞争验证仅用拥有真实归属/来源/背包的有界测试事务，与实际activate共用A/H冲突检测；不将其称为生产掉落协议或完整发奖组合。

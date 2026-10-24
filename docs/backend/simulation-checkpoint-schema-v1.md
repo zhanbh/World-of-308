@@ -69,3 +69,13 @@ H.transitionClock是唯一转场计时权威，prepare建立、activate保留并
 内层严格 schemaVersion=1：ordinal0 为 role，保存非空玩家、配置基础 AP、装备修订、HP/MP 分别的回复余数、位置余数、真实已解锁技能及配置引用、固定职业/药品/饰品七 CD；ordinal1 为 scene，保存 1..8 个非空敌人、原 spawn/template/分类/技能/免疫/AI 状态和战斗随机/事件游标。等级1只解锁 cross，其他技能按既定 5/10/20 等级开放，不因四配置引用就全部解锁。背包数量不进入 CP。初始角色资源来自锁定、已校验发布，后续房不得重用此首房初始化来重置角色。
 
 该初始版本严格限定 buffs/effects/snapshots 为空、regenerationRef=null；非空或未知 schema 明确拒绝，绝不丢弃未识别状态。它交付首房开启及 ready，不宣称 ST11 战斗、3648 效果/228 快照的完整编码包络已实现。后续严格版本应扩展实际战斗域并重新验证其最坏编码。当前只按实际使用两个块读写；其最大合法非空 actor/CD 编码与外层字节在 ST10-03 验证报告记录。
+
+## ST10-05 后续房内层 schema2（2026-10-24）
+
+外层 schema2、cpHeader/cpChunk 键与两块布局保持；role 内层新增严格 schemaVersion=2，沿 schema1 相同字段，允许最多32个严格公开buff记录及 nullable regenerationRef。schema1仍只接受空buff/null回复引用；未知字段、未知版本及scene非空effects/snapshots一律拒绝，不静默丢弃。该32条是本地实际支持域，不代表未来全部战斗效果包络已实现。buff按actorId、唯一buffId、templateRef及绝对逻辑endsAtTick绑定；公开证明包含buff。7CD与技能等级直接继承当前role，装备资产/角色等级XP及statsVersion仍以当前资产/角色记录为权威，entry equipmentSnapshot仅审计。
+
+后续activate先校验旧room绑定的manifest/map及完整spawn集合全部死亡，再复用当前role、替换入口坐标及新scene；不重置HPMP、CD、技能或回复余数。头revision及新场景复用ordinal的chunkRevision单调递增，sceneEpoch更换令旧地面/公开票据失效。ready只在role实际变化时重写ordinal0；scene未变化保留原引用。
+
+regenerationRef只解析显式ChallengeContent.regeneration local-test配置：ref、unit=`internal-per-second`、HP/MP约分有理速率及最多32个按templateRef匹配的buff附加速率。单位是1/1000显示HP/MP的内部资源单位每秒，毫秒换算分母乘1000。当前E01无正式自然回复表；null引用没有推定回复，无生产默认值。每个base/buff速率先规范化为每毫秒有理数，再检查其分母及持久余数分母的LCM≤uint32；不闭合配置在修改资源前拒绝。计算乘积、约分、资源与期限比较使用BigInt，分段点为buff到期；满值舍弃溢出且清对应分数，暂停不推进。运行时只接受当前存活角色的换房，未扩展死亡MP规则或战斗效果引擎。
+
+schema2同时必含regenerationHash（regenerationRef=null则为null，否则为64位小写SHA-256）；每次结算校验完整显式回复配置canonical摘要。同名ref更换速率或buff表也拒绝，不能仅靠字符串相等声明不可变。后续pendingRoomAttempt.exitRuleHash以同样方式把prepare时的出口交互规则绑定至activate。

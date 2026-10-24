@@ -2,6 +2,7 @@ import {encodeSceneMessage,decodeSceneReply} from '../../../../shared/src/protoc
 import {parseRoomRequest,parseRoomResponse,parseRoomManifest} from '../../../../shared/src/protocol/scene-v2.ts';
 import type {RoomManifest} from '../../../../shared/src/protocol/scene-v2.ts';
 import {manifestDigest,resourceDigest} from '../../../../shared/src/room-manifest.ts';
+import type {ActivationCoordinator} from './ActivationCoordinator.ts';
 import type {EntryTransport,EntryPendingStore} from './ChallengeEntryCoordinator.ts';
 type Prepare=Extract<ReturnType<typeof parseRoomRequest>,{command:'challenge.prepareRoom'}>;
 export interface RoomResourceLoader {load(ref:string,releaseRef:string):Promise<Uint8Array>;}
@@ -27,6 +28,17 @@ export class LoadingCoordinator {
   if(this.pending)throw new Error('PENDING_ROOM_PREPARATION');
   const saved=this.persistence.load(this.key(c));if(saved!==null)throw new Error('PENDING_ROOM_PREPARATION');
   this.persistence.save(this.key(c),encodeSceneMessage(c));this.pending=c;await this.submit();
+ }
+ /** Begin only the immediate successor after the previous room completed its verified handshake. */
+ async prepareNextRoom(value:unknown,activation:ActivationCoordinator):Promise<void>{
+  const c=parseRoomRequest(value);if(c.command!=='challenge.prepareRoom')throw new Error('INVALID_LOADING_INTENT');
+  const old=this.pending,m=this.current.manifest;
+  if(!old||this.current.status!=='loaded'||!m||this.key(c)!==this.key(old)||c.payload.nextRoomNo!==m.roomNo+1||c.operationId===old.operationId)throw new Error('INVALID_NEXT_ROOM');
+  activation.retireCompletedRoom(m);
+  ++this.generation;
+  this.persistence.save(this.key(c),encodeSceneMessage(c));this.pending=c;
+  this.current={status:'idle',manifest:null,code:null,operationId:c.operationId};
+  await this.submit();
  }
  cancel():void {++this.generation;this.current.status='cancelled';}
  async retry():Promise<void>{if(!this.pending||this.current.status==='preparing'||this.current.status==='loading')throw new Error('NO_RETRYABLE_PREPARATION');await this.submit();}

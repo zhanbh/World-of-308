@@ -294,3 +294,7 @@ ChallengeService.execute 接入严格 challenge.activateRoom / scene.ready；que
 有CP的恢复票据继续使用原正代次/修订/hash和完整公开分页证明。resumePrepare 冻结前沿并保持recovery；恢复ready回到awaitingReady时只恢复H转场计时，anchor/inputGapBaseAt仍null，并发放新的普通ready票据；资源与新完整基线通过后下一次ready才开场。活动场景ready仍受原死亡/恢复截止，不复活、不补离线战斗。
 
 scene.status 的 readyTicketId 非null保留ST10-03精确原ready回执分支；null为当前状态读取，不消费新controlSeq、不续租。两者不能相互替代。任何新执行/当前读取到now≥原适用截止，事务内关闭场景：active→failed/closed，completed保留completed并closed；体力结算、A指针清理、角色旅店代次与现有handoff共用逻辑。`challenge.get` 返回关闭后的当前状态，替代ST10-03仅返回DEADLINE_EXPIRED的过渡行为；控制/分页返回到期拒绝。当前session保持active，关闭日志使用scene.expire，不伪装新登录。恢复预测须另核对新鲜当前状态，历史ready成功不是继续预测许可。
+
+### ST10-05 后续房与回复域实施说明
+
+prepareRoom/activateRoom/scene.ready命令形状不变；后续prepare只接受下一房、全敌（含紫名）死亡、存活玩家的旧manifest绑定出口。服务端显式local-test出口配置缺失/绑定摘要改变或回复配置摘要与CP不符时CONFIG_NOT_READY；客户端不提交出口坐标、清场结果或回复速率。后续房复用当前角色及逻辑期限，0保留体力/破损武器不会新增拒绝门槛。公开恢复页包含严格buff记录，仍须完整state hash证明后ready；旧scene/timeline/ticket与旧operation原结果不能授权新场景预测。详细本地schema及未覆盖战斗域见[CP合同](simulation-checkpoint-schema-v1.md)。

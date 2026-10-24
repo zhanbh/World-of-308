@@ -1,6 +1,6 @@
 import {encodeAssetRequest,decodeAssetResponse} from '../../../../shared/src/protocol/asset-v2.ts';
 import {parseRoomRequest,parseRoomResponse,parseSceneRequest,parseSceneResponse,parseRecoveryPage,parseChallengeQueryResponse} from '../../../../shared/src/protocol/scene-v2.ts';
-import type {SceneState} from '../../../../shared/src/protocol/scene-v2.ts';
+import type {RoomManifest,SceneState} from '../../../../shared/src/protocol/scene-v2.ts';
 import {encodeSceneMessage,decodeSceneReply} from '../../../../shared/src/protocol/scene-wire.ts';
 import {verifyRecoveryPages} from '../../../../shared/src/public-state-proof.ts';
 import type {EntryTransport,EntryPendingStore} from './ChallengeEntryCoordinator.ts';
@@ -37,6 +37,14 @@ export class ActivationCoordinator{
   ++this.generation;this.confirmedReady=false;this.journal={activation:c,ticket:null,ready:null,committed:null,pages:null};
   try{this.useLoadedResources(loading);}catch(e){this.journal=null;throw e;}
   this.save();await this.retry();
+ }
+ /** Retire original receipts before a successor room can issue any asynchronous work. */
+ retireCompletedRoom(manifest:RoomManifest):void{
+  const j=this.journal;
+  if(!j||this.current.status!=='active'||!this.current.predictionEnabled||!j.committed||j.activation.payload.roomAttemptId!==manifest.roomAttemptId||j.activation.payload.challengeId!==manifest.challengeId||j.activation.payload.manifestHash!==manifest.manifestHash)throw Error('PREVIOUS_ROOM_NOT_ACTIVE');
+  ++this.generation;this.confirmedReady=false;this.loaded=false;this.verified=false;
+  this.persistence.save(this.key(j.activation),null);this.journal=null;
+  this.current={status:'idle',code:null,predictionEnabled:false,ticket:null,state:null};
  }
  async verifyPages(values:unknown[]):Promise<void>{
   const generation=this.generation,j=this.journal;this.verified=false;this.current.predictionEnabled=false;

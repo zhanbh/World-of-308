@@ -431,3 +431,7 @@ H增加至多8个 `controlReceipts={command,sequence,tuple摘要,result,readyTic
 H.recoveryTicket至多一个：未付首房使用带kind:unpaidLoading的sceneEpoch0票据，无checkpointRevision/publicStateHash；有CP时使用既有正代次/修订/hash票据。显式suspend保存recoveryUntil=serverNow+10000；静默resumePrepare沿原leaseUntil。recovery期间deadline固定，deathDeadline独立取更早截止。resumePrepare递增timelineEpoch与CP header.revision（有CP），不重写内容未变的CP块。恢复ready删除恢复票据；返回加载阶段则保留H.transitionClock及consumedElapsedMs消费水位、移动settledAt，不启动敌人锚点；最终普通ready才消费剩余联网段并清H时钟。
 
 到期关闭沿共享handoff结算角色staminaReservation、H.staminaSettlement、A.active/openScene指针和旅店角色状态；仍使用当前登录session。日志command为scene.expire，来源为challenge/原截止，不创建资产operation或退款。已通关结果保留。当前challenge.get的关闭投影覆盖CP历史状态的connection/result/phase，CP块及确认收益保留。
+
+### ST10-05 后续转场本地实施字段
+
+H.pendingRoomAttempt的后续房分支附exitRuleHash（显式local-test出口规则canonical SHA-256），prepare后activate/恢复不允许同规则ref静默换半径。H.transitionClock仍是唯一水位所有者，准备后旧CP保留cleared事实/角色状态，控制视图投影preparing。role内层schema2沿[CP合同](simulation-checkpoint-schema-v1.md)新增regenerationHash，必须匹配regenerationRef解析的完整local-test回复配置canonical SHA-256；同ref改速率拒绝，null引用要求null hash。回复配置未纳入E01生产release，不得把该测试扩展视为正式默认值。

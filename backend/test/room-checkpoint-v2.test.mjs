@@ -4,7 +4,7 @@ import {prepareFixture} from './fixtures/prepare-fixture.mjs';
 import {initialCheckpoint,parseRoleCheckpoint,parseSceneCheckpoint,writeChunk,encodedBytes,stateHash} from '../src/challenge/room-checkpoint.ts';
 async function fixture(){const h=await prepareFixture(),r=await h.service.execute(h.command),challenge=h.store.inspect(h.challengeId),cp=await initialCheckpoint(h.content,challenge,r.outcome.data,h.character().equipmentVersion);return {...h,challenge,cp};}
 test('inner checkpoint rejects unknown schema, unsupported effects and non-string resources',async()=>{
- const {cp}=await fixture();assert.throws(()=>parseRoleCheckpoint({...cp.role,schemaVersion:2}));assert.throws(()=>parseRoleCheckpoint({...cp.role,privateSeed:'leak'}));assert.throws(()=>parseSceneCheckpoint({...cp.scene,effects:[[1]]}));assert.throws(()=>parseRoleCheckpoint({...cp.role,attackPower:1000}));
+ const {cp}=await fixture();assert.throws(()=>parseRoleCheckpoint({...cp.role,schemaVersion:3}));assert.throws(()=>parseRoleCheckpoint({...cp.role,privateSeed:'leak'}));assert.throws(()=>parseSceneCheckpoint({...cp.scene,effects:[[1]]}));assert.throws(()=>parseRoleCheckpoint({...cp.role,attackPower:1000}));
 });
 test('supported maximum nonempty CP encodes8enemies7cooldowns with max escaped IDs and uint64 resources',async()=>{
  const h=await fixture(),role=structuredClone(h.cp.role),scene=structuredClone(h.cp.scene),id='"\\'.repeat(64),max='18446744073709551615';
