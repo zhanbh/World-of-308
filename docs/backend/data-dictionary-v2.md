@@ -411,3 +411,9 @@ quickSlots仍只存角色上的3个模板ID或null，不存格子/stackId或第�
 当前EntryChallenge对逻辑字段的物理命名：configRef→releaseRef，lockedMonsterLevel→monsterLevel，entryEquipment→equipmentSnapshot（完整有界实例来源），entryStatsRef→releaseRef+monsterStatsRef+equipmentSourceRef+equipmentAttributes（装备属性沿ST05聚合，后续变更另修订）。持久化lifeState=alive、roomCount=7、未激活roomPhase=preparing、acceptedSeq/acceptedTick=0；首本purpleEncounter含roomNo0～5、spawnId、配置templateRef（purpleRoomNo保留该roomNo索引）。紫名采用服务端随机源，仅在首个意图事务中确定，Store重试复用同一次抽取，原结果重放不再抽；其他副本为null。
 
 A.activeChallengeId/openSceneChallengeId、C.location/staminaReservation、H与账户作用域assetOp/assetJournal在同一事务提交；登录接管仍以既有staminaSnapshot/staminaSettlement回写一次。E01 adapter保留验证过的release供后续按锁定release取房间配置，不读取latest补行。当前尚无正式三本完整内容包。
+
+### ST10-02 未付首房加载视图（2026-10-24）
+
+`challenge.get.data`新增严格判别分支`kind=unpaidLoading`：challengeId、sceneEpoch=0、timelineEpoch>=0、checkpoint=null、currentRoomNo=-1、roomPhase=preparing/closed、connection=connected/recovery/closed、lifeState=alive、result=active/failed、staminaRemaining=0..308、pendingManifest=null或完整已校验manifest、transitionClock=null或H唯一时钟投影。closed必须同时connection=closed/result=failed/transitionClock=null。不含checkpointRevision/publicStateHash、公开战斗页或输入许可，不以零hash/伪CP表示不存在的状态。已激活SceneState/CP/ready/recoveryPage保持sceneEpoch/timelineEpoch>=1。
+
+H新增connection（创建connected）、timelineEpoch（创建0）；pendingRoomAttempt中的manifestRef指向独立不可变规范manifest。transitionClock字段/唯一归属沿加载合同，不向pending内复制。manifest及资源摘要字段和边界见[加载补充](room-loading-handshake-v1.md#st10-02-本地实施补充固定manifest与未付首房2026-10-24)。资源ref绑定发布节点版本，当前仅E01 contract-fixture-only。

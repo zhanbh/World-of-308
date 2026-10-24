@@ -65,4 +65,8 @@ export interface EntryChallenge extends HandoffChallenge {
     acceptedSeq: number;
     acceptedTick: number;
     createdAt: number;
+    connection?: 'connected' | 'recovery' | 'closed';
+    timelineEpoch?: number;
+    pendingRoomAttempt?: {roomNo:number;attemptId:string;manifestHash:string;configRef:string;preparedRevision:number;manifestRef:string};
+    transitionClock?: {attemptId:string;phase:'prepared'|'awaitingReady';settledAt:number;connectedElapsedMs:number;timeRemainder:{numerator:number;denominator:number};transitionRevision:number};
 }

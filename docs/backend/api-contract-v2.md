@@ -270,3 +270,11 @@ C07 expected恰含角色、目标容器、钱包。quoteRef绑定配置id/versio
 C23 start必须携带入口查询返回的账户和角色expected版本。成功DTO除既有字段，还返回 `monsterLevel,monsterStatsRef,equipmentSourceRef,equipmentVersion,equipmentAttributes[{statId,value}]`；value沿精确资源wire。新增拒绝码 `LEVEL_REQUIRED,DIFFICULTY_LOCKED`；入口options还可返回 `CONFIG_NOT_READY`。选项不含房间费用。创建仅保留体力，不扣首房、不建CP；未激活H保持sceneEpoch=0/currentRoomNo=-1/roomPhase=preparing，兼容LoginService新launch接管。
 
 配置是显式注入的版本化只读内容；没有可用行则CONFIG_NOT_READY。`entryContentFromE01`必须先验真release摘要且仅授权local-test/contract-fixture-only，只支持其1级普通首本。第二本/特殊本及其他等级的测试行只证明门槛/锁定规则，不构成正式三本发布。
+
+### ST10-02 prepare及原结果补充（2026-10-24）
+
+`challenge.prepareRoom`请求不变；成功data使用[加载合同](room-loading-handshake-v1.md#st10-02-本地实施补充固定manifest与未付首房2026-10-24)完整严格manifest，替代无摘要的resourceRefs字符串列表。客户端重算manifestHash和实际资源bytes的sha256/长度，缺件/不符均停留同一attempt并可重试。命令编码<=16KiB、响应<=32KiB，manifest<=24KiB。
+
+`challenge.get`可返回字典的`kind=unpaidLoading/checkpoint=null`明确分支；不改变已激活sceneState/ready/恢复页的正epoch约束。epoch0加载心跳/暂停/恢复请求与租约控制由ST10-04补齐，本次不把ready或恢复页校验整体放宽到0。
+
+prepare的O只持有原manifest引用、attempt/hash、原结果版本与serverTime；`operation.get`通过ChallengeService.queryOriginal解析该引用，返回完整原响应（保持原serverTime/replayed值），不同于重新执行命令所返回的当前serverTime/replayed=true。引用丢失/摘要不符返回SERVICE_UNAVAILABLE，不返回notFound或当前pending替代品。原命令SHA-256用于同ID异参判定，不保存无界资源正文。身份/当前会话在重放前校验。

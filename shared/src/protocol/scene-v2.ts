@@ -180,15 +180,35 @@ export function parseSceneQuery(value: unknown) {
 }
 export function parseChallengeQueryResponse(value: unknown) {
   if (value && typeof value === 'object' && Object.hasOwn(value, 'error')) return object({ requestId: operationId, serverTime: time, error: object({ code: sceneErrors }) })(value);
-  return object({ requestId: operationId, serverTime: time, data: parseSceneState, versions: parseExpected })(value);
+  return object({ requestId: operationId, serverTime: time, data: parseChallengeState, versions: parseExpected })(value);
 }
-const manifestView = object({ roomAttemptId: text(), manifestHash: hash, releaseRef: text(64), mapRef: text(64), resourceRefs: list(text(64), 128), preparedRevision: integer() });
+const resourceDescriptor = object({ ref: text(), sha256: hash, byteLength: integer(1, 81920), mediaType: enumOf('application/json'), purpose: enumOf('contract-fixture-only') });
+const spawnDescriptor = object({ spawnId: text(64), templateRef: text(64), role: enumOf('ordinary', 'elite', 'boss', 'purple'), x: integer(-2147483648,2147483647), y: integer(-2147483648,2147483647) });
+const manifestView = object({ roomAttemptId: text(), challengeId: text(), roomNo: integer(0,6), manifestHash: hash, releaseRef: text(64), releaseHash: hash, mapRef: text(64), resources: list(resourceDescriptor,128), spawns: list(spawnDescriptor,8), preparedRevision: integer() });
+export function parseRoomManifest(value: unknown) {
+ const m=manifestView(value);
+ const refs=new Set(m.resources.map(r=>r.ref));
+ if(!refs.has(m.mapRef)||m.spawns.some(s=>!refs.has(s.templateRef))) throw new TypeError('MISSING_MANIFEST_RESOURCE');
+ if(!m.resources.length || !m.spawns.length || new Set(m.resources.map(r=>r.ref)).size!==m.resources.length || new Set(m.spawns.map(s=>s.spawnId)).size!==m.spawns.length || new TextEncoder().encode(JSON.stringify(m)).length>24576) throw new TypeError('INVALID_MANIFEST');
+ return m;
+}
+export type RoomManifest = ReturnType<typeof parseRoomManifest>;
+const unpaidState=object({kind:enumOf('unpaidLoading'),challengeId:text(),sceneEpoch:enumOf(0),timelineEpoch:integer(),checkpoint:enumNull, currentRoomNo:enumOf(-1),roomPhase:enumOf('preparing','closed'),connection:enumOf('connected','recovery','closed'),lifeState:enumOf('alive'),result:enumOf('active','failed'),staminaRemaining:integer(0,308),pendingManifest:nullable(parseRoomManifest),transitionClock:nullable(transitionClock)});
+function enumNull(value:unknown):null { if(value!==null) throw new TypeError('INVALID_CHECKPOINT');return null; }
+export function parseChallengeState(value:unknown) {
+ if(value && typeof value==='object' && Object.getOwnPropertyDescriptor(value,'kind')?.value==='unpaidLoading') {
+  const s=unpaidState(value);
+  if((s.roomPhase==='closed') !== (s.connection==='closed') || (s.roomPhase==='closed') !== (s.result==='failed') || (s.roomPhase==='closed' && s.transitionClock!==null) || (s.transitionClock!==null && (s.pendingManifest?.roomAttemptId!==s.transitionClock.attemptId || s.transitionClock.phase!=='prepared'))) throw new TypeError('INVALID_UNPAID_STATE');
+  return s;
+ }
+ return parseSceneState(value);
+}
 const resultHeader = { protocolVersion: enumOf(2), operationId, serverTime: time, replayed: bool };
 function result<T>(parseData: Parser<T>): Parser<{ status: 'committed'; data: T; resultVersions: ReturnType<typeof parseExpected> } | ReturnType<typeof failure>> {
   return value => value && typeof value === 'object' && Object.getOwnPropertyDescriptor(value, 'status')?.value === 'committed'
     ? object({ status: enumOf('committed'), data: parseData, resultVersions: parseExpected })(value) : failure(value);
 }
-const prepareResponse = object({ ...resultHeader, command: enumOf('challenge.prepareRoom'), outcome: result(manifestView) });
+const prepareResponse = object({ ...resultHeader, command: enumOf('challenge.prepareRoom'), outcome: result(parseRoomManifest) });
 const activateResponse = object({ ...resultHeader, command: enumOf('challenge.activateRoom'), outcome: result(responseData) });
 export function parseRoomResponse(value: unknown) {
   return value && typeof value === 'object' && Object.getOwnPropertyDescriptor(value, 'command')?.value === 'challenge.prepareRoom' ? prepareResponse(value) : activateResponse(value);

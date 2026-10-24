@@ -43,6 +43,7 @@ export function decodeSceneReply(request: unknown, text: string) {
   if (intent.command === 'challenge.prepareRoom' || intent.command === 'challenge.activateRoom') {
     const response = parseRoomResponse(value);
     if (response.command !== intent.command || response.operationId !== intent.operationId) throw new TypeError('RESPONSE_MISMATCH');
+    if(intent.command==='challenge.prepareRoom' && response.command==='challenge.prepareRoom' && response.outcome.status==='committed' && (response.outcome.data.challengeId!==intent.payload.challengeId || response.outcome.data.roomNo!==intent.payload.nextRoomNo)) throw new TypeError('RESPONSE_MISMATCH');
     return response;
   }
   if (intent.command === 'challenge.start' || intent.command === 'challenge.revive' || intent.command === 'challenge.leave' || intent.command === 'drop.collect') {

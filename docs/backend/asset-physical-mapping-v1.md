@@ -150,3 +150,7 @@ operations保存稳定摘要、成功/明确拒绝、实际数量/固定随机�
 ## ST10-01 入口创建实际包络（2026-10-24）
 
 创建成功原子写A/C/H/O/J五键，明确业务拒绝只写O；身份/原结果冲突不写业务事实。H内equipmentSnapshot至多13槽，每实例经既有严格装备DTO校验（至多16词条、128字符ID及来源），另限制实例16KiB、H128KiB、实际O16KiB、J128KiB UTF-8 JSON。版本递增须为安全整数。测试以13个实际装备实例、每个16个128字符含引号/反斜杠词条标识编码，得到H81038/O6057/J1080字节；它覆盖该入口fixture，不冒充全后续CP、最大终局或真实SDK事务/费用验收。
+
+### ST10-02 prepare物理补充（2026-10-24）
+
+独立键`loginKey('roomManifest',[challengeId,attemptId])`保存不可变manifest；`loginKey('roomAttempt',[challengeId,roomNo])`为确定attempt标识。成功prepare只写H/manifest/O三键，原H读取参与事务栅栏，读取A/C当前身份/场景；不增加CP或收费J。manifest记录<=32KiB，正文<=24KiB，H<=128KiB，O<=16KiB（均实际JSON UTF-8）。O仅保存原ref/attempt/hash和原结果元数据，命令绑定值为规范命令SHA-256而非可膨胀escaped请求正文。原引用和发布资源至少与O保留期共同保留，不对权威manifest自动TTL，也不以当前pending覆盖原结果。资源文件保持发布resolver归属，不塞入O/H。

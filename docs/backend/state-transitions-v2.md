@@ -124,3 +124,7 @@ C23锁快照后尚未enterRoom期间也有租约/关闭路径，避免卡唯一a
 ## ST10-01 未激活创建的实现补充（2026-10-24）
 
 实际城镇位置→dungeon.entry只签发绑定当前位置修订的选项/入口证明，不改变C.location、不建H。主动challenge.start经身份、选角、原入口、expected、等级/共享难度、至少1体力和有效已穿武器重验后，同事务写A双指针、C挑战位置/体力保留及H/O/J。H为active/combat/alive、sceneEpoch0/currentRoomNo-1/preparing；无已付房间、CP、transitionClock或战斗锚点。新launch沿现有handoff可关闭该无CP状态并结算一次；原结果重放不能复活旧H或覆盖新位置。prepare/activate/ready另由ST10-02～03交付。
+
+### ST10-02 未激活prepare分支（2026-10-24）
+
+`active/alive/connected + sceneEpoch0/currentRoom-1/preparing + 无pending/CP` → prepare原子写`H.pendingRoomAttempt + H唯一transitionClock + 独立manifest + O`；仍sceneEpoch0/currentRoom-1/preparing、无CP、不扣房费、不启动敌人。该状态的query使用`unpaidLoading/checkpoint=null`判别分支。有效相同房意图读取原manifest/attempt，不重设settledAt、不重复随机；资源失败、取消或旧异步回调不触发权威状态变化。真实新登录接管沿已有无CP合同关闭H、清transitionClock并结算，旧session在重放前即拒绝。完整加载恢复/租约由ST10-04实现；后续房合法出口/前房进度由ST10-05实现，当前本地分支对此拒绝。

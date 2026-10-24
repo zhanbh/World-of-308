@@ -36,7 +36,7 @@ test('room responses and recovery queries carry references and cannot be confuse
   assert.deepEqual(parseSceneQuery(query), query);
   assert.throws(() => parseSceneQuery({ ...query, operationId: 'op' }));
   const response = { protocolVersion: 2, command: 'challenge.prepareRoom', operationId: 'op', serverTime: 1000, replayed: false,
-    outcome: { status: 'committed', data: { roomAttemptId: 'attempt', manifestHash: 'b'.repeat(64), releaseRef: 'release', mapRef: 'map', resourceRefs: ['sprite-v1'], preparedRevision: 0 }, resultVersions: [] } };
+    outcome: { status: 'committed', data: { roomAttemptId: 'attempt', challengeId:'h', roomNo:0, manifestHash: 'b'.repeat(64), releaseRef: 'release', releaseHash:'c'.repeat(64), mapRef: 'map', resources: [{ref:'map',sha256:'d'.repeat(64),byteLength:12,mediaType:'application/json',purpose:'contract-fixture-only'}], spawns:[{spawnId:'spawn-0',templateRef:'map',role:'ordinary',x:2000,y:1000}], preparedRevision: 0 }, resultVersions: [] } };
   assert.deepEqual(parseRoomResponse(response), response);
   assert.throws(() => parseRoomResponse({ ...response, outcome: { ...response.outcome, data: { ...response.outcome.data, seed: 123 } } }));
   const result = { ...response, command: 'simulation.submit', outcome: { status: 'committed', data: { acceptedSeq: 1, acceptedTick: 100, checkpointRevision: 1, actionResultsRef: 'actions', events: [] }, resultVersions: [] } };
@@ -78,4 +78,12 @@ test('room writes require challenge and character expected objects while a loadi
   const active = { ...state, roomPhase: 'active', transitionClock: null, anchorWallAt: 3000, anchorTick: 0, inputGapBaseAt: 3000 };
   assert.deepEqual(parseSceneState(active), active);
   assert.equal(parseSceneState(active).lastAcceptedInputAt, null);
+});
+
+test('unpaid loading query is explicit no-checkpoint state; combat epochs and pages remain positive', async()=>{
+ const {parseChallengeQueryResponse}=await import('../src/protocol/scene-v2.ts');
+ const unpaid={requestId:'q',serverTime:1,versions:[],data:{kind:'unpaidLoading',challengeId:'h',sceneEpoch:0,timelineEpoch:0,checkpoint:null,currentRoomNo:-1,roomPhase:'preparing',connection:'connected',lifeState:'alive',result:'active',staminaRemaining:308,pendingManifest:null,transitionClock:null}};
+ assert.deepEqual(parseChallengeQueryResponse(unpaid),unpaid);
+ for(const patch of [{checkpoint:0},{sceneEpoch:1},{currentRoomNo:0},{roomPhase:'active'},{result:'completed'}])assert.throws(()=>parseChallengeQueryResponse({...unpaid,data:{...unpaid.data,...patch}}));
+ assert.throws(()=>parseSceneRequest({...control(),payload:{...control().payload,sceneEpoch:0}}));
 });

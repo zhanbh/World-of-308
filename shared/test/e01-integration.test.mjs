@@ -44,7 +44,7 @@ test('release, login, room intent and input share usable public references witho
   const room = { ...base, command: 'challenge.prepareRoom', payload: { challengeId: 'h', characterId: 'c', rolePlayEpoch: view.selectedCharacter.rolePlayEpoch, nextRoomNo: 0, expectedRevision: 0 } };
   assert.deepEqual(JSON.parse(encodeSceneMessage(room)), room);
   const reply = decodeSceneReply(room, JSON.stringify({ protocolVersion: 2, operationId: 'room', command: 'challenge.prepareRoom', serverTime: 2000, replayed: false,
-    outcome: { status: 'committed', resultVersions: [], data: { roomAttemptId: 'attempt', manifestHash: release.manifestHash, releaseRef: release.releaseId, mapRef: 'room-map', resourceRefs: [], preparedRevision: 0 } } }));
+    outcome: { status: 'committed', resultVersions: [], data: { roomAttemptId: 'attempt', challengeId:'h', roomNo:0, manifestHash: release.manifestHash, releaseRef: release.releaseId, releaseHash:release.manifestHash, mapRef: 'room-map', resources: [{ref:'room-map',sha256:'a'.repeat(64),byteLength:1,mediaType:'application/json',purpose:'contract-fixture-only'}], spawns:[{spawnId:'spawn-0',templateRef:'room-map',role:'ordinary',x:2000,y:1000}], preparedRevision: 0 } } }));
   assert.equal(reply.outcome.data.manifestHash, release.manifestHash);
   const input = { ...base, operationId: 'input', command: 'simulation.submit', payload: { characterId: 'c', rolePlayEpoch: 1, challengeId: 'h', roomNo: 1, sceneEpoch: 1, timelineEpoch: 1,
     baseCheckpointVersion: 0, firstSeq: 1, lastSeq: 1, fromTick: 0, toTick: 100, ruleRef: release.releaseId, mapRef: reply.outcome.data.mapRef, digest: 'a'.repeat(64), inputs: [{ seq: 1, tick: 0, kind: 'skill', skillId: 'cross' }] } };

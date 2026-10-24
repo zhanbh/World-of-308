@@ -61,3 +61,15 @@ activate先扣费并建立awaitingReady状态，就绪前不模拟敌人、不�
 transitionClock只存H.transitionClock，含attemptId、phase=prepared/awaitingReady、settledAt、connectedElapsedMs、timeRemainder、transitionRevision；pendingRoomAttempt仅保存下一房manifest/attempt引用，不内嵌时钟。prepare创建唯一时钟；activate同事务消费已累计联网区间并推进settledAt/版本，清pending但保留H.transitionClock且phase=awaitingReady。ready结清activate后的未消费联网区间、把CD/buff/资源及余数写新CP，再在同笔删除H.transitionClock并转active。短恢复保留该时钟且不累计recovery段；恢复ready若回到加载阶段只恢复加载计时，不启动敌人活动。退出/到期/接管按既定结束规则关闭并清转场时钟，不补未确认战斗或额外奖励。
 
 不保留第二份可写时钟，不因重试重设prepare基点。prepare0秒/技能剩5秒，activate2秒消费2秒，ready3秒仅再消费1秒，最终剩2秒。任一步提交丢响应按原回执/当前版本恢复，不再次消费已结清区间。时钟是H内常数大小字段，不新增物理键；ready导致CP变化块按实际d计量。
+
+## ST10-02 本地实施补充：固定manifest与未付首房（2026-10-24）
+
+首房prepare在H.sceneEpoch=0、currentRoomNo=-1、roomPhase=preparing且无CP时执行。H.connection=connected、lifeState=alive、active/openScene指针、角色reservation/location、session/rolePlayEpoch和challenge/character预期版本均从权威记录重验。首房生成后不同operationId的相同房意图可带原prepare前版本或当前H版本复用同一attempt；伪造expectedRevision、异房、终态和旧身份上下文拒绝。后续房出口/清场校验在ST10-05接入，当前本地实现拒绝后续房而非假定其合法。
+
+manifest严格字段：roomAttemptId、challengeId、roomNo、releaseRef、releaseHash、mapRef、preparedRevision、resources、spawns、manifestHash。resources包含1..128个唯一ref及sha256、byteLength(1..81920)、mediaType=application/json、purpose=contract-fixture-only；spawns包含1..8个唯一spawnId及templateRef/role/x/y。manifest整体JSON UTF-8至多24KiB。manifestHash为除自身字段外正文的递归键排序JSON UTF-8 SHA-256（数组顺序保留）；每个资源摘要覆盖resolver实际返回字节，客户端必须重算摘要并核对长度，不能接受布尔“已加载”。确定位置及已锁紫名安排在manifest中不可重抽。
+
+本地resolver只支持经verifyTestRelease验证的E01 level1/normal，资源是publicRelease公开节点的规范JSON字节，不包含private节点，不冒充Cocos贴图/Bundle加载或三本正式内容。每个ref含发布节点版本，releaseRef/hash绑定创建时快照；缺历史发布/资源即失败，不取latest替代。
+
+独立roomManifest记录保存原manifest；H.pendingRoomAttempt增加manifestRef，仅保存roomNo/attemptId/manifestHash/configRef/preparedRevision/manifestRef，不保存第二份时钟。H.transitionClock按已有合同唯一创建一次，phase=prepared，settledAt=提交事务当前服务端时间，connectedElapsedMs=0、timeRemainder=0/1、transitionRevision=0。失败/取消/重载/同意图重试均不重建它。H.timelineEpoch初始0仅表示未付房，无模拟锚点；后续activate/恢复负责其相应递增。
+
+prepare成功原子写H、独立manifest、O三键，拒绝只写O；不写CP、不扣房费、不写资源文件或额外资产流水。O以命令规范SHA-256绑定原意图，保存manifest引用/attempt/hash和原版本/原serverTime；queryOriginal/operation.get从该原引用hydrate，而非读取当前H.pending。资源失败不能回滚已确认资产。
