@@ -175,6 +175,8 @@ export function assembleRecoveryPages(values: unknown[]) {
 }
 
 const query = { ...session, requestId: operationId };
+// A page binds either the live preparation ticket or an issued ready receipt on the same live timeline.
+// After ready, revision/hash refer to the current CP; the server retains the original proof deadline.
 const recoveryQuery = object({ ...query, query: enumOf('scene.recoveryPage'), payload: object({ ...common, readyTicketId: text(), ...binding, pageIndex: integer(0, 63) }) });
 const challengeQuery = object({ ...query, query: enumOf('challenge.get'), payload: object({ challengeId: text() }) });
 export function parseSceneQuery(value: unknown) {

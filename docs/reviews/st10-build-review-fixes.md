@@ -1,0 +1,33 @@
+# ST10 final review fixes
+
+2026-10-24. Implementation base and integration tip: `bd6cda776e57abda5132ae35e30f2fc81b996a1a`; branch `fix/st10-review-findings`. This report supplements the frozen ST10 spec/issues and source contracts, which remain unchanged. Original independent review reports remain owned by their reviewers and unchanged.
+
+## Finding resolution and bounded contract
+
+- P1: both activation and recovery coordinators acquire and verify fresh actor/CD/buff pages after successful ready, then query fresh current state again. The complete baseline proof and verified resources remain prerequisites. Post-ready proof records are available through `state.publicRecords`; a changed ready suffix cannot silently leave the client using pre-ready HP/buffs. Unknown/failing proofs retain the original ready intent for retry/reopen; flow generations reject late callbacks.
+- The strict `scene.recoveryPage` DTO is unchanged. Before ready, it continues to bind the issued preparation ticket. After ready, it accepts only an authenticated original ready ID on the same live scene/timeline/manifest and the exact current CP revision/public hash. Every page carries the original issued deadline. Current active/connected/alive state, acceptingInputs and all lease/death/terminal gates remain required. The query does not renew leases or restart anchors. Heartbeats cannot extend the receipt's original proof deadline; a new timeline cannot use an old receipt.
+- Persisted schema2 H adds only `lastReadyReceipt.proofDeadline: number`, copied from the authenticated consumed ticket in the existing ready transaction (ordinary ready or recovery-ready returning active). The receipt already contains the bounded original response; no CP records are embedded in H/O and the recent-control receipt ring remains eight. Existing old receipts lacking this field fail closed for active-page proof. No new transactional write point or gameplay timing source was added; H.transitionClock remains the sole loading clock.
+- P2: login handoff and room reads share outer CP header/chunk validation. The shared primitive validates identity, schema, boolean acceptingInputs, integer revision/ordinal/scene domains, unique refs, hashes and wrapper budgets, while room reads retain their strict room-specific state and inner role/scene validation. Chunk revisions remain independent from header revisions.
+- Optional standards duplication: the two coordinators now use one typed bounded page fetch/proof helper, with a Cocos `.meta` asset. It checks the requested binding before following page counts and validates the complete digest.
+
+## Red/green evidence
+
+Public seams were the approved ChallengeService queries/commands, LoginService commit and client coordinators with real memory services; controlled clock/transport faults are boundary fixtures.
+
+- P1 backend: `ready-proof-v2.test.mjs` failed with `VERSION_CONFLICT` before implementation when querying the just-committed active state. It passes after issued-receipt/current-CP support. Eight real heartbeats preserve the original proof deadline; reads leave the complete store snapshot unchanged. Forged IDs, old revision, new timeline and expired deadline fail closed.
+- P2: malformed matching null chunk revisions originally returned a successful challenge read (the test failed its expected rejection). The final public assertion checks `SERVICE_UNAVAILABLE`. Null/false/NaN/fraction/negative/unsafe/missing metadata fail closed, including outer revision, scene/session/role epoch, ref ordinal/scene/hash and acceptingInputs. A valid checkpoint passes actual LoginService takeover; shared handoff regressions pass.
+- Existing natural-reply write-fault tests cover each ready write including changed role chunks; this fix adds receipt metadata to existing writes and no extra write point.
+
+## Actual encoding and limits
+
+Complete JSON UTF-8 including wrappers: 32-buff post-ready public page 15081 bytes, ready response 746 bytes, H 5111 bytes, compact lastReadyReceipt 946 bytes. Limits remain page/response 32768, H 131072, CP header 16384 and each chunk 81920. Existing maximum nonempty 8-enemy/7-CD/escaped-ID/uint64 and 32-buff encoding tests remain included. The eight-receipt path is exercised separately by actual heartbeat commands, not by inserting an artificial unbounded receipt.
+
+The actual `node client/tools/demo-next-room.mjs` service/coordinator demo reaches active room0 scene1 with 11 verified resources/stamina307, then active room1 scene2/stamina0. Formal regeneration/exit content, Cocos build/device acceptance, cloud SDK budgets, ST11 battle, ST15 production pickup and full ST16 remain outside this approved local slice. No installation, GUI, cloud, Jira, push or MR operation was performed.
+
+## Final verification and handoff
+
+- Final full command: `node tools/check-all.cjs --typescript /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/Resources/app.asar.unpacked/node_modules/typescript` — **7/7 stages pass**, including backend/shared types, client pure-model types, 115 shared tests and 477 backend/coordinator harness executions. Fifteen new cases cover this fix; three new fixture imports execute the existing 14 next-room cases again (42 repeated executions), so 477 does not mean 477 distinct cases or 57 new tests.
+- Actual new client regression: 11 new cases plus 14 imported existing fixture tests = 25/25; existing activation/recovery coordinator regression = 7/7. Isolated baseline archive reproduced RED before the fix (`/private/tmp/st10-p1-client-red.log`); actual recovered role resources and buff records, lost ready/reopen, active recovery, altered/omitted pages and a real suspend between proof and final status are checked.
+- Backend active-proof regression including active recovery: 16/16 harness executions (two new cases plus 14 imported). The eight-receipt actual H measures 10163 UTF-8 bytes, below 131072.
+- Intermediate full runs are not passing evidence: the first was 6/7 due to an old mocked transport lacking post-ready pages; the second had 476/477 backend executions pass because the new active-recovery test used the existing `cleared` fixture. The transport fixture and active-state fixture were corrected. The final full result above is for the complete final code, after these corrections.
+- `git diff --check` passes. Immediately before commit, integration branch `feat-1.0.0` still resolves to the base SHA above; no merge is necessary. All implementation changes and this evidence are handed off as one local fix commit; its complete SHA is supplied in the implementer handoff. Independent reviewers must recheck that merged head before acceptance.

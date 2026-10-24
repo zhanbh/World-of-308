@@ -36,6 +36,15 @@ function integer(value: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): number
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < min || value > max || Object.is(value, -0)) integrity();
   return value;
 }
+/** Shared outer CP metadata contract; room-specific header fields remain owned by room-checkpoint. */
+export function validateCheckpointHeader(header:HandoffCheckpointHeader, expected:{id:string;challengeId:string;accountId:string;characterId:string;sceneEpoch:number}):void {
+  if (!header || header.schemaVersion!==2 || header.id!==expected.id || header.challengeId!==expected.challengeId || header.accountId!==expected.accountId || header.characterId!==expected.characterId || header.sceneEpoch!==expected.sceneEpoch || typeof header.acceptingInputs!=='boolean' || !Array.isArray(header.activeChunks) || header.activeChunks.length<1 || header.activeChunks.length>8 || new TextEncoder().encode(JSON.stringify(header)).length>16384) integrity();
+  integer(header.revision);integer(header.sceneEpoch,1);if(header.closedAt!==undefined)integer(header.closedAt);
+  const ordinals=new Set<number>();for(const ref of header.activeChunks){if(!ref||typeof ref!=='object')integrity();integer(ref.ordinal,0,7);integer(ref.chunkRevision);integer(ref.sceneEpoch,1);if(ordinals.has(ref.ordinal)||ref.sceneEpoch!==header.sceneEpoch||typeof ref.hash!=='string'||!/^[a-f0-9]{64}$/.test(ref.hash))integrity();ordinals.add(ref.ordinal);}
+}
+export function validateCheckpointChunk(chunk:HandoffCheckpointChunk,ref:HandoffCheckpointHeader['activeChunks'][number],expected:{id:string;challengeId:string;accountId:string}):void {
+ if(!chunk||chunk.schemaVersion!==2||chunk.id!==expected.id||chunk.challengeId!==expected.challengeId||chunk.accountId!==expected.accountId||chunk.ordinal!==ref.ordinal||chunk.chunkRevision!==ref.chunkRevision||chunk.sceneEpoch!==ref.sceneEpoch||chunk.hash!==ref.hash||new TextEncoder().encode(JSON.stringify(chunk)).length>81920)integrity();integer(chunk.ordinal,0,7);integer(chunk.chunkRevision);integer(chunk.sceneEpoch,1);
+}
 function refillWindow(now: number): number { return Math.floor((integer(now) + 8 * 3600000) / (4 * 3600000)); }
 export async function checkpointDataHash(data: unknown): Promise<string> {
   const encoded = canonical(data);
@@ -70,17 +79,13 @@ export async function handoff(tx: Transaction, account: LoginAccount, now: numbe
     const unactivated = challenge.sceneEpoch === 0 && challenge.currentRoomNo === -1 && (challenge.roomPhase === 'preparing' && challenge.result === 'active' || challenge.roomPhase === 'closed' && challenge.sceneState === 'closed');
     if (!header && !unactivated) integrity();
     if (header) {
-    if (unactivated || header.schemaVersion !== 2 || header.id !== headerId || header.challengeId !== challengeId || header.accountId !== account.id || header.characterId !== challenge.characterId || header.sceneEpoch !== challenge.sceneEpoch || typeof header.acceptingInputs !== 'boolean' || !Array.isArray(header.activeChunks) || header.activeChunks.length > 8 || header.activeChunks.length < 1 || new TextEncoder().encode(JSON.stringify(header)).length > 16384) integrity();
-    integer(header.revision);
-    const ordinals = new Set<number>();
+    if(unactivated)integrity();
+    validateCheckpointHeader(header,{id:headerId,challengeId,accountId:account.id,characterId:challenge.characterId,sceneEpoch:challenge.sceneEpoch});
     for (const ref of header.activeChunks) {
-      integer(ref.ordinal, 0, 7); integer(ref.chunkRevision); integer(ref.sceneEpoch, 1);
-      if (ordinals.has(ref.ordinal) || ref.sceneEpoch !== header.sceneEpoch || !/^[a-f0-9]{64}$/.test(ref.hash)) integrity();
-      ordinals.add(ref.ordinal);
       const chunkId = await loginKey('cpChunk', [challengeId, ref.ordinal]);
       const chunk = await tx.get<HandoffCheckpointChunk>(chunkId);
-      if (!chunk || chunk.schemaVersion !== 2 || chunk.id !== chunkId || chunk.challengeId !== challengeId || chunk.accountId !== account.id || chunk.ordinal !== ref.ordinal || chunk.chunkRevision !== ref.chunkRevision || chunk.sceneEpoch !== ref.sceneEpoch || chunk.hash !== ref.hash || await checkpointDataHash(chunk.data) !== ref.hash) integrity();
-      if (new TextEncoder().encode(JSON.stringify(chunk)).length > 81920) integrity();
+      validateCheckpointChunk(chunk!,ref,{id:chunkId,challengeId,accountId:account.id});
+      if(await checkpointDataHash(chunk!.data)!==ref.hash)integrity();
     }
     if (challenge.sceneState === 'closed' && header.acceptingInputs) integrity();
     }

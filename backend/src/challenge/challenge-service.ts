@@ -404,8 +404,18 @@ export class ChallengeService {
         const caller=await this.caller();const page=await this.options.store.run(async tx=>{
             const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),c=await this.character(tx,a,q.payload.characterId,q.payload.rolePlayEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId),now=this.options.clock.now();
             requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');if(await this.expire(tx,a,h,now))return null;requireValue(h.sessionId===q.sessionId&&h.rolePlayEpoch===c.rolePlayEpoch&&h.sceneState!=='closed'&&!this.expired(h,now),'DEADLINE_EXPIRED');
-            const t=(h.recoveryTicket??h.readyTicket) as EntryChallenge['readyTicket'];requireValue(t&&now<t.deadline&&Object.entries(t).filter(([k])=>k!=='deadline').every(([k,v])=>q.payload[k as keyof typeof q.payload]===v),'VERSION_CONFLICT');
-            const {header,role,scene}=await readCheckpoint(tx,h);requireValue(header.revision===t.checkpointRevision&&header.state.publicStateHash===t.publicStateHash,'VERSION_CONFLICT');
+            const {header,role,scene}=await readCheckpoint(tx,h);
+            let t=(h.recoveryTicket??h.readyTicket) as EntryChallenge['readyTicket'];
+            // Original ready receipts authorize only a bounded read of this same live timeline.
+            // They do not renew the lease, consume loading time, or restart an anchor.
+            if(!t){
+                const receipt=h.lastReadyReceipt;requireValue(receipt&&receipt.readyTicketId===q.payload.readyTicketId&&Number.isSafeInteger(receipt.proofDeadline)&&now<receipt.proofDeadline&&h.roomPhase==='active'&&h.connection==='connected'&&h.lifeState==='alive'&&h.result==='active','VERSION_CONFLICT');
+                const original=parseSceneResponse(receipt.result);requireValue(original.outcome.status==='committed'&&!('kind' in original.outcome.data.state),'VERSION_CONFLICT');
+                const state=header.state,issued=original.outcome.data.state;requireValue(!('kind' in state)&&state.sceneEpoch===issued.sceneEpoch&&state.timelineEpoch===issued.timelineEpoch&&state.manifestHash===issued.manifestHash&&header.revision>=issued.checkpointRevision&&state.roomPhase==='active'&&state.connection==='connected'&&header.acceptingInputs,'VERSION_CONFLICT');
+                t={readyTicketId:receipt.readyTicketId,sceneEpoch:state.sceneEpoch,timelineEpoch:state.timelineEpoch,checkpointRevision:header.revision,publicStateHash:state.publicStateHash,manifestHash:state.manifestHash,deadline:receipt.proofDeadline};
+            }
+            requireValue(t&&now<t.deadline&&Object.entries(t).filter(([k])=>k!=='deadline').every(([k,v])=>q.payload[k as keyof typeof q.payload]===v),'VERSION_CONFLICT');
+            requireValue(header.revision===t.checkpointRevision&&header.state.publicStateHash===t.publicStateHash,'VERSION_CONFLICT');
             const records=publicRecords(role,scene),totalPages=Math.ceil(records.length/64);requireValue(q.payload.pageIndex<totalPages,'INVALID_ARGUMENT');
             return parseRecoveryPage({protocolVersion:2,requestId:q.requestId,serverTime:now,...t,pageIndex:q.payload.pageIndex,totalPages,records:records.slice(q.payload.pageIndex*64,(q.payload.pageIndex+1)*64)});
         });requireValue(page,'DEADLINE_EXPIRED');return page;
@@ -491,6 +501,7 @@ export class ChallengeService {
             }
             const result=reply({status:'committed',data:{state:await this.controlState(tx,next),readyTicket:next.recoveryTicket??next.readyTicket??null}},next.lease!.revision);
             const stored=structuredClone(result);let manifestRef:string|undefined;if(stored.outcome.status==='committed'&&'kind' in stored.outcome.data.state&&stored.outcome.data.state.pendingManifest){manifestRef=next.pendingRoomAttempt!.manifestRef;(stored.outcome.data.state as {pendingManifest:unknown}).pendingManifest=null;}
+            if(q.command==='scene.ready'&&next.roomPhase==='active'){const ticket=h.recoveryTicket as {deadline:number};next.lastReadyReceipt={tuple,controlSeq:seq,readyTicketId:q.payload.readyTicketId,proofDeadline:ticket.deadline,result};}
             next.controlReceipts=[...(h.controlReceipts??[]),{tuple,command:q.command,sequence:seq,result:stored,manifestRef,...q.command==='scene.ready'?{readyTicketId:q.payload.readyTicketId}:{}}].slice(-8);budget(next,131072);budget(result,32768);
             tx.set(a.id,{...a,writeRevision:increment(a.writeRevision)});tx.set(h.id,next);return result;
         });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}
@@ -512,7 +523,7 @@ export class ChallengeService {
             const advanced=advanceRole(role,header.logicalTimeMs,logicalTimeMs,this.options.content!);Object.assign(role,advanced);
             const state={...header.state,checkpointRevision:revision,publicStateHash:await stateHash(role,scene),acceptedTick:tick,roomPhase:'active' as const,anchorWallAt:now,anchorTick:tick,inputGapBaseAt:now,transitionClock:null};
             const lease={...h.lease!,lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(h.lease!.revision)},result=reply({status:'committed',data:{state,readyTicket:null}},lease.revision);
-            const next:EntryChallenge={...h,version:increment(h.version),roomPhase:'active',acceptedTick:tick,controlSeq:q.controlSeq,lease,lastReadyReceipt:{tuple,controlSeq:q.controlSeq,readyTicketId:ticket.readyTicketId,result},controlReceipts:[...(h.controlReceipts??[]),{tuple,command:q.command,sequence:q.controlSeq,readyTicketId:ticket.readyTicketId,result}].slice(-8)};delete next.transitionClock;delete next.readyTicket;
+            const next:EntryChallenge={...h,version:increment(h.version),roomPhase:'active',acceptedTick:tick,controlSeq:q.controlSeq,lease,lastReadyReceipt:{tuple,controlSeq:q.controlSeq,readyTicketId:ticket.readyTicketId,proofDeadline:ticket.deadline,result},controlReceipts:[...(h.controlReceipts??[]),{tuple,command:q.command,sequence:q.controlSeq,readyTicketId:ticket.readyTicketId,result}].slice(-8)};delete next.transitionClock;delete next.readyTicket;
             const activeChunks=[...header.activeChunks];if(await checkpointDataHash(role)!==activeChunks[0].hash){const chunk=await writeChunk(h,0,increment(activeChunks[0].chunkRevision),role);tx.set(chunk.id,chunk);activeChunks[0]={...activeChunks[0],chunkRevision:chunk.chunkRevision,hash:chunk.hash};}
             const nextHeader={...header,activeChunks,revision,acceptingInputs:true,state,logicalTimeMs,timeRemainderMs:logicalTimeMs%10};budget(next,131072);budget(nextHeader,16384);budget(result,32768);
             tx.set(a.id,{...a,writeRevision:increment(a.writeRevision)});tx.set(h.id,next);tx.set(header.id,nextHeader);return result;

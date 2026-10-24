@@ -1,7 +1,8 @@
 import {encodeAssetRequest,decodeAssetResponse} from '../../../../shared/src/protocol/asset-v2.ts';
-import {parseRoomRequest,parseRoomResponse,parseSceneRequest,parseSceneResponse,parseRecoveryPage,parseChallengeQueryResponse} from '../../../../shared/src/protocol/scene-v2.ts';
+import {parseRoomRequest,parseRoomResponse,parseSceneRequest,parseSceneResponse,assembleRecoveryPages,parseChallengeQueryResponse} from '../../../../shared/src/protocol/scene-v2.ts';
 import type {RoomManifest,SceneState} from '../../../../shared/src/protocol/scene-v2.ts';
 import {encodeSceneMessage,decodeSceneReply} from '../../../../shared/src/protocol/scene-wire.ts';
+import {fetchRecoveryProof,sameProofState} from './RecoveryProof.ts';
 import {verifyRecoveryPages} from '../../../../shared/src/public-state-proof.ts';
 import type {EntryTransport,EntryPendingStore} from './ChallengeEntryCoordinator.ts';
 import type {LoadingCoordinator} from './LoadingCoordinator.ts';
@@ -9,11 +10,11 @@ type Activate=Extract<ReturnType<typeof parseRoomRequest>,{command:'challenge.ac
 type Ready=Extract<ReturnType<typeof parseSceneRequest>,{command:'scene.ready'}>;
 type Ticket=NonNullable<Extract<ReturnType<typeof parseRoomResponse>['outcome'],{status:'committed'}>['data'] extends infer D? D extends {readyTicket:infer T}?T:never:never>;
 type Journal={activation:Activate;ticket:Ticket|null;ready:Ready|null;committed:SceneState|null;pages:unknown[]|null};
-export interface ActivationState{status:'idle'|'submitting'|'unknown'|'awaitingProof'|'active'|'failed';code:string|null;predictionEnabled:boolean;ticket:Ticket|null;state:SceneState|null;}
+export interface ActivationState{status:'idle'|'submitting'|'unknown'|'awaitingProof'|'active'|'failed';code:string|null;predictionEnabled:boolean;publicRecords:ReturnType<typeof assembleRecoveryPages>['records']|null;ticket:Ticket|null;state:SceneState|null;}
 /** Durable intent journal. Reload always reacquires resources and the complete public proof. */
 export class ActivationCoordinator{
  private journal:Journal|null=null;private loaded=false;private verified=false;private confirmedReady=false;private generation=0;
- private current:ActivationState={status:'idle',code:null,predictionEnabled:false,ticket:null,state:null};
+ private current:ActivationState={status:'idle',code:null,predictionEnabled:false,publicRecords:null,ticket:null,state:null};
  private transport:EntryTransport;private persistence:EntryPendingStore;
  constructor(transport:EntryTransport,persistence:EntryPendingStore){this.transport=transport;this.persistence=persistence;}
  get state():ActivationState{return structuredClone(this.current);}
@@ -21,7 +22,7 @@ export class ActivationCoordinator{
  private key(c:Activate){return JSON.stringify(['room-activation',c.sessionId,c.sessionEpoch,c.payload.characterId,c.payload.rolePlayEpoch,c.payload.challengeId]);}
  private save(){this.persistence.save(this.key(this.journal!.activation),JSON.stringify(this.journal));}
  restore(context:unknown):void{
-  ++this.generation;this.confirmedReady=false;const c=this.parse(context);this.loaded=false;this.verified=false;this.journal=null;this.current={status:'idle',code:null,predictionEnabled:false,ticket:null,state:null};
+  ++this.generation;this.confirmedReady=false;const c=this.parse(context);this.loaded=false;this.verified=false;this.journal=null;this.current={status:'idle',code:null,predictionEnabled:false,publicRecords:null,ticket:null,state:null};
   const saved=this.persistence.load(this.key(c));if(saved===null)return;
   const j=JSON.parse(saved);const original=this.parse(j.activation);if(this.key(original)!==this.key(c))throw Error('INVALID_ACTIVATION');
   if(j.ready){const ready=parseSceneRequest(j.ready);if(ready.command!=='scene.ready')throw Error('INVALID_READY');j.ready=ready;}
@@ -44,10 +45,10 @@ export class ActivationCoordinator{
   if(!j||this.current.status!=='active'||!this.current.predictionEnabled||!j.committed||j.activation.payload.roomAttemptId!==manifest.roomAttemptId||j.activation.payload.challengeId!==manifest.challengeId||j.activation.payload.manifestHash!==manifest.manifestHash)throw Error('PREVIOUS_ROOM_NOT_ACTIVE');
   ++this.generation;this.confirmedReady=false;this.loaded=false;this.verified=false;
   this.persistence.save(this.key(j.activation),null);this.journal=null;
-  this.current={status:'idle',code:null,predictionEnabled:false,ticket:null,state:null};
+  this.current={status:'idle',code:null,predictionEnabled:false,publicRecords:null,ticket:null,state:null};
  }
  async verifyPages(values:unknown[]):Promise<void>{
-  const generation=this.generation,j=this.journal;this.verified=false;this.current.predictionEnabled=false;
+  const generation=this.generation,j=this.journal;this.confirmedReady=false;this.verified=false;this.current.predictionEnabled=false;this.current.publicRecords=null;
   const proof=await verifyRecoveryPages(values);if(generation!==this.generation)return;const ticket=j?.ticket;if(!ticket)throw Error('NO_READY_TICKET');
   for(const key of ['readyTicketId','sceneEpoch','timelineEpoch','checkpointRevision','publicStateHash','manifestHash','deadline'] as const)if(proof[key]!==ticket[key])throw Error('TICKET_PROOF_MISMATCH');
   this.journal!.pages=structuredClone(values);this.save();this.verified=true;this.enable();
@@ -55,12 +56,8 @@ export class ActivationCoordinator{
  async fetchPages(requestIdPrefix:string):Promise<void>{
   const generation=this.generation,j=this.journal,t=j?.ticket;if(!j||!t)throw Error('NO_READY_TICKET');
   if(j.ready&&j.pages){await this.verifyPages(j.pages);return;}
-  const pages:unknown[]=[];let total=1;
-  for(let i=0;i<total;i++){
-   const {deadline,...binding}=t;const c=j.activation;const q={protocolVersion:2,query:'scene.recoveryPage',requestId:`${requestIdPrefix}-${i}`,sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,payload:{characterId:c.payload.characterId,rolePlayEpoch:c.payload.rolePlayEpoch,challengeId:c.payload.challengeId,...binding,pageIndex:i}};
-   const text=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;decodeSceneReply(q,text);const page=parseRecoveryPage(JSON.parse(text));total=page.totalPages;pages.push(page);
-  }
-  if(generation!==this.generation)return;await this.verifyPages(pages);
+  const c=j.activation,pages=await fetchRecoveryProof(this.transport,{...c,...c.payload},t,requestIdPrefix,()=>generation===this.generation);
+  if(pages)await this.verifyPages(pages);
  }
  async ready(value:unknown):Promise<void>{
   if(!this.loaded||!this.verified||!this.journal?.ticket)throw Error('SCENE_NOT_VERIFIED');
@@ -72,7 +69,7 @@ export class ActivationCoordinator{
  }
  async retry():Promise<void>{
   if(!this.journal||this.current.status==='submitting')throw Error('NO_PENDING_ACTIVATION');const generation=this.generation,j=this.journal,c=j.ready??j.activation;
-  const recover=this.current.status==='unknown';this.confirmedReady=false;this.current.status='submitting';this.current.code=null;this.current.predictionEnabled=false;
+  const recover=this.current.status==='unknown';this.confirmedReady=false;this.current.status='submitting';this.current.code=null;this.current.predictionEnabled=false;this.current.publicRecords=null;
   try{
    const original=recover?await this.queryOriginal(j):null;if(generation!==this.generation)return;
    const text=original??await this.transport.send(encodeSceneMessage(c));if(generation!==this.generation)return;decodeSceneReply(c,text);
@@ -86,8 +83,13 @@ export class ActivationCoordinator{
     decodeSceneReply(q,currentText);const current=parseChallengeQueryResponse(JSON.parse(currentText));
     if('error' in current)throw Error(current.error.code);
     const live=current.data,original=data.state;
-    if('kind' in live||live.roomPhase!=='active'||live.connection!=='connected'||live.lifeState!=='alive'||live.result!=='active'||live.sceneEpoch!==original.sceneEpoch||live.timelineEpoch!==original.timelineEpoch||live.checkpointRevision<original.checkpointRevision||live.publicStateHash!==original.publicStateHash||live.manifestHash!==original.manifestHash)throw Error('CURRENT_SCENE_NOT_VERIFIED');
-    this.confirmedReady=true;this.current.state=live;
+    if('kind' in live||live.roomPhase!=='active'||live.connection!=='connected'||live.lifeState!=='alive'||live.result!=='active'||live.sceneEpoch!==original.sceneEpoch||live.timelineEpoch!==original.timelineEpoch||live.checkpointRevision<original.checkpointRevision||live.manifestHash!==original.manifestHash)throw Error('CURRENT_SCENE_NOT_VERIFIED');
+    const ticket=j.ticket;if(!ticket)throw Error('NO_READY_TICKET');
+    const pages=await fetchRecoveryProof(this.transport,{...c,...c.payload},{readyTicketId:c.payload.readyTicketId,deadline:ticket.deadline,sceneEpoch:live.sceneEpoch,timelineEpoch:live.timelineEpoch,checkpointRevision:live.checkpointRevision,publicStateHash:live.publicStateHash,manifestHash:live.manifestHash},`active-${j.activation.operationId}`.slice(0,56),()=>generation===this.generation);
+    if(!pages||generation!==this.generation)return;
+    const finalText=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;decodeSceneReply(q,finalText);const final=parseChallengeQueryResponse(JSON.parse(finalText));
+    if('error' in final||'kind' in final.data||!sameProofState(live,final.data))throw Error('CURRENT_SCENE_NOT_VERIFIED');
+    this.current.publicRecords=assembleRecoveryPages(pages).records;this.verified=true;this.confirmedReady=true;this.current.state=final.data;j.committed=final.data;
    }else{
     const data=r.outcome.data;if(!('readyTicket' in data)||!data.readyTicket||'kind' in data.readyTicket||'kind' in data.state||data.state.challengeId!==j.activation.payload.challengeId||data.readyTicket.manifestHash!==j.activation.payload.manifestHash)throw Error('RESPONSE_MISMATCH');
     j.ticket=data.readyTicket;this.current.ticket=data.readyTicket;this.current.state=data.state;
@@ -111,5 +113,5 @@ export class ActivationCoordinator{
   const data=r.data as {status:string;result?:unknown};if(data.status==='notFound')return null;
   const result=JSON.stringify(data.result);decodeSceneReply(a,result);return result;
  }
- private enable(){this.current.predictionEnabled=!!(this.loaded&&this.verified&&this.confirmedReady&&this.journal?.committed);if(this.current.predictionEnabled)this.current.status='active';}
+ private enable(){this.current.predictionEnabled=!!(this.loaded&&this.verified&&this.confirmedReady&&this.current.publicRecords&&this.journal?.committed);if(this.current.predictionEnabled)this.current.status='active';}
 }

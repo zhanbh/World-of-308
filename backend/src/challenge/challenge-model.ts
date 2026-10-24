@@ -75,7 +75,7 @@ export interface EntryChallenge extends HandoffChallenge {
     recoveryUntil?:number;
     deathDeadline?:number;
     readyTicket?:{readyTicketId:string;sceneEpoch:number;timelineEpoch:number;checkpointRevision:number;publicStateHash:string;manifestHash:string;deadline:number};
-    lastReadyReceipt?:{tuple:string;controlSeq:number;readyTicketId:string;result:unknown};
+    lastReadyReceipt?:{tuple:string;controlSeq:number;readyTicketId:string;proofDeadline:number;result:unknown};
     controlReceipts?:{tuple:string;command:string;sequence:number;result:unknown;readyTicketId?:string;manifestRef?:string}[];
     recoveryTicket?:unknown;
     connection?: 'connected' | 'recovery' | 'closed';
