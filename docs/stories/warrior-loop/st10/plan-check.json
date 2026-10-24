@@ -1,0 +1,73 @@
+{
+  "feature": "warrior-loop-st10",
+  "base": "a75ee619d4f64f2e073c62d5626e605aff028402",
+  "integration_branch": "feat-1.0.0",
+  "spec_hash": "23272608bc24780e09b3850e117598a78d44fea7614ee7d9015a1060989f34ed",
+  "source_hash": "bf348bfe1062424c108122a1e173c39a02a050a014e79c9c200cb6f6752b0706",
+  "approval_kind": "human",
+  "approval_evidence": "好的，开始吧",
+  "tickets": [
+    {
+      "id": "ST10-01",
+      "path": "docs/stories/warrior-loop/st10/issues/01-entry-start.md",
+      "revision": "af6cebcee6e523683c67b06787b3028451f88915f265cf55616970a5e068f54e",
+      "blocked_by": [],
+      "status": "accepted"
+    },
+    {
+      "id": "ST10-02",
+      "path": "docs/stories/warrior-loop/st10/issues/02-prepare-resources.md",
+      "revision": "abb94c8a5702dc9cb27e47be14541e1091cb1781fdabf16a3af2c656a86235ae",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted"
+    },
+    {
+      "id": "ST10-03",
+      "path": "docs/stories/warrior-loop/st10/issues/03-activate-ready.md",
+      "revision": "c54836a3f2ff5e30c9554e9bb2f60f628445a758d2fc5d33d85437a162f1a78c",
+      "blocked_by": [
+        2
+      ],
+      "status": "accepted"
+    },
+    {
+      "id": "ST10-04",
+      "path": "docs/stories/warrior-loop/st10/issues/04-loading-recovery.md",
+      "revision": "d0cc613595aea6081955ae0e954174cd30684b33096b2b6afaaf676dcdd862e5",
+      "blocked_by": [
+        3
+      ],
+      "status": "accepted"
+    },
+    {
+      "id": "ST10-05",
+      "path": "docs/stories/warrior-loop/st10/issues/05-next-room-clock.md",
+      "revision": "e7a0aef56c75152a6316e8d663e66520c8729c87e2a4b59ae0b2abb42d52ada5",
+      "blocked_by": [
+        4
+      ],
+      "status": "accepted"
+    }
+  ],
+  "frontiers": [
+    [
+      1
+    ],
+    [
+      2
+    ],
+    [
+      3
+    ],
+    [
+      4
+    ],
+    [
+      5
+    ]
+  ],
+  "dependencies_acyclic": true,
+  "jira_actions": false
+}

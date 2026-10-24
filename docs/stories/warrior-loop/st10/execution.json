@@ -1,0 +1,53 @@
+{
+  "feature": "warrior-loop-st10",
+  "status": "approved-implementation-starting",
+  "integration_branch": "feat-1.0.0",
+  "tickets": [
+    {
+      "id": "ST10-01",
+      "accepted_revision": "af6cebcee6e523683c67b06787b3028451f88915f265cf55616970a5e068f54e",
+      "state": "pending",
+      "blocked_by": []
+    },
+    {
+      "id": "ST10-02",
+      "accepted_revision": "abb94c8a5702dc9cb27e47be14541e1091cb1781fdabf16a3af2c656a86235ae",
+      "state": "pending",
+      "blocked_by": [
+        1
+      ]
+    },
+    {
+      "id": "ST10-03",
+      "accepted_revision": "c54836a3f2ff5e30c9554e9bb2f60f628445a758d2fc5d33d85437a162f1a78c",
+      "state": "pending",
+      "blocked_by": [
+        2
+      ]
+    },
+    {
+      "id": "ST10-04",
+      "accepted_revision": "d0cc613595aea6081955ae0e954174cd30684b33096b2b6afaaf676dcdd862e5",
+      "state": "pending",
+      "blocked_by": [
+        3
+      ]
+    },
+    {
+      "id": "ST10-05",
+      "accepted_revision": "e7a0aef56c75152a6316e8d663e66520c8729c87e2a4b59ae0b2abb42d52ada5",
+      "state": "pending",
+      "blocked_by": [
+        4
+      ]
+    }
+  ],
+  "testing_seams": [
+    "trusted v2 service execute/query with real ST03/ST05 and MemoryStore",
+    "strict public DTO/scene wire codec",
+    "client entry/loading coordinator transport and durable pending store",
+    "actual optional Cocos build/runtime recorded separately"
+  ],
+  "jira_actions": false,
+  "pushed": false
+}

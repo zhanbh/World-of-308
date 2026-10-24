@@ -1,0 +1,27 @@
+{
+  "feature": "warrior-loop-st10",
+  "base": "a75ee619d4f64f2e073c62d5626e605aff028402",
+  "source_sha256": "bf348bfe1062424c108122a1e173c39a02a050a014e79c9c200cb6f6752b0706",
+  "status": "user-confirmed",
+  "frontiers": [
+    [
+      1
+    ],
+    [
+      2
+    ],
+    [
+      3
+    ],
+    [
+      4
+    ],
+    [
+      5
+    ]
+  ],
+  "tickets_published": true,
+  "business_implementation_started": false,
+  "jira_actions": false,
+  "approval_evidence": "好的，开始吧"
+}
