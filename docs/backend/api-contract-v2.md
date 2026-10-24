@@ -284,3 +284,13 @@ prepare的O只持有原manifest引用、attempt/hash、原结果版本与serverT
 ChallengeService.execute 接入严格 challenge.activateRoom / scene.ready；query 接入 scene.recoveryPage 和激活后的 challenge.get。activate 的 operation.get 返回原小型状态/票据，不读取当前 CP 重构历史结果。分页仅允许当前有效身份、票据及原基础修订，读取头→引用块→头一致性后裁剪公开记录，不直接发送 CP 内层。
 
 本地 `queryOriginalReady`（execute 的 scene.status 路由）接收原 scene.ready 的 controlSeq、原 leaseRevision、身份/challenge 与 readyTicketId，找到后返回**原 scene.ready 响应**（保留原 serverTime/anchors）；未找到返回 scene.status 的 VERSION_CONFLICT，客户端才能用原 ready 重试。该原结果查询不消费新控制序号、不创建 O、不代表当前状态或续租。ST10-04 扩展一般状态/恢复控制时须保留这一精确查询分支。客户端恢复预测另读取 challenge.get 的当前 active/connected/alive、代次/摘要/修订；当前截止已到返回 DEADLINE_EXPIRED，原回执仍可作为历史读取。
+
+## ST10-04 本地加载恢复控制
+
+`ChallengeService.execute` 现接通 heartbeat / scene.suspend / scene.resumePrepare / scene.ready / scene.status。控制原意图必须持久化后发送；`queryOriginalControl(原请求)` 为本地传输适配接口，按原命令、原 controlSeq 或 heartbeatSeq、原 leaseRevision 及完整原摘要查询最近8个成功控制回执；未保留/未找到返回 VERSION_CONFLICT，不证明旧请求不可能提交，重试只能使用原请求。控制不创建 assetOp；同序号异意图 OPERATION_MISMATCH。身份、当前session和角色代次校验先于回放。心跳独立推进 heartbeatSeq/lease.revision，不推进 H.version；重复心跳/控制只读原结果，不更新租约/时钟。
+
+未激活首房的 heartbeat/suspend 使用 sceneEpoch=0、当前 timelineEpoch；resumePrepare 的 checkpointRevision=null。该分支没有CP、假hash或公开分页。其恢复票据为 `{kind:unpaidLoading,readyTicketId,sceneEpoch:0,timelineEpoch,roomAttemptId,manifestHash,deadline}`；ready payload 为票据去掉deadline再加characterId/rolePlayEpoch/challengeId。控制响应的 state 使用既有 unpaidLoading 联合分支，readyTicket 使用此票据或既有CP票据。首次恢复递增timelineEpoch，保留同attempt/manifest/紫名安排，不扣房费。
+
+有CP的恢复票据继续使用原正代次/修订/hash和完整公开分页证明。resumePrepare 冻结前沿并保持recovery；恢复ready回到awaitingReady时只恢复H转场计时，anchor/inputGapBaseAt仍null，并发放新的普通ready票据；资源与新完整基线通过后下一次ready才开场。活动场景ready仍受原死亡/恢复截止，不复活、不补离线战斗。
+
+scene.status 的 readyTicketId 非null保留ST10-03精确原ready回执分支；null为当前状态读取，不消费新controlSeq、不续租。两者不能相互替代。任何新执行/当前读取到now≥原适用截止，事务内关闭场景：active→failed/closed，completed保留completed并closed；体力结算、A指针清理、角色旅店代次与现有handoff共用逻辑。`challenge.get` 返回关闭后的当前状态，替代ST10-03仅返回DEADLINE_EXPIRED的过渡行为；控制/分页返回到期拒绝。当前session保持active，关闭日志使用scene.expire，不伪装新登录。恢复预测须另核对新鲜当前状态，历史ready成功不是继续预测许可。

@@ -13,7 +13,7 @@ import type { IdentityPort } from '../identity/identity-v2.ts';
 import type { LoginAccount, LoginSession, IdentityLink } from '../identity/login-model.ts';
 import type { CharacterEntity, EquipmentEntity } from '../character/character-model.ts';
 import type { Store, Clock, Transaction } from '../ports/store.ts';
-import { checkpointDataHash } from '../identity/login-handoff.ts';
+import { handoff, checkpointDataHash } from '../identity/login-handoff.ts';
 import { toEquipmentView } from '../equipment/equipment-service.ts';
 import { aggregateCombatAttributes, validateEquipEligibility } from '../equipment/equipment-rules.ts';
 import { CommitUnknown, StoreUnavailable, canonical } from '../ports/store.ts';
@@ -149,8 +149,7 @@ export class ChallengeService {
         }
     }
     async execute(raw: unknown) {
-        if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='scene.status') return this.queryOriginalReady(raw);
-        if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='scene.ready') return this.ready(raw);
+        if(raw&&typeof raw==='object'){const command=Object.getOwnPropertyDescriptor(raw,'command')?.value;if(['heartbeat','scene.suspend','scene.resumePrepare'].includes(command))return this.sceneControl(raw);if(command==='scene.status')return Object.getOwnPropertyDescriptor(raw,'payload')?.value?.readyTicketId!==null?this.queryOriginalReady(raw):this.sceneControl(raw);if(command==='scene.ready'){const q=parseSceneRequest(raw);if(q.command!=='scene.ready')throw new TypeError('UNSUPPORTED_COMMAND');const h=await this.options.store.run(tx=>tx.get<EntryChallenge>(q.payload.challengeId));return h?.connection==='recovery'||h?.controlReceipts?.some(r=>r.command==='scene.ready'&&r.sequence===q.controlSeq)||q.payload.sceneEpoch===0?this.sceneControl(raw):this.ready(raw);}}
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.activateRoom') return this.activate(raw);
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.prepareRoom') return this.prepare(raw);
         const command = parseChallengeRequest(raw);
@@ -262,15 +261,15 @@ export class ChallengeService {
     }
     private async challengeState(raw:unknown) {
         const q=parseSceneQuery(raw);if(q.query!=='challenge.get')throw new TypeError('UNSUPPORTED_QUERY');
-        const now=this.options.clock.now();const reply=(value:unknown)=>parseChallengeQueryResponse({requestId:q.requestId,serverTime:now,...value as object});
+        let now=this.options.clock.now();const reply=(value:unknown)=>parseChallengeQueryResponse({requestId:q.requestId,serverTime:now,...value as object});
         try {const caller=await this.caller();return await this.options.store.run(async tx=>{
-            const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId);
-            requireValue(h?.schemaVersion===2 && h.id===q.payload.challengeId && h.accountId===a.id,'NOT_FOUND_OR_FORBIDDEN');
+            now=this.options.clock.now();const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch);let h=await tx.get<EntryChallenge>(q.payload.challengeId);
+            requireValue(h?.schemaVersion===2&&h.id===q.payload.challengeId&&h.accountId===a.id,'NOT_FOUND_OR_FORBIDDEN');
             const current=await tx.get<CharacterEntity>(h.characterId);
-            const c=await this.character(tx,a,h.characterId,h.sceneState==='closed'?current?.rolePlayEpoch??h.rolePlayEpoch:h.rolePlayEpoch);
-            if(h.sceneEpoch>0){if(h.sceneState!=='closed')requireValue(h.lease&&now<h.lease.leaseUntil&&(h.recoveryUntil===undefined||now<h.recoveryUntil)&&(h.deathDeadline===undefined||now<h.deathDeadline),'DEADLINE_EXPIRED');const {header}=await readCheckpoint(tx,h);return reply({data:{...header.state,checkpointRevision:header.revision,roomPhase:h.roomPhase,connection:h.sceneState==='closed'?'closed':h.connection,lifeState:h.lifeState,result:h.result,transitionClock:h.transitionClock??null},versions:[{kind:'character',id:c.id,version:c.version},{kind:'challenge',id:h.id,version:h.version}]});}
-            const pending=h.pendingRoomAttempt;
-            return reply({data:{kind:'unpaidLoading',challengeId:h.id,sceneEpoch:0,timelineEpoch:h.timelineEpoch??0,checkpoint:null,currentRoomNo:-1,roomPhase:h.roomPhase,connection:h.sceneState==='closed'?'closed':h.connection??'connected',lifeState:h.lifeState,result:h.result,staminaRemaining:h.staminaSnapshot.remaining,pendingManifest:pending?await this.hydrate(tx,pending.manifestRef,pending.attemptId,pending.manifestHash):null,transitionClock:h.transitionClock??null},versions:[{kind:'character',id:c.id,version:c.version},{kind:'challenge',id:h.id,version:h.version}]});
+            await this.character(tx,a,h.characterId,h.sceneState==='closed'?current?.rolePlayEpoch??h.rolePlayEpoch:h.rolePlayEpoch);
+            if(await this.expire(tx,a,h,now))h=(await tx.get<EntryChallenge>(h.id))!;
+            const c=(await tx.get<CharacterEntity>(h.characterId))!;
+            return reply({data:await this.controlState(tx,h),versions:[{kind:'character',id:c.id,version:c.version},{kind:'challenge',id:h.id,version:h.version}]});
         });}catch(e){if(e instanceof Refusal)return reply({error:{code:e.message}});if(e instanceof StoreUnavailable||e instanceof CommitUnknown||e instanceof TypeError)return reply({error:{code:'SERVICE_UNAVAILABLE'}});throw e;}
     }
     /** Asset receipt hydration resolves its original immutable reference, never H's latest pending. */
@@ -313,6 +312,7 @@ export class ChallengeService {
             try {
                 const h=await tx.get<EntryChallenge>(command.payload.challengeId);
                 requireValue(h?.schemaVersion===2&&h.id===command.payload.challengeId&&h.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
+                requireValue(!await this.expire(tx,a,h,now),'DEADLINE_EXPIRED');
                 requireValue(h.result==='active'&&h.sceneState!=='closed','CHALLENGE_TERMINAL');
                 requireValue(h.sessionId===command.sessionId&&h.rolePlayEpoch===c.rolePlayEpoch&&a.activeChallengeId===h.id&&a.openSceneChallengeId===h.id&&c.location.kind==='challenge'&&c.location.challengeId===h.id&&c.staminaReservation===h.id,'VERSION_CONFLICT');
                 requireValue(h.lifeState==='alive','ROOM_NOT_AVAILABLE');requireValue(h.connection==='connected','RECOVERY_REQUIRED');
@@ -357,7 +357,7 @@ export class ChallengeService {
             const id=await loginKey('assetOp',[a.id,command.operationId]),tuple=await manifestDigest(command),old=await tx.get<{schemaVersion:number;id:string;accountId:string;command:string;tuple:string;result:unknown}>(id);
             if(old){requireValue(old.schemaVersion===2&&old.id===id&&old.accountId===a.id&&old.command===command.command,'SERVICE_UNAVAILABLE');requireValue(old.tuple===tuple,'OPERATION_MISMATCH');const original=parseRoomResponse(old.result);return parseRoomResponse({...original,serverTime:now,replayed:true});}
             try{
-                const h=await tx.get<EntryChallenge>(command.payload.challengeId);requireValue(h?.schemaVersion===2&&h.id===command.payload.challengeId&&h.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');this.live(h,a,c,command.sessionId,now);
+                const h=await tx.get<EntryChallenge>(command.payload.challengeId);requireValue(h?.schemaVersion===2&&h.id===command.payload.challengeId&&h.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');requireValue(!await this.expire(tx,a,h,now),'DEADLINE_EXPIRED');this.live(h,a,c,command.sessionId,now);
                 requireValue(command.expected.some(v=>v.kind==='character'&&v.id===c.id&&v.version===c.version),'VERSION_CONFLICT');
                 if(h.currentRoomNo===0&&h.readyTicket&&h.sceneEpoch===1){
                     const roomId=await loginKey('room',[h.id,0]),room=await tx.get<{attemptId:string;activationRevision:number;initialResult:unknown}>(roomId);
@@ -384,29 +384,108 @@ export class ChallengeService {
     }
     private async recoveryPage(raw:unknown) {
         const q=parseSceneQuery(raw);if(q.query!=='scene.recoveryPage')throw new TypeError('UNSUPPORTED_QUERY');
-        const caller=await this.caller();return this.options.store.run(async tx=>{
+        const caller=await this.caller();const page=await this.options.store.run(async tx=>{
             const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),c=await this.character(tx,a,q.payload.characterId,q.payload.rolePlayEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId),now=this.options.clock.now();
-            requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');this.live(h,a,c,q.sessionId,now);
-            const t=h.readyTicket;requireValue(t&&now<t.deadline&&Object.entries(t).filter(([k])=>k!=='deadline').every(([k,v])=>q.payload[k as keyof typeof q.payload]===v),'VERSION_CONFLICT');
+            requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');if(await this.expire(tx,a,h,now))return null;requireValue(h.sessionId===q.sessionId&&h.rolePlayEpoch===c.rolePlayEpoch&&h.sceneState!=='closed'&&!this.expired(h,now),'DEADLINE_EXPIRED');
+            const t=(h.recoveryTicket??h.readyTicket) as EntryChallenge['readyTicket'];requireValue(t&&now<t.deadline&&Object.entries(t).filter(([k])=>k!=='deadline').every(([k,v])=>q.payload[k as keyof typeof q.payload]===v),'VERSION_CONFLICT');
             const {header,role,scene}=await readCheckpoint(tx,h);requireValue(header.revision===t.checkpointRevision&&header.state.publicStateHash===t.publicStateHash,'VERSION_CONFLICT');
             const records=publicRecords(role,scene),totalPages=Math.ceil(records.length/64);requireValue(q.payload.pageIndex<totalPages,'INVALID_ARGUMENT');
             return parseRecoveryPage({protocolVersion:2,requestId:q.requestId,serverTime:now,...t,pageIndex:q.payload.pageIndex,totalPages,records:records.slice(q.payload.pageIndex*64,(q.payload.pageIndex+1)*64)});
-        });
+        });requireValue(page,'DEADLINE_EXPIRED');return page;
     }
     async queryOriginalReady(raw:unknown) {
         const q=parseSceneRequest(raw);if(q.command!=='scene.status')throw new TypeError('UNSUPPORTED_COMMAND');
         let now=this.options.clock.now();const reply=(outcome:unknown,leaseRevision=q.leaseRevision)=>parseSceneResponse({protocolVersion:2,command:q.command,controlSeq:q.controlSeq,leaseRevision,serverTime:now,replayed:false,outcome});
         try{const caller=await this.caller();return await this.options.store.run(async tx=>{
             now=this.options.clock.now();const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),c=await this.character(tx,a,q.payload.characterId,q.payload.rolePlayEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId);requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
-            const r=h.lastReadyReceipt;requireValue(r&&r.controlSeq===q.controlSeq&&r.readyTicketId===q.payload.readyTicketId,'VERSION_CONFLICT');return parseSceneResponse(r.result);
+            const r=h.controlReceipts?.find(r=>r.command==='scene.ready'&&r.sequence===q.controlSeq);if(r){requireValue(r.readyTicketId===q.payload.readyTicketId,'VERSION_CONFLICT');return this.controlOriginal(tx,r);}
+            const old=h.lastReadyReceipt;requireValue(old&&old.controlSeq===q.controlSeq&&old.readyTicketId===q.payload.readyTicketId,'VERSION_CONFLICT');return parseSceneResponse(old.result);
         });}catch(e){if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof StoreUnavailable||e instanceof CommitUnknown)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});throw e;}
     }
+    /** Bounded original control receipts are historical evidence, never current permission. */
+    async queryOriginalControl(raw:unknown) { return this.sceneControl(raw,true); }
+    private async controlOriginal(tx:Transaction,r:NonNullable<EntryChallenge['controlReceipts']>[number]) {
+        const result=structuredClone(r.result) as {outcome:{status:string;data:{state:{pendingManifest:unknown}}}};
+        if(r.manifestRef){const record=await tx.get<{manifest:RoomManifest}>(r.manifestRef);requireValue(record?.manifest,'SERVICE_UNAVAILABLE');result.outcome.data.state.pendingManifest=parseRoomManifest(record.manifest);}
+        return parseSceneResponse(result);
+    }
+    private async controlState(tx:Transaction,h:EntryChallenge) {
+        if(h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);return {...header.state,checkpointRevision:header.revision,roomPhase:h.roomPhase,connection:h.sceneState==='closed'?'closed':h.connection,lifeState:h.lifeState,result:h.result,transitionClock:h.transitionClock??null};}
+        const p=h.pendingRoomAttempt;
+        return {kind:'unpaidLoading',challengeId:h.id,sceneEpoch:0,timelineEpoch:h.timelineEpoch??0,checkpoint:null,currentRoomNo:-1,roomPhase:h.roomPhase,connection:h.sceneState==='closed'?'closed':h.connection,lifeState:h.lifeState,result:h.result,staminaRemaining:h.staminaSnapshot.remaining,pendingManifest:p?await this.hydrate(tx,p.manifestRef,p.attemptId,p.manifestHash):null,transitionClock:h.transitionClock??null};
+    }
+    private expired(h:EntryChallenge,now:number) {return h.sceneState!=='closed'&&(!h.lease||now>=(h.recoveryUntil??h.lease.leaseUntil)||h.deathDeadline!==undefined&&now>=h.deathDeadline);}
+    private async expire(tx:Transaction,a:LoginAccount,h:EntryChallenge,now:number) {
+        if(!this.expired(h,now))return false;
+        const closed=await handoff(tx,a,now,'scene.expire',`${h.id}:${h.recoveryUntil??h.lease?.leaseUntil}`,'scene.expire');
+        tx.set(a.id,{...closed.account,writeRevision:increment(a.writeRevision),version:increment(a.version)});
+        return true;
+    }
+    private async sceneControl(raw:unknown,originalOnly=false) {
+        const q=parseSceneRequest(raw);
+        let now=this.options.clock.now();
+        const seq=q.command==='heartbeat'?q.heartbeatSeq:q.controlSeq;
+        const reply=(outcome:unknown,leaseRevision=q.leaseRevision,replayed=false)=>parseSceneResponse({protocolVersion:2,command:q.command,...q.command==='heartbeat'?{heartbeatSeq:seq}:{controlSeq:seq},leaseRevision,serverTime:now,replayed,outcome});
+        try{const caller=await this.caller();return await this.options.store.run(async tx=>{
+            now=this.options.clock.now();const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),c=await this.character(tx,a,q.payload.characterId,q.payload.rolePlayEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId);
+            requireValue(h?.schemaVersion===2&&h.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
+            const tuple=await manifestDigest(q),receipt=h.controlReceipts?.find(r=>r.command===q.command&&r.sequence===seq);
+            if(receipt){requireValue(receipt.tuple===tuple,'OPERATION_MISMATCH');const old=await this.controlOriginal(tx,receipt);return originalOnly?old:parseSceneResponse({...old,serverTime:now,replayed:true});}
+            if(originalOnly)return reply({status:'rejected',code:'VERSION_CONFLICT'});
+            requireValue(h.sessionId===q.sessionId&&h.rolePlayEpoch===c.rolePlayEpoch,'VERSION_CONFLICT');
+            if(await this.expire(tx,a,h,now))return reply({status:'rejected',code:'DEADLINE_EXPIRED'});
+            requireValue(h.sceneState!=='closed','SCENE_CLOSED');
+            if(q.command==='scene.status')return reply({status:'committed',data:{state:await this.controlState(tx,h),readyTicket:h.recoveryTicket??h.readyTicket??null}},h.lease!.revision);
+            requireValue(h.result==='active'||h.result==='completed','CHALLENGE_TERMINAL');
+            requireValue(a.openSceneChallengeId===h.id&&c.staminaReservation===h.id&&c.location.kind==='challenge'&&c.location.challengeId===h.id,'VERSION_CONFLICT');
+            requireValue(q.leaseRevision===h.lease!.revision,'VERSION_CONFLICT');
+            requireValue(q.command==='heartbeat'?seq===(h.heartbeatSeq??0)+1:seq===(h.controlSeq??0)+1,'VERSION_CONFLICT');
+            requireValue(q.payload.sceneEpoch===h.sceneEpoch&&q.payload.timelineEpoch===(h.timelineEpoch??0),'VERSION_CONFLICT');
+            const next=structuredClone(h);next.version=increment(h.version);
+            if(q.command==='heartbeat'){
+                requireValue(h.connection==='connected','RECOVERY_REQUIRED');next.version=h.version;next.heartbeatSeq=seq;
+                next.lease={...h.lease!,lastEvidenceAt:now,lastHeartbeatAt:now,lastHeartbeatSeq:seq,leaseUntil:now+10000,revision:increment(h.lease!.revision)};
+            }else if(q.command==='scene.suspend'){
+                requireValue(h.connection==='connected','RECOVERY_REQUIRED');next.controlSeq=seq;next.connection='recovery';next.recoveryUntil=now+10000;
+                next.lease={...h.lease!,mode:'recovery',recoveryUntil:next.recoveryUntil,revision:increment(h.lease!.revision)};delete next.readyTicket;delete next.recoveryTicket;
+                if(next.transitionClock){requireValue(now>=next.transitionClock.settledAt,'CONFIG_NOT_READY');next.transitionClock={...next.transitionClock,connectedElapsedMs:next.transitionClock.connectedElapsedMs+(now-next.transitionClock.settledAt),settledAt:now,transitionRevision:increment(next.transitionClock.transitionRevision)};}
+                if(h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);const revision=increment(header.revision);tx.set(header.id,{...header,revision,acceptingInputs:false,state:{...header.state,checkpointRevision:revision,connection:'recovery',recoveryUntil:next.recoveryUntil,anchorWallAt:null,anchorTick:null,inputGapBaseAt:null,transitionClock:next.transitionClock??null}});}
+            }else if(q.command==='scene.resumePrepare'){
+                // A silent loss keeps the original lease cutoff, never now+10 seconds.
+                requireValue(h.connection==='recovery'||h.connection==='connected','RECOVERY_REQUIRED');
+                next.controlSeq=seq;next.connection='recovery';next.recoveryUntil=h.recoveryUntil??h.lease!.leaseUntil;next.timelineEpoch=increment(h.timelineEpoch??0);
+                next.lease={...h.lease!,mode:'recovery',recoveryUntil:next.recoveryUntil,revision:increment(h.lease!.revision)};
+                if(next.transitionClock){const t=next.transitionClock;next.transitionClock={...t,connectedElapsedMs:t.connectedElapsedMs+(h.connection==='connected'?Math.max(0,Math.min(now,h.lease!.leaseUntil)-t.settledAt):0),settledAt:now,transitionRevision:increment(t.transitionRevision)};}
+                const deadline=Math.min(next.recoveryUntil,next.deathDeadline??Number.MAX_SAFE_INTEGER),readyTicketId=await loginKey('readyTicket',[h.id,h.sceneEpoch,next.timelineEpoch,seq]);
+                if(h.sceneEpoch===0){requireValue(q.payload.checkpointRevision===null&&next.pendingRoomAttempt,'VERSION_CONFLICT');next.recoveryTicket={kind:'unpaidLoading',readyTicketId,sceneEpoch:0,timelineEpoch:next.timelineEpoch,roomAttemptId:next.pendingRoomAttempt.attemptId,manifestHash:next.pendingRoomAttempt.manifestHash,deadline};}
+                else{const {header}=await readCheckpoint(tx,h);requireValue(q.payload.checkpointRevision===header.revision,'VERSION_CONFLICT');const revision=increment(header.revision),state={...header.state,timelineEpoch:next.timelineEpoch,checkpointRevision:revision,connection:'recovery' as const,recoveryUntil:next.recoveryUntil,anchorWallAt:null,anchorTick:null,inputGapBaseAt:null,transitionClock:next.transitionClock??null};
+                    next.recoveryTicket={readyTicketId,sceneEpoch:h.sceneEpoch,timelineEpoch:next.timelineEpoch,checkpointRevision:revision,publicStateHash:state.publicStateHash,manifestHash:state.manifestHash,deadline};tx.set(header.id,{...header,revision,acceptingInputs:false,state});}
+                delete next.readyTicket;
+            }else if(q.command==='scene.ready'){
+                requireValue(h.connection==='recovery'&&h.recoveryTicket,'VERSION_CONFLICT');const ticket=h.recoveryTicket as Record<string,unknown>;
+                requireValue(now<(ticket.deadline as number)&&Object.entries(ticket).filter(([k])=>k!=='deadline').every(([k,v])=>q.payload[k as keyof typeof q.payload]===v),'VERSION_CONFLICT');
+                next.controlSeq=seq;next.connection='connected';delete next.recoveryUntil;delete next.recoveryTicket;
+                next.lease={...h.lease!,mode:'connected',lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(h.lease!.revision)};delete next.lease.recoveryUntil;
+                if(next.transitionClock)next.transitionClock={...next.transitionClock,settledAt:now,transitionRevision:increment(next.transitionClock.transitionRevision)};
+                if(h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);const revision=increment(header.revision),state={...header.state,checkpointRevision:revision,connection:'connected' as const,recoveryUntil:null,transitionClock:next.transitionClock??null,...h.roomPhase==='active'?{anchorWallAt:now,anchorTick:header.state.acceptedTick,inputGapBaseAt:now}:{}};
+                    tx.set(header.id,{...header,revision,acceptingInputs:h.roomPhase==='active',state});
+                    if(h.roomPhase==='awaitingReady')next.readyTicket={readyTicketId:await loginKey('readyTicket',[h.id,h.sceneEpoch,h.timelineEpoch!,revision]),sceneEpoch:h.sceneEpoch,timelineEpoch:h.timelineEpoch!,checkpointRevision:revision,publicStateHash:state.publicStateHash,manifestHash:state.manifestHash,deadline:Math.min(next.lease.leaseUntil,h.deathDeadline??Number.MAX_SAFE_INTEGER)};
+                }
+            }
+            const result=reply({status:'committed',data:{state:await this.controlState(tx,next),readyTicket:next.recoveryTicket??next.readyTicket??null}},next.lease!.revision);
+            const stored=structuredClone(result);let manifestRef:string|undefined;if(stored.outcome.status==='committed'&&'kind' in stored.outcome.data.state&&stored.outcome.data.state.pendingManifest){manifestRef=next.pendingRoomAttempt!.manifestRef;(stored.outcome.data.state as {pendingManifest:unknown}).pendingManifest=null;}
+            next.controlReceipts=[...(h.controlReceipts??[]),{tuple,command:q.command,sequence:seq,result:stored,manifestRef,...q.command==='scene.ready'?{readyTicketId:q.payload.readyTicketId}:{}}].slice(-8);budget(next,131072);budget(result,32768);
+            tx.set(a.id,{...a,writeRevision:increment(a.writeRevision)});tx.set(h.id,next);return result;
+        });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}
+    }
+
     private async ready(raw:unknown) {
         const q=parseSceneRequest(raw);if(q.command!=='scene.ready')throw new TypeError('UNSUPPORTED_COMMAND');
         let now=this.options.clock.now();const reply=(outcome:unknown,leaseRevision=q.leaseRevision,replayed=false)=>parseSceneResponse({protocolVersion:2,command:q.command,controlSeq:q.controlSeq,leaseRevision,serverTime:now,replayed,outcome});
         try{const caller=await this.caller();return await this.options.store.run(async tx=>{
             now=this.options.clock.now();const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),c=await this.character(tx,a,q.payload.characterId,q.payload.rolePlayEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId);requireValue(h?.schemaVersion===2&&h.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
             const tuple=await manifestDigest(q),r=h.lastReadyReceipt;if(r&&r.controlSeq===q.controlSeq){requireValue(r.tuple===tuple,'OPERATION_MISMATCH');const original=parseSceneResponse(r.result);return parseSceneResponse({...original,replayed:true,serverTime:now});}
+            if(await this.expire(tx,a,h,now))return reply({status:'rejected',code:'DEADLINE_EXPIRED'});
             this.live(h,a,c,q.sessionId,now);requireValue(q.controlSeq===(h.controlSeq??0)+1&&q.leaseRevision===h.lease!.revision,'VERSION_CONFLICT');
             const ticket=h.readyTicket;requireValue(ticket&&now<ticket.deadline,'DEADLINE_EXPIRED');requireValue(Object.entries(ticket).filter(([k])=>k!=='deadline').every(([k,v])=>q.payload[k as keyof typeof q.payload]===v),'VERSION_CONFLICT');
             requireValue(h.roomPhase==='awaitingReady'&&h.transitionClock?.phase==='awaitingReady','ROOM_NOT_AVAILABLE');
@@ -414,7 +493,7 @@ export class ChallengeService {
             const clock=h.transitionClock;requireValue(now>=clock.settledAt&&Number.isSafeInteger(clock.consumedElapsedMs)&&clock.consumedElapsedMs>=0&&clock.connectedElapsedMs>=clock.consumedElapsedMs,'CONFIG_NOT_READY');const elapsed=clock.connectedElapsedMs+(now-clock.settledAt),delta=elapsed-clock.consumedElapsedMs,logicalTimeMs=header.logicalTimeMs+delta;requireValue(Number.isSafeInteger(elapsed)&&Number.isSafeInteger(logicalTimeMs),'CONFIG_NOT_READY');const revision=increment(header.revision),tick=Math.floor(logicalTimeMs/10);
             const state={...header.state,checkpointRevision:revision,publicStateHash:await stateHash(role,scene),acceptedTick:tick,roomPhase:'active' as const,anchorWallAt:now,anchorTick:tick,inputGapBaseAt:now,transitionClock:null};
             const lease={...h.lease!,lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(h.lease!.revision)},result=reply({status:'committed',data:{state,readyTicket:null}},lease.revision);
-            const next:EntryChallenge={...h,version:increment(h.version),roomPhase:'active',acceptedTick:tick,controlSeq:q.controlSeq,lease,lastReadyReceipt:{tuple,controlSeq:q.controlSeq,readyTicketId:ticket.readyTicketId,result}};delete next.transitionClock;delete next.readyTicket;
+            const next:EntryChallenge={...h,version:increment(h.version),roomPhase:'active',acceptedTick:tick,controlSeq:q.controlSeq,lease,lastReadyReceipt:{tuple,controlSeq:q.controlSeq,readyTicketId:ticket.readyTicketId,result},controlReceipts:[...(h.controlReceipts??[]),{tuple,command:q.command,sequence:q.controlSeq,readyTicketId:ticket.readyTicketId,result}].slice(-8)};delete next.transitionClock;delete next.readyTicket;
             const nextHeader={...header,revision,acceptingInputs:true,state,logicalTimeMs,timeRemainderMs:logicalTimeMs%10};budget(next,131072);budget(nextHeader,16384);budget(result,32768);
             tx.set(a.id,{...a,writeRevision:increment(a.writeRevision)});tx.set(h.id,next);tx.set(header.id,nextHeader);return result;
         });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}

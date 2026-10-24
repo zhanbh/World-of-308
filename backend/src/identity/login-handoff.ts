@@ -51,7 +51,7 @@ function validateCharacter(character: LoginCharacter | undefined, accountId: str
   return character;
 }
 /** Runs within the caller's account/session commit transaction; never commits an independent transaction. */
-export async function handoff(tx: Transaction, account: LoginAccount, now: number, operationId: string, receiptId: string): Promise<HandoffResult> {
+export async function handoff(tx: Transaction, account: LoginAccount, now: number, operationId: string, receiptId: string, eventCommand: 'session.handoff'|'scene.expire'='session.handoff'): Promise<HandoffResult> {
   integer(now); integer(account.version); integer(account.writeRevision);
   if (account.schemaVersion !== 2 || Object.keys(account.characterIdsByClass).some(c => c !== 'warrior' && c !== 'hunter')) integrity();
   const next = structuredClone(account), currentWindow = refillWindow(now), characters: CharacterSummary[] = [], resultVersions: Expected[] = [];
@@ -142,7 +142,7 @@ export async function handoff(tx: Transaction, account: LoginAccount, now: numbe
   if (changes.length) {
     const journalId = await loginKey('handoffJournal', [account.id, receiptId]);
     if (await tx.get(journalId) !== undefined) integrity();
-    tx.set(journalId, { schemaVersion: 2, id: journalId, tuple: JSON.stringify([account.id, receiptId]), accountId: account.id, operationId, sourceId: receiptId, command: 'session.handoff', occurredAt: now, changes });
+    tx.set(journalId, { schemaVersion: 2, id: journalId, tuple: JSON.stringify([account.id, receiptId]), accountId: account.id, operationId, sourceId: receiptId, command: eventCommand, occurredAt: now, changes });
   }
   return { account: next, characters, selectedCharacter, resultVersions };
 }

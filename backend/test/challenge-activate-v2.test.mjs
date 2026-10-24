@@ -81,7 +81,7 @@ test('supported responses and original receipts include actual wrapper bytes wit
 });
 test('historical ready receipt stays exact while current expired scene cannot authorize prediction',async()=>{
  const h=await activateFixture(),r=await h.service.execute(h.activateCommand),q=readyCommand(h,r),ready=await h.service.execute(q);h.clock.now=()=>11000;
- const original=await h.service.queryOriginalReady({...h.auth,command:'scene.status',controlSeq:1,leaseRevision:0,payload:{characterId:h.characterId,rolePlayEpoch:h.character().rolePlayEpoch,challengeId:h.challengeId,readyTicketId:q.payload.readyTicketId}});assert.deepEqual(original,ready);assert.equal((await h.query()).error.code,'DEADLINE_EXPIRED');
+ const original=await h.service.queryOriginalReady({...h.auth,command:'scene.status',controlSeq:1,leaseRevision:0,payload:{characterId:h.characterId,rolePlayEpoch:h.character().rolePlayEpoch,challengeId:h.challengeId,readyTicketId:q.payload.readyTicketId}});assert.deepEqual(original,ready);assert.equal((await h.query()).data.connection,'closed');
 });
 test('reserved snapshot fee clips tozero without introducing midchallenge brokenweapon gate',async()=>{
  const h=await activateFixture();await h.store.run(async tx=>{const old=await tx.get(h.challengeId);tx.set(h.challengeId,{...old,staminaSnapshot:{...old.staminaSnapshot,remaining:0},equipmentSnapshot:old.equipmentSnapshot.map(e=>({...e,durability:{...e.durability,current:0}}))});});const r=await h.service.execute(h.activateCommand);assert.equal(r.outcome.status,'committed');assert.equal(h.store.inspect(h.challengeId).staminaSnapshot.remaining,0);assert.equal((await h.service.execute(h.activateCommand)).replayed,true);assert.equal(h.store.inspect(h.challengeId).staminaSnapshot.revision,1);

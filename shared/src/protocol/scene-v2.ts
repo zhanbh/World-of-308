@@ -38,10 +38,13 @@ const epochs = { sceneEpoch: integer(1), timelineEpoch: integer(1) };
 const binding = { ...epochs, checkpointRevision: integer(), publicStateHash: hash, manifestHash: hash };
 const session = { protocolVersion: enumOf(2), sessionId: text(), sessionEpoch: integer(1) };
 const ready = object({ ...common, ...binding, readyTicketId: text() });
-const resume = object({ ...common, ...epochs, checkpointRevision: integer() });
-const simpleControl = object({ ...common, ...epochs });
+const controlEpochs={sceneEpoch:integer(),timelineEpoch:integer()};
+const resume = object({ ...common, ...controlEpochs, checkpointRevision: nullable(integer()) });
+const simpleControl = object({ ...common, ...controlEpochs });
+const loadingReady=object({...common,kind:enumOf('unpaidLoading'),sceneEpoch:enumOf(0),timelineEpoch:integer(1),roomAttemptId:text(),readyTicketId:text(),manifestHash:hash});
+function anyReady(v:unknown){return v&&typeof v==='object'&&Object.getOwnPropertyDescriptor(v,'kind')?.value==='unpaidLoading'?loadingReady(v):ready(v);}
 const controlFields = { ...session, controlSeq: integer(1), leaseRevision: integer() };
-const readyRequest = object({ ...controlFields, command: enumOf('scene.ready'), payload: ready });
+const readyRequest = object({ ...controlFields, command: enumOf('scene.ready'), payload: anyReady });
 const resumeRequest = object({ ...controlFields, command: enumOf('scene.resumePrepare'), payload: resume });
 const suspendRequest = object({ ...controlFields, command: enumOf('scene.suspend'), payload: simpleControl });
 const statusRequest = object({ ...controlFields, command: enumOf('scene.status'), payload: object({ ...common, readyTicketId: nullable(text()) }) });
@@ -91,16 +94,18 @@ export function parseSceneState(value: unknown) {
 export type SceneState = ReturnType<typeof parseSceneState>;
 
 const bool: Parser<boolean> = value => { if (typeof value !== 'boolean') throw new TypeError('INVALID_BOOLEAN'); return value; };
-const readyTicket = object({ readyTicketId: text(), ...binding, deadline: time });
+const cpReadyTicket = object({ readyTicketId: text(), ...binding, deadline: time });
+const unpaidReadyTicket=object({kind:enumOf('unpaidLoading'),readyTicketId:text(),sceneEpoch:enumOf(0),timelineEpoch:integer(1),roomAttemptId:text(),manifestHash:hash,deadline:time});
+function readyTicket(v:unknown){return v&&typeof v==='object'&&Object.getOwnPropertyDescriptor(v,'kind')?.value==='unpaidLoading'?unpaidReadyTicket(v):cpReadyTicket(v);}
 const sceneErrors = enumOf('LEVEL_REQUIRED', 'DIFFICULTY_LOCKED', 'INVALID_ARGUMENT', 'UNSUPPORTED_PROTOCOL', 'AUTH_REQUIRED', 'SESSION_REVOKED', 'VERSION_CONFLICT', 'RECOVERY_REQUIRED', 'DEADLINE_EXPIRED', 'SCENE_CLOSED', 'ROOM_NOT_AVAILABLE', 'CONFIG_NOT_READY', 'SERVICE_UNAVAILABLE', 'OPERATION_MISMATCH', 'NOT_FOUND_OR_FORBIDDEN', 'RATE_LIMITED', 'CHALLENGE_TERMINAL', 'EVENT_GAP', 'INVALID_EVENT', 'EVENT_ALREADY_ACCEPTED', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN', 'STAMINA_NOT_ENOUGH', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'NOT_DEAD', 'EMBLEM_NOT_ENOUGH', 'REVIVE_LIMIT_REACHED', 'BAG_FULL', 'CONTAINER_FULL');
 function failure(value: unknown) {
   const o = object({ status: enumOf('rejected', 'unknown'), code: text(64) })(value);
   return o.status === 'unknown' ? { status: o.status, code: enumOf('RESULT_UNKNOWN')(o.code) } : { status: o.status, code: sceneErrors(o.code) };
 }
-const rawResponseData = object({ state: parseSceneState, readyTicket: nullable(readyTicket) });
+const rawResponseData = object({ state: parseChallengeState, readyTicket: nullable(readyTicket) });
 function responseData(value: unknown) {
   const data = rawResponseData(value), t = data.readyTicket, s = data.state;
-  if (t && (t.sceneEpoch !== s.sceneEpoch || t.timelineEpoch !== s.timelineEpoch || t.checkpointRevision !== s.checkpointRevision || t.publicStateHash !== s.publicStateHash || t.manifestHash !== s.manifestHash)) throw new TypeError('TICKET_STATE_MISMATCH');
+  if (t && (t.sceneEpoch !== s.sceneEpoch || t.timelineEpoch !== s.timelineEpoch || ('kind' in t ? !('kind' in s) || s.pendingManifest?.roomAttemptId!==t.roomAttemptId : !('checkpointRevision' in s) || t.checkpointRevision!==s.checkpointRevision || t.publicStateHash!==s.publicStateHash || t.manifestHash!==s.manifestHash))) throw new TypeError('TICKET_STATE_MISMATCH');
   return data;
 }
 function controlOutcome(value: unknown) {
@@ -166,7 +171,7 @@ export function assembleRecoveryPages(values: unknown[]) {
     if ((r.kind === 'cooldown' || r.kind === 'buff') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
     if (r.kind === 'effect' && (!actorIds.has(r.ownerId) || (r.targetId !== null && !actorIds.has(r.targetId)))) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
   }
-  return { ...readyTicket({ readyTicketId: first.readyTicketId, sceneEpoch: first.sceneEpoch, timelineEpoch: first.timelineEpoch, checkpointRevision: first.checkpointRevision, publicStateHash: first.publicStateHash, manifestHash: first.manifestHash, deadline: first.deadline }), records };
+  return { ...cpReadyTicket({ readyTicketId: first.readyTicketId, sceneEpoch: first.sceneEpoch, timelineEpoch: first.timelineEpoch, checkpointRevision: first.checkpointRevision, publicStateHash: first.publicStateHash, manifestHash: first.manifestHash, deadline: first.deadline }), records };
 }
 
 const query = { ...session, requestId: operationId };
@@ -209,7 +214,8 @@ function result<T>(parseData: Parser<T>): Parser<{ status: 'committed'; data: T;
     ? object({ status: enumOf('committed'), data: parseData, resultVersions: parseExpected })(value) : failure(value);
 }
 const prepareResponse = object({ ...resultHeader, command: enumOf('challenge.prepareRoom'), outcome: result(parseRoomManifest) });
-const activateResponse = object({ ...resultHeader, command: enumOf('challenge.activateRoom'), outcome: result(responseData) });
+function activationData(v:unknown){const d=responseData(v);if('kind' in d.state || d.readyTicket&&'kind' in d.readyTicket)throw new TypeError('INVALID_ACTIVATION_STATE');return {state:d.state,readyTicket:d.readyTicket};}
+const activateResponse = object({ ...resultHeader, command: enumOf('challenge.activateRoom'), outcome: result(activationData) });
 export function parseRoomResponse(value: unknown) {
   return value && typeof value === 'object' && Object.getOwnPropertyDescriptor(value, 'command')?.value === 'challenge.prepareRoom' ? prepareResponse(value) : activateResponse(value);
 }

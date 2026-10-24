@@ -1,0 +1,79 @@
+import {parseSceneRequest,parseSceneResponse,parseRecoveryPage} from '../../../../shared/src/protocol/scene-v2.ts';
+import {encodeSceneMessage,decodeSceneReply} from '../../../../shared/src/protocol/scene-wire.ts';
+import {verifyRecoveryPages} from '../../../../shared/src/public-state-proof.ts';
+import type {EntryTransport,EntryPendingStore,EntryIdentity} from './ChallengeEntryCoordinator.ts';
+import type {LoadingCoordinator} from './LoadingCoordinator.ts';
+type Control=ReturnType<typeof parseSceneRequest>;
+type Data=Extract<ReturnType<typeof parseSceneResponse>['outcome'],{status:'committed'}>['data'];
+export interface RecoveryTransport extends EntryTransport {queryOriginalControl(text:string):Promise<string>;}
+export interface RecoveryState {status:'idle'|'submitting'|'unknown'|'failed'|'recovering'|'loading'|'active';code:string|null;predictionEnabled:boolean;data:Data|null;}
+type Journal={pending:Control|null;data:Data|null;pages:unknown[]|null};
+/** Exact control intents survive reopen. Receipts are evidence of the past, never authority to predict the current scene. */
+export class RecoveryCoordinator {
+ private identity:(EntryIdentity&{challengeId:string})|null=null;private journal:Journal={pending:null,data:null,pages:null};private generation=0;private loaded=false;private verifiedTicket:string|null=null;
+ private current:RecoveryState={status:'idle',code:null,predictionEnabled:false,data:null};
+ private transport:RecoveryTransport;private persistence:EntryPendingStore;
+ constructor(transport:RecoveryTransport,persistence:EntryPendingStore){this.transport=transport;this.persistence=persistence;}
+ get state():RecoveryState{return structuredClone(this.current);}
+ private key(){const i=this.identity!;return JSON.stringify(['scene-recovery',i.sessionId,i.sessionEpoch,i.characterId,i.rolePlayEpoch,i.challengeId]);}
+ private matches(c:Control){const i=this.identity!;return c.sessionId===i.sessionId&&c.sessionEpoch===i.sessionEpoch&&c.payload.characterId===i.characterId&&c.payload.rolePlayEpoch===i.rolePlayEpoch&&c.payload.challengeId===i.challengeId;}
+ private save(){this.persistence.save(this.key(),JSON.stringify(this.journal));}
+ init(identity:EntryIdentity&{challengeId:string}):void {
+  ++this.generation;this.identity={...identity};this.loaded=false;this.verifiedTicket=null;this.journal={pending:null,data:null,pages:null};this.current={status:'idle',code:null,predictionEnabled:false,data:null};
+  const saved=this.persistence.load(this.key());if(saved===null)return;const j=JSON.parse(saved);
+  if(j.pending){j.pending=parseSceneRequest(j.pending);if(!this.matches(j.pending))throw Error('RECOVERY_CONTEXT_MISMATCH');}
+  // Read models and proofs must be acquired afresh after reopening.
+  const data=j.data?parseSceneResponse({protocolVersion:2,command:'scene.status',controlSeq:1,leaseRevision:0,serverTime:0,replayed:false,outcome:{status:'committed',data:j.data}}).outcome:null;
+  if(data?.status==='committed'&&data.data.state.challengeId!==identity.challengeId)throw Error('RECOVERY_CONTEXT_MISMATCH');
+  this.journal={pending:j.pending??null,data:data?.status==='committed'?data.data:null,pages:j.pages??null};this.current.status=j.pending?'unknown':'idle';
+ }
+ close():void{++this.generation;this.loaded=false;this.verifiedTicket=null;this.current.predictionEnabled=false;this.current.status='idle';}
+ async control(value:unknown):Promise<void>{
+  const c=parseSceneRequest(value);if(!this.identity||!this.matches(c))throw Error('RECOVERY_CONTEXT_MISMATCH');if(this.journal.pending)throw Error('PENDING_RECOVERY_CONTROL');
+  if(c.command==='scene.ready'){
+   const t=this.journal.data?.readyTicket;if(!t||!this.loaded||(!('kind' in t)&&this.verifiedTicket!==t.readyTicketId))throw Error('SCENE_NOT_VERIFIED');
+   for(const [k,v] of Object.entries(t))if(k!=='deadline'&&c.payload[k as keyof typeof c.payload]!==v)throw Error('READY_CONTEXT_MISMATCH');
+  }
+  this.journal.pending=c;this.save();await this.submit(false);
+ }
+ async retry():Promise<void>{if(!this.journal.pending||this.current.status==='submitting')throw Error('NO_PENDING_RECOVERY_CONTROL');await this.submit(true);}
+ useLoadedResources(loading:LoadingCoordinator):void{
+  const manifest=loading.state.manifest,t=this.journal.data?.readyTicket;
+  if(loading.state.status!=='loaded'||!manifest||!t||manifest.challengeId!==this.identity?.challengeId||manifest.manifestHash!==t.manifestHash||('kind' in t&&manifest.roomAttemptId!==t.roomAttemptId))throw Error('RESOURCES_NOT_LOADED');this.loaded=true;
+ }
+ async fetchPages(prefix:string):Promise<void>{
+  const generation=this.generation,t=this.journal.data?.readyTicket,i=this.identity;if(!t||!i||'kind' in t)throw Error('NO_CHECKPOINT_TICKET');this.current.predictionEnabled=false;this.verifiedTicket=null;
+  const pages:unknown[]=this.journal.pending?.command==='scene.ready'&&this.journal.pages?structuredClone(this.journal.pages):[];let total=pages.length?0:1;for(let n=0;n<total;n++){
+   const {deadline,...binding}=t;const q={protocolVersion:2,query:'scene.recoveryPage',requestId:`${prefix}-${n}`,sessionId:i.sessionId,sessionEpoch:i.sessionEpoch,payload:{characterId:i.characterId,rolePlayEpoch:i.rolePlayEpoch,challengeId:i.challengeId,...binding,pageIndex:n}};
+   const text=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;decodeSceneReply(q,text);const page=parseRecoveryPage(JSON.parse(text));total=page.totalPages;pages.push(page);
+  }
+  const proof=await verifyRecoveryPages(pages);if(generation!==this.generation)return;
+  for(const [k,v] of Object.entries(t))if(proof[k as keyof typeof proof]!==v)throw Error('TICKET_PROOF_MISMATCH');if(this.journal.data?.readyTicket?.readyTicketId!==t.readyTicketId)throw Error('TICKET_PROOF_MISMATCH');this.verifiedTicket=t.readyTicketId;this.journal.pages=structuredClone(pages);this.save();
+ }
+ private async submit(recover:boolean):Promise<void>{
+  const generation=++this.generation,c=this.journal.pending!;this.current.status='submitting';this.current.code=null;this.current.predictionEnabled=false;
+  try{
+   let text:string|undefined;if(recover){
+    if(c.command==='scene.ready'){
+     const q={...c,command:'scene.status',payload:{characterId:c.payload.characterId,rolePlayEpoch:c.payload.rolePlayEpoch,challengeId:c.payload.challengeId,readyTicketId:c.payload.readyTicketId}};text=await this.transport.send(encodeSceneMessage(q));
+    }else text=await this.transport.queryOriginalControl(encodeSceneMessage(c));
+    if(generation!==this.generation)return;const original=parseSceneResponse(JSON.parse(text));if(original.outcome.status==='rejected'&&original.outcome.code==='VERSION_CONFLICT')text=undefined;
+   }
+   if(text===undefined&&c.command==='scene.ready'){const t=this.journal.data?.readyTicket;if(!t||!this.loaded||(!('kind' in t)&&this.verifiedTicket!==t.readyTicketId))throw Error('SCENE_NOT_VERIFIED');}
+   text??=await this.transport.send(encodeSceneMessage(c));if(generation!==this.generation)return;decodeSceneReply(c,text);const r=parseSceneResponse(JSON.parse(text));
+   if(r.outcome.status!=='committed'){this.current.status=r.outcome.status==='unknown'?'unknown':'failed';this.current.code=r.outcome.code;return;}
+   const original=r.outcome.data;let data=original;
+   // A successful original ready can predate another disconnect, takeover, or newer timeline.
+   if(c.command==='scene.ready'){
+    const q={protocolVersion:2,command:'scene.status',sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,controlSeq:c.controlSeq,leaseRevision:r.leaseRevision,payload:{characterId:c.payload.characterId,rolePlayEpoch:c.payload.rolePlayEpoch,challengeId:c.payload.challengeId,readyTicketId:null}};
+    const latestText=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;decodeSceneReply(q,latestText);const latest=parseSceneResponse(JSON.parse(latestText));if(latest.outcome.status!=='committed')throw Error('CURRENT_SCENE_NOT_VERIFIED');data=latest.outcome.data;
+    if(data.state.sceneEpoch!==original.state.sceneEpoch||data.state.timelineEpoch!==original.state.timelineEpoch||data.state.connection!=='connected')throw Error('CURRENT_SCENE_NOT_VERIFIED');
+    if(!('kind' in data.state)&&!('kind' in original.state)&&(data.state.publicStateHash!==original.state.publicStateHash||data.state.checkpointRevision<original.state.checkpointRevision))throw Error('CURRENT_SCENE_NOT_VERIFIED');
+   }
+   const previousTicket=this.journal.data?.readyTicket;this.journal={pending:null,data,pages:null};this.save();this.current.data=data;
+   if(previousTicket?.readyTicketId!==data.readyTicket?.readyTicketId)this.verifiedTicket=null;
+   const s=data.state;this.current.predictionEnabled=!!(c.command==='scene.ready'&&this.loaded&&previousTicket&&!('kind' in previousTicket)&&!('kind' in s)&&s.roomPhase==='active'&&s.connection==='connected'&&s.lifeState==='alive'&&s.result==='active'&&s.publicStateHash===previousTicket.publicStateHash);
+   this.current.status=this.current.predictionEnabled?'active':s.connection==='recovery'?'recovering':'loading';
+  }catch{if(generation!==this.generation)return;this.current.status='unknown';this.current.code='RESULT_UNKNOWN';}
+ }
+}

@@ -132,3 +132,9 @@ C23锁快照后尚未enterRoom期间也有租约/关闭路径，避免卡唯一a
 ### ST10-03 首房状态实施补充（2026-10-24）
 
 未付首房 preparing/sceneEpoch0/noCP → activate 原子付一次房费并确定 room/CP，sceneEpoch/timelineEpoch 各递增一次，进入 awaitingReady；H 保留唯一转场时钟，CP 不接受输入且活动锚点为空。资源与完整公开状态准备后 scene.ready 验证原基线/截止，结清联网后缀、删除时钟/票据、建立活动锚点及 inputGapBaseAt，进入 active。原 activate/ready 重放不重新扣费、结时或开锚点。接管先发生则旧激活拒绝；激活先发生则原已付房按接管合同关闭结算，无退款。完整 recovery/到期终局后续 ST10-04 接入，下一房清场/出口/状态继承后续 ST10-05 接入。
+
+### ST10-04 加载恢复落地
+
+未付首房 preparing/connected → suspend或静默resumePrepare → preparing/recovery（仍无CP/房费）→ 同票据ready → preparing/connected，保留原attempt。awaitingReady同样恢复，但recovery-ready只返回awaitingReady/connected与新普通ready票据；敌人锚点仍为空，下一次普通ready才active。H转场计时仅累计connected段，resume准备/资源分页期间不累计；原消费水位不重置。
+
+显式暂停固定now+10秒，静默缺口沿原leaseUntil，死亡截止不变；所有允许继续判断为严格小于。到期当前读取/新控制与登录接管共争A/H/角色/CP栅栏，原子失败关闭或仅关闭completed，结算原体力并返回旅店；保持当前session，scene.expire日志记录真实原因。旧已提交控制可授权读取历史回执，新时钟下未提交旧timeline写拒绝；原结果不能覆盖当前读模型或开启预测。

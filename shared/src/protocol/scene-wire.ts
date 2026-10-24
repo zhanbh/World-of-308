@@ -58,8 +58,10 @@ export function decodeSceneReply(request: unknown, text: string) {
     if (state.challengeId !== intent.payload.challengeId) throw new TypeError('RESPONSE_MISMATCH');
     if (intent.command === 'scene.ready') {
       const p = intent.payload;
-      if (state.sceneEpoch !== p.sceneEpoch || state.timelineEpoch !== p.timelineEpoch || state.checkpointRevision < p.checkpointRevision || state.manifestHash !== p.manifestHash) throw new TypeError('READY_RESPONSE_MISMATCH');
-      if (readyTicket && (readyTicket.readyTicketId !== p.readyTicketId || readyTicket.checkpointRevision !== p.checkpointRevision || readyTicket.publicStateHash !== p.publicStateHash)) throw new TypeError('READY_RESPONSE_MISMATCH');
+      if (state.sceneEpoch !== p.sceneEpoch || state.timelineEpoch !== p.timelineEpoch) throw new TypeError('READY_RESPONSE_MISMATCH');
+      if ('kind' in p) {
+        if (!('kind' in state) || state.pendingManifest?.roomAttemptId!==p.roomAttemptId || state.pendingManifest.manifestHash!==p.manifestHash) throw new TypeError('READY_RESPONSE_MISMATCH');
+      } else if (!('checkpointRevision' in state) || state.checkpointRevision<p.checkpointRevision || state.manifestHash!==p.manifestHash) throw new TypeError('READY_RESPONSE_MISMATCH');
     }
   }
   return response;

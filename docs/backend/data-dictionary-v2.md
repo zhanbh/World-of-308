@@ -423,3 +423,11 @@ H新增connection（创建connected）、timelineEpoch（创建0）；pendingRoo
 EntryChallenge 增加 controlSeq=0、heartbeatSeq=0、lease={mode:connected,lastEvidenceAt:createdAt,leaseUntil:createdAt+10000,lastHeartbeatAt:createdAt,lastHeartbeatSeq:0,revision:0}。lease/control 序号独立于 H.version；初始租约不因 activate、原操作重放或查询延期，ready 新成功才建立新连接证据并递增 lease.revision。ST10-04 接入完整 heartbeat/suspend/resume/到期终局；当前写路径和活动读取已经检查现有原截止。
 
 H.readyTicket 至多一个，严格绑定 readyTicketId、sceneEpoch/timelineEpoch、checkpointRevision、publicStateHash、manifestHash、deadline；原 scene.ready 成功后删除票据和 transitionClock，保存至多一个 lastReadyReceipt={tuple摘要,controlSeq,readyTicketId,result}。同序号异意图 OPERATION_MISMATCH；成功重放不重建锚点，不延租约，不增业务版本。ready 不创建普通 assetOp。transitionClock 新增 consumedElapsedMs 的单位/消费公式与10ms分数见加载合同，不在 pending 或 CP 再保存可写消费水位。
+
+### ST10-04 控制与恢复持久字段
+
+H增加至多8个 `controlReceipts={command,sequence,tuple摘要,result,readyTicketId?,manifestRef?}`，controlSeq与heartbeatSeq分别排序，lease.revision独立CAS。未付费state中的manifest由不可变manifestRef复原，避免每个回执复制24KiB manifest；结果仍为原完整响应。旧回执淘汰后不补造未提交结论。普通ready兼容lastReadyReceipt，亦进入有界回执；回放不续租、不重置锚点。
+
+H.recoveryTicket至多一个：未付首房使用带kind:unpaidLoading的sceneEpoch0票据，无checkpointRevision/publicStateHash；有CP时使用既有正代次/修订/hash票据。显式suspend保存recoveryUntil=serverNow+10000；静默resumePrepare沿原leaseUntil。recovery期间deadline固定，deathDeadline独立取更早截止。resumePrepare递增timelineEpoch与CP header.revision（有CP），不重写内容未变的CP块。恢复ready删除恢复票据；返回加载阶段则保留H.transitionClock及consumedElapsedMs消费水位、移动settledAt，不启动敌人锚点；最终普通ready才消费剩余联网段并清H时钟。
+
+到期关闭沿共享handoff结算角色staminaReservation、H.staminaSettlement、A.active/openScene指针和旅店角色状态；仍使用当前登录session。日志command为scene.expire，来源为challenge/原截止，不创建资产operation或退款。已通关结果保留。当前challenge.get的关闭投影覆盖CP历史状态的connection/result/phase，CP块及确认收益保留。

@@ -56,7 +56,7 @@ export class ActivationCoordinator{
  }
  async ready(value:unknown):Promise<void>{
   if(!this.loaded||!this.verified||!this.journal?.ticket)throw Error('SCENE_NOT_VERIFIED');
-  const c=parseSceneRequest(value);if(c.command!=='scene.ready')throw Error('INVALID_READY');const j=this.journal,a=j.activation,t=j.ticket!;
+  const c=parseSceneRequest(value);if(c.command!=='scene.ready'||'kind' in c.payload)throw Error('INVALID_READY');const j=this.journal,a=j.activation,t=j.ticket!;
   if(j.ready)throw Error('PENDING_READY');
   if(c.sessionId!==a.sessionId||c.sessionEpoch!==a.sessionEpoch||c.payload.characterId!==a.payload.characterId||c.payload.rolePlayEpoch!==a.payload.rolePlayEpoch||c.payload.challengeId!==a.payload.challengeId)throw Error('READY_CONTEXT_MISMATCH');
   for(const key of ['readyTicketId','sceneEpoch','timelineEpoch','checkpointRevision','publicStateHash','manifestHash'] as const)if(c.payload[key]!==t[key])throw Error('READY_CONTEXT_MISMATCH');
@@ -71,7 +71,7 @@ export class ActivationCoordinator{
    const r=c.command==='scene.ready'?parseSceneResponse(JSON.parse(text)):parseRoomResponse(JSON.parse(text));
    if(r.outcome.status!=='committed'){this.current.status=r.outcome.status==='unknown'?'unknown':'failed';this.current.code=r.outcome.code;return;}
    if(c.command==='scene.ready'){
-    const data=r.outcome.data;if(!('state' in data)||data.state.roomPhase!=='active'||data.state.connection!=='connected'||data.state.lifeState!=='alive'||data.state.result!=='active')throw Error('READY_NOT_ACTIVE');
+    const data=r.outcome.data;if(!('state' in data)||'kind' in data.state||data.state.roomPhase!=='active'||data.state.connection!=='connected'||data.state.lifeState!=='alive'||data.state.result!=='active')throw Error('READY_NOT_ACTIVE');
     j.committed=data.state;this.current.state=data.state;this.confirmedReady=false;
     const q={protocolVersion:2,query:'challenge.get',requestId:`current-${j.activation.operationId}`.slice(0,64),sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,payload:{challengeId:j.activation.payload.challengeId}};
     const currentText=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;
@@ -81,7 +81,7 @@ export class ActivationCoordinator{
     if('kind' in live||live.roomPhase!=='active'||live.connection!=='connected'||live.lifeState!=='alive'||live.result!=='active'||live.sceneEpoch!==original.sceneEpoch||live.timelineEpoch!==original.timelineEpoch||live.checkpointRevision<original.checkpointRevision||live.publicStateHash!==original.publicStateHash||live.manifestHash!==original.manifestHash)throw Error('CURRENT_SCENE_NOT_VERIFIED');
     this.confirmedReady=true;this.current.state=live;
    }else{
-    const data=r.outcome.data;if(!('readyTicket' in data)||!data.readyTicket||data.state.challengeId!==j.activation.payload.challengeId||data.readyTicket.manifestHash!==j.activation.payload.manifestHash)throw Error('RESPONSE_MISMATCH');
+    const data=r.outcome.data;if(!('readyTicket' in data)||!data.readyTicket||'kind' in data.readyTicket||'kind' in data.state||data.state.challengeId!==j.activation.payload.challengeId||data.readyTicket.manifestHash!==j.activation.payload.manifestHash)throw Error('RESPONSE_MISMATCH');
     j.ticket=data.readyTicket;this.current.ticket=data.readyTicket;this.current.state=data.state;
    }
    this.save();this.current.status='awaitingProof';this.enable();
