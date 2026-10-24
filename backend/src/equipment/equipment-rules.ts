@@ -63,7 +63,7 @@ export function validateEquipEligibility(
 ): void {
   requireValue((EQUIPMENT_SLOTS as readonly string[]).includes(targetSlot), 'ITEM_NOT_ELIGIBLE');
   requireValue(item.slotKind === targetSlot, 'ITEM_NOT_ELIGIBLE');
-  requireValue(character.level >= item.itemLevel, 'ITEM_NOT_ELIGIBLE');
+  requireValue(character.level + 10 >= item.itemLevel, 'ITEM_NOT_ELIGIBLE');
 
   if (catalog && Object.hasOwn(catalog, item.templateRef.id)) {
     const template = catalog[item.templateRef.id];

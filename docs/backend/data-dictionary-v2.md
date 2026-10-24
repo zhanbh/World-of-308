@@ -403,3 +403,11 @@ quickSlots仍只存角色上的3个模板ID或null，不存格子/stackId或第�
 ## ST09 编码预算补核（2026-10-24）
 
 完整UTF-8 JSON（含字段、所有权、绑定、来源头及转义）：容器文档≤256KiB，整理流水≤512KiB、其余资产流水≤128KiB，原结果≤16KiB；inventory.get≤128KiB、bank.get≤256KiB、其他资产查询≤64KiB。ID仍为已声明128字符ASCII，不以缩短ID或减少100格适配预算。协议解析与网络解码以及银行/背包/装备内部容器校验使用共享预算；实测见[补核验证](../reviews/st09-build-fix-verification.md)。
+
+### ST10-01 本地v2入口实现映射（2026-10-24）
+
+`dungeonEntry`私有证明包含schemaVersion/id、accountId、sessionId/sessionEpoch、characterId/rolePlayEpoch、dungeonId、mapId、sceneEpoch、locationRevision、releaseRef；通过loginKey及完整字段核验，不能凭哈希定位任意其他角色。证明读取同实际位置事务；失效依据原地图/代次/位置修订，不增加可滚动时间宽限。
+
+当前EntryChallenge对逻辑字段的物理命名：configRef→releaseRef，lockedMonsterLevel→monsterLevel，entryEquipment→equipmentSnapshot（完整有界实例来源），entryStatsRef→releaseRef+monsterStatsRef+equipmentSourceRef+equipmentAttributes（装备属性沿ST05聚合，后续变更另修订）。持久化lifeState=alive、roomCount=7、未激活roomPhase=preparing、acceptedSeq/acceptedTick=0；首本purpleEncounter含roomNo0～5、spawnId、配置templateRef（purpleRoomNo保留该roomNo索引）。紫名采用服务端随机源，仅在首个意图事务中确定，Store重试复用同一次抽取，原结果重放不再抽；其他副本为null。
+
+A.activeChallengeId/openSceneChallengeId、C.location/staminaReservation、H与账户作用域assetOp/assetJournal在同一事务提交；登录接管仍以既有staminaSnapshot/staminaSettlement回写一次。E01 adapter保留验证过的release供后续按锁定release取房间配置，不读取latest补行。当前尚无正式三本完整内容包。

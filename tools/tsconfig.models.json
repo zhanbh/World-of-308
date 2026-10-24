@@ -27,6 +27,7 @@
     "../client/assets/scripts/net/InventoryPreview.ts",
     "../client/assets/scripts/net/EquipmentCoordinator.ts",
     "../client/assets/scripts/net/ShopCoordinator.ts",
-    "../client/assets/scripts/net/MailCoordinator.ts"
+    "../client/assets/scripts/net/MailCoordinator.ts",
+    "../client/assets/scripts/net/ChallengeEntryCoordinator.ts"
   ]
 }

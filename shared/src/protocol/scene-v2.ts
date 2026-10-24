@@ -92,7 +92,7 @@ export type SceneState = ReturnType<typeof parseSceneState>;
 
 const bool: Parser<boolean> = value => { if (typeof value !== 'boolean') throw new TypeError('INVALID_BOOLEAN'); return value; };
 const readyTicket = object({ readyTicketId: text(), ...binding, deadline: time });
-const sceneErrors = enumOf('INVALID_ARGUMENT', 'UNSUPPORTED_PROTOCOL', 'AUTH_REQUIRED', 'SESSION_REVOKED', 'VERSION_CONFLICT', 'RECOVERY_REQUIRED', 'DEADLINE_EXPIRED', 'SCENE_CLOSED', 'ROOM_NOT_AVAILABLE', 'CONFIG_NOT_READY', 'SERVICE_UNAVAILABLE', 'OPERATION_MISMATCH', 'NOT_FOUND_OR_FORBIDDEN', 'RATE_LIMITED', 'CHALLENGE_TERMINAL', 'EVENT_GAP', 'INVALID_EVENT', 'EVENT_ALREADY_ACCEPTED', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN', 'STAMINA_NOT_ENOUGH', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'NOT_DEAD', 'EMBLEM_NOT_ENOUGH', 'REVIVE_LIMIT_REACHED', 'BAG_FULL', 'CONTAINER_FULL');
+const sceneErrors = enumOf('LEVEL_REQUIRED', 'DIFFICULTY_LOCKED', 'INVALID_ARGUMENT', 'UNSUPPORTED_PROTOCOL', 'AUTH_REQUIRED', 'SESSION_REVOKED', 'VERSION_CONFLICT', 'RECOVERY_REQUIRED', 'DEADLINE_EXPIRED', 'SCENE_CLOSED', 'ROOM_NOT_AVAILABLE', 'CONFIG_NOT_READY', 'SERVICE_UNAVAILABLE', 'OPERATION_MISMATCH', 'NOT_FOUND_OR_FORBIDDEN', 'RATE_LIMITED', 'CHALLENGE_TERMINAL', 'EVENT_GAP', 'INVALID_EVENT', 'EVENT_ALREADY_ACCEPTED', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN', 'STAMINA_NOT_ENOUGH', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'NOT_DEAD', 'EMBLEM_NOT_ENOUGH', 'REVIVE_LIMIT_REACHED', 'BAG_FULL', 'CONTAINER_FULL');
 function failure(value: unknown) {
   const o = object({ status: enumOf('rejected', 'unknown'), code: text(64) })(value);
   return o.status === 'unknown' ? { status: o.status, code: enumOf('RESULT_UNKNOWN')(o.code) } : { status: o.status, code: sceneErrors(o.code) };
@@ -215,7 +215,7 @@ export function parseChallengeRequest(value: unknown) {
     default: throw new TypeError('UNSUPPORTED_PROTOCOL');
   }
 }
-const startResult = object({ ...resultHeader, command: enumOf('challenge.start'), outcome: result(object({ challengeId: text(), configRef: text(64), playerLevel: integer(1, 30), staminaSnapshot: integer(), acceptedSeq: integer(), acceptedTick: logicTick })) });
+const startResult = object({ ...resultHeader, command: enumOf('challenge.start'), outcome: result(object({ challengeId: text(), configRef: text(64), playerLevel: integer(1, 30), staminaSnapshot: integer(), monsterLevel: integer(1, 30), monsterStatsRef: text(64), equipmentSourceRef: text(64), equipmentVersion: integer(), equipmentAttributes: list(object({ statId: text(), value: resourceWire }), 64), acceptedSeq: integer(), acceptedTick: logicTick })) });
 const reviveResult = object({ ...resultHeader, command: enumOf('challenge.revive'), outcome: result(object({ challengeId: text(), deathIndex: integer(1), checkpointRevision: integer(), stateRef: text() })) });
 const leaveResult = object({ ...resultHeader, command: enumOf('challenge.leave'), outcome: result(object({ challengeId: text(), result: enumOf('completed', 'failed'), sceneState: enumOf('closed'), returnAnchorRef: text(64), staminaSettlementRef: text() })) });
 const collectResult = object({ ...resultHeader, command: enumOf('drop.collect'), outcome: result(object({ dropId: text(), deliveryRef: text(), itemIds: list(text(), 1), quantity: integer(1, 20) })) });
@@ -228,4 +228,12 @@ export function parseChallengeResponse(value: unknown) {
     case 'drop.collect': return collectResult(value);
     default: throw new TypeError('UNSUPPORTED_PROTOCOL');
   }
+}
+
+const entryQuery = object({ ...query, query: enumOf('dungeon.entry'), payload: object({ characterId: text(), rolePlayEpoch: integer(1), dungeonId: text(64) }) });
+export function parseDungeonEntryQuery(value: unknown) { return entryQuery(value); }
+const entryOption = object({ difficultyId: text(64), unlocked: bool, canEnter: bool, reason: nullable(enumOf('LEVEL_REQUIRED', 'DIFFICULTY_LOCKED', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'STAMINA_NOT_ENOUGH', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN', 'CONFIG_NOT_READY')) });
+export function parseDungeonEntryResponse(value: unknown) {
+  if (value && typeof value === 'object' && Object.hasOwn(value, 'error')) return object({ requestId: operationId, serverTime: time, error: object({ code: sceneErrors }) })(value);
+  return object({ requestId: operationId, serverTime: time, data: object({ dungeonId: text(64), entryContext: text(), locationRevision: integer(), options: list(entryOption, 4) }), versions: parseExpected })(value);
 }

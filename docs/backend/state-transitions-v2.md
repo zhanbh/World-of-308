@@ -120,3 +120,7 @@ C23锁快照后尚未enterRoom期间也有租约/关闭路径，避免卡唯一a
 - 提交成功同笔移动双容器及装备唯一归属，跨账号库套装同步相关scope持有增减；同角色包↔个人库保持持有。实例/钱包/容器任一写失败回滚全部资产；已提交但响应丢失查询原O，不第二次转移/扣款。
 
 该状态已落到本地内存服务和平台无关协调器；Cocos运行时、真实微信SDK、真机弱网及正式价格配置的证据分别记录，不以状态表声明上线通过。
+
+## ST10-01 未激活创建的实现补充（2026-10-24）
+
+实际城镇位置→dungeon.entry只签发绑定当前位置修订的选项/入口证明，不改变C.location、不建H。主动challenge.start经身份、选角、原入口、expected、等级/共享难度、至少1体力和有效已穿武器重验后，同事务写A双指针、C挑战位置/体力保留及H/O/J。H为active/combat/alive、sceneEpoch0/currentRoomNo-1/preparing；无已付房间、CP、transitionClock或战斗锚点。新launch沿现有handoff可关闭该无CP状态并结算一次；原结果重放不能复活旧H或覆盖新位置。prepare/activate/ready另由ST10-02～03交付。

@@ -273,7 +273,7 @@ test('ST05-01: empty slot equip, slot mismatch, level requirement, class & bindi
   assert.equal(wrongSlotRes.outcome.code, 'ITEM_NOT_ELIGIBLE');
 
   // Level mismatch error
-  const highLevel = f.makeItem('high-lvl-1', { itemLevel: 15 });
+  const highLevel = f.makeItem('high-lvl-1', { itemLevel: 25 });
   await f.putInBag(highLevel, 1);
   const highLevelRes = await f.service.execute(f.command('equipment.equip', { itemId: 'high-lvl-1', targetSlot: 'weapon' }));
   assert.equal(highLevelRes.outcome.status, 'rejected');

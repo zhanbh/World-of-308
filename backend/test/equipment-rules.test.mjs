@@ -92,7 +92,7 @@ test('validateEquipEligibility checks slot, level, class and binding', () => {
   assert.throws(() => validateEquipEligibility(char, weapon, 'chest'), /ITEM_NOT_ELIGIBLE/);
 
   // Level requirement not met
-  const highLevelWeapon = createMockEquipment({ itemLevel: 15 });
+  const highLevelWeapon = createMockEquipment({ itemLevel: 25 });
   assert.throws(() => validateEquipEligibility(char, highLevelWeapon, 'weapon'), /ITEM_NOT_ELIGIBLE/);
 
   // Class restriction

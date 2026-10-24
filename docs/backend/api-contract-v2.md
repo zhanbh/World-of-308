@@ -262,3 +262,11 @@ C06的target为 `{kind:equipment,itemId}` 或 `{kind:stack,stackId}`，quantity�
 C07 expected恰含角色、目标容器、钱包。quoteRef绑定配置id/version、容器及钱包/角色版本、targetStage与全部候选币价；确认选一种paymentCurrency。`BankExpansionConfig`显式注入test/release及各档价格，无内置默认价；背包每档必须金币价，个人库每档必须金币和点券价，均为正的规范uint64十进制字符串。缺项/非法配置CONFIG_NOT_READY，旧报价QUOTE_CHANGED、越档UNLOCK_STAGE_MISMATCH、余额不足CURRENCY_NOT_ENOUGH；不从兑换汇率推算价格。正式经济价格与实际发布配置仍待后续门禁。
 
 存取和扩容都在当前可信身份授权后查原O，同ID异参拒绝；同参原结果重放不再消费。资产、钱包（如适用）、持有投影（如适用）、A.writeRevision、J/O同笔；明确拒绝只留O，J孤立而O缺失拒绝继续消费。unknown沿原ID查operation.get或显式重发原文，notFound不是新建支付的许可。
+
+### ST10-01 入口选择的收敛接口（2026-10-24）
+
+实际v2入口实现使用窄查询 `dungeon.entry`：输入严格为 `characterId,rolePlayEpoch,dungeonId`（通用session/requestId头同scene-wire），返回 `dungeonId,entryContext,locationRevision,options` 与账户/角色expected版本。它组合R05选项与入口证明签发；既有R05 DTO保持兼容；当前ChallengeService没有独立dungeon.options处理器，实际入口调用dungeon.entry，不能把R05旧DTO视为已交付的服务路由。服务端读取真实TownState地图、位置与24px内配置入口，持久证明绑定账号、当前session/epoch、选中角色/rolePlayEpoch、town sceneEpoch/locationRevision及release。移动后即失效，不接受客户端nearDungeon或serviceKind代替。
+
+C23 start必须携带入口查询返回的账户和角色expected版本。成功DTO除既有字段，还返回 `monsterLevel,monsterStatsRef,equipmentSourceRef,equipmentVersion,equipmentAttributes[{statId,value}]`；value沿精确资源wire。新增拒绝码 `LEVEL_REQUIRED,DIFFICULTY_LOCKED`；入口options还可返回 `CONFIG_NOT_READY`。选项不含房间费用。创建仅保留体力，不扣首房、不建CP；未激活H保持sceneEpoch=0/currentRoomNo=-1/roomPhase=preparing，兼容LoginService新launch接管。
+
+配置是显式注入的版本化只读内容；没有可用行则CONFIG_NOT_READY。`entryContentFromE01`必须先验真release摘要且仅授权local-test/contract-fixture-only，只支持其1级普通首本。第二本/特殊本及其他等级的测试行只证明门槛/锁定规则，不构成正式三本发布。

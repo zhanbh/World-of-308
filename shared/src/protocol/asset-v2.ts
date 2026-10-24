@@ -93,7 +93,7 @@ export const decodeAssetQuery = (textValue: string): AssetQuery => parseAssetQue
 const resourceWire = (value: unknown): string => { if (typeof value !== 'string') throw new TypeError('INVALID_RESOURCE_WIRE'); return encodeResource(resource(value)); };
 const binding = union(object({ kind: choice('none') }), object({ kind: choice('account') }), object({ kind: choice('character'), characterId: id }));
 // Internal account identifiers and random seeds are deliberately absent from public bindings.
-const sourceLocator = union(object({ kind: choice('roomDrop'), roomId: id, dropId: id }), object({ kind: choice('mailAttachment'), mailId: id, attachmentId: id }), object({ kind: choice('grant'), grantId: id }), object({ kind: choice('challengeClear'), challengeId: id, ordinal: integer(0, 55) }));
+const sourceLocator = union(object({ kind: choice('initialEquip'), characterId: id }), object({ kind: choice('roomDrop'), roomId: id, dropId: id }), object({ kind: choice('mailAttachment'), mailId: id, attachmentId: id }), object({ kind: choice('grant'), grantId: id }), object({ kind: choice('challengeClear'), challengeId: id, ordinal: integer(0, 55) }));
 const durability = union(object({ wearEnabled: choice(true), current: integer(), max: integer(1), policyRef: id }), object({ wearEnabled: choice(false), current: choice(null), max: choice(null), policyRef: id }));
 const location = union(object({ kind: choice('container'), containerId: id }), object({ kind: choice('equipped'), characterId: id, slotId: slot }), object({ kind: choice('pending'), grantId: id }), object({ kind: choice('retired'), reason: choice('destroyed', 'sold', 'expired'), sourceRef: id }));
 const quality = choice('white', 'green', 'blue', 'purple', 'orange');
