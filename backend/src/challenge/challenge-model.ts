@@ -65,8 +65,15 @@ export interface EntryChallenge extends HandoffChallenge {
     acceptedSeq: number;
     acceptedTick: number;
     createdAt: number;
+    controlSeq?:number;
+    heartbeatSeq?:number;
+    lease?:{mode:'connected'|'recovery';lastEvidenceAt:number;leaseUntil:number;lastHeartbeatAt:number;lastHeartbeatSeq:number;revision:number;recoveryUntil?:number};
+    recoveryUntil?:number;
+    deathDeadline?:number;
+    readyTicket?:{readyTicketId:string;sceneEpoch:number;timelineEpoch:number;checkpointRevision:number;publicStateHash:string;manifestHash:string;deadline:number};
+    lastReadyReceipt?:{tuple:string;controlSeq:number;readyTicketId:string;result:unknown};
     connection?: 'connected' | 'recovery' | 'closed';
     timelineEpoch?: number;
     pendingRoomAttempt?: {roomNo:number;attemptId:string;manifestHash:string;configRef:string;preparedRevision:number;manifestRef:string};
-    transitionClock?: {attemptId:string;phase:'prepared'|'awaitingReady';settledAt:number;connectedElapsedMs:number;timeRemainder:{numerator:number;denominator:number};transitionRevision:number};
+    transitionClock?: {attemptId:string;phase:'prepared'|'awaitingReady';settledAt:number;connectedElapsedMs:number;consumedElapsedMs:number;timeRemainder:{numerator:number;denominator:number};transitionRevision:number};
 }

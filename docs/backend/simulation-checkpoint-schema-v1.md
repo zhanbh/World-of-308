@@ -61,3 +61,11 @@
 ## FR01/FR02当前字段合同
 
 H.transitionClock是唯一转场计时权威，prepare建立、activate保留并推进已结算边界、ready最终结清后删除；pendingRoomAttempt不承载时钟。CP头时钟新增inputGapBaseAt:Time，活动段首次ready赋值，随后仅新输入成功提交更新，心跳与重放不更新。lastAcceptedInputAt保留实际输入提交事实；输入缺口以inputGapBaseAt为准，≥2000ms到期。场景仍awaitingReady/转场时不启用输入缺口。字段在H/CP已有键内，编码字节计入原上界。
+
+## ST10-03 初始内层 schema 实施域（2026-10-24）
+
+外层沿 login-handoff 的 schemaVersion=2 cpHeader/cpChunk 键、归属、activeChunks 和 canonical(data) hash，不建立第二命名空间。头附 sessionEpoch/rolePlayEpoch、rulesRef/mapRef/contentRef、roomNo、严格 sceneState 与 logicalTimeMs/timeRemainderMs。头 revision 是整体修订；本轮 ready 只改变头逻辑时间/锚点时，角色/场景块保留原 chunkRevision/hash，不无故重写。
+
+内层严格 schemaVersion=1：ordinal0 为 role，保存非空玩家、配置基础 AP、装备修订、HP/MP 分别的回复余数、位置余数、真实已解锁技能及配置引用、固定职业/药品/饰品七 CD；ordinal1 为 scene，保存 1..8 个非空敌人、原 spawn/template/分类/技能/免疫/AI 状态和战斗随机/事件游标。等级1只解锁 cross，其他技能按既定 5/10/20 等级开放，不因四配置引用就全部解锁。背包数量不进入 CP。初始角色资源来自锁定、已校验发布，后续房不得重用此首房初始化来重置角色。
+
+该初始版本严格限定 buffs/effects/snapshots 为空、regenerationRef=null；非空或未知 schema 明确拒绝，绝不丢弃未识别状态。它交付首房开启及 ready，不宣称 ST11 战斗、3648 效果/228 快照的完整编码包络已实现。后续严格版本应扩展实际战斗域并重新验证其最坏编码。当前只按实际使用两个块读写；其最大合法非空 actor/CD 编码与外层字节在 ST10-03 验证报告记录。

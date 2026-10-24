@@ -73,3 +73,15 @@ manifest严格字段：roomAttemptId、challengeId、roomNo、releaseRef、relea
 独立roomManifest记录保存原manifest；H.pendingRoomAttempt增加manifestRef，仅保存roomNo/attemptId/manifestHash/configRef/preparedRevision/manifestRef，不保存第二份时钟。H.transitionClock按已有合同唯一创建一次，phase=prepared，settledAt=提交事务当前服务端时间，connectedElapsedMs=0、timeRemainder=0/1、transitionRevision=0。失败/取消/重载/同意图重试均不重建它。H.timelineEpoch初始0仅表示未付房，无模拟锚点；后续activate/恢复负责其相应递增。
 
 prepare成功原子写H、独立manifest、O三键，拒绝只写O；不写CP、不扣房费、不写资源文件或额外资产流水。O以命令规范SHA-256绑定原意图，保存manifest引用/attempt/hash和原版本/原serverTime；queryOriginal/operation.get从该原引用hydrate，而非读取当前H.pending。资源失败不能回滚已确认资产。
+
+## ST10-03 本地激活与就绪实施（2026-10-24）
+
+首房 `challenge.activateRoom` 使用已保存的 manifest/attempt，不重抽站位；重验身份、预期 C/H 版本、角色预留和 A 指针、connection、生死及已有 lease/recovery/death 截止。确定 `room(challengeId,0)`、H、CP 头/实际使用的两个块、A 写栅栏与 O 同事务提交，快照扣至最低 0；不在途中新增武器破损/体力不足门禁。O 只保存原小型状态/票据/游标，绝不复制 CP 或完整 expected 数组。相同原操作恢复精确原结果；不同操作的同房竞争仍只生成一个房间和一次房费。
+
+H.transitionClock 增加常数大小 `consumedElapsedMs` 水位（prepare 初始 0）。`connectedElapsedMs` 为已保存的累计有效联网毫秒，`settledAt` 为该累计的墙钟边界；在 connected 时，当前 eligible = connectedElapsedMs + now - settledAt。activate 消费 eligible、保存累计和 consumed 水位，phase=awaitingReady；ready 消费 eligible-consumedElapsedMs，再删除整个时钟。恢复阶段由 ST10-04 累计边界，不能累计 recovery 时间或另建时钟。`timeRemainder` 明确表示累计联网时长不足一个 **10ms 逻辑 tick** 的约分分数（6ms=3/5），不是 HP/MP 自然回复余数。CP.logicalTimeMs 是角色的精确整数毫秒逻辑游标；timeRemainderMs 必须等于 logicalTimeMs%10，acceptedTick=floor(logicalTimeMs/10)。首房 6ms+7ms 得 1 tick 及 3ms，不能每阶段舍弃。
+
+activate 创建 awaitingReady，CP.acceptingInputs=false、anchorWallAt/anchorTick/inputGapBaseAt=null；不运行敌人、不启用战斗输入缺口。scene.ready 校验原票据的场景/时间代次、CP 基础修订、manifest/publicState hash 和全部原截止，结清后缀，CP.acceptingInputs=true，首次建立活动锚点和 inputGapBaseAt。绝对逻辑 tick CD 不被重置；角色资源/余数不凭转场设满。E01 没有自然回复率配置，当前初始版本不假定任何回复率。
+
+完整公开状态摘要为完整**有序公开记录数组**的递归键排序 JSON UTF-8 SHA-256；记录顺序 player、manifest 顺序敌人、固定七组 CD。分页边界不进入摘要；客户端在语法/完整分页/引用检查后自行重算，删/改/重排记录都不能沿用旧 hash。ready 绑定此基础状态；其后服务端逻辑后缀可形成新修订。资源验证、全量摘要和 ready 成功都满足后，客户端还读取当前 challenge.get 检查可预测状态；历史原 ready 回执不能授权已过期、换代或关闭场景。
+
+客户端 ActivationCoordinator 持久化原 activate 命令、票据、原 ready controlSeq/leaseRevision 和已验证公开分页。未知结果重载先 operation.get/原 ready 回执查询；不存在才重发原命令，不换 ID/序号/票据。重载重新验证资源和完整摘要；已提交 ready 后服务端基础页不可再读取时，可以重验持久化的原基础页，但仍必须查询原回执及当前场景。异步流程代次隔离迟到回调。

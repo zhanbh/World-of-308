@@ -417,3 +417,9 @@ A.activeChallengeId/openSceneChallengeId、C.location/staminaReservation、H与�
 `challenge.get.data`新增严格判别分支`kind=unpaidLoading`：challengeId、sceneEpoch=0、timelineEpoch>=0、checkpoint=null、currentRoomNo=-1、roomPhase=preparing/closed、connection=connected/recovery/closed、lifeState=alive、result=active/failed、staminaRemaining=0..308、pendingManifest=null或完整已校验manifest、transitionClock=null或H唯一时钟投影。closed必须同时connection=closed/result=failed/transitionClock=null。不含checkpointRevision/publicStateHash、公开战斗页或输入许可，不以零hash/伪CP表示不存在的状态。已激活SceneState/CP/ready/recoveryPage保持sceneEpoch/timelineEpoch>=1。
 
 H新增connection（创建connected）、timelineEpoch（创建0）；pendingRoomAttempt中的manifestRef指向独立不可变规范manifest。transitionClock字段/唯一归属沿加载合同，不向pending内复制。manifest及资源摘要字段和边界见[加载补充](room-loading-handshake-v1.md#st10-02-本地实施补充固定manifest与未付首房2026-10-24)。资源ref绑定发布节点版本，当前仅E01 contract-fixture-only。
+
+### ST10-03 首房控制/CP物理补充（2026-10-24）
+
+EntryChallenge 增加 controlSeq=0、heartbeatSeq=0、lease={mode:connected,lastEvidenceAt:createdAt,leaseUntil:createdAt+10000,lastHeartbeatAt:createdAt,lastHeartbeatSeq:0,revision:0}。lease/control 序号独立于 H.version；初始租约不因 activate、原操作重放或查询延期，ready 新成功才建立新连接证据并递增 lease.revision。ST10-04 接入完整 heartbeat/suspend/resume/到期终局；当前写路径和活动读取已经检查现有原截止。
+
+H.readyTicket 至多一个，严格绑定 readyTicketId、sceneEpoch/timelineEpoch、checkpointRevision、publicStateHash、manifestHash、deadline；原 scene.ready 成功后删除票据和 transitionClock，保存至多一个 lastReadyReceipt={tuple摘要,controlSeq,readyTicketId,result}。同序号异意图 OPERATION_MISMATCH；成功重放不重建锚点，不延租约，不增业务版本。ready 不创建普通 assetOp。transitionClock 新增 consumedElapsedMs 的单位/消费公式与10ms分数见加载合同，不在 pending 或 CP 再保存可写消费水位。

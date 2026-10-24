@@ -128,3 +128,7 @@ C23锁快照后尚未enterRoom期间也有租约/关闭路径，避免卡唯一a
 ### ST10-02 未激活prepare分支（2026-10-24）
 
 `active/alive/connected + sceneEpoch0/currentRoom-1/preparing + 无pending/CP` → prepare原子写`H.pendingRoomAttempt + H唯一transitionClock + 独立manifest + O`；仍sceneEpoch0/currentRoom-1/preparing、无CP、不扣房费、不启动敌人。该状态的query使用`unpaidLoading/checkpoint=null`判别分支。有效相同房意图读取原manifest/attempt，不重设settledAt、不重复随机；资源失败、取消或旧异步回调不触发权威状态变化。真实新登录接管沿已有无CP合同关闭H、清transitionClock并结算，旧session在重放前即拒绝。完整加载恢复/租约由ST10-04实现；后续房合法出口/前房进度由ST10-05实现，当前本地分支对此拒绝。
+
+### ST10-03 首房状态实施补充（2026-10-24）
+
+未付首房 preparing/sceneEpoch0/noCP → activate 原子付一次房费并确定 room/CP，sceneEpoch/timelineEpoch 各递增一次，进入 awaitingReady；H 保留唯一转场时钟，CP 不接受输入且活动锚点为空。资源与完整公开状态准备后 scene.ready 验证原基线/截止，结清联网后缀、删除时钟/票据、建立活动锚点及 inputGapBaseAt，进入 active。原 activate/ready 重放不重新扣费、结时或开锚点。接管先发生则旧激活拒绝；激活先发生则原已付房按接管合同关闭结算，无退款。完整 recovery/到期终局后续 ST10-04 接入，下一房清场/出口/状态继承后续 ST10-05 接入。

@@ -68,7 +68,7 @@ test('room writes require challenge and character expected objects while a loadi
   assert.throws(() => parseRoomRequest({ ...value, expected: [] }));
   const state = { ...binding(), challengeId: 'h', acceptedSeq: 0, acceptedTick: 0, roomPhase: 'awaitingReady', connection: 'connected', lifeState: 'alive', result: 'active',
     anchorWallAt: null, anchorTick: null, inputGapBaseAt: null, lastAcceptedInputAt: null, recoveryUntil: null, deathDeadline: null,
-    transitionClock: { attemptId: 'attempt', phase: 'awaitingReady', settledAt: 2000, connectedElapsedMs: 2000, timeRemainder: { numerator: 0, denominator: 1 }, transitionRevision: 1 } };
+    transitionClock: { attemptId: 'attempt', phase: 'awaitingReady', settledAt: 2000, connectedElapsedMs: 2000, consumedElapsedMs: 2000, timeRemainder: { numerator: 0, denominator: 1 }, transitionRevision: 1 } };
   assert.deepEqual(parseSceneState(state), state);
   assert.throws(() => parseSceneState({ ...state, pendingRoomAttempt: { transitionClock: state.transitionClock } }));
   assert.throws(() => parseSceneState({ ...state, roomPhase: 'active' }));

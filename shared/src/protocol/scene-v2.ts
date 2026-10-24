@@ -75,7 +75,7 @@ export function parseRoomRequest(value: unknown) {
   return result;
 }
 export type RoomRequest = ReturnType<typeof parseRoomRequest>;
-const transitionClock = object({ attemptId: text(), phase: enumOf('prepared', 'awaitingReady'), settledAt: time, connectedElapsedMs: integer(), timeRemainder: decodeRemainder, transitionRevision: integer() });
+const transitionClock = object({ attemptId: text(), phase: enumOf('prepared', 'awaitingReady'), settledAt: time, connectedElapsedMs: integer(), consumedElapsedMs: integer(), timeRemainder: decodeRemainder, transitionRevision: integer() });
 const sceneState = object({ ...binding, challengeId: text(), acceptedSeq: integer(), acceptedTick: logicTick,
   roomPhase: enumOf('preparing', 'awaitingReady', 'active', 'cleared', 'closed'), connection: enumOf('connected', 'recovery', 'closed'), lifeState: enumOf('alive', 'dead'), result: enumOf('active', 'completed', 'failed'),
   anchorWallAt: nullable(time), anchorTick: nullable(logicTick), inputGapBaseAt: nullable(time), lastAcceptedInputAt: nullable(time), recoveryUntil: nullable(time), deathDeadline: nullable(time), transitionClock: nullable(transitionClock),

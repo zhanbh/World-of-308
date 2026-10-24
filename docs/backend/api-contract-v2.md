@@ -278,3 +278,9 @@ C23 start必须携带入口查询返回的账户和角色expected版本。成功
 `challenge.get`可返回字典的`kind=unpaidLoading/checkpoint=null`明确分支；不改变已激活sceneState/ready/恢复页的正epoch约束。epoch0加载心跳/暂停/恢复请求与租约控制由ST10-04补齐，本次不把ready或恢复页校验整体放宽到0。
 
 prepare的O只持有原manifest引用、attempt/hash、原结果版本与serverTime；`operation.get`通过ChallengeService.queryOriginal解析该引用，返回完整原响应（保持原serverTime/replayed值），不同于重新执行命令所返回的当前serverTime/replayed=true。引用丢失/摘要不符返回SERVICE_UNAVAILABLE，不返回notFound或当前pending替代品。原命令SHA-256用于同ID异参判定，不保存无界资源正文。身份/当前会话在重放前校验。
+
+### ST10-03 本地原结果与就绪读写补充（2026-10-24）
+
+ChallengeService.execute 接入严格 challenge.activateRoom / scene.ready；query 接入 scene.recoveryPage 和激活后的 challenge.get。activate 的 operation.get 返回原小型状态/票据，不读取当前 CP 重构历史结果。分页仅允许当前有效身份、票据及原基础修订，读取头→引用块→头一致性后裁剪公开记录，不直接发送 CP 内层。
+
+本地 `queryOriginalReady`（execute 的 scene.status 路由）接收原 scene.ready 的 controlSeq、原 leaseRevision、身份/challenge 与 readyTicketId，找到后返回**原 scene.ready 响应**（保留原 serverTime/anchors）；未找到返回 scene.status 的 VERSION_CONFLICT，客户端才能用原 ready 重试。该原结果查询不消费新控制序号、不创建 O、不代表当前状态或续租。ST10-04 扩展一般状态/恢复控制时须保留这一精确查询分支。客户端恢复预测另读取 challenge.get 的当前 active/connected/alive、代次/摘要/修订；当前截止已到返回 DEADLINE_EXPIRED，原回执仍可作为历史读取。
