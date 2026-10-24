@@ -422,7 +422,7 @@ H新增connection（创建connected）、timelineEpoch（创建0）；pendingRoo
 
 EntryChallenge 增加 controlSeq=0、heartbeatSeq=0、lease={mode:connected,lastEvidenceAt:createdAt,leaseUntil:createdAt+10000,lastHeartbeatAt:createdAt,lastHeartbeatSeq:0,revision:0}。lease/control 序号独立于 H.version；初始租约不因 activate、原操作重放或查询延期，ready 新成功才建立新连接证据并递增 lease.revision。ST10-04 接入完整 heartbeat/suspend/resume/到期终局；当前写路径和活动读取已经检查现有原截止。
 
-H.readyTicket 至多一个，严格绑定 readyTicketId、sceneEpoch/timelineEpoch、checkpointRevision、publicStateHash、manifestHash、deadline；原 scene.ready 成功后删除票据和 transitionClock，保存至多一个 lastReadyReceipt={tuple摘要,controlSeq,readyTicketId,result}。同序号异意图 OPERATION_MISMATCH；成功重放不重建锚点，不延租约，不增业务版本。ready 不创建普通 assetOp。transitionClock 新增 consumedElapsedMs 的单位/消费公式与10ms分数见加载合同，不在 pending 或 CP 再保存可写消费水位。
+H.readyTicket 至多一个，严格绑定 readyTicketId、sceneEpoch/timelineEpoch、checkpointRevision、publicStateHash、manifestHash、deadline；原 scene.ready 成功后删除票据和 transitionClock，保存至多一个 lastReadyReceipt={tuple摘要,controlSeq,readyTicketId,proofDeadline,result}。同序号异意图 OPERATION_MISMATCH；成功重放不重建锚点，不延租约，不增业务版本。ready 不创建普通 assetOp。transitionClock 新增 consumedElapsedMs 的单位/消费公式与10ms分数见加载合同，不在 pending 或 CP 再保存可写消费水位。
 
 ### ST10-04 控制与恢复持久字段
 
@@ -435,3 +435,7 @@ H.recoveryTicket至多一个：未付首房使用带kind:unpaidLoading的sceneEp
 ### ST10-05 后续转场本地实施字段
 
 H.pendingRoomAttempt的后续房分支附exitRuleHash（显式local-test出口规则canonical SHA-256），prepare后activate/恢复不允许同规则ref静默换半径。H.transitionClock仍是唯一水位所有者，准备后旧CP保留cleared事实/角色状态，控制视图投影preparing。role内层schema2沿[CP合同](simulation-checkpoint-schema-v1.md)新增regenerationHash，必须匹配regenerationRef解析的完整local-test回复配置canonical SHA-256；同ref改速率拒绝，null引用要求null hash。回复配置未纳入E01生产release，不得把该测试扩展视为正式默认值。
+
+### ST10 当前证明回执字段收敛
+
+`H.lastReadyReceipt.proofDeadline: Time`在普通ready或恢复ready成功进入active时签发，等于该笔新connected lease.leaseUntil与适用deathDeadline的较小值；不是已消费票据的加载截止。它随小型原响应保存，不含CP；最多一个lastReadyReceipt及最近8个控制回执的预算不变。读取、ready回放、heartbeat不修改它；旧回执缺字段时active证明拒绝。字段/分页与预测门禁、实际字节及验收见[加载合同当前证明节](room-loading-handshake-v1.md#st10-ready-后当前公开证明2026-10-24)。

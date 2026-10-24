@@ -91,3 +91,13 @@ activate 创建 awaitingReady，CP.acceptingInputs=false、anchorWallAt/anchorTi
 后续prepare为严格currentRoomNo+1，旧CP玩家存活、旧room manifest完整敌人集合（含紫名）全部死亡，且权威玩家位置在旧manifest绑定地图出口交互范围内。E01没有出口交互半径，必须显式注入与锁定release相同rulesRef的local-test exitInteraction；缺配置返回CONFIG_NOT_READY，不借用城镇半径。prepare保留旧CP与已确认收益，H进入preparing并拥有唯一transitionClock；控制恢复投影同一preparing阶段，activate才替换旧场景。角色沿CP逻辑毫秒及10ms步余数推进，H只消费未消费联网水位，恢复段排除。
 
 客户端连续下一房仅在前房完整资源/公开证明/ready及当前场景已确认后退役旧持久意图，并先禁用预测及失效异步代次；unknown意图不能因此退役。旧资源回调和旧operation原结果不覆盖新房。ST15尚无实际v2拾取服务，本轮竞争验证仅用拥有真实归属/来源/背包的有界测试事务，与实际activate共用A/H冲突检测；不将其称为生产掉落协议或完整发奖组合。
+
+## ST10 ready 后当前公开证明（2026-10-24）
+
+本节收敛 ready 后缀改变 HP/CD/buff 时的公开证明，替代前文“重验持久化原基础页即可恢复预测”的过渡表述。ready 前仍须已验证资源和完整基础分页；ready 必须在原票据及原恢复/死亡截止之前成功。普通 ready 或恢复 ready 成功进入 active 时，同笔保存 `H.lastReadyReceipt.proofDeadline=min(本次成功建立的 connected lease.leaseUntil, deathDeadline或最大安全整数)`。这是新连接阶段已提交的固定证明截止，不沿用已消费票据的旧加载截止，也不增加宽限或第二份计时权威。
+
+ready 后 `scene.recoveryPage` DTO不变：当前身份、原成功 readyTicketId、相同 sceneEpoch/timelineEpoch/manifestHash及**当前** CP revision/publicStateHash精确匹配，且当前 active/connected/alive、acceptingInputs及适用租约/终态检查通过，才返回当前完整有界 actor/CD/buff 页。第一页携带服务端已签发的 proofDeadline；后续所有页及完整摘要必须绑定同一截止和当前快照。分页不得返回私有CP字段。客户端在原资源/完整基础证明/ready成功之外，还须验证这些新完整记录并在其后再次查询当前状态，精确核对场景/时间代次、修订/hash、manifest和可预测状态，才允许预测；不能仅删除旧hash比较或沿用旧HP/buff。
+
+回执仅保存小型原响应及固定 proofDeadline，不嵌CP。读取、原ready回放、心跳都不移动该证明截止或重启锚点；新的时间代次不能使用旧回执。旧记录缺proofDeadline时，active分页证明拒绝；这不宣称已提供旧数据迁移或更长时间后的完整恢复能力。原结果仍仅作历史证据。H.transitionClock唯一权威及ready后缀只消费一次的规则保持。
+
+预算仍为H 128KiB、响应/公开页各32KiB、CP头16KiB、块各80KiB、最近控制回执8条。实际32buff后缀证明页15081B、ready746B、H5111B、小回执946B，实际8回执H10163B；字节、截止−1/+1重开、篡改/缺页、换代及最终全套验收见[修复验证](../reviews/st10-build-review-fixes.md)。

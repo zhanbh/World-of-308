@@ -138,3 +138,7 @@ C23锁快照后尚未enterRoom期间也有租约/关闭路径，避免卡唯一a
 未付首房 preparing/connected → suspend或静默resumePrepare → preparing/recovery（仍无CP/房费）→ 同票据ready → preparing/connected，保留原attempt。awaitingReady同样恢复，但recovery-ready只返回awaitingReady/connected与新普通ready票据；敌人锚点仍为空，下一次普通ready才active。H转场计时仅累计connected段，resume准备/资源分页期间不累计；原消费水位不重置。
 
 显式暂停固定now+10秒，静默缺口沿原leaseUntil，死亡截止不变；所有允许继续判断为严格小于。到期当前读取/新控制与登录接管共争A/H/角色/CP栅栏，原子失败关闭或仅关闭completed，结算原体力并返回旅店；保持当前session，scene.expire日志记录真实原因。旧已提交控制可授权读取历史回执，新时钟下未提交旧timeline写拒绝；原结果不能覆盖当前读模型或开启预测。
+
+### ST10 当前证明与预测许可（2026-10-24）
+
+ready仍先按原票据截止CAS进入active，成功后签发该新连接阶段固定proofDeadline。active不直接等于客户端可预测：资源、完整基础页、ready成功、当前完整公开页及最后一次当前状态核对全部满足才启用。未知/丢响应保留原意图；过期/换代/缺页/摘要不符停止预测。 固定截止、旧回执缺字段拒绝、读取/回放/心跳不延期及预算/验收统一沿[加载合同当前证明节](room-loading-handshake-v1.md#st10-ready-后当前公开证明2026-10-24)。

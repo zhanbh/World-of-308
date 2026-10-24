@@ -281,7 +281,7 @@ prepare的O只持有原manifest引用、attempt/hash、原结果版本与serverT
 
 ### ST10-03 本地原结果与就绪读写补充（2026-10-24）
 
-ChallengeService.execute 接入严格 challenge.activateRoom / scene.ready；query 接入 scene.recoveryPage 和激活后的 challenge.get。activate 的 operation.get 返回原小型状态/票据，不读取当前 CP 重构历史结果。分页仅允许当前有效身份、票据及原基础修订，读取头→引用块→头一致性后裁剪公开记录，不直接发送 CP 内层。
+ChallengeService.execute 接入严格 challenge.activateRoom / scene.ready；query 接入 scene.recoveryPage 和激活后的 challenge.get。activate 的 operation.get 返回原小型状态/票据，不读取当前 CP 重构历史结果。ready前分页仅允许当前有效身份、票据及原基础修订；ready后还支持下述当前证明分支。读取头→引用块→头一致性后裁剪公开记录，不直接发送 CP 内层。
 
 本地 `queryOriginalReady`（execute 的 scene.status 路由）接收原 scene.ready 的 controlSeq、原 leaseRevision、身份/challenge 与 readyTicketId，找到后返回**原 scene.ready 响应**（保留原 serverTime/anchors）；未找到返回 scene.status 的 VERSION_CONFLICT，客户端才能用原 ready 重试。该原结果查询不消费新控制序号、不创建 O、不代表当前状态或续租。ST10-04 扩展一般状态/恢复控制时须保留这一精确查询分支。客户端恢复预测另读取 challenge.get 的当前 active/connected/alive、代次/摘要/修订；当前截止已到返回 DEADLINE_EXPIRED，原回执仍可作为历史读取。
 
@@ -298,3 +298,7 @@ scene.status 的 readyTicketId 非null保留ST10-03精确原ready回执分支；
 ### ST10-05 后续房与回复域实施说明
 
 prepareRoom/activateRoom/scene.ready命令形状不变；后续prepare只接受下一房、全敌（含紫名）死亡、存活玩家的旧manifest绑定出口。服务端显式local-test出口配置缺失/绑定摘要改变或回复配置摘要与CP不符时CONFIG_NOT_READY；客户端不提交出口坐标、清场结果或回复速率。后续房复用当前角色及逻辑期限，0保留体力/破损武器不会新增拒绝门槛。公开恢复页包含严格buff记录，仍须完整state hash证明后ready；旧scene/timeline/ticket与旧operation原结果不能授权新场景预测。详细本地schema及未覆盖战斗域见[CP合同](simulation-checkpoint-schema-v1.md)。
+
+### ST10 ready 后分页收敛
+
+`scene.recoveryPage`严格请求/响应形状不变；ready前绑定当前票据，ready后以原成功readyTicketId和当前CP修订/hash读取同一活动场景/时间代次的完整公开记录。active证明截止由成功ready的新connected租约及死亡截止确定，第一页提供固定截止，后续页须一致。客户端验证新完整证明后再读当前状态才能预测；读取/回放/心跳不延期。权限、状态、历史缺字段拒绝、预算与验收统一沿[加载合同当前证明节](room-loading-handshake-v1.md#st10-ready-后当前公开证明2026-10-24)。

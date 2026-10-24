@@ -79,3 +79,9 @@ H.transitionClock是唯一转场计时权威，prepare建立、activate保留并
 regenerationRef只解析显式ChallengeContent.regeneration local-test配置：ref、unit=`internal-per-second`、HP/MP约分有理速率及最多32个按templateRef匹配的buff附加速率。单位是1/1000显示HP/MP的内部资源单位每秒，毫秒换算分母乘1000。当前E01无正式自然回复表；null引用没有推定回复，无生产默认值。每个base/buff速率先规范化为每毫秒有理数，再检查其分母及持久余数分母的LCM≤uint32；不闭合配置在修改资源前拒绝。计算乘积、约分、资源与期限比较使用BigInt，分段点为buff到期；满值舍弃溢出且清对应分数，暂停不推进。运行时只接受当前存活角色的换房，未扩展死亡MP规则或战斗效果引擎。
 
 schema2同时必含regenerationHash（regenerationRef=null则为null，否则为64位小写SHA-256）；每次结算校验完整显式回复配置canonical摘要。同名ref更换速率或buff表也拒绝，不能仅靠字符串相等声明不可变。后续pendingRoomAttempt.exitRuleHash以同样方式把prepare时的出口交互规则绑定至activate。
+
+### ST10 ready 后 CP 公开投影（2026-10-24）
+
+ready后缀可合法改变HP/CD/buff及CP修订/hash；active分页投影当前CP公开记录，并以同场景/时间代次的已签发原ready回执绑定。CP不嵌入回执，外层CP头/块修订语义和私有字段隔离保持；客户端不能用旧基础页替代新公开记录。 固定截止、旧回执缺字段拒绝、读取/回放/心跳不延期及预算/验收统一沿[加载合同当前证明节](room-loading-handshake-v1.md#st10-ready-后当前公开证明2026-10-24)。
+
+外层校验与login handoff共用头/块元数据约束：身份/键/schema匹配，acceptingInputs为boolean；revision/chunkRevision为非负安全整数，sceneEpoch为正安全整数，ordinal为0..7且唯一，hash为64位小写十六进制，引用与块一致并重算canonical(data)摘要。房间读路径另验session/role正安全整数及严格state/role/scene内层，不因两处同为null等畸形元数据而放行；块修订不要求等于头整体修订。
