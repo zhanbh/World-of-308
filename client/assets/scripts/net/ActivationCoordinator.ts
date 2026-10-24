@@ -85,7 +85,7 @@ export class ActivationCoordinator{
     const live=current.data,original=data.state;
     if('kind' in live||live.roomPhase!=='active'||live.connection!=='connected'||live.lifeState!=='alive'||live.result!=='active'||live.sceneEpoch!==original.sceneEpoch||live.timelineEpoch!==original.timelineEpoch||live.checkpointRevision<original.checkpointRevision||live.manifestHash!==original.manifestHash)throw Error('CURRENT_SCENE_NOT_VERIFIED');
     const ticket=j.ticket;if(!ticket)throw Error('NO_READY_TICKET');
-    const pages=await fetchRecoveryProof(this.transport,{...c,...c.payload},{readyTicketId:c.payload.readyTicketId,deadline:ticket.deadline,sceneEpoch:live.sceneEpoch,timelineEpoch:live.timelineEpoch,checkpointRevision:live.checkpointRevision,publicStateHash:live.publicStateHash,manifestHash:live.manifestHash},`active-${j.activation.operationId}`.slice(0,56),()=>generation===this.generation);
+    const pages=await fetchRecoveryProof(this.transport,{...c,...c.payload},{readyTicketId:c.payload.readyTicketId,sceneEpoch:live.sceneEpoch,timelineEpoch:live.timelineEpoch,checkpointRevision:live.checkpointRevision,publicStateHash:live.publicStateHash,manifestHash:live.manifestHash},`active-${j.activation.operationId}`.slice(0,56),()=>generation===this.generation);
     if(!pages||generation!==this.generation)return;
     const finalText=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;decodeSceneReply(q,finalText);const final=parseChallengeQueryResponse(JSON.parse(finalText));
     if('error' in final||'kind' in final.data||!sameProofState(live,final.data))throw Error('CURRENT_SCENE_NOT_VERIFIED');

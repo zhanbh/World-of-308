@@ -70,7 +70,7 @@ export class RecoveryCoordinator {
     if(!('kind' in original.state)&&data.state.roomPhase==='active'){
      const live=data.state,t=this.journal.data?.readyTicket;
      if('kind' in live||!t||'kind' in t||!sameProofState(live,live))throw Error('CURRENT_SCENE_NOT_VERIFIED');
-     const pages=await fetchRecoveryProof(this.transport,{...c,...c.payload},{readyTicketId:c.payload.readyTicketId!,deadline:t.deadline,sceneEpoch:live.sceneEpoch,timelineEpoch:live.timelineEpoch,checkpointRevision:live.checkpointRevision,publicStateHash:live.publicStateHash,manifestHash:live.manifestHash},`active-${c.controlSeq}`,()=>generation===this.generation);
+     const pages=await fetchRecoveryProof(this.transport,{...c,...c.payload},{readyTicketId:c.payload.readyTicketId!,sceneEpoch:live.sceneEpoch,timelineEpoch:live.timelineEpoch,checkpointRevision:live.checkpointRevision,publicStateHash:live.publicStateHash,manifestHash:live.manifestHash},`active-${c.controlSeq}`,()=>generation===this.generation);
      if(!pages||generation!==this.generation)return;
      const finalText=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;decodeSceneReply(q,finalText);const final=parseSceneResponse(JSON.parse(finalText));
      if(final.outcome.status!=='committed'||'kind' in final.outcome.data.state||!sameProofState(live,final.outcome.data.state))throw Error('CURRENT_SCENE_NOT_VERIFIED');
