@@ -51,7 +51,7 @@ test('recovery pages are bounded public projections tied to one ticket and revis
     records: [{ kind: 'actor', actorId: 'player', actorIndex: 0, x: 1000, y: 1000, facing: 1, hp: '100000', maxHp: '100000', mp: '50000', maxMp: '50000', lifeState: 'alive', actionId: 'idle', phase: 0 }] };
   assert.deepEqual(parseRecoveryPage(page), page);
   assert.equal(assembleRecoveryPages([page]).records[0].actorId, 'player');
-  for (const patch of [{ pageIndex: 1 }, { totalPages: 65 }, { randomSeed: 'secret' }, { records: [{ ...page.records[0], privateBudget: '100' }] }]) assert.throws(() => parseRecoveryPage({ ...page, ...patch }));
+  for (const patch of [{ pageIndex: 1 }, { totalPages: 257 }, { randomSeed: 'secret' }, { records: [{ ...page.records[0], privateBudget: '100' }] }]) assert.throws(() => parseRecoveryPage({ ...page, ...patch }));
   assert.throws(() => assembleRecoveryPages([{ ...page, totalPages: 2 }]));
   assert.throws(() => assembleRecoveryPages([{ ...page, totalPages: 2 }, { ...page, totalPages: 2, pageIndex: 1, timelineEpoch: 3 }]));
   assert.throws(() => assembleRecoveryPages([{ ...page, records: [page.records[0], { ...page.records[0], actorId: 'other' }] }]));

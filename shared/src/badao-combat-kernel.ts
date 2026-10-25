@@ -129,6 +129,7 @@ export function advanceBadaoCombat(state: BadaoState, inputs: readonly ActionInp
     sceneEpoch: number;
     actorId: string;
     immuneToBleed?: number[];
+    processUntilUs?: Rational;
 }, current: BadaoCurrent, targets: readonly CombatTarget[], random: (cursor: number) => number): {
     state: BadaoState;
     targets: CombatTarget[];
@@ -179,9 +180,10 @@ export function advanceBadaoCombat(state: BadaoState, inputs: readonly ActionInp
         s.effects.push({ kind: 'bleed', sequence, node, targetIndex: t.actorIndex, originUs: at, nextJump: 0, snapshot: structuredClone(shot), budget }); };
     // All emitted effects run on fixed 10 ms ticks; rational origins remain unrounded for subsequent nodes/jumps.
     const process = (tickNo: number) => {
-        const at = r(tickNo * 10000);
+        if(current.controlled)s.cast=null;
+        const at = context.processUntilUs??r(tickNo * 10000);
         for (const t of ts)
-            if (t.lifeState === 'alive' && t.downUntilTick !== null && t.downUntilTick <= tickNo) {
+            if (t.lifeState === 'alive' && t.downUntilTick !== null && cmp(r(t.downUntilTick*10000),at)<=0) {
                 t.downUntilTick = null;
                 t.directSinceRise = '0';
                 emit('rise', at, 0, 0, 0, t.actorId);

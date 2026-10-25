@@ -1,3 +1,4 @@
+import {validateEarthPublicState} from '../earth-combat-kernel.ts';
 import {validateBadaoPublicState} from '../badao-combat-kernel.ts';
 import {validateBengshanPublicState} from '../bengshan-combat-kernel.ts';
 import {validateCrossPublicState} from '../cross-combat-kernel.ts';
@@ -136,11 +137,13 @@ const movementRecord=object({kind:enumOf('movement'),actorId:text(),configHash:h
 const combatFraction:Parser<Rational>=v=>{const r=object({n:text(20),d:text(10)})(v);if(!/^(0|[1-9][0-9]*)$/.test(r.n)||!/^[1-9][0-9]*$/.test(r.d)||BigInt(r.n)>18446744073709551615n||BigInt(r.d)>4294967295n)throw new TypeError('INVALID_COMBAT_TIME');return r;};
 const combatCast=object({facing:enumOf(-1,1),stage:integer(0,2),sequence:integer(1),originUs:combatFraction,impactUs:combatFraction,endUs:combatFraction,moveUnlockUs:combatFraction,impacted:bool});
 const combatActionRecord=object({kind:enumOf('combatAction'),actorId:text(),configHash:hash,held:bool,buffered:bool,nextStage:integer(0,2),comboExpiresUs:nullable(combatFraction),castSequence:integer(),cast:nullable(combatCast)});
-const badaoEffectRecord=object({kind:enumOf('badaoEffect'),actorId:text(),index:integer(0,2047),state:validateBadaoPublicState});
+const earthEffectRecord=object({kind:enumOf('earthEffect'),actorId:text(),index:integer(0,3647),state:validateEarthPublicState});
+const earthActionRecord=object({kind:enumOf('earthAction'),actorId:text(),state:validateEarthPublicState});
+const badaoEffectRecord=object({kind:enumOf('badaoEffect'),actorId:text(),index:integer(0,3647),state:validateBadaoPublicState});
 const badaoActionRecord=object({kind:enumOf('badaoAction'),actorId:text(),state:validateBadaoPublicState});
-const bengshanEffectRecord=object({kind:enumOf('bengshanEffect'),actorId:text(),index:integer(0,2047),state:validateBengshanPublicState});
+const bengshanEffectRecord=object({kind:enumOf('bengshanEffect'),actorId:text(),index:integer(0,3647),state:validateBengshanPublicState});
 const bengshanActionRecord=object({kind:enumOf('bengshanAction'),actorId:text(),state:validateBengshanPublicState});
-const crossEffectRecord=object({kind:enumOf('crossEffect'),actorId:text(),index:integer(0,2047),state:validateCrossPublicState});
+const crossEffectRecord=object({kind:enumOf('crossEffect'),actorId:text(),index:integer(0,3647),state:validateCrossPublicState});
 const crossActionRecord=object({kind:enumOf('crossAction'),actorId:text(),state:validateCrossPublicState});
 const targetControlRecord=object({kind:enumOf('targetControl'),actorId:text(),directSinceRise:resourceWire,downUntilTick:nullable(logicTick)});
 const buffRecord = object({ kind: enumOf('buff'), buffId: text(), actorId: text(), templateRef: text(64), endsAtTick: logicTick });
@@ -159,6 +162,8 @@ function publicRecord(value: unknown) {
       return r;
     }
     case 'combatAction': {const r=combatActionRecord(value),c=r.cast;if(c){const cmp=(a:Rational,b:Rational)=>BigInt(a.n)*BigInt(b.d)-BigInt(b.n)*BigInt(a.d);if(c.sequence>r.castSequence||cmp(c.originUs,c.impactUs)>=0n||cmp(c.impactUs,c.endUs)>0n||cmp(c.originUs,c.moveUnlockUs)>0n||cmp(c.moveUnlockUs,c.endUs)>0n)throw new TypeError('INVALID_PUBLIC_ACTION');}return r;}
+    case 'earthEffect': {const r=earthEffectRecord(value);if(r.state.cast!==null||r.state.effects.length!==1)throw new TypeError('INVALID_EARTH_EFFECT');return r;}
+    case 'earthAction': {const r=earthActionRecord(value);if(r.state.effects.length!==0)throw new TypeError('INVALID_EARTH_ACTION');return r;}
     case 'badaoEffect': {const r=badaoEffectRecord(value);if(r.state.cast!==null||r.state.effects.length!==1)throw new TypeError('INVALID_BADAO_EFFECT');return r;}
     case 'badaoAction': {const r=badaoActionRecord(value);if(r.state.effects.length!==0)throw new TypeError('INVALID_BADAO_ACTION');return r;}
     case 'bengshanEffect': {const r=bengshanEffectRecord(value);if(r.state.cast!==null||r.state.effects.length!==1)throw new TypeError('INVALID_BENGSHAN_EFFECT');return r;}
@@ -172,7 +177,7 @@ function publicRecord(value: unknown) {
   }
 }
 const recoveryPage = object({ protocolVersion: enumOf(2), requestId: operationId, serverTime: time, readyTicketId: text(), ...binding, deadline: time,
-  pageIndex: integer(0, 63), totalPages: integer(1, 64), records: list(publicRecord, 64) });
+  pageIndex: integer(0, 255), totalPages: integer(1, 256), records: list(publicRecord, 64) });
 export function parseRecoveryPage(value: unknown) {
   const page = recoveryPage(value);
   if (page.pageIndex >= page.totalPages || new TextEncoder().encode(JSON.stringify(page)).length > 32768) throw new TypeError('INVALID_PAGE');
@@ -180,13 +185,13 @@ export function parseRecoveryPage(value: unknown) {
 }
 export type RecoveryPage = ReturnType<typeof parseRecoveryPage>;
 export function assembleRecoveryPages(values: unknown[]) {
-  if (!Array.isArray(values) || !values.length || values.length > 64) throw new TypeError('INCOMPLETE_RECOVERY');
+  if (!Array.isArray(values) || !values.length || values.length > 256) throw new TypeError('INCOMPLETE_RECOVERY');
   const pages = values.map(parseRecoveryPage).sort((a, b) => a.pageIndex - b.pageIndex), first = pages[0];
   const identity = (p: RecoveryPage) => JSON.stringify([p.readyTicketId, p.sceneEpoch, p.timelineEpoch, p.checkpointRevision, p.publicStateHash, p.manifestHash, p.deadline, p.totalPages]);
   if (pages.length !== first.totalPages || pages.some((p, index) => p.pageIndex !== index || identity(p) !== identity(first))) throw new TypeError('INCOMPLETE_RECOVERY');
   const records = pages.flatMap(p => p.records), seen = new Set<string>();
   for (const r of records) {
-    const key = r.kind === 'actor' ? ['actor', r.actorId] : r.kind === 'cooldown' ? ['cooldown', r.actorId, r.cooldownId] : r.kind === 'effect' ? ['effect', r.effectId] : r.kind==='badaoEffect'?['badaoEffect',r.actorId,r.index]:r.kind==='badaoAction'?['badaoAction',r.actorId]:r.kind==='bengshanEffect'?['bengshanEffect',r.actorId,r.index]:r.kind==='bengshanAction'?['bengshanAction',r.actorId]:r.kind==='crossEffect'?['crossEffect',r.actorId,r.index]:r.kind==='crossAction'?['crossAction',r.actorId]:r.kind==='combatAction'?['combatAction',r.actorId]:r.kind==='targetControl'?['targetControl',r.actorId]:r.kind==='movement'?['movement',r.actorId]:['buff', r.buffId];
+    const key = r.kind === 'actor' ? ['actor', r.actorId] : r.kind === 'cooldown' ? ['cooldown', r.actorId, r.cooldownId] : r.kind === 'effect' ? ['effect', r.effectId] : r.kind==='earthEffect'?['earthEffect',r.actorId,r.index]:r.kind==='earthAction'?['earthAction',r.actorId]:r.kind==='badaoEffect'?['badaoEffect',r.actorId,r.index]:r.kind==='badaoAction'?['badaoAction',r.actorId]:r.kind==='bengshanEffect'?['bengshanEffect',r.actorId,r.index]:r.kind==='bengshanAction'?['bengshanAction',r.actorId]:r.kind==='crossEffect'?['crossEffect',r.actorId,r.index]:r.kind==='crossAction'?['crossAction',r.actorId]:r.kind==='combatAction'?['combatAction',r.actorId]:r.kind==='targetControl'?['targetControl',r.actorId]:r.kind==='movement'?['movement',r.actorId]:['buff', r.buffId];
     const encoded = JSON.stringify(key);
     if (seen.has(encoded)) throw new TypeError('DUPLICATE_PUBLIC_RECORD'); seen.add(encoded);
   }
@@ -194,7 +199,7 @@ export function assembleRecoveryPages(values: unknown[]) {
   if (!actors.length || actors.length > 9 || new Set(actors.map(r => r.actorIndex)).size !== actors.length) throw new TypeError('INVALID_PUBLIC_ACTORS');
   const actorIds = new Set(actors.map(r => r.actorId));
   for (const r of records) {
-    if ((r.kind === 'cooldown' || r.kind === 'buff' || r.kind==='movement'||r.kind==='combatAction'||r.kind==='targetControl'||r.kind==='crossAction'||r.kind==='crossEffect'||r.kind==='badaoAction'||r.kind==='badaoEffect'||r.kind==='bengshanAction'||r.kind==='bengshanEffect') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
+    if ((r.kind === 'cooldown' || r.kind === 'buff' || r.kind==='movement'||r.kind==='combatAction'||r.kind==='targetControl'||r.kind==='crossAction'||r.kind==='crossEffect'||r.kind==='earthAction'||r.kind==='earthEffect'||r.kind==='badaoAction'||r.kind==='badaoEffect'||r.kind==='bengshanAction'||r.kind==='bengshanEffect') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
     if (r.kind === 'effect' && (!actorIds.has(r.ownerId) || (r.targetId !== null && !actorIds.has(r.targetId)))) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
   }
   return { ...cpReadyTicket({ readyTicketId: first.readyTicketId, sceneEpoch: first.sceneEpoch, timelineEpoch: first.timelineEpoch, checkpointRevision: first.checkpointRevision, publicStateHash: first.publicStateHash, manifestHash: first.manifestHash, deadline: first.deadline }), records };
@@ -203,7 +208,7 @@ export function assembleRecoveryPages(values: unknown[]) {
 const query = { ...session, requestId: operationId };
 // A page binds either the live preparation ticket or an issued ready receipt on the same live timeline.
 // After ready, revision/hash refer to the current CP; the server retains the original proof deadline.
-const recoveryQuery = object({ ...query, query: enumOf('scene.recoveryPage'), payload: object({ ...common, readyTicketId: text(), ...binding, pageIndex: integer(0, 63) }) });
+const recoveryQuery = object({ ...query, query: enumOf('scene.recoveryPage'), payload: object({ ...common, readyTicketId: text(), ...binding, pageIndex: integer(0, 255) }) });
 const challengeQuery = object({ ...query, query: enumOf('challenge.get'), payload: object({ challengeId: text() }) });
 export function parseSceneQuery(value: unknown) {
   const name = value && typeof value === 'object' ? Object.getOwnPropertyDescriptor(value, 'query')?.value : undefined;
@@ -251,7 +256,7 @@ const eventSummary = object({ kind: enumOf('actionAccepted', 'actionRejected', '
 const movementEvent = object({seq:integer(1),tick:logicTick,kind:enumOf('rejected'),code:enumOf('ACTION_NOT_SUPPORTED')});
 const combatActionEvent=object({kind:enumOf('actionAccepted','actionRejected','damage','miss','death','knockdown','rise'),eventId:text(),actorId:text(),tick:logicTick,seq:nullable(integer(1)),targetId:nullable(text()),damage:nullable(resourceWire),critical:nullable(bool),code:nullable(text(64))});
 export function parseActionResultsPage(value:unknown){
- const p=object({protocolVersion:enumOf(2),query:enumOf('simulation.actionResults'),requestId:operationId,operationId,actionResultsRef:text(),pageIndex:integer(0,63),totalPages:integer(1,64),events:list(combatActionEvent,32)})(value);
+ const p=object({protocolVersion:enumOf(2),query:enumOf('simulation.actionResults'),requestId:operationId,operationId,actionResultsRef:text(),pageIndex:integer(0,1023),totalPages:integer(1,1024),events:list(combatActionEvent,32)})(value);
  if(p.pageIndex>=p.totalPages||new TextEncoder().encode(JSON.stringify(p)).length>32768)throw new TypeError('INVALID_PAGE');return p;
 }
 const submitResponse = object({ ...resultHeader, command: enumOf('simulation.submit'), outcome: result(object({ acceptedSeq: integer(), acceptedTick: logicTick, checkpointRevision: integer(), actionResultsRef: text(), events: list(v=>v&&typeof v==='object'&&Object.getOwnPropertyDescriptor(v,'kind')?.value==='rejected'?movementEvent(v):eventSummary(v), 64) })) });

@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {earthClientFixture} from './fixtures/earth-client-fixture.mjs';
+test('earth durable client predicts four-node ground and recovers original results with current public proof',async()=>{
+ const h=await earthClientFixture();h.setNow(1263);h.client.enqueue({seq:1,tick:1,kind:'skill',skillId:'earth'});h.client.predict(26);assert.equal(h.client.state.earth.castSequence,1);assert.ok(h.client.state.earth.effects.length>0);const predicted=h.client.state.position;
+ h.lose();await h.client.submit('client-earth',26);assert.equal(h.client.state.status,'unknown');const reopened=h.make();await reopened.load(h.context,h.config,h.loading,h.basic);assert.equal(reopened.state.status,'active',reopened.state.code);assert.deepEqual(reopened.state.actionResults,await h.results('client-earth'));assert.equal(reopened.state.earth.castSequence,1);assert.deepEqual(reopened.state.position,predicted);assert.ok(reopened.state.earth.effects.length>0);
+ const frozen=reopened.state.earth.cast.snapshot;const altered=h.make();await altered.load(h.context,h.config,h.loading,{...h.basic,stats:{...h.basic.stats,x:9999,y:9999,facing:-1,haste:{n:'2',d:'1'}}});assert.equal(altered.state.status,'active',altered.state.code);assert.deepEqual(altered.state.earth.cast.snapshot.haste,frozen.haste);assert.equal(altered.state.earth.cast.snapshot.facing,frozen.facing);assert.deepEqual(altered.state.position,predicted);
+});
