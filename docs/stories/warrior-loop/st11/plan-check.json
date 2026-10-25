@@ -1,0 +1,45 @@
+{
+  "feature": "warrior-loop-st11",
+  "status": "accepted-valid",
+  "human_approval": true,
+  "build_gate": "local-pass",
+  "source_sha256": "c40b9047aff164141ca667889360642058d13dd3e33cfc22e548d6e3b57c4b25",
+  "spec_body_sha256": "605d959c39e9caac16fa7096653c454e13ccf543f568a2288a2d9eebd6f3154b",
+  "spec_full_sha256": "dfdf9d7935574efcbbd59a76d29c734166c845aa6e24d26846642f768b32830b",
+  "tickets": 6,
+  "ticket_revisions": {
+    "ST11-01": "53e5ce36c156757462e5f9ef4cdbbf10c08c4a9de2e76e309560160475c0e48a",
+    "ST11-02": "eb867bae80659f30c1f7a00eaee4926875b34dfb571dd1178cc79d2982bbe71c",
+    "ST11-03": "aa55f3ca5aa49deb04f7bd4052b006feea96f89eef591a977745bd077c98112d",
+    "ST11-04": "057e2179e9114d9507ddf3a64f6ef96cd9b39f1d63dde54150a662fc94311043",
+    "ST11-05": "4371b54755d7f1381af57058364f88191010ed012e2ea5d2616458c04b269ed6",
+    "ST11-06": "8e58438d3bea8c3684509aabaa01d09dc2498af8f60dd936e220abedd248f363"
+  },
+  "frontiers": [
+    [
+      1
+    ],
+    [
+      2
+    ],
+    [
+      3
+    ],
+    [
+      4,
+      5
+    ],
+    [
+      6
+    ]
+  ],
+  "coverage": [
+    "ST11-AC1",
+    "ST11-AC2",
+    "ST11-AC3",
+    "shared-input-lifecycle"
+  ],
+  "errors": [],
+  "method": "local source/body SHA256 + Accepted/revision/coverage/unique-ID/edge/acyclic checks; no Jira or external gate",
+  "jira_actions": false
+}

@@ -1,0 +1,38 @@
+{
+  "feature": "warrior-loop-st11",
+  "approval_kind": "human",
+  "approval_evidence": "好的，开始吧",
+  "approved_on": "2026-10-25",
+  "approved_granularity": 6,
+  "approved_edges": [
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      3,
+      5
+    ],
+    [
+      4,
+      6
+    ],
+    [
+      5,
+      6
+    ]
+  ],
+  "approved_spec_body_sha256": "605d959c39e9caac16fa7096653c454e13ccf543f568a2288a2d9eebd6f3154b",
+  "proposal_snapshot": "plan-proposal.json",
+  "tickets_published": true,
+  "implementation_authorized": true,
+  "jira_actions": false
+}

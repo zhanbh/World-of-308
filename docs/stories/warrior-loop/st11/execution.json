@@ -1,0 +1,65 @@
+{
+  "feature": "warrior-loop-st11",
+  "status": "accepted-ready-ST11-01",
+  "integration_branch": "feat-1.0.0",
+  "baseline_head": "accd5927b0e5daefcac281b2b8913adfdbe04209",
+  "approved_spec_revision": "605d959c39e9caac16fa7096653c454e13ccf543f568a2288a2d9eebd6f3154b",
+  "tickets": [
+    {
+      "id": "ST11-01",
+      "accepted_revision": "53e5ce36c156757462e5f9ef4cdbbf10c08c4a9de2e76e309560160475c0e48a",
+      "state": "pending",
+      "blocked_by": []
+    },
+    {
+      "id": "ST11-02",
+      "accepted_revision": "eb867bae80659f30c1f7a00eaee4926875b34dfb571dd1178cc79d2982bbe71c",
+      "state": "pending",
+      "blocked_by": [
+        1
+      ]
+    },
+    {
+      "id": "ST11-03",
+      "accepted_revision": "aa55f3ca5aa49deb04f7bd4052b006feea96f89eef591a977745bd077c98112d",
+      "state": "pending",
+      "blocked_by": [
+        2
+      ]
+    },
+    {
+      "id": "ST11-04",
+      "accepted_revision": "057e2179e9114d9507ddf3a64f6ef96cd9b39f1d63dde54150a662fc94311043",
+      "state": "pending",
+      "blocked_by": [
+        3
+      ]
+    },
+    {
+      "id": "ST11-05",
+      "accepted_revision": "4371b54755d7f1381af57058364f88191010ed012e2ea5d2616458c04b269ed6",
+      "state": "pending",
+      "blocked_by": [
+        3
+      ]
+    },
+    {
+      "id": "ST11-06",
+      "accepted_revision": "8e58438d3bea8c3684509aabaa01d09dc2498af8f60dd936e220abedd248f363",
+      "state": "pending",
+      "blocked_by": [
+        4,
+        5
+      ]
+    }
+  ],
+  "testing_seams": [
+    "pure deterministic kernel explicit state/input/event/random",
+    "trusted service execute/query + real ST10/ST05/ST04 + MemoryStore faults",
+    "strict DTO/wire and public-state proof",
+    "durable client transport/pendingStore/input clock"
+  ],
+  "jira_actions": false,
+  "pushed": false,
+  "cocos_rebuild": "not-run-prior-permission-rejected"
+}
