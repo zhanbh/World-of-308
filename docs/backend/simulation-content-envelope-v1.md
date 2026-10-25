@@ -56,3 +56,8 @@ ST11-01移动片段仍≤100tick/32输入/16KiB，O≤16KiB/公开回复页≤32
 ## ST11-02 普攻训练实施（2026-10-25）
 
 当前预算增量见[普攻执行合同](basic-combat-contract-v1.md)：显式无奖励训练profile、role4/scene2动作及目标控制、独立私有战斗流、当前公开动作证明和完整有界actionResults分页。既有未声明combat的移动能力保持。实现及实际预算见[验证](../reviews/st11-02-verification.md)，不代表正式收益/技能/AI能力已交付。
+
+
+## ST11-03 十字斩实施增量（2026-10-25）
+
+当前增量沿[十字斩合同](cross-combat-contract-v1.md)：严格schema2无奖励profile、逐节点直接/流血预算、输入边界MP回复、scene3紧凑效果/快照及按需块、crossAction/crossEffect公开证明和完整动作结果。旧schema1普攻、原CP/恢复/加载兼容；实际验收与未覆盖项见[ST11-03证据](../reviews/st11-03-verification.md)，不代表正式奖励/AI或全部技能混合图已通过。
