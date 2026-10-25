@@ -70,3 +70,6 @@ ST11-01移动采用1000整数单位/设计像素，10ms tick，分母100000带�
 ## ST11-06 连续战斗增量
 
 当前大崩四节点、实际落点/独立地面尾伤、四技能有理候选顺序、profile5/scene6稳定槽与全局字典、公开256页/原结果1024页及完整字节预算按[大崩与连续战斗合同](earth-combat-contract-v1.md)执行。旧profile/schema严格兼容；future怪物912条仅编码域夹具，ST12 AI未实现。实际证据见[06验证](../reviews/st11-06-verification.md)。
+
+
+ST11最终评审算术域修订：训练profile发布/入口须证明完整合法属性/等级域下直接节点及流血施放预算/末跳暴击均可编码uint64；超域在入口前CONFIG_NOT_READY且无资产变化，禁止留待首次施放失败。死亡清除失效的directSinceRise但保留原伤害事件，存活累计不变。精确上界及分配顺序见[大崩合同·算术发布域](earth-combat-contract-v1.md)。

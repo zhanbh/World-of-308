@@ -166,6 +166,7 @@ export function advanceBadaoCombat(state: BadaoState, inputs: readonly ActionInp
         amount = mul(amount, shot.critMultiplier); amount = mul(amount, q(BigInt(t.mitigation.d) - BigInt(t.mitigation.n), BigInt(t.mitigation.d))); const n = t.damageImmune ? 0n : floor(amount); t.hp = String(n >= BigInt(t.hp) ? 0n : BigInt(t.hp) - n); if (!dot)
         t.directSinceRise = String(BigInt(t.directSinceRise) + n); emit('damage', at, sequence, node, jump, t.actorId, String(n), critical); if (t.hp === '0') {
         t.lifeState = 'dead';
+            t.directSinceRise = '0';
         t.downUntilTick = null;
         emit('death', at, sequence, node, jump, t.actorId);
     }

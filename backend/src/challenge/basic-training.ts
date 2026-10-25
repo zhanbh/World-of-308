@@ -22,7 +22,7 @@ export function validateBasicTraining(value:unknown):BasicTrainingProfile{
  if(badao){const cfg=validateBadaoConfig(value.badao);check((Math.ceil((cfg.durationUs+cfg.bleed.jumps*cfg.bleed.intervalUs)*8/cfg.cooldownUs)+2)*8<=2048);}
  if(earth){validateEarthConfig(value.earth);validateMixedEnvelope(value as unknown as BasicTrainingProfile);}
  fields(value.attributes,['attackPowerByLevel','haste','damageBonus','hit','crit','critMultiplier']);check(Array.isArray(value.attributes.attackPowerByLevel)&&value.attributes.attackPowerByLevel.length===30);for(const n of value.attributes.attackPowerByLevel)check(typeof n==='string'&&/^(0|[1-9][0-9]{0,18})$/.test(n)&&BigInt(n)<=18446744073709551615n);for(const k of ['haste','damageBonus','hit','crit','critMultiplier'])rational(value.attributes[k],k==='hit'||k==='crit');
- check(value.targets&&typeof value.targets==='object'&&!Array.isArray(value.targets)&&Object.keys(value.targets).length>=1&&Object.keys(value.targets).length<=32);for(const [ref,t] of Object.entries(value.targets)){check(ref.length<=64);fields(t,['mitigation','evasion','damageImmune']);rational(t.mitigation,true);rational(t.evasion,true);check(typeof t.damageImmune==='boolean');}const typed=value as BasicTrainingProfile;for(const attackPower of typed.attributes.attackPowerByLevel)validateCombatStats({attackPower,haste:typed.attributes.haste,damageBonus:typed.attributes.damageBonus,hit:typed.attributes.hit,crit:typed.attributes.crit,critMultiplier:typed.attributes.critMultiplier,x:0,y:0,facing:1});return structuredClone(value) as BasicTrainingProfile;
+ check(value.targets&&typeof value.targets==='object'&&!Array.isArray(value.targets)&&Object.keys(value.targets).length>=1&&Object.keys(value.targets).length<=32);for(const [ref,t] of Object.entries(value.targets)){check(ref.length<=64);fields(t,['mitigation','evasion','damageImmune']);rational(t.mitigation,true);rational(t.evasion,true);check(typeof t.damageImmune==='boolean');}const typed=value as BasicTrainingProfile;for(const attackPower of typed.attributes.attackPowerByLevel)validateCombatStats({attackPower,haste:typed.attributes.haste,damageBonus:typed.attributes.damageBonus,hit:typed.attributes.hit,crit:typed.attributes.crit,critMultiplier:typed.attributes.critMultiplier,x:0,y:0,facing:1});validateTrainingArithmetic(typed);return structuredClone(value) as BasicTrainingProfile;
 }
 function add(a:Rational,b:string):Rational{let n=BigInt(a.n)*1000n+BigInt(b)*BigInt(a.d),d=BigInt(a.d)*1000n,x=n,y=d;while(y){const t=x%y;x=y;y=t;}n/=x||1n;d/=x||1n;return {n:String(n),d:String(d)};}
 function capped(a:Rational,max:bigint):Rational{return BigInt(a.n)>max*BigInt(a.d)?{n:String(max),d:'1'}:a;}
@@ -60,4 +60,29 @@ export function validateMixedEnvelope(p:BasicTrainingProfile){
  check(minSkillGapUs>=120000&&minBasicGapUs>=120000);
  for(const c of skills){check(c.bleed.jumps<=5&&within(c.bleed.intervalUs*c.bleed.jumps,5000000));const nodes='nodeOffsetsUs'in c?c.nodeOffsetsUs:[c.nodeOffsetUs];check(within(nodes[nodes.length-1],4000000)&&within(c.durationUs,9000000)&&within(nodes[nodes.length-1]+c.bleed.intervalUs*c.bleed.jumps,9000000));if('projectileDurationUs'in c)check(within(c.nodeOffsetsUs[1]+c.projectileDurationUs,4000000)&&within(c.nodeOffsetsUs[1]+c.projectileDurationUs+c.bleed.intervalUs*c.bleed.jumps,9000000));}
  return {version:1,minimumGapUs:minSkillGapUs,tailUs:9000000,playerCasts:76,playerBleeds:2432,playerDetached:304,futureMonsterEffects:912,snapshots:228};
+}
+
+/** Publication proof over the entire supported post-equipment snapshot domain, not the
+ * fixture's starting panel. CombatStats admits AP<=10^12, bonus/mastery<=10 and
+ * critical multiplier<=10; every character level 1..30 is reachable in training. */
+export function validateTrainingArithmetic(p:BasicTrainingProfile):void{
+ const max=18446744073709551615n,ap=1000000000000n;
+ const floorProduct=(n:bigint,c:Rational,multiplier:bigint)=>n*BigInt(c.n)*multiplier/BigInt(c.d);
+ const bounded=(n:bigint)=>check(n<=max);
+ // Basic has no mastery. Critical amplification occurs after the stage product.
+ for(const stage of p.config.stages)bounded(floorProduct(ap,stage.coefficient,110n));
+ const portions=(total:bigint,weights:number[])=>{const sum=BigInt(weights.reduce((a,b)=>a+b,0));const first=weights.slice(0,-1).map(w=>total*BigInt(w)/sum);return [...first,total-first.reduce((a,b)=>a+b,0n)];};
+ for(const cfg of [p.cross,p.bengshan,p.badao,p.earth])if(cfg){
+  const growth=BigInt(Math.floor((30-cfg.unlockLevel)/2))*BigInt(cfg.damage.growth);
+  // Keep rational AP contribution until the complete direct budget is floored.
+  const direct=((BigInt(cfg.damage.base)+growth)*BigInt(cfg.damage.coefficient.d)+ap*BigInt(cfg.damage.coefficient.n))*121n/BigInt(cfg.damage.coefficient.d);
+  const weights='nodeWeights'in cfg.damage?cfg.damage.nodeWeights:[1];
+  for(const node of portions(direct,weights))bounded(node*10n);
+  const bleed=floorProduct(ap,cfg.bleed.coefficient,121n);bounded(bleed);
+  const bleedWeights='nodeWeights'in cfg.bleed?cfg.bleed.nodeWeights:[1];
+  for(const node of portions(bleed,bleedWeights)){
+   const early=node/BigInt(cfg.bleed.jumps),last=node-early*BigInt(cfg.bleed.jumps-1);
+   bounded(last*10n);
+  }
+ }
 }
