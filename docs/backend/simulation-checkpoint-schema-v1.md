@@ -85,3 +85,8 @@ schema2同时必含regenerationHash（regenerationRef=null则为null，否则为
 ready后缀可合法改变HP/CD/buff及CP修订/hash；active分页投影当前CP公开记录，并以同场景/时间代次的已签发原ready回执绑定。CP不嵌入回执，外层CP头/块修订语义和私有字段隔离保持；客户端不能用旧基础页替代新公开记录。 固定截止、旧回执缺字段拒绝、读取/回放/心跳不延期及预算/验收统一沿[加载合同当前证明节](room-loading-handshake-v1.md#st10-ready-后当前公开证明2026-10-24)。
 
 外层校验与login handoff共用头/块元数据约束：身份/键/schema匹配，acceptingInputs为boolean；revision/chunkRevision为非负安全整数，sceneEpoch为正安全整数，ordinal为0..7且唯一，hash为64位小写十六进制，引用与块一致并重算canonical(data)摘要。房间读路径另验session/role正安全整数及严格state/role/scene内层，不因两处同为null等畸形元数据而放行；块修订不要求等于头整体修订。
+
+
+## ST11-01 当前移动实施（2026-10-25）
+
+role schema3持久移动意图与精确带符号/100000余数，兼容role1/2；保持logicalTimeMs原亚tick余量（13ms+500ms=513ms），不以acceptedTick重建毫秒。movement公开精度进入公开hash并由simulation.confirmed裁剪分页。字段、兼容与约束见[移动合同](movement-input-contract-v1.md)。

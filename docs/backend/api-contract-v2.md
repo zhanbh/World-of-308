@@ -302,3 +302,8 @@ prepareRoom/activateRoom/scene.ready命令形状不变；后续prepare只接受�
 ### ST10 ready 后分页收敛
 
 `scene.recoveryPage`严格请求/响应形状不变；ready前绑定当前票据，ready后以原成功readyTicketId和当前CP修订/hash读取同一活动场景/时间代次的完整公开记录。active证明截止由成功ready的新connected租约及死亡截止确定，第一页提供固定截止，后续页须一致。客户端验证新完整证明后再读当前状态才能预测；读取/回放/心跳不延期。权限、状态、历史缺字段拒绝、预算与验收统一沿[加载合同当前证明节](room-loading-handshake-v1.md#st10-ready-后当前公开证明2026-10-24)。
+
+
+## ST11-01 当前移动实施（2026-10-25）
+
+ST11-01已实现simulation.submit移动能力及simulation.confirmed当前公开分页；严格字段、摘要公式、拒绝码、原operation及训练能力边界见[移动合同](movement-input-contract-v1.md)。simulation.get历史候选未采用。simulation.confirmed沿RecoveryPage分页协议，必须绑定当前身份/角色/场景/代次/CP修订，不下发原始CP。

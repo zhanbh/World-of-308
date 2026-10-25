@@ -97,7 +97,7 @@ const bool: Parser<boolean> = value => { if (typeof value !== 'boolean') throw n
 const cpReadyTicket = object({ readyTicketId: text(), ...binding, deadline: time });
 const unpaidReadyTicket=object({kind:enumOf('unpaidLoading'),readyTicketId:text(),sceneEpoch:enumOf(0),timelineEpoch:integer(1),roomAttemptId:text(),manifestHash:hash,deadline:time});
 function readyTicket(v:unknown){return v&&typeof v==='object'&&Object.getOwnPropertyDescriptor(v,'kind')?.value==='unpaidLoading'?unpaidReadyTicket(v):cpReadyTicket(v);}
-const sceneErrors = enumOf('LEVEL_REQUIRED', 'DIFFICULTY_LOCKED', 'INVALID_ARGUMENT', 'UNSUPPORTED_PROTOCOL', 'AUTH_REQUIRED', 'SESSION_REVOKED', 'VERSION_CONFLICT', 'RECOVERY_REQUIRED', 'DEADLINE_EXPIRED', 'SCENE_CLOSED', 'ROOM_NOT_AVAILABLE', 'CONFIG_NOT_READY', 'SERVICE_UNAVAILABLE', 'OPERATION_MISMATCH', 'NOT_FOUND_OR_FORBIDDEN', 'RATE_LIMITED', 'CHALLENGE_TERMINAL', 'EVENT_GAP', 'INVALID_EVENT', 'EVENT_ALREADY_ACCEPTED', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN', 'STAMINA_NOT_ENOUGH', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'NOT_DEAD', 'EMBLEM_NOT_ENOUGH', 'REVIVE_LIMIT_REACHED', 'BAG_FULL', 'CONTAINER_FULL');
+const sceneErrors = enumOf('INPUT_GAP','TIME_FRONTIER','DIGEST_MISMATCH','LEVEL_REQUIRED', 'DIFFICULTY_LOCKED', 'INVALID_ARGUMENT', 'UNSUPPORTED_PROTOCOL', 'AUTH_REQUIRED', 'SESSION_REVOKED', 'VERSION_CONFLICT', 'RECOVERY_REQUIRED', 'DEADLINE_EXPIRED', 'SCENE_CLOSED', 'ROOM_NOT_AVAILABLE', 'CONFIG_NOT_READY', 'SERVICE_UNAVAILABLE', 'OPERATION_MISMATCH', 'NOT_FOUND_OR_FORBIDDEN', 'RATE_LIMITED', 'CHALLENGE_TERMINAL', 'EVENT_GAP', 'INVALID_EVENT', 'EVENT_ALREADY_ACCEPTED', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN', 'STAMINA_NOT_ENOUGH', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'NOT_DEAD', 'EMBLEM_NOT_ENOUGH', 'REVIVE_LIMIT_REACHED', 'BAG_FULL', 'CONTAINER_FULL');
 function failure(value: unknown) {
   const o = object({ status: enumOf('rejected', 'unknown'), code: text(64) })(value);
   return o.status === 'unknown' ? { status: o.status, code: enumOf('RESULT_UNKNOWN')(o.code) } : { status: o.status, code: sceneErrors(o.code) };
@@ -126,6 +126,8 @@ const position = integer(-2147483648, 2147483647);
 const actorRecord = object({ kind: enumOf('actor'), actorId: text(), actorIndex: integer(0, 8), x: position, y: position, facing: enumOf(-1, 1), hp: resourceWire, maxHp: resourceWire, mp: resourceWire, maxMp: resourceWire, lifeState: enumOf('alive', 'dead'), actionId: text(64), phase: integer(0, 255) });
 const cooldownRecord = object({ kind: enumOf('cooldown'), actorId: text(), cooldownId: enumOf('cross', 'bengshan', 'badao', 'earth', 'hpPotion', 'mpPotion', 'trinket'), readyAtTick: logicTick });
 const effectRecord = object({ kind: enumOf('effect'), effectId: text(), castId: text(), ownerId: text(), targetId: nullable(text()), templateRef: text(64), nodeIndex: integer(0, 5), x: position, y: position, startsAtTick: logicTick, endsAtTick: logicTick, nextAtTick: nullable(logicTick) });
+const signedRemainder:Parser<string>=v=>{if(typeof v!=='string'||! /^(0|-?[1-9][0-9]{0,4})$/.test(v)||BigInt(v)<=-100000n||BigInt(v)>=100000n)throw new TypeError('INVALID_REMAINDER');return v;};
+const movementRecord=object({kind:enumOf('movement'),actorId:text(),configHash:hash,intentX:integer(-1000,1000),intentY:integer(-1000,1000),remainderX:signedRemainder,remainderY:signedRemainder,denominator:enumOf(100000)});
 const buffRecord = object({ kind: enumOf('buff'), buffId: text(), actorId: text(), templateRef: text(64), endsAtTick: logicTick });
 function publicRecord(value: unknown) {
   const kind = value && typeof value === 'object' ? Object.getOwnPropertyDescriptor(value, 'kind')?.value : undefined;
@@ -141,6 +143,7 @@ function publicRecord(value: unknown) {
       if (r.endsAtTick < r.startsAtTick || (r.nextAtTick !== null && (r.nextAtTick < r.startsAtTick || r.nextAtTick > r.endsAtTick))) throw new TypeError('INVALID_EFFECT_TIME');
       return r;
     }
+    case 'movement': return movementRecord(value);
     case 'buff': return buffRecord(value);
     default: throw new TypeError('INVALID_PUBLIC_RECORD');
   }
@@ -160,7 +163,7 @@ export function assembleRecoveryPages(values: unknown[]) {
   if (pages.length !== first.totalPages || pages.some((p, index) => p.pageIndex !== index || identity(p) !== identity(first))) throw new TypeError('INCOMPLETE_RECOVERY');
   const records = pages.flatMap(p => p.records), seen = new Set<string>();
   for (const r of records) {
-    const key = r.kind === 'actor' ? ['actor', r.actorId] : r.kind === 'cooldown' ? ['cooldown', r.actorId, r.cooldownId] : r.kind === 'effect' ? ['effect', r.effectId] : ['buff', r.buffId];
+    const key = r.kind === 'actor' ? ['actor', r.actorId] : r.kind === 'cooldown' ? ['cooldown', r.actorId, r.cooldownId] : r.kind === 'effect' ? ['effect', r.effectId] : r.kind==='movement'?['movement',r.actorId]:['buff', r.buffId];
     const encoded = JSON.stringify(key);
     if (seen.has(encoded)) throw new TypeError('DUPLICATE_PUBLIC_RECORD'); seen.add(encoded);
   }
@@ -168,7 +171,7 @@ export function assembleRecoveryPages(values: unknown[]) {
   if (!actors.length || actors.length > 9 || new Set(actors.map(r => r.actorIndex)).size !== actors.length) throw new TypeError('INVALID_PUBLIC_ACTORS');
   const actorIds = new Set(actors.map(r => r.actorId));
   for (const r of records) {
-    if ((r.kind === 'cooldown' || r.kind === 'buff') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
+    if ((r.kind === 'cooldown' || r.kind === 'buff' || r.kind==='movement') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
     if (r.kind === 'effect' && (!actorIds.has(r.ownerId) || (r.targetId !== null && !actorIds.has(r.targetId)))) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
   }
   return { ...cpReadyTicket({ readyTicketId: first.readyTicketId, sceneEpoch: first.sceneEpoch, timelineEpoch: first.timelineEpoch, checkpointRevision: first.checkpointRevision, publicStateHash: first.publicStateHash, manifestHash: first.manifestHash, deadline: first.deadline }), records };
@@ -222,7 +225,8 @@ export function parseRoomResponse(value: unknown) {
   return value && typeof value === 'object' && Object.getOwnPropertyDescriptor(value, 'command')?.value === 'challenge.prepareRoom' ? prepareResponse(value) : activateResponse(value);
 }
 const eventSummary = object({ kind: enumOf('actionAccepted', 'actionRejected', 'damage', 'death', 'roomCleared', 'levelUp', 'completed'), eventId: text(), actorId: text(), tick: logicTick });
-const submitResponse = object({ ...resultHeader, command: enumOf('simulation.submit'), outcome: result(object({ acceptedSeq: integer(), acceptedTick: logicTick, checkpointRevision: integer(), actionResultsRef: text(), events: list(eventSummary, 64) })) });
+const movementEvent = object({seq:integer(1),tick:logicTick,kind:enumOf('rejected'),code:enumOf('ACTION_NOT_SUPPORTED')});
+const submitResponse = object({ ...resultHeader, command: enumOf('simulation.submit'), outcome: result(object({ acceptedSeq: integer(), acceptedTick: logicTick, checkpointRevision: integer(), actionResultsRef: text(), events: list(v=>v&&typeof v==='object'&&Object.getOwnPropertyDescriptor(v,'kind')?.value==='rejected'?movementEvent(v):eventSummary(v), 64) })) });
 export function parseSimulationResponse(value: unknown) {
   const response = submitResponse(value);
   if (new TextEncoder().encode(JSON.stringify(response)).length > 32768) throw new TypeError('RESPONSE_TOO_LARGE');

@@ -61,8 +61,9 @@ function action(value: unknown): ActionInput {
   }
   throw new TypeError('INVALID_INPUT');
 }
-export function decodeSimulationSubmit(text: string): SimulationSubmit {
-  const r = object(readWire(text, 16384), ['protocolVersion', 'command', 'operationId', 'sessionId', 'sessionEpoch', 'expected', 'payload']);
+export function decodeSimulationSubmit(text:string):SimulationSubmit{return parseSimulationSubmit(readWire(text,16384));}
+export function parseSimulationSubmit(value:unknown):SimulationSubmit {
+  const r = object(value, ['protocolVersion', 'command', 'operationId', 'sessionId', 'sessionEpoch', 'expected', 'payload']);
   if (r.protocolVersion !== 2 || r.command !== 'simulation.submit') throw new TypeError('UNSUPPORTED_PROTOCOL');
   const p = object(r.payload, ['characterId', 'rolePlayEpoch', 'challengeId', 'roomNo', 'sceneEpoch', 'timelineEpoch', 'baseCheckpointVersion', 'firstSeq', 'lastSeq', 'fromTick', 'toTick', 'ruleRef', 'mapRef', 'digest', 'inputs']);
   const fromTick = logicTick(p.fromTick), toTick = logicTick(p.toTick);
@@ -76,8 +77,18 @@ export function decodeSimulationSubmit(text: string): SimulationSubmit {
     if (inputs[i].seq !== firstSeq + i || inputs[i].tick < previousTick || inputs[i].tick < fromTick || inputs[i].tick >= toTick) throw new TypeError('INPUT_GAP');
     previousTick = inputs[i].tick;
   }
-  return { protocolVersion: 2, command: 'simulation.submit', operationId: opId(r.operationId), sessionId: identifier(r.sessionId), sessionEpoch: int(r.sessionEpoch, 1), expected: parseExpected(r.expected), payload: {
+  const parsed:SimulationSubmit = { protocolVersion: 2, command: 'simulation.submit', operationId: opId(r.operationId), sessionId: identifier(r.sessionId), sessionEpoch: int(r.sessionEpoch, 1), expected: parseExpected(r.expected), payload: {
     characterId: identifier(p.characterId), rolePlayEpoch: int(p.rolePlayEpoch, 1), challengeId: identifier(p.challengeId), roomNo: int(p.roomNo, 0, 6), sceneEpoch: int(p.sceneEpoch, 1), timelineEpoch: int(p.timelineEpoch, 1),
     baseCheckpointVersion: int(p.baseCheckpointVersion), firstSeq, lastSeq, fromTick, toTick, ruleRef: identifier(p.ruleRef, 64), mapRef: identifier(p.mapRef, 64), digest: hash(p.digest), inputs,
   } };
+  if(new TextEncoder().encode(JSON.stringify(parsed)).length>16384)throw new TypeError('REQUEST_TOO_LARGE');
+  return parsed;
+}
+
+/** Current public CP only. No private chunks or historical ready ticket authority. */
+export function parseSimulationConfirmed(value:unknown){
+ const q=object(value,['protocolVersion','query','requestId','sessionId','sessionEpoch','payload']);
+ if(q.protocolVersion!==2||q.query!=='simulation.confirmed')throw new TypeError('UNSUPPORTED_PROTOCOL');
+ const p=object(q.payload,['characterId','rolePlayEpoch','challengeId','sceneEpoch','timelineEpoch','checkpointRevision','pageIndex']);
+ return {protocolVersion:2 as const,query:'simulation.confirmed' as const,requestId:identifier(q.requestId,64),sessionId:identifier(q.sessionId),sessionEpoch:int(q.sessionEpoch,1),payload:{characterId:identifier(p.characterId),rolePlayEpoch:int(p.rolePlayEpoch,1),challengeId:identifier(p.challengeId),sceneEpoch:int(p.sceneEpoch,1),timelineEpoch:int(p.timelineEpoch,1),checkpointRevision:int(p.checkpointRevision),pageIndex:int(p.pageIndex,0,63)}};
 }

@@ -1,3 +1,7 @@
+import {advanceMovement} from '../../../shared/src/movement-kernel.ts';
+import {parseSimulationSubmit,parseSimulationConfirmed} from '../../../shared/src/protocol/simulation-v2.ts';
+import type {SimulationSubmit} from '../../../shared/src/protocol/simulation-v2.ts';
+import {parseSimulationResponse} from '../../../shared/src/protocol/scene-v2.ts';
 import {advanceRole} from './role-transition.ts';
 import {remainder} from '../../../shared/src/exact-values.ts';
 import {parseSceneRequest,parseSceneResponse,parseRecoveryPage,parseSceneState} from '../../../shared/src/protocol/scene-v2.ts';
@@ -123,6 +127,7 @@ export class ChallengeService {
     }
     async query(raw: unknown) {
         const name=raw && typeof raw==='object' ? Object.getOwnPropertyDescriptor(raw,'query')?.value : undefined;
+        if(name==='simulation.confirmed')return this.confirmedMovement(raw);
         if(name==='scene.recoveryPage') return this.recoveryPage(raw);
         if(name==='challenge.get') return this.challengeState(raw);
         if(name==='operation.get') return this.queryOriginal(raw);
@@ -150,6 +155,7 @@ export class ChallengeService {
         }
     }
     async execute(raw: unknown) {
+        if(raw&&typeof raw==='object'&&Object.getOwnPropertyDescriptor(raw,'command')?.value==='simulation.submit')return this.submitMovement(raw);
         if(raw&&typeof raw==='object'){const command=Object.getOwnPropertyDescriptor(raw,'command')?.value;if(['heartbeat','scene.suspend','scene.resumePrepare'].includes(command))return this.sceneControl(raw);if(command==='scene.status')return Object.getOwnPropertyDescriptor(raw,'payload')?.value?.readyTicketId!==null?this.queryOriginalReady(raw):this.sceneControl(raw);if(command==='scene.ready'){const q=parseSceneRequest(raw);if(q.command!=='scene.ready')throw new TypeError('UNSUPPORTED_COMMAND');const h=await this.options.store.run(tx=>tx.get<EntryChallenge>(q.payload.challengeId));return h?.connection==='recovery'||h?.controlReceipts?.some(r=>r.command==='scene.ready'&&r.sequence===q.controlSeq)||q.payload.sceneEpoch===0?this.sceneControl(raw):this.ready(raw);}}
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.activateRoom') return this.activate(raw);
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.prepareRoom') return this.prepare(raw);
@@ -269,6 +275,7 @@ export class ChallengeService {
             const current=await tx.get<CharacterEntity>(h.characterId);
             await this.character(tx,a,h.characterId,h.sceneState==='closed'?current?.rolePlayEpoch??h.rolePlayEpoch:h.rolePlayEpoch);
             if(await this.expire(tx,a,h,now))h=(await tx.get<EntryChallenge>(h.id))!;
+            if(h.roomPhase==='active'&&h.connection==='connected'&&h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);if(await this.movementGap(tx,h,header,now))h=(await tx.get<EntryChallenge>(h.id))!;}
             const c=(await tx.get<CharacterEntity>(h.characterId))!;
             return reply({data:await this.controlState(tx,h),versions:[{kind:'character',id:c.id,version:c.version},{kind:'challenge',id:h.id,version:h.version}]});
         });}catch(e){if(e instanceof Refusal)return reply({error:{code:e.message}});if(e instanceof StoreUnavailable||e instanceof CommitUnknown||e instanceof TypeError)return reply({error:{code:'SERVICE_UNAVAILABLE'}});throw e;}
@@ -280,9 +287,10 @@ export class ChallengeService {
         try {const caller=await this.caller();return await this.options.store.run(async tx=>{
             const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch);
             const id=await loginKey('assetOp',[a.id,q.payload.operationId]);
-            const receipt=await tx.get<{schemaVersion:number;id:string;accountId:string;command:string;result:unknown;manifestRef?:string;attemptId?:string;manifestHash?:string}>(id);
+            const receipt=await tx.get<{schemaVersion:number;id:string;accountId:string;command:string;result:unknown;manifestRef?:string;attemptId?:string;manifestHash?:string;characterId?:string;rolePlayEpoch?:number;sessionId?:string;sessionEpoch?:number}>(id);
             if(!receipt)return reply({versions:[],data:{status:'notFound'}});
             requireValue(receipt.schemaVersion===2&&receipt.id===id&&receipt.accountId===a.id,'SERVICE_UNAVAILABLE');
+            if(receipt.command==='simulation.submit')requireValue(typeof receipt.sessionId==='string'&&receipt.sessionId.length>0&&Number.isSafeInteger(receipt.sessionEpoch)&&receipt.sessionEpoch!>0&&typeof receipt.characterId==='string'&&receipt.characterId.length>0&&Number.isSafeInteger(receipt.rolePlayEpoch)&&receipt.rolePlayEpoch!>0,'SERVICE_UNAVAILABLE');
             const original=await this.originalPrepare(tx,receipt);requireValue(original.command===receipt.command&&original.operationId===q.payload.operationId,'SERVICE_UNAVAILABLE');
             return reply({versions:[],data:{status:'found',command:receipt.command,result:original}});
         });}catch(e){if(e instanceof Refusal)return reply({error:{code:e.message}});if(e instanceof StoreUnavailable||e instanceof CommitUnknown||e instanceof TypeError)return reply({error:{code:'SERVICE_UNAVAILABLE'}});throw e;}
@@ -293,6 +301,7 @@ export class ChallengeService {
             const result=receipt.result as {outcome:{status:string;data:unknown;resultVersions:unknown}};
             return parseRoomResponse({...result,outcome:{...result.outcome,data:await this.hydrate(tx,receipt.manifestRef,receipt.attemptId,receipt.manifestHash)}});
         }
+        if(receipt.command==='simulation.submit')return parseSimulationResponse(receipt.result);
         return ['challenge.prepareRoom','challenge.activateRoom'].includes(receipt.command)?parseRoomResponse(receipt.result):parseChallengeResponse(receipt.result);
     }
     async resolveResource(releaseRef:string,ref:string):Promise<Uint8Array> {
@@ -401,10 +410,11 @@ export class ChallengeService {
     }
     private async recoveryPage(raw:unknown) {
         const q=parseSceneQuery(raw);if(q.query!=='scene.recoveryPage')throw new TypeError('UNSUPPORTED_QUERY');
-        const caller=await this.caller();const page=await this.options.store.run(async tx=>{
+        const caller=await this.caller();let gap=false;const page=await this.options.store.run(async tx=>{
             const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),c=await this.character(tx,a,q.payload.characterId,q.payload.rolePlayEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId),now=this.options.clock.now();
             requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');if(await this.expire(tx,a,h,now))return null;requireValue(h.sessionId===q.sessionId&&h.rolePlayEpoch===c.rolePlayEpoch&&h.sceneState!=='closed'&&!this.expired(h,now),'DEADLINE_EXPIRED');
             const {header,role,scene}=await readCheckpoint(tx,h);
+            if(h.roomPhase==='active'&&h.connection==='connected'&&await this.movementGap(tx,h,header,now)){gap=true;return null;}
             let t=(h.recoveryTicket??h.readyTicket) as EntryChallenge['readyTicket'];
             // Original ready receipts authorize only a bounded read of this same live timeline.
             // They do not renew the lease, consume loading time, or restart an anchor.
@@ -418,7 +428,7 @@ export class ChallengeService {
             requireValue(header.revision===t.checkpointRevision&&header.state.publicStateHash===t.publicStateHash,'VERSION_CONFLICT');
             const records=publicRecords(role,scene),totalPages=Math.ceil(records.length/64);requireValue(q.payload.pageIndex<totalPages,'INVALID_ARGUMENT');
             return parseRecoveryPage({protocolVersion:2,requestId:q.requestId,serverTime:now,...t,pageIndex:q.payload.pageIndex,totalPages,records:records.slice(q.payload.pageIndex*64,(q.payload.pageIndex+1)*64)});
-        });requireValue(page,'DEADLINE_EXPIRED');return page;
+        });requireValue(page,gap?'RECOVERY_REQUIRED':'DEADLINE_EXPIRED');return page;
     }
     async queryOriginalReady(raw:unknown) {
         const q=parseSceneRequest(raw);if(q.command!=='scene.status')throw new TypeError('UNSUPPORTED_COMMAND');
@@ -462,6 +472,7 @@ export class ChallengeService {
             requireValue(h.sessionId===q.sessionId&&h.rolePlayEpoch===c.rolePlayEpoch,'VERSION_CONFLICT');
             if(await this.expire(tx,a,h,now))return reply({status:'rejected',code:'DEADLINE_EXPIRED'});
             requireValue(h.sceneState!=='closed','SCENE_CLOSED');
+            if(h.roomPhase==='active'&&h.connection==='connected'&&h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);if(await this.movementGap(tx,h,header,now))return reply({status:'rejected',code:'RECOVERY_REQUIRED'},h.lease!.revision+1);}
             if(q.command==='scene.status')return reply({status:'committed',data:{state:await this.controlState(tx,h),readyTicket:h.recoveryTicket??h.readyTicket??null}},h.lease!.revision);
             requireValue(h.result==='active'||h.result==='completed','CHALLENGE_TERMINAL');
             requireValue(a.openSceneChallengeId===h.id&&c.staminaReservation===h.id&&c.location.kind==='challenge'&&c.location.challengeId===h.id,'VERSION_CONFLICT');
@@ -528,6 +539,87 @@ export class ChallengeService {
             const nextHeader={...header,activeChunks,revision,acceptingInputs:true,state,logicalTimeMs,timeRemainderMs:logicalTimeMs%10};budget(next,131072);budget(nextHeader,16384);budget(result,32768);
             tx.set(a.id,{...a,writeRevision:increment(a.writeRevision)});tx.set(h.id,next);tx.set(header.id,nextHeader);return result;
         });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}
+    }
+    private async movementGap(tx:Transaction,h:EntryChallenge,header:RoomCheckpointHeader,now:number){
+        const base=header.state.inputGapBaseAt;
+        requireValue(base!==null&&now>=base,'CONFIG_NOT_READY');
+        if(now-base<2000)return false;
+        const recoveryUntil=h.recoveryUntil??h.lease!.leaseUntil,revision=increment(header.revision);
+        tx.set(h.id,{...h,version:increment(h.version),connection:'recovery',recoveryUntil,lease:{...h.lease!,mode:'recovery',recoveryUntil,revision:increment(h.lease!.revision)}});
+        tx.set(header.id,{...header,revision,acceptingInputs:false,state:{...header.state,checkpointRevision:revision,connection:'recovery',recoveryUntil,anchorWallAt:null,anchorTick:null,inputGapBaseAt:null}});
+        return true;
+    }
+    private async confirmedMovement(raw:unknown){
+        const q=parseSimulationConfirmed(raw),caller=await this.caller();
+        const page=await this.options.store.run(async tx=>{
+            const now=this.options.clock.now(),a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),c=await this.character(tx,a,q.payload.characterId,q.payload.rolePlayEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId);
+            requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
+            if(await this.expire(tx,a,h,now))return null;
+            this.live(h,a,c,q.sessionId,now);const {header,role,scene}=await readCheckpoint(tx,h);
+            requireValue(h.roomPhase==='active'&&header.acceptingInputs,'ROOM_NOT_AVAILABLE');
+            if(await this.movementGap(tx,h,header,now))return null;
+            requireValue(q.payload.sceneEpoch===h.sceneEpoch&&q.payload.timelineEpoch===h.timelineEpoch&&q.payload.checkpointRevision===header.revision,'VERSION_CONFLICT');
+            const records=publicRecords(role,scene),totalPages=Math.ceil(records.length/64);requireValue(q.payload.pageIndex<totalPages,'INVALID_ARGUMENT');
+            return parseRecoveryPage({protocolVersion:2,requestId:q.requestId,serverTime:now,readyTicketId:`confirmed:${h.id}`,sceneEpoch:h.sceneEpoch,timelineEpoch:h.timelineEpoch,checkpointRevision:header.revision,publicStateHash:header.state.publicStateHash,manifestHash:header.state.manifestHash,deadline:Math.min(h.lease!.leaseUntil,h.deathDeadline??Number.MAX_SAFE_INTEGER),pageIndex:q.payload.pageIndex,totalPages,records:records.slice(q.payload.pageIndex*64,(q.payload.pageIndex+1)*64)});
+        });requireValue(page,'RECOVERY_REQUIRED');return page;
+    }
+    private async submitMovement(raw:unknown){
+        const q=parseSimulationSubmit(raw);let now=this.options.clock.now();
+        const reply=(outcome:unknown,replayed=false)=>parseSimulationResponse({protocolVersion:2,command:q.command,operationId:q.operationId,serverTime:now,replayed,outcome});
+        try{
+            const caller=await this.caller(),tuple=await manifestDigest(q);
+            const original=(old:{schemaVersion:number;id:string;accountId:string;command:string;tuple:string;result:unknown},id:string,accountId:string)=>{requireValue(old.schemaVersion===2&&old.id===id&&old.accountId===accountId,'SERVICE_UNAVAILABLE');requireValue(old.command===q.command&&old.tuple===tuple,'OPERATION_MISMATCH');const result=parseSimulationResponse(old.result);requireValue(result.operationId===q.operationId&&result.command===q.command,'SERVICE_UNAVAILABLE');return result;};
+            const baseline=await this.options.store.run(async tx=>{
+                now=this.options.clock.now();const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),c=await this.character(tx,a,q.payload.characterId,q.payload.rolePlayEpoch),id=await loginKey('assetOp',[a.id,q.operationId]),old=await tx.get<{schemaVersion:number;id:string;tuple:string;command:string;accountId:string;result:unknown}>(id);
+                if(old)return {original:original(old,id,a.id)};
+                requireValue(await tx.get(await loginKey('assetJournal',[a.id,q.operationId]))===undefined,'SERVICE_UNAVAILABLE');
+                const h=await tx.get<EntryChallenge>(q.payload.challengeId);requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
+                if(await this.expire(tx,a,h,now))return {rejected:'DEADLINE_EXPIRED'};
+                this.live(h,a,c,q.sessionId,now);const cp=await readCheckpoint(tx,h);requireValue(h.roomPhase==='active'&&cp.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
+                if(await this.movementGap(tx,h,cp.header,now))return {rejected:'RECOVERY_REQUIRED'};
+                this.validateMovement(q,a,c,h,cp.header,now);
+                return {a,c,h,cp,id};
+            });
+            if('original' in baseline)return reply(baseline.original!.outcome,true);
+            if('rejected' in baseline)return reply({status:'rejected',code:baseline.rejected});
+            const {a,c,h,cp,id}=baseline,config=this.options.content!.movement!;
+            requireValue(await manifestDigest({payload:Object.fromEntries(Object.entries(q.payload).filter(([k])=>k!=='digest')),config})===q.payload.digest,'DIGEST_MISMATCH');
+            const configHash=await manifestDigest(config),old=cp.role.movement;
+            requireValue(!old||old.configHash===configHash,'CONFIG_NOT_READY');
+            const initial=old?.state??{x:String(cp.role.player.x),y:String(cp.role.player.y),remainderX:'0',remainderY:'0',facing:cp.role.player.facing,intentX:0,intentY:0};
+            const computed=advanceMovement(initial,q.payload.inputs,q.payload.fromTick,q.payload.toTick,config),logicalTimeMs=cp.header.logicalTimeMs+(q.payload.toTick-q.payload.fromTick)*10;
+            if(cp.role.regenerationRef!==null)requireValue(cp.role.regenerationHash===await manifestDigest(this.options.content!.regeneration),'CONFIG_NOT_READY');
+            const role=advanceRole(cp.role,cp.header.logicalTimeMs,logicalTimeMs,this.options.content!);
+            role.schemaVersion=3;role.regenerationHash=role.regenerationHash??null;role.movement={configHash,state:computed.state};role.player={...role.player,x:Number(computed.state.x),y:Number(computed.state.y),facing:computed.state.facing};
+            const hash=await stateHash(role,cp.scene),chunk=await writeChunk(h,0,increment(cp.header.activeChunks[0].chunkRevision),role);
+            return await this.options.store.run(async tx=>{
+                now=this.options.clock.now();const currentA=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),currentC=await this.character(tx,currentA,q.payload.characterId,q.payload.rolePlayEpoch),currentH=await tx.get<EntryChallenge>(h.id),old=await tx.get<{schemaVersion:number;id:string;tuple:string;command:string;accountId:string;result:unknown}>(id);
+                if(old)return reply(original(old,id,a.id).outcome,true);
+                requireValue(await tx.get(await loginKey('assetJournal',[a.id,q.operationId]))===undefined,'SERVICE_UNAVAILABLE');
+                requireValue(currentH&&currentH.accountId===a.id,'NOT_FOUND_OR_FORBIDDEN');
+                if(await this.expire(tx,currentA,currentH,now))return reply({status:'rejected',code:'DEADLINE_EXPIRED'});
+                this.live(currentH,currentA,currentC,q.sessionId,now);const latest=await readCheckpoint(tx,currentH);
+                requireValue(currentH.roomPhase==='active'&&latest.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
+                if(await this.movementGap(tx,currentH,latest.header,now))return reply({status:'rejected',code:'RECOVERY_REQUIRED'});
+                this.validateMovement(q,currentA,currentC,currentH,latest.header,now);
+                requireValue(canonical(latest)===canonical(cp)&&currentC.equipmentVersion===c.equipmentVersion,'VERSION_CONFLICT');
+                const revision=increment(latest.header.revision),state={...latest.header.state,checkpointRevision:revision,publicStateHash:hash,acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,inputGapBaseAt:now,lastAcceptedInputAt:now};
+                const activeChunks=[...latest.header.activeChunks];if(chunk.hash!==activeChunks[0].hash){tx.set(chunk.id,chunk);activeChunks[0]={...activeChunks[0],chunkRevision:chunk.chunkRevision,hash:chunk.hash};}
+                const nextHeader={...latest.header,revision,activeChunks,state,logicalTimeMs,timeRemainderMs:logicalTimeMs%10};
+                const nextH={...currentH,version:increment(currentH.version),acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,lease:{...currentH.lease!,lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(currentH.lease!.revision)}};
+                const result=reply({status:'committed',data:{acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,checkpointRevision:revision,actionResultsRef:id,events:computed.events},resultVersions:[{kind:'character',id:c.id,version:c.version},{kind:'challenge',id:h.id,version:nextH.version}]});
+                const receipt={schemaVersion:2,id,accountId:a.id,command:q.command,tuple,result,characterId:c.id,rolePlayEpoch:c.rolePlayEpoch,sessionId:q.sessionId,sessionEpoch:q.sessionEpoch};budget(receipt,16384);budget(nextHeader,16384);budget(nextH,131072);
+                tx.set(a.id,{...currentA,writeRevision:increment(currentA.writeRevision)});tx.set(h.id,nextH);tx.set(nextHeader.id,nextHeader);tx.set(id,receipt);return result;
+            });
+        }catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}
+    }
+    private validateMovement(q:SimulationSubmit,a:LoginAccount,c:CharacterEntity,h:EntryChallenge,header:RoomCheckpointHeader,now:number){
+        const p=q.payload,config=this.options.content?.movement;
+        requireValue(config&&this.options.content?.profile==='local-test'&&this.options.content.purpose==='contract-fixture-only'&&config.profile==='local-test-movement'&&config.mapRef===header.mapRef&&p.mapRef===config.mapRef&&p.ruleRef===config.ruleRef,'CONFIG_NOT_READY');
+        requireValue(p.roomNo===h.currentRoomNo&&p.sceneEpoch===h.sceneEpoch&&p.timelineEpoch===h.timelineEpoch&&p.baseCheckpointVersion===header.revision,'VERSION_CONFLICT');
+        requireValue(p.fromTick===header.state.acceptedTick&&p.firstSeq===header.state.acceptedSeq+1&&h.acceptedSeq===header.state.acceptedSeq&&h.acceptedTick===header.state.acceptedTick,'INPUT_GAP');
+        requireValue(q.expected.some(v=>v.kind==='challenge'&&v.id===h.id&&v.version===h.version)&&q.expected.some(v=>v.kind==='character'&&v.id===c.id&&v.version===c.version),'VERSION_CONFLICT');
+        const s=header.state;requireValue(s.anchorWallAt!==null&&s.anchorTick!==null&&now>=s.anchorWallAt&&p.toTick-s.anchorTick<=Math.floor((now-s.anchorWallAt)/10),'TIME_FRONTIER');
     }
 
 }

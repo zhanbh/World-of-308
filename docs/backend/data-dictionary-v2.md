@@ -439,3 +439,8 @@ H.pendingRoomAttempt的后续房分支附exitRuleHash（显式local-test出口�
 ### ST10 当前证明回执字段收敛
 
 `H.lastReadyReceipt.proofDeadline: Time`在普通ready或恢复ready成功进入active时签发，等于该笔新connected lease.leaseUntil与适用deathDeadline的较小值；不是已消费票据的加载截止。它随小型原响应保存，不含CP；最多一个lastReadyReceipt及最近8个控制回执的预算不变。读取、ready回放、heartbeat不修改它；旧回执缺字段时active证明拒绝。字段/分页与预测门禁、实际字节及验收见[加载合同当前证明节](room-loading-handshake-v1.md#st10-ready-后当前公开证明2026-10-24)。
+
+
+## ST11-01 当前移动实施（2026-10-25）
+
+ST11-01的role内部schema3增加movement.configHash与精确state（x/y、带符号remainderX/Y、facing、intentX/Y），余数分母固定100000；旧positionRemainder不复用。公开movement记录、O的原session/role上下文及完整字段/单位见[移动合同](movement-input-contract-v1.md)。外层CP schema2及scene schema1保持，role1/2兼容读取。

@@ -44,3 +44,11 @@ test('room numbering uses zero-based protocol values and rejects the eighth room
   value.payload.roomNo = 7;
   assert.throws(() => decodeSimulationSubmit(JSON.stringify(value)));
 });
+test('current movement proof request is strict and wire reply binds current context',async()=>{
+ const {parseSimulationConfirmed,parseSimulationSubmit}=await import('../src/protocol/simulation-v2.ts'),{encodeSceneMessage,decodeSceneReply}=await import('../src/protocol/scene-wire.ts');
+ const q={protocolVersion:2,query:'simulation.confirmed',requestId:'current',sessionId:'s',sessionEpoch:1,payload:{characterId:'c',rolePlayEpoch:1,challengeId:'h',sceneEpoch:1,timelineEpoch:1,checkpointRevision:2,pageIndex:0}};
+ assert.deepEqual(JSON.parse(encodeSceneMessage(q)),q);assert.throws(()=>parseSimulationConfirmed({...q,payload:{...q.payload,privateChunk:true}}));
+ const r={protocolVersion:2,requestId:'current',serverTime:1,readyTicketId:'confirmed:h',sceneEpoch:1,timelineEpoch:1,checkpointRevision:2,publicStateHash:'a'.repeat(64),manifestHash:'b'.repeat(64),deadline:10,pageIndex:0,totalPages:1,records:[]};
+ assert.equal(decodeSceneReply(q,JSON.stringify(r)).checkpointRevision,2);assert.throws(()=>decodeSceneReply(q,JSON.stringify({...r,checkpointRevision:1})));
+ const accessor=request();Object.defineProperty(accessor.payload,'digest',{get:()=>{throw Error('unsafe accessor');},enumerable:true});assert.throws(()=>parseSimulationSubmit(accessor),/INVALID_FIELDS/);
+});

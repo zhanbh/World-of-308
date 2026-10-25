@@ -1,12 +1,13 @@
 import { parseSceneRequest, parseRoomRequest, parseSceneQuery, parseSceneResponse, parseRoomResponse, parseRecoveryPage, parseSimulationResponse, parseChallengeRequest, parseChallengeResponse, parseChallengeQueryResponse, parseDungeonEntryQuery, parseDungeonEntryResponse } from './scene-v2.ts';
-import { decodeSimulationSubmit } from './simulation-v2.ts';
+import { parseSimulationSubmit,parseSimulationConfirmed } from './simulation-v2.ts';
 
 function route(value: unknown) {
   if (!value || typeof value !== 'object') throw new TypeError('INVALID_ARGUMENT');
   const command = Object.getOwnPropertyDescriptor(value, 'command')?.value;
-  if (command === 'simulation.submit') return decodeSimulationSubmit(JSON.stringify(value));
+  if (command === 'simulation.submit') return parseSimulationSubmit(value);
   if (command === 'challenge.prepareRoom' || command === 'challenge.activateRoom') return parseRoomRequest(value);
   if (command === 'challenge.start' || command === 'challenge.revive' || command === 'challenge.leave' || command === 'drop.collect') return parseChallengeRequest(value);
+  if (Object.getOwnPropertyDescriptor(value,'query')?.value==='simulation.confirmed')return parseSimulationConfirmed(value);
   if (Object.getOwnPropertyDescriptor(value, 'query')?.value === 'dungeon.entry') return parseDungeonEntryQuery(value);
   if (Object.hasOwn(value, 'query')) return parseSceneQuery(value);
   return parseSceneRequest(value);
@@ -26,6 +27,7 @@ export function decodeSceneReply(request: unknown, text: string) {
       if (r.requestId !== intent.requestId || ('data' in r && r.data.dungeonId !== intent.payload.dungeonId)) throw new TypeError('RESPONSE_MISMATCH');
       return r;
     }
+    if(intent.query==='simulation.confirmed'){const page=parseRecoveryPage(value),p=intent.payload;if(page.requestId!==intent.requestId||page.pageIndex!==p.pageIndex||page.readyTicketId!==`confirmed:${p.challengeId}`||page.sceneEpoch!==p.sceneEpoch||page.timelineEpoch!==p.timelineEpoch||page.checkpointRevision!==p.checkpointRevision)throw new TypeError('RESPONSE_MISMATCH');return page;}
     if (intent.query === 'scene.recoveryPage') {
       const page = parseRecoveryPage(value), p = intent.payload;
       if (page.requestId !== intent.requestId || page.pageIndex !== p.pageIndex || page.readyTicketId !== p.readyTicketId || page.sceneEpoch !== p.sceneEpoch || page.timelineEpoch !== p.timelineEpoch || page.checkpointRevision !== p.checkpointRevision || page.manifestHash !== p.manifestHash || page.publicStateHash !== p.publicStateHash) throw new TypeError('RESPONSE_MISMATCH');

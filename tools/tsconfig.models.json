@@ -31,6 +31,7 @@
     "../client/assets/scripts/net/ChallengeEntryCoordinator.ts",
     "../client/assets/scripts/net/LoadingCoordinator.ts",
     "../client/assets/scripts/net/ActivationCoordinator.ts",
-    "../client/assets/scripts/net/RecoveryCoordinator.ts"
+    "../client/assets/scripts/net/RecoveryCoordinator.ts",
+    "../client/assets/scripts/net/MovementCoordinator.ts"
   ]
 }

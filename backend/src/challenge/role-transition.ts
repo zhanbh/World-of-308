@@ -10,7 +10,7 @@ function rate(v:Fraction):[bigint,bigint]{check(Number.isSafeInteger(v.numerator
 /** Exact resource units (1/1000 HP), seconds to milliseconds explicitly /1000. No tick flooring. */
 export function advanceRole(role:RoleCheckpoint,fromMs:number,toMs:number,content:ChallengeContent):RoleCheckpoint {
  check(Number.isSafeInteger(fromMs)&&Number.isSafeInteger(toMs)&&toMs>=fromMs);const next=parseRoleCheckpoint(role),config=content.regeneration;
- if(next.regenerationRef!==null){check(next.schemaVersion===2&&config&&config.profile==='local-test'&&config.unit==='internal-per-second'&&config.ref===next.regenerationRef&&config.buffs.length<=32);}
+ if(next.regenerationRef!==null){check(next.schemaVersion>=2&&config&&config.profile==='local-test'&&config.unit==='internal-per-second'&&config.ref===next.regenerationRef&&config.buffs.length<=32);}
  if(next.buffs.length){check(config&&next.regenerationRef===config.ref);for(const buff of next.buffs)check(config.buffs.some(b=>b.templateRef===buff.templateRef));}
  // Validate denominator closure before any resource mutation. All possible summed rates and persisted fractions fit uint32.
  if(config&&next.regenerationRef!==null){let closure=1n;for(const r of [config.hp,config.mp,...config.buffs.flatMap(b=>[b.hp,b.mp])]){const [n,secondsDenominator]=rate(r),raw=secondsDenominator*1000n,d=raw/gcd(n,raw);closure=closure/gcd(closure,d)*d;check(closure<=4294967295n);}for(const r of [next.hpRegenRemainder,next.mpRegenRemainder])check(closure/gcd(closure,BigInt(r.denominator))*BigInt(r.denominator)<=4294967295n);}
