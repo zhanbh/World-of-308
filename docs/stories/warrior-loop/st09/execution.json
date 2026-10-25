@@ -86,7 +86,7 @@
     "workspace_setup_commit": "7a6b2d14d339740a02d906153718e6d32d9eda40",
     "fix_evidence": "docs/reviews/st09-build-fix-verification.md",
     "merge_evidence": "docs/reviews/st09-build-merge-verification.md",
-    "followup_pushed": false,
+    "followup_pushed": true,
     "audit_docs_committed": true,
     "cocos_rebuild": "not-run-permission-rejected",
     "standards_hard_open": 0,
