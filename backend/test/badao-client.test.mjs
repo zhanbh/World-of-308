@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {badaoClientFixture} from './fixtures/badao-client-fixture.mjs';
+test('badao durable client predicts single wide hit and recovers original results with current public proof',async()=>{
+ const h=await badaoClientFixture();h.setNow(1263);h.client.enqueue({seq:1,tick:1,kind:'skill',skillId:'badao'});h.client.predict(26);assert.equal(h.client.state.badao.castSequence,1);assert.ok(h.client.state.badao.effects.length>0);const predicted=h.client.state.position;
+ h.lose();await h.client.submit('client-badao',26);assert.equal(h.client.state.status,'unknown');const reopened=h.make();await reopened.load(h.context,h.config,h.loading,h.basic);assert.equal(reopened.state.status,'active',reopened.state.code);assert.deepEqual(reopened.state.actionResults,await h.results('client-badao'));assert.equal(reopened.state.badao.castSequence,1);assert.deepEqual(reopened.state.position,predicted);assert.ok(reopened.state.badao.effects.length>0);
+ const frozen=reopened.state.badao.cast.snapshot;const altered=h.make();await altered.load(h.context,h.config,h.loading,{...h.basic,stats:{...h.basic.stats,x:9999,y:9999,facing:-1,haste:{n:'2',d:'1'}}});assert.equal(altered.state.status,'active',altered.state.code);assert.deepEqual(altered.state.badao.cast.snapshot.haste,frozen.haste);assert.equal(altered.state.badao.cast.snapshot.facing,frozen.facing);assert.deepEqual(altered.state.position,predicted);
+});

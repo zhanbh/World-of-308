@@ -1,0 +1,3 @@
+import {bengshanFixture} from './bengshan-fixture.mjs';
+export const BADAO_CONFIG={version:'training-badao-v1',rewardPolicy:'none',unlockLevel:10,mpCost:'10',cooldownUs:1000000,durationUs:400000,nodeOffsetUs:200000,frontRangeX:500000,rangeY:500000,damage:{base:'0',growth:'0',coefficient:{n:'1',d:'1'}},bleed:{coefficient:{n:'1',d:'1'},jumps:5,intervalUs:100000},knockdownThreshold:{n:'1',d:'1'},knockdownDurationUs:500000};
+export async function badaoFixture(patch={}){const h=await bengshanFixture({schemaVersion:4,profile:'local-test-badao',capabilities:['basic','cross','bengshan','badao','no-rewards'],badao:structuredClone(BADAO_CONFIG),...patch});const grow=h.grow;return {...h,grow:(level=10)=>grow(level)};}

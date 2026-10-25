@@ -34,3 +34,8 @@ FR01/FR02/FR03原发现见[最终复核](../reviews/eng-review-final-recheck-202
 ST11-03当前技能执行增量见[十字斩合同](cross-combat-contract-v1.md)，并同步上表算术/CP/包络、字段/API/状态视图；实施事实与GAP见[03验证](../reviews/st11-03-verification.md)。
 
 ST11-04崩山击增量见[崩山击合同](bengshan-combat-contract-v1.md)，同步字段/API/状态/算术/CP/包络；实际证据见[04验证](../reviews/st11-04-verification.md)。
+
+
+## ST11-05 拔刀斩增量
+
+显式无奖励profile4、scene5及skillEffects schema3三lane保留旧版本严格兼容；拔刀单节点、当前等级10起每2级成长、MP/CD原子扣除、完整公开badaoAction/badaoEffect及原操作恢复，按[拔刀合同](badao-combat-contract-v1.md)执行。动作/伤害/流血精度、字节包络及训练/正式收益边界见该合同；实际验证见[05报告](../reviews/st11-05-verification.md)。

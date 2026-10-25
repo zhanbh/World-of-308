@@ -459,3 +459,8 @@ ST11-01的role内部schema3增加movement.configHash与精确state（x/y、带�
 ## ST11-04 崩山击执行增量
 
 当前增量见[崩山击合同](bengshan-combat-contract-v1.md)：显式无奖励训练profile schema3、scene schema4及双技能严格效果lane；三节点直接/流血分别整招预算后按权重分摊、末段承余数。位移全路径复用足迹/边界/障碍扫掠，以实际合法位置判命中；终段才自带特殊倒地，已有倒地不缩短、死亡优先。typed bengshanAction/逐个bengshanEffect纳入完整公开hash和分页；MP/CD/当前等级装备、原操作/恢复/OCC/原子结果页预算沿原合同，旧schema保持兼容。各字段、时序、编码及界限以该合同为同一增量的展开视图；完整最大四技能图仍待ST11-06。
+
+
+## ST11-05 拔刀斩增量
+
+显式无奖励profile4、scene5及skillEffects schema3三lane保留旧版本严格兼容；拔刀单节点、当前等级10起每2级成长、MP/CD原子扣除、完整公开badaoAction/badaoEffect及原操作恢复，按[拔刀合同](badao-combat-contract-v1.md)执行。动作/伤害/流血精度、字节包络及训练/正式收益边界见该合同；实际验证见[05报告](../reviews/st11-05-verification.md)。
