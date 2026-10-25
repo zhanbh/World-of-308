@@ -84,6 +84,6 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 2026-10-24，用户已确认五项任务图并授权本地实施，integration为`feat-1.0.0`。见[ST10入口](st10/README.md)、[Accepted规格与依赖](st10/plan-check.json)、[当前执行状态](st10/execution.json)。2026-10-25，01～05按frontier实施并独立合入，评审修复后两轴复查通过；见[本地交付与限制](../../reviews/st10-local-verification.md)。来源卡proposed保留为历史快照，执行状态以Accepted任务与sidecar为准。无Jira；ST09历史构建与本轮被拒绝的重构建分别记录，不挪用为ST10构建通过。
 
-## ST11 任务图准备
+## ST11 本地实施续接
 
-2026-10-25：接续ST10，已核对当前输入协议、动作原型与战斗/CP合同，整理[六项垂直切片](st11/task-plan.md)及[派生范围草案](st11/spec.md)。本地源hash/覆盖/依赖无环检查通过；用户已确认「好的，开始吧」，六项Accepted任务已发布，按01→02→03→{04,05}→06开始实施。无Jira、安装或外部发布；未把旧浮点原型当作已验证权威内核。
+2026-10-25～2026-10-26：用户已确认六项任务图并授权本地实施，integration为`feat-1.0.0`。移动、三段普攻、十字斩、崩山击、拔刀斩、大崩均已按frontier独立实现合入，经Standards/Spec独立评审及集中修复，两轴复查通过，全量7/7（含568/568后台测试）及Cocos类型检查通过。见[ST11入口](st11/README.md)、[本地交付与限制](../../reviews/st11-local-verification.md)、[Standards复核](../../reviews/st11-build-standards-recheck.md)、[Spec复核](../../reviews/st11-build-spec-recheck.md)。未声称Cocos构建/真机/云端SDK或后续怪物AI(ST12)通过。

@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st11",
-  "status": "accepted-ready-ST11-01",
+  "status": "local-capability-verified-platform-device-pending",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "accd5927b0e5daefcac281b2b8913adfdbe04209",
   "approved_spec_revision": "605d959c39e9caac16fa7096653c454e13ccf543f568a2288a2d9eebd6f3154b",
@@ -8,49 +8,133 @@
     {
       "id": "ST11-01",
       "accepted_revision": "53e5ce36c156757462e5f9ef4cdbbf10c08c4a9de2e76e309560160475c0e48a",
-      "state": "pending",
-      "blocked_by": []
+      "state": "merged",
+      "blocked_by": [],
+      "worktree": ".worktrees/st11-01-movement",
+      "branch": "feat/st11-01-movement",
+      "base_commit": "f7ff09be3dbcab596852c638a135eee102a8e139",
+      "implementation_commit": "c0017eddaf235120b49bb8c0b155b9a2f25227fa",
+      "verification": "docs/reviews/st11-01-verification.md",
+      "merge_verification": "docs/reviews/st11-01-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "shared": 123,
+        "backend_harness_executions": 496,
+        "focused": "29/29"
+      },
+      "worktree_cleanup": "removed-after-clean-merged-verification"
     },
     {
       "id": "ST11-02",
       "accepted_revision": "eb867bae80659f30c1f7a00eaee4926875b34dfb571dd1178cc79d2982bbe71c",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         1
-      ]
+      ],
+      "worktree": ".worktrees/st11-02-basic",
+      "branch": "feat/st11-02-basic",
+      "base_commit": "c0017eddaf235120b49bb8c0b155b9a2f25227fa",
+      "implementation_commit": "287e72c0cc431c7cb7b8e5771c3538144f40c63b",
+      "verification": "docs/reviews/st11-02-verification.md",
+      "merge_verification": "docs/reviews/st11-02-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "shared": 132,
+        "backend_harness_executions": 508,
+        "focused": "21/21"
+      },
+      "worktree_cleanup": "removed-after-clean-merged-verification"
     },
     {
       "id": "ST11-03",
       "accepted_revision": "aa55f3ca5aa49deb04f7bd4052b006feea96f89eef591a977745bd077c98112d",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         2
-      ]
+      ],
+      "worktree": ".worktrees/st11-03-cross",
+      "branch": "feat/st11-03-cross",
+      "base_commit": "287e72c0cc431c7cb7b8e5771c3538144f40c63b",
+      "implementation_commit": "080e81b5ad993b2128f9ab2a81ec876838bcb07f",
+      "verification": "docs/reviews/st11-03-verification.md",
+      "merge_verification": "docs/reviews/st11-03-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "shared": 141,
+        "backend_harness_executions": 517,
+        "focused": "18/18"
+      },
+      "worktree_cleanup": "removed-after-clean-merged-verification"
     },
     {
       "id": "ST11-04",
       "accepted_revision": "057e2179e9114d9507ddf3a64f6ef96cd9b39f1d63dde54150a662fc94311043",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         3
-      ]
+      ],
+      "worktree": ".worktrees/st11-04-bengshan",
+      "branch": "feat/st11-04-bengshan",
+      "base_commit": "080e81b5ad993b2128f9ab2a81ec876838bcb07f",
+      "implementation_commit": "60a8933949ed2b4521a989fa1940f5e91c6b4881",
+      "verification": "docs/reviews/st11-04-verification.md",
+      "merge_verification": "docs/reviews/st11-04-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "shared": 148,
+        "backend_harness_executions": 528,
+        "focused": "18/18"
+      },
+      "worktree_cleanup": "removed-after-clean-merged-verification"
     },
     {
       "id": "ST11-05",
       "accepted_revision": "4371b54755d7f1381af57058364f88191010ed012e2ea5d2616458c04b269ed6",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         3
-      ]
+      ],
+      "worktree": ".worktrees/st11-05-badao",
+      "branch": "feat/st11-05-badao",
+      "base_commit": "080e81b5ad993b2128f9ab2a81ec876838bcb07f",
+      "preparation_checks": {
+        "command": "node --test shared/test/badao-combat.test.mjs backend/test/badao-checkpoint.test.mjs",
+        "result": "9/9",
+        "scope": "pure kernel and compact codec only; full vertical integration pending ST11-04 shared seam"
+      },
+      "integration_base_commit": "60a8933949ed2b4521a989fa1940f5e91c6b4881",
+      "implementation_commit": "df3d40bf870ed6c3b3b563bf9ef149b2e8915b52",
+      "verification": "docs/reviews/st11-05-verification.md",
+      "merge_verification": "docs/reviews/st11-05-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "shared": 156,
+        "backend_harness_executions": 541,
+        "focused": "21/21"
+      },
+      "worktree_cleanup": "removed-after-clean-merged-verification"
     },
     {
       "id": "ST11-06",
       "accepted_revision": "8e58438d3bea8c3684509aabaa01d09dc2498af8f60dd936e220abedd248f363",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         4,
         5
-      ]
+      ],
+      "worktree": ".worktrees/st11-06-earth",
+      "branch": "feat/st11-06-earth",
+      "base_commit": "df3d40bf870ed6c3b3b563bf9ef149b2e8915b52",
+      "implementation_commit": "ea9ac987e6a70a6c19bb5ccb2a1a44aaeebdaeeb",
+      "verification": "docs/reviews/st11-06-verification.md",
+      "merge_verification": "docs/reviews/st11-06-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "shared": 162,
+        "backend_harness_executions": 562,
+        "focused": "27/27"
+      },
+      "worktree_cleanup": "removed-after-clean-merged-verification"
     }
   ],
   "testing_seams": [
@@ -61,5 +145,94 @@
   ],
   "jira_actions": false,
   "pushed": false,
-  "cocos_rebuild": "not-run-prior-permission-rejected"
+  "cocos_rebuild": "not-run-prior-permission-rejected",
+  "plan_commit": "f7ff09be3dbcab596852c638a135eee102a8e139",
+  "baseline_checks": {
+    "all": "7/7",
+    "shared": 115,
+    "backend_harness_executions": 478,
+    "backend_repeated_existing_executions": 42,
+    "log": "/tmp/st11-baseline-checks.log"
+  },
+  "integration_typechecks": [
+    {
+      "head": "c0017eddaf235120b49bb8c0b155b9a2f25227fa",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "types-only-no-build"
+    },
+    {
+      "head": "287e72c0cc431c7cb7b8e5771c3538144f40c63b",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "types-only-no-build"
+    },
+    {
+      "head": "080e81b5ad993b2128f9ab2a81ec876838bcb07f",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "types-only-no-build"
+    },
+    {
+      "head": "60a8933949ed2b4521a989fa1940f5e91c6b4881",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "types-only-no-build"
+    },
+    {
+      "head": "df3d40bf870ed6c3b3b563bf9ef149b2e8915b52",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "types-only-no-build"
+    },
+    {
+      "head": "ea9ac987e6a70a6c19bb5ccb2a1a44aaeebdaeeb",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "types-only-no-build"
+    }
+  ],
+  "integration_followups": [
+    {
+      "id": "ST11-control-interruption",
+      "state": "verify-in-ST11-06-and-final-review",
+      "source": "ST11-04 resume preflight",
+      "requirement": "controlled player cannot restart basic or ordinary movement; interrupt unreleased skill nodes, preserve legal released effects",
+      "paths": [
+        "shared/src/cross-simulation.ts",
+        "shared/src/bengshan-simulation.ts"
+      ],
+      "note": "profile3 fix/test in progress; recheck older cross-only compatibility path rather than treating suspicion as confirmed final finding"
+    }
+  ],
+  "review": {
+    "base": "accd5927b0e5daefcac281b2b8913adfdbe04209",
+    "head": "ea9ac987e6a70a6c19bb5ccb2a1a44aaeebdaeeb",
+    "standards": "initial-findings-2-judgment-0-hard",
+    "spec": "initial-findings-1-P2",
+    "standards_report": "docs/reviews/st11-build-standards-review.md",
+    "spec_report": "docs/reviews/st11-build-spec-review.md",
+    "fix_branch": "fix/st11-review",
+    "fix_commits": [
+      "cfb7bb94076989fd51bc328fd427b8a7a59cc793",
+      "07ffb1ec12d6bc94f27d35f3b8cb25d5cbe5c71a"
+    ],
+    "standards_recheck": "docs/reviews/st11-build-standards-recheck.md",
+    "spec_recheck": "docs/reviews/st11-build-spec-recheck.md",
+    "fix_merge_verification": "docs/reviews/st11-review-fixes-merge.md",
+    "local_verification": "docs/reviews/st11-local-verification.md",
+    "standards_status": "pass",
+    "spec_status": "pass",
+    "fix_worktree_cleanup": "removed-after-clean-merged-verification"
+  },
+  "final_checks": {
+    "all": "7/7",
+    "tooling_tests": 7,
+    "shared_tests": 162,
+    "backend_tests": 568,
+    "client_pure_model_types": "pass",
+    "client_model_regression": "pass",
+    "client_ui_model_regression": "pass",
+    "cocos_types": "pass"
+  }
 }
