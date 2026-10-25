@@ -133,9 +133,11 @@ for(const first of ['deposit','withdraw'])test(`opposite equipment transfers ser
  const incoming={...structuredClone(outgoing),id:'incoming-gear',holderCharacterId:undefined,location:{kind:'container',containerId:f.vault('accountVault').id}};
  await f.store.run(async tx=>{tx.set(incoming.id,incoming);tx.set(f.vault('accountVault').id,{...f.vault('accountVault'),slots:{0:{kind:'equipment',itemId:incoming.id,sortHeader:{itemLevel:30,quality:'orange',slotKind:'weapon'}}}});const h=await tx.get(account);tx.set(account,{...h,entries:[{collectionKey:'warrior-set-weapon',permanentCount:1,mailLatestExpiryAt:null}]});});
  const cmds={deposit:f.transfer({kind:'equipment',itemId:outgoing.id},1,'accountVault'),withdraw:f.transfer({kind:'equipment',itemId:incoming.id},1,'accountVault',true)};
- let arrivals=0,ready,releaseFirst,releaseSecond;const both=new Promise(r=>ready=r),gate1=new Promise(r=>releaseFirst=r),gate2=new Promise(r=>releaseSecond=r);
- f.store.beforeCommit=async attempt=>{if(attempt!==0)return;const index=arrivals++;if(arrivals===2)ready();await(index===0?gate1:gate2);};
- const other=first==='deposit'?'withdraw':'deposit',a=f.service.execute(cmds[first]),b=f.service.execute(cmds[other]);await both;releaseFirst();assert.equal((await a).outcome.status,'committed');releaseSecond();assert.equal((await b).outcome.code,'VERSION_CONFLICT');f.store.beforeCommit=undefined;assert.ok(f.store.conflicts>=1);
+ let arrivals=0,ready,firstReady,releaseFirst,releaseSecond;const both=new Promise(r=>ready=r),firstArrived=new Promise(r=>firstReady=r),gate1=new Promise(r=>releaseFirst=r),gate2=new Promise(r=>releaseSecond=r);
+ f.store.beforeCommit=async attempt=>{if(attempt!==0)return;const index=arrivals++;if(index===0)firstReady();if(arrivals===2)ready();await(index===0?gate1:gate2);};
+ // Hashing before the transaction is asynchronous: explicitly bind a to gate1
+ // before launching b. Both candidates still read the same uncommitted baseline.
+ const other=first==='deposit'?'withdraw':'deposit',a=f.service.execute(cmds[first]);await firstArrived;const b=f.service.execute(cmds[other]);await both;releaseFirst();assert.equal((await a).outcome.status,'committed');releaseSecond();assert.equal((await b).outcome.code,'VERSION_CONFLICT');f.store.beforeCommit=undefined;assert.ok(f.store.conflicts>=1);
  const read=await f.query('bank.get',{vaultKind:'accountVault'});assert.equal(read.data.backpack.slots.length+read.data.vault.slots.length,2);
  const retry=f.transfer({kind:'equipment',itemId:other==='deposit'?outgoing.id:incoming.id},1,'accountVault',other==='withdraw');assert.equal((await f.service.execute(retry)).outcome.status,'committed');
  const final=await f.query('bank.get',{vaultKind:'accountVault'});assert.deepEqual(final.data.backpack.slots.map(s=>s.entry.itemId),[incoming.id]);assert.deepEqual(final.data.vault.slots.map(s=>s.entry.itemId),[outgoing.id]);
