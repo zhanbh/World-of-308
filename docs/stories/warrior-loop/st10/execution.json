@@ -1,45 +1,105 @@
 {
   "feature": "warrior-loop-st10",
-  "status": "approved-implementation-starting",
+  "status": "complete-local-scope",
   "integration_branch": "feat-1.0.0",
   "tickets": [
     {
       "id": "ST10-01",
       "accepted_revision": "af6cebcee6e523683c67b06787b3028451f88915f265cf55616970a5e068f54e",
-      "state": "pending",
-      "blocked_by": []
+      "state": "merged",
+      "blocked_by": [],
+      "worktree": ".worktrees/st10-01-entry",
+      "branch": "feat/st10-01-entry",
+      "base_commit": "2d5276a2a37d84b1a274ac453e105a3ef4ebdc1a",
+      "implementation_commit": "cae0f5d8d14eb3853c6d33c5ace21870d21080d4",
+      "verification": "docs/reviews/st10-01-verification.md",
+      "merge_verification": "docs/reviews/st10-01-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "backend": 360,
+        "shared": 112,
+        "focused": "19/19"
+      }
     },
     {
       "id": "ST10-02",
       "accepted_revision": "abb94c8a5702dc9cb27e47be14541e1091cb1781fdabf16a3af2c656a86235ae",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         1
-      ]
+      ],
+      "worktree": ".worktrees/st10-02-prepare",
+      "branch": "feat/st10-02-prepare",
+      "base_commit": "cae0f5d8d14eb3853c6d33c5ace21870d21080d4",
+      "implementation_commit": "e61761994f60fbf3f201d50a1c626379a985fd2f",
+      "verification": "docs/reviews/st10-02-verification.md",
+      "merge_verification": "docs/reviews/st10-02-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "backend": 372,
+        "shared": 113,
+        "focused": "21/21"
+      }
     },
     {
       "id": "ST10-03",
       "accepted_revision": "c54836a3f2ff5e30c9554e9bb2f60f628445a758d2fc5d33d85437a162f1a78c",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         2
-      ]
+      ],
+      "worktree": ".worktrees/st10-03-activate",
+      "branch": "feat/st10-03-activate",
+      "base_commit": "e61761994f60fbf3f201d50a1c626379a985fd2f",
+      "implementation_commit": "7ab61844f02364182f12285358aec64eac23bfe7",
+      "verification": "docs/reviews/st10-03-verification.md",
+      "merge_verification": "docs/reviews/st10-03-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "backend": 390,
+        "shared": 115,
+        "focused": "26/26"
+      }
     },
     {
       "id": "ST10-04",
       "accepted_revision": "d0cc613595aea6081955ae0e954174cd30684b33096b2b6afaaf676dcdd862e5",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         3
-      ]
+      ],
+      "worktree": ".worktrees/st10-04-recovery",
+      "branch": "feat/st10-04-recovery",
+      "base_commit": "7ab61844f02364182f12285358aec64eac23bfe7",
+      "implementation_commit": "83752e76fd9835d908165ccc7c0847e03d7db49c",
+      "verification": "docs/reviews/st10-04-verification.md",
+      "merge_verification": "docs/reviews/st10-04-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "backend": 403,
+        "shared": 115,
+        "focused": "15/15"
+      }
     },
     {
       "id": "ST10-05",
       "accepted_revision": "e7a0aef56c75152a6316e8d663e66520c8729c87e2a4b59ae0b2abb42d52ada5",
-      "state": "pending",
+      "state": "merged",
       "blocked_by": [
         4
-      ]
+      ],
+      "worktree": ".worktrees/st10-05-next-room",
+      "branch": "feat/st10-05-next-room",
+      "base_commit": "83752e76fd9835d908165ccc7c0847e03d7db49c",
+      "implementation_commit": "bd6cda776e57abda5132ae35e30f2fc81b996a1a",
+      "verification": "docs/reviews/st10-05-verification.md",
+      "merge_verification": "docs/reviews/st10-05-merge-verification.md",
+      "checks": {
+        "all": "7/7",
+        "backend": 420,
+        "shared": 115,
+        "focused": "14 service + 9 client"
+      }
     }
   ],
   "testing_seams": [
@@ -49,5 +109,88 @@
     "actual optional Cocos build/runtime recorded separately"
   ],
   "jira_actions": false,
-  "pushed": false
+  "pushed": false,
+  "plan_commit": "2d5276a2a37d84b1a274ac453e105a3ef4ebdc1a",
+  "baseline_checks": {
+    "all": "7/7",
+    "backend": 341,
+    "shared": 112,
+    "tooling": 7,
+    "cocos_rebuild": "not-run-prior-permission-rejected"
+  },
+  "integration_typechecks": [
+    {
+      "head": "cae0f5d8d14eb3853c6d33c5ace21870d21080d4",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "typecheck-only-no-rebuild"
+    },
+    {
+      "head": "e61761994f60fbf3f201d50a1c626379a985fd2f",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "typecheck-only-no-rebuild"
+    },
+    {
+      "head": "7ab61844f02364182f12285358aec64eac23bfe7",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "typecheck-only-no-rebuild"
+    },
+    {
+      "head": "83752e76fd9835d908165ccc7c0847e03d7db49c",
+      "project": "tools/tsconfig.cocos-inventory.json",
+      "result": "pass",
+      "kind": "typecheck-only-no-rebuild"
+    }
+  ],
+  "review_base": "2d5276a2a37d84b1a274ac453e105a3ef4ebdc1a",
+  "implementation_head": "bd6cda776e57abda5132ae35e30f2fc81b996a1a",
+  "review": {
+    "base": "2d5276a2a37d84b1a274ac453e105a3ef4ebdc1a",
+    "reviewed_head": "bd6cda776e57abda5132ae35e30f2fc81b996a1a",
+    "standards_report": "docs/reviews/st10-build-standards-review.md",
+    "standards_hard_findings": 0,
+    "standards_optional_judgments": 1,
+    "spec_report": "docs/reviews/st10-build-spec-review.md",
+    "spec_findings": [
+      {
+        "id": "P1-ready-suffix-public-state",
+        "state": "closed-independent-recheck"
+      },
+      {
+        "id": "P2-checkpoint-wrapper-validation",
+        "state": "closed-independent-recheck"
+      }
+    ],
+    "fix_worktree": ".worktrees/st10-review-fixes",
+    "fix_branch": "fix/st10-review-findings",
+    "fixed_head": "08fb0eba410dfa79477eff30b669717c5fa4d815",
+    "standards_optional_judgments_open": 0,
+    "standards_hard_findings_open": 0,
+    "spec_findings_open": 0,
+    "independent_recheck": "both-axes-pass"
+  },
+  "integrated_checks": {
+    "head": "08fb0eba410dfa79477eff30b669717c5fa4d815",
+    "all": "7/7",
+    "backend": 478,
+    "shared": 115,
+    "tooling": 7,
+    "log": "/tmp/st10-final-integrated-checks.log",
+    "cocos_type_project": "pass",
+    "cocos_rebuild": "not-run-prior-permission-rejected",
+    "backend_harness_executions": 478,
+    "backend_repeated_existing_executions": 42
+  },
+  "completed_on": "2026-10-25",
+  "code_head": "08fb0eba410dfa79477eff30b669717c5fa4d815",
+  "review_fix_commits": [
+    "03148cba0d749eaae6c0ba3d1fd980b1a9a88236",
+    "08fb0eba410dfa79477eff30b669717c5fa4d815"
+  ],
+  "delivery_report": "docs/reviews/st10-local-verification.md",
+  "worktree_cleanup": "complete",
+  "contract_sync_commit": "24e05cda510d5ad478be6b0842b87c8d8481da0b",
+  "branches_retained": true
 }

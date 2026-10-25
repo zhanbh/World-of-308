@@ -79,3 +79,7 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 ## ST09 本地实施续接
 
 2026-10-23，`feat-1.0.0`：用户确认的四项任务已完成本地能力验收，含实际Cocos银行、普通背包扩容、原结果恢复及独立评审修复。详见[任务入口](st09/README.md)及[试玩与验证](../../reviews/st09-local-verification.md)。正式价格/SDK/真机待验，不以本机通过标全平台Done。下一可玩检查节点仍是[城镇界面联调包](../../reviews/player-preview-milestones-v1.md)，ST05～08服务存在不代表面板已接入。
+
+## ST10 本地实施续接
+
+2026-10-24，用户已确认五项任务图并授权本地实施，integration为`feat-1.0.0`。见[ST10入口](st10/README.md)、[Accepted规格与依赖](st10/plan-check.json)、[当前执行状态](st10/execution.json)。2026-10-25，01～05按frontier实施并独立合入，评审修复后两轴复查通过；见[本地交付与限制](../../reviews/st10-local-verification.md)。来源卡proposed保留为历史快照，执行状态以Accepted任务与sidecar为准。无Jira；ST09历史构建与本轮被拒绝的重构建分别记录，不挪用为ST10构建通过。

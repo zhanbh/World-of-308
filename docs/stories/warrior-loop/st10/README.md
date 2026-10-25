@@ -5,3 +5,7 @@
 [只读规格](spec.md)、[已确认任务图](task-plan.md)、[来源/图检查](plan-check.json)、[当前执行状态](execution.json)。issues/01～05保存Approved修订快照；执行记录另存，不把源故事proposed快照当未授权。测试边界与任务图一并确认，不重复询问相同边界。
 
 按01→02→03→04→05依赖推进；每implementer从最新integration tip建立独立工作树、TDD逐片、merger合入，再推进frontier。最终完整diff独立Standards/Spec评审并集中修复，保留实际SHA/结果/未运行项，不冒充真实微信/SDK/手机通过。
+
+## 本地交付完成
+
+2026-10-25：01～05均已实施合入，集中修复后两轴独立复查通过。见[交付与限制](../../../reviews/st10-local-verification.md)、[Standards复核](../../../reviews/st10-build-standards-review.md)、[Spec复核](../../../reviews/st10-build-spec-review.md)。全量7/7及Cocos类型检查通过，未声称构建/真机/SDK或后续战斗故事通过。当前可运行`node client/tools/demo-next-room.mjs`查看真实内存服务的两房加载演示；清场为服务端夹具。
