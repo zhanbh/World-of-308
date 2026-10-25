@@ -51,3 +51,8 @@
 ## ST11-01 当前移动实施（2026-10-25）
 
 ST11-01移动片段仍≤100tick/32输入/16KiB，O≤16KiB/公开回复页≤32KiB。显式本地地图最多256矩形墙，保守方形足迹；两个在用块只写变化块，不声明全部战斗效果包络已实测。实际尺寸与CPU见[验证](../reviews/st11-01-verification.md)，精确合同见[移动合同](movement-input-contract-v1.md)。
+
+
+## ST11-02 普攻训练实施（2026-10-25）
+
+当前预算增量见[普攻执行合同](basic-combat-contract-v1.md)：显式无奖励训练profile、role4/scene2动作及目标控制、独立私有战斗流、当前公开动作证明和完整有界actionResults分页。既有未声明combat的移动能力保持。实现及实际预算见[验证](../reviews/st11-02-verification.md)，不代表正式收益/技能/AI能力已交付。

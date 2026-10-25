@@ -31,3 +31,8 @@ role内部schema3兼容读取schema1/2；schema3增加`movement:{configHash,stat
 ## 预算与后续边界
 
 当前移动域使用role+scene两个在用块，只变化role时写1块；五个写点（role/A/H/header/O）逐点故障回滚。恢复缺口两写点另验。纯计算最多100tick×256墙，CPU与实际UTF-8见验证，不代表SDK费用或真机性能。最大战士效果/快照及1～8块增长由后续战斗票扩展，不以本片两块代替完整战斗包络证明。
+
+
+## ST11-02 普攻训练实施（2026-10-25）
+
+当前移动增量见[普攻执行合同](basic-combat-contract-v1.md)：显式无奖励训练profile、role4/scene2动作及目标控制、独立私有战斗流、当前公开动作证明和完整有界actionResults分页。既有未声明combat的移动能力保持。实现及实际预算见[验证](../reviews/st11-02-verification.md)，不代表正式收益/技能/AI能力已交付。

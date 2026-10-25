@@ -1,5 +1,5 @@
-import { parseSceneRequest, parseRoomRequest, parseSceneQuery, parseSceneResponse, parseRoomResponse, parseRecoveryPage, parseSimulationResponse, parseChallengeRequest, parseChallengeResponse, parseChallengeQueryResponse, parseDungeonEntryQuery, parseDungeonEntryResponse } from './scene-v2.ts';
-import { parseSimulationSubmit,parseSimulationConfirmed } from './simulation-v2.ts';
+import { parseSceneRequest, parseRoomRequest, parseSceneQuery, parseSceneResponse, parseRoomResponse, parseRecoveryPage, parseSimulationResponse, parseChallengeRequest, parseChallengeResponse, parseChallengeQueryResponse, parseDungeonEntryQuery, parseDungeonEntryResponse,parseActionResultsPage } from './scene-v2.ts';
+import { parseSimulationSubmit,parseSimulationConfirmed,parseActionResultsQuery } from './simulation-v2.ts';
 
 function route(value: unknown) {
   if (!value || typeof value !== 'object') throw new TypeError('INVALID_ARGUMENT');
@@ -9,6 +9,7 @@ function route(value: unknown) {
   if (command === 'challenge.start' || command === 'challenge.revive' || command === 'challenge.leave' || command === 'drop.collect') return parseChallengeRequest(value);
   if (Object.getOwnPropertyDescriptor(value,'query')?.value==='simulation.confirmed')return parseSimulationConfirmed(value);
   if (Object.getOwnPropertyDescriptor(value, 'query')?.value === 'dungeon.entry') return parseDungeonEntryQuery(value);
+  if (Object.getOwnPropertyDescriptor(value,'query')?.value==='simulation.actionResults')return parseActionResultsQuery(value);
   if (Object.hasOwn(value, 'query')) return parseSceneQuery(value);
   return parseSceneRequest(value);
 }
@@ -22,6 +23,7 @@ export function decodeSceneReply(request: unknown, text: string) {
   if (typeof text !== 'string' || new TextEncoder().encode(text).length > 32768) throw new TypeError('RESPONSE_TOO_LARGE');
   const value: unknown = JSON.parse(text);
   if ('query' in intent) {
+    if(intent.query==='simulation.actionResults'){const p=parseActionResultsPage(value);if(p.requestId!==intent.requestId||p.operationId!==intent.payload.operationId||p.pageIndex!==intent.payload.pageIndex)throw new TypeError('RESPONSE_MISMATCH');return p;}
     if (intent.query === 'dungeon.entry') {
       const r = parseDungeonEntryResponse(value);
       if (r.requestId !== intent.requestId || ('data' in r && r.data.dungeonId !== intent.payload.dungeonId)) throw new TypeError('RESPONSE_MISMATCH');

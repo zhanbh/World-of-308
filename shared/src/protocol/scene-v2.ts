@@ -1,3 +1,4 @@
+import type {Rational} from '../basic-combat-kernel.ts';
 import { time, logicTick, resource, encodeResource, decodeRemainder } from '../exact-values.ts';
 import { parseExpected } from './session-v2.ts';
 type Parser<T> = (value: unknown) => T;
@@ -128,6 +129,10 @@ const cooldownRecord = object({ kind: enumOf('cooldown'), actorId: text(), coold
 const effectRecord = object({ kind: enumOf('effect'), effectId: text(), castId: text(), ownerId: text(), targetId: nullable(text()), templateRef: text(64), nodeIndex: integer(0, 5), x: position, y: position, startsAtTick: logicTick, endsAtTick: logicTick, nextAtTick: nullable(logicTick) });
 const signedRemainder:Parser<string>=v=>{if(typeof v!=='string'||! /^(0|-?[1-9][0-9]{0,4})$/.test(v)||BigInt(v)<=-100000n||BigInt(v)>=100000n)throw new TypeError('INVALID_REMAINDER');return v;};
 const movementRecord=object({kind:enumOf('movement'),actorId:text(),configHash:hash,intentX:integer(-1000,1000),intentY:integer(-1000,1000),remainderX:signedRemainder,remainderY:signedRemainder,denominator:enumOf(100000)});
+const combatFraction:Parser<Rational>=v=>{const r=object({n:text(20),d:text(10)})(v);if(!/^(0|[1-9][0-9]*)$/.test(r.n)||!/^[1-9][0-9]*$/.test(r.d)||BigInt(r.n)>18446744073709551615n||BigInt(r.d)>4294967295n)throw new TypeError('INVALID_COMBAT_TIME');return r;};
+const combatCast=object({facing:enumOf(-1,1),stage:integer(0,2),sequence:integer(1),originUs:combatFraction,impactUs:combatFraction,endUs:combatFraction,moveUnlockUs:combatFraction,impacted:bool});
+const combatActionRecord=object({kind:enumOf('combatAction'),actorId:text(),configHash:hash,held:bool,buffered:bool,nextStage:integer(0,2),comboExpiresUs:nullable(combatFraction),castSequence:integer(),cast:nullable(combatCast)});
+const targetControlRecord=object({kind:enumOf('targetControl'),actorId:text(),directSinceRise:resourceWire,downUntilTick:nullable(logicTick)});
 const buffRecord = object({ kind: enumOf('buff'), buffId: text(), actorId: text(), templateRef: text(64), endsAtTick: logicTick });
 function publicRecord(value: unknown) {
   const kind = value && typeof value === 'object' ? Object.getOwnPropertyDescriptor(value, 'kind')?.value : undefined;
@@ -143,6 +148,8 @@ function publicRecord(value: unknown) {
       if (r.endsAtTick < r.startsAtTick || (r.nextAtTick !== null && (r.nextAtTick < r.startsAtTick || r.nextAtTick > r.endsAtTick))) throw new TypeError('INVALID_EFFECT_TIME');
       return r;
     }
+    case 'combatAction': {const r=combatActionRecord(value),c=r.cast;if(c){const cmp=(a:Rational,b:Rational)=>BigInt(a.n)*BigInt(b.d)-BigInt(b.n)*BigInt(a.d);if(c.sequence>r.castSequence||cmp(c.originUs,c.impactUs)>=0n||cmp(c.impactUs,c.endUs)>0n||cmp(c.originUs,c.moveUnlockUs)>0n||cmp(c.moveUnlockUs,c.endUs)>0n)throw new TypeError('INVALID_PUBLIC_ACTION');}return r;}
+    case 'targetControl': return targetControlRecord(value);
     case 'movement': return movementRecord(value);
     case 'buff': return buffRecord(value);
     default: throw new TypeError('INVALID_PUBLIC_RECORD');
@@ -163,7 +170,7 @@ export function assembleRecoveryPages(values: unknown[]) {
   if (pages.length !== first.totalPages || pages.some((p, index) => p.pageIndex !== index || identity(p) !== identity(first))) throw new TypeError('INCOMPLETE_RECOVERY');
   const records = pages.flatMap(p => p.records), seen = new Set<string>();
   for (const r of records) {
-    const key = r.kind === 'actor' ? ['actor', r.actorId] : r.kind === 'cooldown' ? ['cooldown', r.actorId, r.cooldownId] : r.kind === 'effect' ? ['effect', r.effectId] : r.kind==='movement'?['movement',r.actorId]:['buff', r.buffId];
+    const key = r.kind === 'actor' ? ['actor', r.actorId] : r.kind === 'cooldown' ? ['cooldown', r.actorId, r.cooldownId] : r.kind === 'effect' ? ['effect', r.effectId] : r.kind==='combatAction'?['combatAction',r.actorId]:r.kind==='targetControl'?['targetControl',r.actorId]:r.kind==='movement'?['movement',r.actorId]:['buff', r.buffId];
     const encoded = JSON.stringify(key);
     if (seen.has(encoded)) throw new TypeError('DUPLICATE_PUBLIC_RECORD'); seen.add(encoded);
   }
@@ -171,7 +178,7 @@ export function assembleRecoveryPages(values: unknown[]) {
   if (!actors.length || actors.length > 9 || new Set(actors.map(r => r.actorIndex)).size !== actors.length) throw new TypeError('INVALID_PUBLIC_ACTORS');
   const actorIds = new Set(actors.map(r => r.actorId));
   for (const r of records) {
-    if ((r.kind === 'cooldown' || r.kind === 'buff' || r.kind==='movement') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
+    if ((r.kind === 'cooldown' || r.kind === 'buff' || r.kind==='movement'||r.kind==='combatAction'||r.kind==='targetControl') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
     if (r.kind === 'effect' && (!actorIds.has(r.ownerId) || (r.targetId !== null && !actorIds.has(r.targetId)))) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
   }
   return { ...cpReadyTicket({ readyTicketId: first.readyTicketId, sceneEpoch: first.sceneEpoch, timelineEpoch: first.timelineEpoch, checkpointRevision: first.checkpointRevision, publicStateHash: first.publicStateHash, manifestHash: first.manifestHash, deadline: first.deadline }), records };
@@ -226,6 +233,11 @@ export function parseRoomResponse(value: unknown) {
 }
 const eventSummary = object({ kind: enumOf('actionAccepted', 'actionRejected', 'damage', 'death', 'roomCleared', 'levelUp', 'completed'), eventId: text(), actorId: text(), tick: logicTick });
 const movementEvent = object({seq:integer(1),tick:logicTick,kind:enumOf('rejected'),code:enumOf('ACTION_NOT_SUPPORTED')});
+const combatActionEvent=object({kind:enumOf('actionAccepted','actionRejected','damage','miss','death','knockdown','rise'),eventId:text(),actorId:text(),tick:logicTick,seq:nullable(integer(1)),targetId:nullable(text()),damage:nullable(resourceWire),critical:nullable(bool),code:nullable(text(64))});
+export function parseActionResultsPage(value:unknown){
+ const p=object({protocolVersion:enumOf(2),query:enumOf('simulation.actionResults'),requestId:operationId,operationId,actionResultsRef:text(),pageIndex:integer(0,63),totalPages:integer(1,64),events:list(combatActionEvent,32)})(value);
+ if(p.pageIndex>=p.totalPages||new TextEncoder().encode(JSON.stringify(p)).length>32768)throw new TypeError('INVALID_PAGE');return p;
+}
 const submitResponse = object({ ...resultHeader, command: enumOf('simulation.submit'), outcome: result(object({ acceptedSeq: integer(), acceptedTick: logicTick, checkpointRevision: integer(), actionResultsRef: text(), events: list(v=>v&&typeof v==='object'&&Object.getOwnPropertyDescriptor(v,'kind')?.value==='rejected'?movementEvent(v):eventSummary(v), 64) })) });
 export function parseSimulationResponse(value: unknown) {
   const response = submitResponse(value);

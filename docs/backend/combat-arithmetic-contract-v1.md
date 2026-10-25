@@ -45,3 +45,8 @@ HP/MP分别持久保存约分非负分数regenerationRemainder；恒定速率分
 ## ST11-01 当前移动实施（2026-10-25）
 
 ST11-01移动采用1000整数单位/设计像素，10ms tick，分母100000带符号余数、BigInt扫掠接触比；碰撞截断分数丢弃。旧positionRemainder<1000不混用。输入整段/任意切片与30/60/120渲染调度共用内核，具体字段及计算公式见[移动合同](movement-input-contract-v1.md)。
+
+
+## ST11-02 普攻训练实施（2026-10-25）
+
+当前算术增量见[普攻执行合同](basic-combat-contract-v1.md)：显式无奖励训练profile、role4/scene2动作及目标控制、独立私有战斗流、当前公开动作证明和完整有界actionResults分页。既有未声明combat的移动能力保持。实现及实际预算见[验证](../reviews/st11-02-verification.md)，不代表正式收益/技能/AI能力已交付。

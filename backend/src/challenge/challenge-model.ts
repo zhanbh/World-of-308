@@ -9,6 +9,7 @@ export interface ChallengeContent {
     release?: TestRelease;
     /** Explicit local-test rule; E01 has no production interaction radius. */
     regeneration?: {profile:'local-test';ref:string;unit:'internal-per-second';hp:{numerator:number;denominator:number};mp:{numerator:number;denominator:number};buffs:{templateRef:string;hp:{numerator:number;denominator:number};mp:{numerator:number;denominator:number}}[]};
+    combat?: import('./basic-training.ts').BasicTrainingProfile;
     movement?: import('../../../shared/src/movement-kernel.ts').MovementConfig;
     exitInteraction?: {profile:'local-test';rulesRef:string;radius:number};
     dungeons: {

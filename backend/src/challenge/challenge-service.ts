@@ -1,7 +1,10 @@
+import {advanceBasicSimulation} from '../../../shared/src/basic-simulation.ts';
+import {initialCombatState} from '../../../shared/src/basic-combat-kernel.ts';
+import {trainingCapability,currentBasicStats,combatRandomTape} from './basic-training.ts';
 import {advanceMovement} from '../../../shared/src/movement-kernel.ts';
-import {parseSimulationSubmit,parseSimulationConfirmed} from '../../../shared/src/protocol/simulation-v2.ts';
+import {parseSimulationSubmit,parseSimulationConfirmed,parseActionResultsQuery} from '../../../shared/src/protocol/simulation-v2.ts';
 import type {SimulationSubmit} from '../../../shared/src/protocol/simulation-v2.ts';
-import {parseSimulationResponse} from '../../../shared/src/protocol/scene-v2.ts';
+import {parseActionResultsPage,parseSimulationResponse} from '../../../shared/src/protocol/scene-v2.ts';
 import {advanceRole} from './role-transition.ts';
 import {remainder} from '../../../shared/src/exact-values.ts';
 import {parseSceneRequest,parseSceneResponse,parseRecoveryPage,parseSceneState} from '../../../shared/src/protocol/scene-v2.ts';
@@ -78,6 +81,7 @@ export class ChallengeService {
     }
     private dungeon(id: string) {
         const content = this.options.content;
+        if(content){try{trainingCapability(content);}catch{throw new Refusal('CONFIG_NOT_READY');}}
         requireValue(content?.schemaVersion === 1 && typeof content.releaseRef === 'string' && /^[^\s]{1,64}$/.test(content.releaseRef) && ((content.profile === 'local-test' && content.purpose === 'contract-fixture-only') || (content.profile === 'release' && content.purpose === 'published')), 'CONFIG_NOT_READY');
         requireValue(Array.isArray(content.dungeons) && content.dungeons.length > 0 && content.dungeons.length <= 3, 'CONFIG_NOT_READY');
         const d = content.dungeons.find(d => d.dungeonId === id);
@@ -127,6 +131,7 @@ export class ChallengeService {
     }
     async query(raw: unknown) {
         const name=raw && typeof raw==='object' ? Object.getOwnPropertyDescriptor(raw,'query')?.value : undefined;
+        if(name==='simulation.actionResults')return this.actionResults(raw);
         if(name==='simulation.confirmed')return this.confirmedMovement(raw);
         if(name==='scene.recoveryPage') return this.recoveryPage(raw);
         if(name==='challenge.get') return this.challengeState(raw);
@@ -391,10 +396,10 @@ export class ChallengeService {
                 requireValue(h.currentRoomNo===-1?h.sceneEpoch===0&&h.roomPhase==='preparing':h.roomPhase==='preparing','ROOM_NOT_AVAILABLE');
                 requireValue(command.payload.expectedRevision===h.version&&command.expected.some(v=>v.kind==='challenge'&&v.id===h.id&&v.version===h.version),'VERSION_CONFLICT');
                 const p=h.pendingRoomAttempt,t=h.transitionClock;requireValue(p&&t&&t.attemptId===p.attemptId&&t.phase==='prepared'&&p.roomNo===h.currentRoomNo+1&&p.attemptId===command.payload.roomAttemptId&&p.manifestHash===command.payload.manifestHash&&p.configRef===h.releaseRef,'VERSION_CONFLICT');
-                requireValue(this.options.content,'CONFIG_NOT_READY');const manifest=await this.hydrate(tx,p.manifestRef,p.attemptId,p.manifestHash),initial=await initialCheckpoint(this.options.content,h,manifest,c.equipmentVersion),previous=h.currentRoomNo>=0?await this.nextRoomAllowed(tx,h):null,role=previous?{...previous.role,player:{...previous.role.player,x:initial.role.player.x,y:initial.role.player.y}}:initial.role,scene=initial.scene;
+                requireValue(this.options.content,'CONFIG_NOT_READY');const manifest=await this.hydrate(tx,p.manifestRef,p.attemptId,p.manifestHash),initial=await initialCheckpoint(this.options.content,h,manifest,c.equipmentVersion,c.statsVersion),previous=h.currentRoomNo>=0?await this.nextRoomAllowed(tx,h):null,role=previous?{...previous.role,player:{...previous.role.player,x:initial.role.player.x,y:initial.role.player.y}}:initial.role,scene=initial.scene;
                 requireValue(now>=t.settledAt,'CONFIG_NOT_READY');const elapsed=t.connectedElapsedMs+(now-t.settledAt),logicalTimeMs=(previous?.header.logicalTimeMs??0)+elapsed-t.consumedElapsedMs,acceptedTick=Math.floor(logicalTimeMs/10),revision=increment(h.version),sceneEpoch=increment(h.sceneEpoch),timelineEpoch=increment(h.timelineEpoch??0);
                 const next:EntryChallenge={...h,version:revision,sceneEpoch,timelineEpoch,currentRoomNo:p.roomNo,roomPhase:'awaitingReady',acceptedTick,staminaSnapshot:{...h.staminaSnapshot,remaining:Math.max(0,h.staminaSnapshot.remaining-h.roomCost),revision:increment(h.staminaSnapshot.revision)},transitionClock:{...t,phase:'awaitingReady',settledAt:now,connectedElapsedMs:elapsed,consumedElapsedMs:elapsed,timeRemainder:remainder(logicalTimeMs%10,10),transitionRevision:increment(t.transitionRevision)}};delete next.pendingRoomAttempt;
-                if(previous){for(const [slot,itemId] of Object.entries(c.equipped)){const item=await tx.get<EquipmentEntity>(itemId!);requireValue(item?.schemaVersion===2&&item.accountId===a.id&&item.lifecycle==='active'&&item.location.kind==='equipped'&&item.location.characterId===c.id&&item.location.slotId===slot,'VERSION_CONFLICT');}role.equipmentVersion=c.equipmentVersion;}
+                if(previous){if(initial.role.movement)role.movement=structuredClone(initial.role.movement);if(initial.role.combat)role.combat=structuredClone(initial.role.combat);for(const [slot,itemId] of Object.entries(c.equipped)){const item=await tx.get<EquipmentEntity>(itemId!);requireValue(item?.schemaVersion===2&&item.accountId===a.id&&item.lifecycle==='active'&&item.location.kind==='equipped'&&item.location.characterId===c.id&&item.location.slotId===slot,'VERSION_CONFLICT');}role.equipmentVersion=c.equipmentVersion;}
                 if(role.regenerationRef!==null)requireValue(role.regenerationHash===await manifestDigest(this.options.content!.regeneration),'CONFIG_NOT_READY');
                 const advanced=advanceRole(role,previous?.header.logicalTimeMs??0,logicalTimeMs,this.options.content!);Object.assign(role,advanced);
                 const cpRevision=previous?increment(previous.header.revision):0,hash=await stateHash(role,scene),ticket={readyTicketId:await loginKey('readyTicket',[h.id,sceneEpoch,timelineEpoch,cpRevision]),sceneEpoch,timelineEpoch,checkpointRevision:cpRevision,publicStateHash:hash,manifestHash:manifest.manifestHash,deadline:Math.min(h.lease!.leaseUntil,h.recoveryUntil??Number.MAX_SAFE_INTEGER,h.deathDeadline??Number.MAX_SAFE_INTEGER)};next.readyTicket=ticket;
@@ -549,6 +554,17 @@ export class ChallengeService {
         tx.set(header.id,{...header,revision,acceptingInputs:false,state:{...header.state,checkpointRevision:revision,connection:'recovery',recoveryUntil,anchorWallAt:null,anchorTick:null,inputGapBaseAt:null}});
         return true;
     }
+    private async actionResults(raw:unknown){
+        const q=parseActionResultsQuery(raw),caller=await this.caller();
+        return this.options.store.run(async tx=>{
+            const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),id=await loginKey('assetOp',[a.id,q.payload.operationId]),receipt=await tx.get<{schemaVersion:number;id:string;accountId:string;command:string;result:unknown}>(id);
+            requireValue(receipt?.schemaVersion===2&&receipt.id===id&&receipt.accountId===a.id&&receipt.command==='simulation.submit','NOT_FOUND_OR_FORBIDDEN');
+            const original=parseSimulationResponse(receipt.result);requireValue(original.operationId===q.payload.operationId&&original.outcome.status==='committed','SERVICE_UNAVAILABLE');
+            const pageId=await loginKey('combatResults',[a.id,q.payload.operationId,q.payload.pageIndex]),stored=await tx.get<{schemaVersion:number;accountId:string;operationId:string;actionResultsRef:string;pageIndex:number;totalPages:number;events:unknown[]}>(pageId);
+            requireValue(stored?.schemaVersion===1&&stored.accountId===a.id&&stored.operationId===q.payload.operationId&&stored.actionResultsRef===id&&stored.pageIndex===q.payload.pageIndex,'NOT_FOUND_OR_FORBIDDEN');
+            return parseActionResultsPage({protocolVersion:2,query:q.query,requestId:q.requestId,operationId:stored.operationId,actionResultsRef:stored.actionResultsRef,pageIndex:stored.pageIndex,totalPages:stored.totalPages,events:stored.events});
+        });
+    }
     private async confirmedMovement(raw:unknown){
         const q=parseSimulationConfirmed(raw),caller=await this.caller();
         const page=await this.options.store.run(async tx=>{
@@ -578,20 +594,31 @@ export class ChallengeService {
                 this.live(h,a,c,q.sessionId,now);const cp=await readCheckpoint(tx,h);requireValue(h.roomPhase==='active'&&cp.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
                 if(await this.movementGap(tx,h,cp.header,now))return {rejected:'RECOVERY_REQUIRED'};
                 this.validateMovement(q,a,c,h,cp.header,now);
-                return {a,c,h,cp,id};
+                const equipment:EquipmentEntity[]=[];for(const [slot,itemId] of Object.entries(c.equipped)){const item=await tx.get<EquipmentEntity>(itemId!);requireValue(item?.schemaVersion===2&&item.id===itemId&&item.accountId===a.id&&item.lifecycle==='active'&&item.location.kind==='equipped'&&item.location.characterId===c.id&&item.location.slotId===slot,'CONFIG_NOT_READY');equipment.push(item);}
+                return {a,c,h,cp,id,equipment};
             });
             if('original' in baseline)return reply(baseline.original!.outcome,true);
             if('rejected' in baseline)return reply({status:'rejected',code:baseline.rejected});
-            const {a,c,h,cp,id}=baseline,config=this.options.content!.movement!;
-            requireValue(await manifestDigest({payload:Object.fromEntries(Object.entries(q.payload).filter(([k])=>k!=='digest')),config})===q.payload.digest,'DIGEST_MISMATCH');
+            const {a,c,h,cp,id,equipment}=baseline,config=this.options.content!.movement!,combat=trainingCapability(this.options.content!);
+            requireValue(await manifestDigest({payload:Object.fromEntries(Object.entries(q.payload).filter(([k])=>k!=='digest')),config,...combat?{combat}:{} })===q.payload.digest,'DIGEST_MISMATCH');
             const configHash=await manifestDigest(config),old=cp.role.movement;
             requireValue(!old||old.configHash===configHash,'CONFIG_NOT_READY');
             const initial=old?.state??{x:String(cp.role.player.x),y:String(cp.role.player.y),remainderX:'0',remainderY:'0',facing:cp.role.player.facing,intentX:0,intentY:0};
-            const computed=advanceMovement(initial,q.payload.inputs,q.payload.fromTick,q.payload.toTick,config),logicalTimeMs=cp.header.logicalTimeMs+(q.payload.toTick-q.payload.fromTick)*10;
+            const computed=advanceMovement(initial,combat?q.payload.inputs.filter(i=>i.kind==='move'):q.payload.inputs,q.payload.fromTick,q.payload.toTick,config),logicalTimeMs=cp.header.logicalTimeMs+(q.payload.toTick-q.payload.fromTick)*10;
+            const scene=structuredClone(cp.scene);let combatEvents:import('../../../shared/src/basic-combat-kernel.ts').CombatEvent[]|null=null;let combatState=cp.role.combat?.state;
+            if(combat){requireValue(scene.schemaVersion===2&&scene.combat,'CONFIG_NOT_READY');const combatHash=await manifestDigest(combat);requireValue(!cp.role.combat||cp.role.combat.configHash===combatHash,'CONFIG_NOT_READY');
+                const state=combatState??initialCombatState(),tape=await combatRandomTape(scene.combat.seed,state.randomCursor,256),stats=currentBasicStats(c,equipment,combat,{x:Number(initial.x),y:Number(initial.y),facing:initial.facing},this.options.setConfigs);
+                const targets=scene.combat.targets.map(t=>({...t,controlImmune:scene.enemies.find(e=>e.actor.actorId===t.actorId)!.immuneToControl}));
+                const result=advanceBasicSimulation(initial,state,targets,q.payload.inputs,q.payload.fromTick,q.payload.toTick,config,combat.config,{challengeId:h.id,sceneEpoch:h.sceneEpoch,actorId:c.id},stats,cursor=>{requireValue(cursor-state.randomCursor<tape.length,'CONFIG_NOT_READY');return tape[cursor-state.randomCursor];});
+                computed.state=result.movement;combatState=result.state;combatEvents=result.events;scene.combat.targets=result.targets;scene.randomCursor=result.state.randomCursor;scene.eventCursor+=result.events.length;
+                for(const enemy of scene.enemies){const target=result.targets.find(t=>t.actorId===enemy.actor.actorId)!;enemy.actor={...enemy.actor,hp:target.hp,lifeState:target.lifeState,actionId:target.lifeState==='dead'?'dead':target.downUntilTick!==null?'knockdown':'idle',phase:0};}
+            }
             if(cp.role.regenerationRef!==null)requireValue(cp.role.regenerationHash===await manifestDigest(this.options.content!.regeneration),'CONFIG_NOT_READY');
             const role=advanceRole(cp.role,cp.header.logicalTimeMs,logicalTimeMs,this.options.content!);
             role.schemaVersion=3;role.regenerationHash=role.regenerationHash??null;role.movement={configHash,state:computed.state};role.player={...role.player,x:Number(computed.state.x),y:Number(computed.state.y),facing:computed.state.facing};
-            const hash=await stateHash(role,cp.scene),chunk=await writeChunk(h,0,increment(cp.header.activeChunks[0].chunkRevision),role);
+            if(combat){role.schemaVersion=4;role.attackPower=currentBasicStats(c,equipment,combat,{x:role.player.x,y:role.player.y,facing:role.player.facing},this.options.setConfigs).attackPower;role.equipmentVersion=c.equipmentVersion;role.combat={configHash:await manifestDigest(combat),attributesRevision:c.statsVersion,state:combatState!};role.player.actionId=combatState!.cast?`basic${combatState!.cast.stage+1}`:'idle';role.player.phase=combatState!.cast?.stage??0;}
+            const hash=await stateHash(role,scene),chunk=await writeChunk(h,0,increment(cp.header.activeChunks[0].chunkRevision),role),sceneChunk=await writeChunk(h,1,increment(cp.header.activeChunks[1].chunkRevision),scene);
+            const resultPages=await Promise.all(Array.from({length:combatEvents?Math.max(1,Math.ceil(combatEvents.length/32)):0},async(_,pageIndex)=>({id:await loginKey('combatResults',[a.id,q.operationId,pageIndex]),schemaVersion:1,accountId:a.id,operationId:q.operationId,actionResultsRef:id,pageIndex,totalPages:Math.max(1,Math.ceil(combatEvents!.length/32)),events:combatEvents!.slice(pageIndex*32,(pageIndex+1)*32)})));requireValue(resultPages.length<=64,'CONFIG_NOT_READY');for(const page of resultPages)budget(page,32768);
             return await this.options.store.run(async tx=>{
                 now=this.options.clock.now();const currentA=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),currentC=await this.character(tx,currentA,q.payload.characterId,q.payload.rolePlayEpoch),currentH=await tx.get<EntryChallenge>(h.id),old=await tx.get<{schemaVersion:number;id:string;tuple:string;command:string;accountId:string;result:unknown}>(id);
                 if(old)return reply(original(old,id,a.id).outcome,true);
@@ -602,13 +629,15 @@ export class ChallengeService {
                 requireValue(currentH.roomPhase==='active'&&latest.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
                 if(await this.movementGap(tx,currentH,latest.header,now))return reply({status:'rejected',code:'RECOVERY_REQUIRED'});
                 this.validateMovement(q,currentA,currentC,currentH,latest.header,now);
-                requireValue(canonical(latest)===canonical(cp)&&currentC.equipmentVersion===c.equipmentVersion,'VERSION_CONFLICT');
+                requireValue(canonical(latest)===canonical(cp)&&canonical(currentC)===canonical(c),'VERSION_CONFLICT');for(const item of equipment)requireValue(canonical(await tx.get(item.id))===canonical(item),'VERSION_CONFLICT');
                 const revision=increment(latest.header.revision),state={...latest.header.state,checkpointRevision:revision,publicStateHash:hash,acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,inputGapBaseAt:now,lastAcceptedInputAt:now};
                 const activeChunks=[...latest.header.activeChunks];if(chunk.hash!==activeChunks[0].hash){tx.set(chunk.id,chunk);activeChunks[0]={...activeChunks[0],chunkRevision:chunk.chunkRevision,hash:chunk.hash};}
+                if(sceneChunk.hash!==activeChunks[1].hash){tx.set(sceneChunk.id,sceneChunk);activeChunks[1]={...activeChunks[1],chunkRevision:sceneChunk.chunkRevision,hash:sceneChunk.hash};}
                 const nextHeader={...latest.header,revision,activeChunks,state,logicalTimeMs,timeRemainderMs:logicalTimeMs%10};
                 const nextH={...currentH,version:increment(currentH.version),acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,lease:{...currentH.lease!,lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(currentH.lease!.revision)}};
-                const result=reply({status:'committed',data:{acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,checkpointRevision:revision,actionResultsRef:id,events:computed.events},resultVersions:[{kind:'character',id:c.id,version:c.version},{kind:'challenge',id:h.id,version:nextH.version}]});
+                const result=reply({status:'committed',data:{acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,checkpointRevision:revision,actionResultsRef:id,events:combatEvents?[]:computed.events},resultVersions:[{kind:'character',id:c.id,version:c.version},{kind:'challenge',id:h.id,version:nextH.version}]});
                 const receipt={schemaVersion:2,id,accountId:a.id,command:q.command,tuple,result,characterId:c.id,rolePlayEpoch:c.rolePlayEpoch,sessionId:q.sessionId,sessionEpoch:q.sessionEpoch};budget(receipt,16384);budget(nextHeader,16384);budget(nextH,131072);
+                for(const page of resultPages)tx.set(page.id,page);
                 tx.set(a.id,{...currentA,writeRevision:increment(currentA.writeRevision)});tx.set(h.id,nextH);tx.set(nextHeader.id,nextHeader);tx.set(id,receipt);return result;
             });
         }catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}

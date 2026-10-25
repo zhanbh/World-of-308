@@ -444,3 +444,8 @@ H.pendingRoomAttempt的后续房分支附exitRuleHash（显式local-test出口�
 ## ST11-01 当前移动实施（2026-10-25）
 
 ST11-01的role内部schema3增加movement.configHash与精确state（x/y、带符号remainderX/Y、facing、intentX/Y），余数分母固定100000；旧positionRemainder不复用。公开movement记录、O的原session/role上下文及完整字段/单位见[移动合同](movement-input-contract-v1.md)。外层CP schema2及scene schema1保持，role1/2兼容读取。
+
+
+## ST11-02 普攻训练实施（2026-10-25）
+
+当前字段增量见[普攻执行合同](basic-combat-contract-v1.md)：显式无奖励训练profile、role4/scene2动作及目标控制、独立私有战斗流、当前公开动作证明和完整有界actionResults分页。既有未声明combat的移动能力保持。实现及实际预算见[验证](../reviews/st11-02-verification.md)，不代表正式收益/技能/AI能力已交付。

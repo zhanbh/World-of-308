@@ -92,3 +92,11 @@ export function parseSimulationConfirmed(value:unknown){
  const p=object(q.payload,['characterId','rolePlayEpoch','challengeId','sceneEpoch','timelineEpoch','checkpointRevision','pageIndex']);
  return {protocolVersion:2 as const,query:'simulation.confirmed' as const,requestId:identifier(q.requestId,64),sessionId:identifier(q.sessionId),sessionEpoch:int(q.sessionEpoch,1),payload:{characterId:identifier(p.characterId),rolePlayEpoch:int(p.rolePlayEpoch,1),challengeId:identifier(p.challengeId),sceneEpoch:int(p.sceneEpoch,1),timelineEpoch:int(p.timelineEpoch,1),checkpointRevision:int(p.checkpointRevision),pageIndex:int(p.pageIndex,0,63)}};
 }
+
+/** Historical complete bounded action result pages; authorization is current account/session. */
+export function parseActionResultsQuery(value:unknown){
+ const q=object(value,['protocolVersion','query','requestId','sessionId','sessionEpoch','payload']);
+ if(q.protocolVersion!==2||q.query!=='simulation.actionResults')throw new TypeError('UNSUPPORTED_PROTOCOL');
+ const p=object(q.payload,['operationId','pageIndex']);
+ return {protocolVersion:2 as const,query:'simulation.actionResults' as const,requestId:identifier(q.requestId,64),sessionId:identifier(q.sessionId),sessionEpoch:int(q.sessionEpoch,1),payload:{operationId:opId(p.operationId),pageIndex:int(p.pageIndex,0,63)}};
+}

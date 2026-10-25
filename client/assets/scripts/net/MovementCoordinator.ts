@@ -1,9 +1,13 @@
 import {encodeSceneMessage,decodeSceneReply} from '../../../../shared/src/protocol/scene-wire.ts';
+import {advanceBasicSimulation} from '../../../../shared/src/basic-simulation.ts';
+import {initialCombatState} from '../../../../shared/src/basic-combat-kernel.ts';
+import type {CombatState,CombatStats,CombatTarget,CombatEvent} from '../../../../shared/src/basic-combat-kernel.ts';
+import type {BasicTrainingProfile} from '../../../../backend/src/challenge/basic-training.ts';
 import {advanceMovement} from '../../../../shared/src/movement-kernel.ts';
 import type {MovementConfig,MovementState} from '../../../../shared/src/movement-kernel.ts';
 import {decodeSimulationSubmit} from '../../../../shared/src/protocol/simulation-v2.ts';
 import type {ActionInput,SimulationSubmit} from '../../../../shared/src/protocol/simulation-v2.ts';
-import {parseSimulationResponse,parseChallengeQueryResponse,parseRecoveryPage} from '../../../../shared/src/protocol/scene-v2.ts';
+import {parseSimulationResponse,parseChallengeQueryResponse,parseRecoveryPage,parseActionResultsPage} from '../../../../shared/src/protocol/scene-v2.ts';
 import type {SceneState} from '../../../../shared/src/protocol/scene-v2.ts';
 import {parseAssetQueryResponse} from '../../../../shared/src/protocol/asset-v2.ts';
 import {verifyRecoveryPages} from '../../../../shared/src/public-state-proof.ts';
@@ -12,22 +16,24 @@ import type {EntryTransport,EntryPendingStore} from './ChallengeEntryCoordinator
 import type {LoadingCoordinator} from './LoadingCoordinator.ts';
 type Context={protocolVersion:2;sessionId:string;sessionEpoch:number;characterId:string;rolePlayEpoch:number;challengeId:string};
 type Queued=ActionInput;
-export interface MovementClientState {status:'loading'|'empty'|'error'|'submitting'|'unknown'|'stale'|'active'|'frozen';code:string|null;predictionEnabled:boolean;confirmed:SceneState|null;position:MovementState|null;queued:number;}
+export type BasicPrediction={profile:BasicTrainingProfile;stats:CombatStats;targetRules:Record<string,{mitigation:CombatTarget['mitigation'];evasion:CombatTarget['evasion'];damageImmune:boolean;controlImmune:boolean}>};
+export interface MovementClientState {status:'loading'|'empty'|'error'|'submitting'|'unknown'|'stale'|'active'|'frozen';code:string|null;predictionEnabled:boolean;confirmed:SceneState|null;position:MovementState|null;queued:number;combat:CombatState|null;targets:CombatTarget[];actionResults:CombatEvent[];}
 /** Durable original intent, current public proof, and a bounded prediction clock. */
 export class MovementCoordinator {
  private transport:EntryTransport;private persistence:EntryPendingStore;private clock:{now():number};
  private context:Context|null=null;private config:MovementConfig|null=null;private generation=0;private pending:SimulationSubmit|null=null;private knownRejected=false;private queue:Queued[]=[];
+ private basic:BasicPrediction|null=null;private confirmedCombat:CombatState|null=null;private confirmedTargets:CombatTarget[]=[];
  private confirmedPosition:MovementState|null=null;private confirmedAt=0;private versions:SimulationSubmit['expected']=[];
- private current:MovementClientState={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0};
+ private current:MovementClientState={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0,combat:null,targets:[],actionResults:[]};
  constructor(transport:EntryTransport,persistence:EntryPendingStore,clock:{now():number}){this.transport=transport;this.persistence=persistence;this.clock=clock;}
  get state(){this.guardClock();return structuredClone(this.current);}
  private async scene(q:unknown){const text=await this.transport.send(encodeSceneMessage(q));decodeSceneReply(q,text);return JSON.parse(text) as unknown;}
  private key(){return JSON.stringify(['movement',this.context]);}
  private save(){this.persistence.save(this.key(),this.pending?JSON.stringify(this.pending):null);}
  private guardClock(){if(this.current.predictionEnabled&&this.clock.now()-this.confirmedAt>=1000){this.current.predictionEnabled=false;this.current.status='frozen';}}
- async load(context:Context,config:MovementConfig,loading:LoadingCoordinator){
-  const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
-  this.current={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0};
+ async load(context:Context,config:MovementConfig,loading:LoadingCoordinator,basic?:BasicPrediction){
+  const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.basic=basic?structuredClone(basic):null;this.confirmedCombat=null;this.confirmedTargets=[];this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
+  this.current={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0,combat:null,targets:[],actionResults:[]};
   if(loading.state.status!=='loaded'||loading.state.manifest?.challengeId!==context.challengeId||loading.state.manifest.mapRef!==config.mapRef){this.current.status='empty';this.current.code='RESOURCES_NOT_LOADED';return;}
   this.roomNo=loading.state.manifest.roomNo;
   const saved=this.persistence.load(this.key());if(saved!==null){this.pending=decodeSimulationSubmit(saved);if(this.pending.sessionId!==context.sessionId||this.pending.sessionEpoch!==context.sessionEpoch||this.pending.payload.characterId!==context.characterId||this.pending.payload.rolePlayEpoch!==context.rolePlayEpoch||this.pending.payload.challengeId!==context.challengeId)throw Error('PENDING_CONTEXT_MISMATCH');this.current.status='unknown';await this.retry();return;}
@@ -52,7 +58,18 @@ export class MovementCoordinator {
   if(!actor||actor.kind!=='actor')throw Error('INCOMPLETE_PUBLIC_STATE');
   if(movement&&movement.kind==='movement'&&movement.configHash!==await manifestDigest(config))throw Error('CONFIG_MISMATCH');if(generation!==this.generation)return;
   const m=movement?.kind==='movement'?movement:null;this.confirmedPosition={x:String(actor.x),y:String(actor.y),facing:actor.facing,intentX:m?.intentX??0,intentY:m?.intentY??0,remainderX:m?.remainderX??'0',remainderY:m?.remainderY??'0'};
-  this.versions=final.versions;this.confirmedAt=this.clock.now();this.current={status:'active',code:null,predictionEnabled:true,confirmed:s,position:structuredClone(this.confirmedPosition),queued:0};
+  if(!this.basic&&proof.records.some(r=>r.kind==='combatAction'))throw Error('COMBAT_CONFIG_MISSING');
+  if(this.basic){
+   const action=proof.records.find(r=>r.kind==='combatAction'&&r.actorId===c.characterId);
+   if(!action||action.kind!=='combatAction'||action.configHash!==await manifestDigest(this.basic.profile))throw Error('COMBAT_CONFIG_MISMATCH');if(generation!==this.generation)return;
+   this.confirmedCombat={...initialCombatState(),held:action.held,buffered:action.buffered,nextStage:action.nextStage,comboExpiresUs:action.comboExpiresUs,castSequence:action.castSequence,cast:action.cast?(()=>{const {facing,...cast}=action.cast;return {...cast,snapshot:{...structuredClone(this.basic!.stats),facing}};})():null};
+   this.confirmedTargets=proof.records.filter(r=>r.kind==='actor'&&r.actorId!==c.characterId).map(r=>{
+    if(r.kind!=='actor')throw Error('INCOMPLETE_PUBLIC_STATE');const rule=this.basic!.targetRules[r.actorId],control=proof.records.find(v=>v.kind==='targetControl'&&v.actorId===r.actorId);
+    if(!rule||!control||control.kind!=='targetControl')throw Error('TARGET_CONFIG_MISSING');
+    return {actorIndex:r.actorIndex,actorId:r.actorId,x:r.x,y:r.y,hp:r.hp,maxHp:r.maxHp,lifeState:r.lifeState,...rule,directSinceRise:control.directSinceRise,downUntilTick:control.downUntilTick};
+   });
+  }
+  this.versions=final.versions;this.confirmedAt=this.clock.now();this.current={status:'active',code:null,predictionEnabled:true,confirmed:s,position:structuredClone(this.confirmedPosition),queued:0,combat:structuredClone(this.confirmedCombat),targets:structuredClone(this.confirmedTargets),actionResults:this.current.actionResults};
  }
  enqueue(input:ActionInput){
   this.guardClock();if(!this.current.predictionEnabled||!this.current.confirmed||this.pending)throw Error('PREDICTION_FROZEN');
@@ -64,6 +81,7 @@ export class MovementCoordinator {
  }
  predict(toTick:number){this.guardClock();if(!this.current.predictionEnabled||!this.confirmedPosition||!this.current.confirmed)return;
   const from=this.current.confirmed.acceptedTick;if(toTick-from>Math.min(100,Math.floor((this.clock.now()-this.confirmedAt)/10)))throw Error('PREDICTION_FRONTIER');
+  if(this.basic&&this.confirmedCombat){const result=advanceBasicSimulation(this.confirmedPosition,this.confirmedCombat,this.confirmedTargets,this.queue.filter(i=>i.tick<toTick),from,toTick,this.config!,this.basic.profile.config,{challengeId:this.context!.challengeId,sceneEpoch:this.current.confirmed.sceneEpoch,actorId:this.context!.characterId},this.basic.stats,()=>0);this.current.position=result.movement;this.current.combat=result.state;this.current.targets=result.targets;return;}
   this.current.position=advanceMovement(this.confirmedPosition,this.queue.filter(i=>i.tick<toTick),from,toTick,this.config!).state;
  }
  async submit(operationId:string,toTick:number){
@@ -73,7 +91,7 @@ export class MovementCoordinator {
   const payload={characterId:c.characterId,rolePlayEpoch:c.rolePlayEpoch,challengeId:c.challengeId,roomNo:0,sceneEpoch:s.sceneEpoch,timelineEpoch:s.timelineEpoch,baseCheckpointVersion:s.checkpointRevision,firstSeq:s.acceptedSeq+1,lastSeq:s.acceptedSeq+inputs.length,fromTick:s.acceptedTick,toTick,ruleRef:this.config.ruleRef,mapRef:this.config.mapRef,inputs,digest:''};
   // roomNo is supplied by the loaded resource manifest and retained with configuration below.
   payload.roomNo=this.roomNo;
-  payload.digest=await manifestDigest({payload:Object.fromEntries(Object.entries(payload).filter(([k])=>k!=='digest')),config:this.config});
+  payload.digest=await manifestDigest({payload:Object.fromEntries(Object.entries(payload).filter(([k])=>k!=='digest')),config:this.config,...(this.basic?{combat:this.basic.profile}:{})});
   if(generation!==this.generation)return;
   this.pending=decodeSimulationSubmit(JSON.stringify({protocolVersion:2,sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,command:'simulation.submit',operationId,expected:this.versions,payload}));this.save();this.queue=[];await this.retry(false);
  }
@@ -90,6 +108,16 @@ export class MovementCoordinator {
    if(result.outcome.status==='rejected'){this.knownRejected=true;this.current.status='error';this.current.code=result.outcome.code;return;}
    await this.refresh(generation);if(generation!==this.generation)return;
    if(this.current.confirmed!.checkpointRevision<result.outcome.data.checkpointRevision)throw Error('STALE_STATE');
+   if(this.basic){
+    this.current.status='submitting';this.current.predictionEnabled=false;
+    const actionResults:CombatEvent[]=[];let totalPages=1,expectedTotal:number|null=null;
+    for(let pageIndex=0;pageIndex<totalPages;pageIndex++){
+     const page=parseActionResultsPage(await this.scene({protocolVersion:2,sessionId:q.sessionId,sessionEpoch:q.sessionEpoch,query:'simulation.actionResults',requestId:`combat-results-${pageIndex}`,payload:{operationId:q.operationId,pageIndex}}));
+     if(generation!==this.generation)return;if(page.actionResultsRef!==result.outcome.data.actionResultsRef||(expectedTotal!==null&&page.totalPages!==expectedTotal))throw Error('ACTION_RESULTS_MISMATCH');expectedTotal=page.totalPages;totalPages=page.totalPages;actionResults.push(...page.events);
+    }
+    if(new Set(actionResults.map(e=>e.eventId)).size!==actionResults.length)throw Error('ACTION_RESULTS_MISMATCH');
+    this.current.actionResults=actionResults;this.current.status='active';this.current.predictionEnabled=true;
+   }
    this.pending=null;this.save();
   }catch(e){if(generation!==this.generation)return;this.current.status='unknown';this.current.code=e instanceof Error?e.message:'NETWORK_ERROR';this.current.predictionEnabled=false;}
  }

@@ -90,3 +90,8 @@ ready后缀可合法改变HP/CD/buff及CP修订/hash；active分页投影当前C
 ## ST11-01 当前移动实施（2026-10-25）
 
 role schema3持久移动意图与精确带符号/100000余数，兼容role1/2；保持logicalTimeMs原亚tick余量（13ms+500ms=513ms），不以acceptedTick重建毫秒。movement公开精度进入公开hash并由simulation.confirmed裁剪分页。字段、兼容与约束见[移动合同](movement-input-contract-v1.md)。
+
+
+## ST11-02 普攻训练实施（2026-10-25）
+
+当前CP增量见[普攻执行合同](basic-combat-contract-v1.md)：显式无奖励训练profile、role4/scene2动作及目标控制、独立私有战斗流、当前公开动作证明和完整有界actionResults分页。既有未声明combat的移动能力保持。实现及实际预算见[验证](../reviews/st11-02-verification.md)，不代表正式收益/技能/AI能力已交付。

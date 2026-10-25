@@ -147,3 +147,8 @@ ready仍先按原票据截止CAS进入active，成功后签发该新连接阶段
 ## ST11-01 当前移动实施（2026-10-25）
 
 ST11-01 active/connected接受连续移动片段后原子推进acceptedSeq/Tick、CP和原O；动作不支持为有序拒绝，结构/前沿/身份错误整段不推进。共同输入缺口守卫在submit/当前查询/新心跳/活动分页/控制入口转recovery，继承原lease截止；加载排除。严格状态和客户端未知/重开/冻结见[移动合同](movement-input-contract-v1.md)。
+
+
+## ST11-02 普攻训练实施（2026-10-25）
+
+当前状态增量见[普攻执行合同](basic-combat-contract-v1.md)：显式无奖励训练profile、role4/scene2动作及目标控制、独立私有战斗流、当前公开动作证明和完整有界actionResults分页。既有未声明combat的移动能力保持。实现及实际预算见[验证](../reviews/st11-02-verification.md)，不代表正式收益/技能/AI能力已交付。
