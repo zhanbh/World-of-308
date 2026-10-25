@@ -32,3 +32,5 @@ FR01/FR02/FR03原发现见[最终复核](../reviews/eng-review-final-recheck-202
 设计正文一致不等于功能已实现。B0实施范围见[首片计划](../design/implementation-b0-contract-foundation-v1.md)；用户后续已授权E01本地实现，当前协议/配置/检查基础已交付，实际覆盖与缺口见[E01验证](../reviews/e01-07-integration-verification-2026-10-22.md)。SDK/真机/经济与性能门禁按对应阶段执行。本索引不授权安装、部署或操作真实资产。
 
 ST11-03当前技能执行增量见[十字斩合同](cross-combat-contract-v1.md)，并同步上表算术/CP/包络、字段/API/状态视图；实施事实与GAP见[03验证](../reviews/st11-03-verification.md)。
+
+ST11-04崩山击增量见[崩山击合同](bengshan-combat-contract-v1.md)，同步字段/API/状态/算术/CP/包络；实际证据见[04验证](../reviews/st11-04-verification.md)。

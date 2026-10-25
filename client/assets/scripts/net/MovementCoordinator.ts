@@ -1,3 +1,6 @@
+import {advanceBengshanSimulation} from '../../../../shared/src/bengshan-simulation.ts';
+import {restoreBengshanPublic} from '../../../../shared/src/bengshan-combat-kernel.ts';
+import type {BengshanState} from '../../../../shared/src/bengshan-combat-kernel.ts';
 import {advanceCrossSimulation} from '../../../../shared/src/cross-simulation.ts';
 import {restoreCrossPublic} from '../../../../shared/src/cross-combat-kernel.ts';
 import type {CrossState} from '../../../../shared/src/cross-combat-kernel.ts';
@@ -20,13 +23,13 @@ import type {LoadingCoordinator} from './LoadingCoordinator.ts';
 type Context={protocolVersion:2;sessionId:string;sessionEpoch:number;characterId:string;rolePlayEpoch:number;challengeId:string};
 type Queued=ActionInput;
 export type BasicPrediction={profile:BasicTrainingProfile;stats:CombatStats;cross?:{level:number;controlled:boolean};targetRules:Record<string,{mitigation:CombatTarget['mitigation'];evasion:CombatTarget['evasion'];damageImmune:boolean;controlImmune:boolean}>};
-export interface MovementClientState {status:'loading'|'empty'|'error'|'submitting'|'unknown'|'stale'|'active'|'frozen';code:string|null;predictionEnabled:boolean;confirmed:SceneState|null;position:MovementState|null;queued:number;combat:CombatState|null;targets:CombatTarget[];actionResults:CombatEvent[];cross?:CrossState|null;}
+export interface MovementClientState {status:'loading'|'empty'|'error'|'submitting'|'unknown'|'stale'|'active'|'frozen';code:string|null;predictionEnabled:boolean;confirmed:SceneState|null;position:MovementState|null;queued:number;combat:CombatState|null;targets:CombatTarget[];actionResults:CombatEvent[];cross?:CrossState|null;bengshan?:BengshanState|null;}
 /** Durable original intent, current public proof, and a bounded prediction clock. */
 export class MovementCoordinator {
  private transport:EntryTransport;private persistence:EntryPendingStore;private clock:{now():number};
  private context:Context|null=null;private config:MovementConfig|null=null;private generation=0;private pending:SimulationSubmit|null=null;private knownRejected=false;private queue:Queued[]=[];
  private basic:BasicPrediction|null=null;private confirmedCombat:CombatState|null=null;private confirmedTargets:CombatTarget[]=[];
- private confirmedCross:CrossState|null=null;private confirmedMp='0';
+ private confirmedBengshan:BengshanState|null=null;private confirmedCross:CrossState|null=null;private confirmedMp='0';
  private confirmedPosition:MovementState|null=null;private confirmedAt=0;private versions:SimulationSubmit['expected']=[];
  private current:MovementClientState={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0,combat:null,targets:[],actionResults:[]};
  constructor(transport:EntryTransport,persistence:EntryPendingStore,clock:{now():number}){this.transport=transport;this.persistence=persistence;this.clock=clock;}
@@ -36,7 +39,7 @@ export class MovementCoordinator {
  private save(){this.persistence.save(this.key(),this.pending?JSON.stringify(this.pending):null);}
  private guardClock(){if(this.current.predictionEnabled&&this.clock.now()-this.confirmedAt>=1000){this.current.predictionEnabled=false;this.current.status='frozen';}}
  async load(context:Context,config:MovementConfig,loading:LoadingCoordinator,basic?:BasicPrediction){
-  const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.basic=basic?structuredClone(basic):null;this.confirmedCombat=null;this.confirmedCross=null;this.confirmedTargets=[];this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
+  const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.basic=basic?structuredClone(basic):null;this.confirmedCombat=null;this.confirmedCross=null;this.confirmedBengshan=null;this.confirmedTargets=[];this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
   this.current={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0,combat:null,targets:[],actionResults:[]};
   if(loading.state.status!=='loaded'||loading.state.manifest?.challengeId!==context.challengeId||loading.state.manifest.mapRef!==config.mapRef){this.current.status='empty';this.current.code='RESOURCES_NOT_LOADED';return;}
   this.roomNo=loading.state.manifest.roomNo;
@@ -74,7 +77,8 @@ export class MovementCoordinator {
    });
   }
   this.confirmedMp=actor.mp;if(this.basic?.profile.cross){const action=proof.records.find(r=>r.kind==='crossAction'&&r.actorId===c.characterId);if(!action||action.kind!=='crossAction'||!this.basic.cross)throw Error('CROSS_STATE_MISSING');const effectRecords=proof.records.filter(r=>r.kind==='crossEffect'&&r.actorId===c.characterId);const effects=effectRecords.map((r,index)=>{if(r.kind!=='crossEffect'||r.index!==index||r.state.castSequence!==action.state.castSequence||JSON.stringify(r.state.readyAtUs)!==JSON.stringify(action.state.readyAtUs))throw Error('CROSS_EFFECT_MISMATCH');return r.state.effects[0];});this.confirmedCross=restoreCrossPublic({...action.state,effects},{...this.basic.stats,...this.basic.cross,mastery:this.basic.profile.mastery!,mp:actor.mp});}
-  this.versions=final.versions;this.confirmedAt=this.clock.now();this.current={status:'active',code:null,predictionEnabled:true,confirmed:s,position:structuredClone(this.confirmedPosition),queued:0,combat:structuredClone(this.confirmedCombat),targets:structuredClone(this.confirmedTargets),actionResults:this.current.actionResults,cross:structuredClone(this.confirmedCross)};
+  if(this.basic?.profile.bengshan){const action=proof.records.find(r=>r.kind==='bengshanAction'&&r.actorId===c.characterId);if(!action||action.kind!=='bengshanAction'||!this.basic.cross)throw Error('BENGSHAN_STATE_MISSING');const effects=proof.records.filter(r=>r.kind==='bengshanEffect'&&r.actorId===c.characterId).map((r,index)=>{if(r.kind!=='bengshanEffect'||r.index!==index||r.state.castSequence!==action.state.castSequence||JSON.stringify(r.state.readyAtUs)!==JSON.stringify(action.state.readyAtUs))throw Error('BENGSHAN_EFFECT_MISMATCH');return r.state.effects[0];});this.confirmedBengshan=restoreBengshanPublic({...action.state,effects},{...this.basic.stats,...this.basic.cross,mastery:this.basic.profile.mastery!,mp:actor.mp});}
+  this.versions=final.versions;this.confirmedAt=this.clock.now();this.current={status:'active',code:null,predictionEnabled:true,confirmed:s,position:structuredClone(this.confirmedPosition),queued:0,combat:structuredClone(this.confirmedCombat),targets:structuredClone(this.confirmedTargets),actionResults:this.current.actionResults,cross:structuredClone(this.confirmedCross),bengshan:structuredClone(this.confirmedBengshan)};
  }
  enqueue(input:ActionInput){
   this.guardClock();if(!this.current.predictionEnabled||!this.current.confirmed||this.pending)throw Error('PREDICTION_FROZEN');
@@ -86,6 +90,7 @@ export class MovementCoordinator {
  }
  predict(toTick:number){this.guardClock();if(!this.current.predictionEnabled||!this.confirmedPosition||!this.current.confirmed)return;
   const from=this.current.confirmed.acceptedTick;if(toTick-from>Math.min(100,Math.floor((this.clock.now()-this.confirmedAt)/10)))throw Error('PREDICTION_FRONTIER');
+  if(this.basic?.profile.bengshan&&this.basic.profile.cross&&this.confirmedBengshan&&this.basic.cross&&this.confirmedCombat&&this.confirmedCross){const result=advanceBengshanSimulation(this.confirmedPosition,this.confirmedCombat,this.confirmedCross,this.confirmedBengshan,this.confirmedTargets,this.queue.filter(i=>i.tick<toTick),from,toTick,this.config!,this.basic.profile.config,this.basic.profile.cross,this.basic.profile.bengshan,{challengeId:this.context!.challengeId,sceneEpoch:this.current.confirmed.sceneEpoch,actorId:this.context!.characterId},{...this.basic.stats,...this.basic.cross,mastery:this.basic.profile.mastery!,mp:this.confirmedMp},()=>0);this.current.position=result.movement;this.current.combat=result.state;this.current.cross=result.cross;this.current.bengshan=result.bengshan;this.current.targets=result.targets;return;}
   if(this.basic?.profile.cross&&this.basic.cross&&this.confirmedCombat&&this.confirmedCross){const result=advanceCrossSimulation(this.confirmedPosition,this.confirmedCombat,this.confirmedCross,this.confirmedTargets,this.queue.filter(i=>i.tick<toTick),from,toTick,this.config!,this.basic.profile.config,this.basic.profile.cross,{challengeId:this.context!.challengeId,sceneEpoch:this.current.confirmed.sceneEpoch,actorId:this.context!.characterId},{...this.basic.stats,...this.basic.cross,mastery:this.basic.profile.mastery!,mp:this.confirmedMp},()=>0);this.current.position=result.movement;this.current.combat=result.state;this.current.cross=result.cross;this.current.targets=result.targets;return;}
   if(this.basic&&this.confirmedCombat){const result=advanceBasicSimulation(this.confirmedPosition,this.confirmedCombat,this.confirmedTargets,this.queue.filter(i=>i.tick<toTick),from,toTick,this.config!,this.basic.profile.config,{challengeId:this.context!.challengeId,sceneEpoch:this.current.confirmed.sceneEpoch,actorId:this.context!.characterId},this.basic.stats,()=>0);this.current.position=result.movement;this.current.combat=result.state;this.current.targets=result.targets;return;}
   this.current.position=advanceMovement(this.confirmedPosition,this.queue.filter(i=>i.tick<toTick),from,toTick,this.config!).state;

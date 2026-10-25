@@ -55,3 +55,8 @@ ST11-01移动采用1000整数单位/设计像素，10ms tick，分母100000带�
 ## ST11-03 十字斩实施增量（2026-10-25）
 
 当前增量沿[十字斩合同](cross-combat-contract-v1.md)：严格schema2无奖励profile、逐节点直接/流血预算、输入边界MP回复、scene3紧凑效果/快照及按需块、crossAction/crossEffect公开证明和完整动作结果。旧schema1普攻、原CP/恢复/加载兼容；实际验收与未覆盖项见[ST11-03证据](../reviews/st11-03-verification.md)，不代表正式奖励/AI或全部技能混合图已通过。
+
+
+## ST11-04 崩山击执行增量
+
+当前增量见[崩山击合同](bengshan-combat-contract-v1.md)：显式无奖励训练profile schema3、scene schema4及双技能严格效果lane；三节点直接/流血分别整招预算后按权重分摊、末段承余数。位移全路径复用足迹/边界/障碍扫掠，以实际合法位置判命中；终段才自带特殊倒地，已有倒地不缩短、死亡优先。typed bengshanAction/逐个bengshanEffect纳入完整公开hash和分页；MP/CD/当前等级装备、原操作/恢复/OCC/原子结果页预算沿原合同，旧schema保持兼容。各字段、时序、编码及界限以该合同为同一增量的展开视图；完整最大四技能图仍待ST11-06。
