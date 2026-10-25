@@ -1,0 +1,24 @@
+{
+  "commit": "5129c57461c7daed1c20999d5c3b0b82382f9d00",
+  "date": "2026-10-24",
+  "fixture": "Published field ceiling: printable ASCII IDs128,100stacks, version safeinteger maximum, legitimate character/account binding; no new gameplay",
+  "sizes": [
+    {
+      "kind": "backpack",
+      "internal_utf8": 82226,
+      "public_utf8": 65981
+    },
+    {
+      "kind": "personalVault",
+      "internal_utf8": 82231,
+      "public_utf8": 65986
+    },
+    {
+      "kind": "accountVault",
+      "internal_utf8": 67385,
+      "public_utf8": 51141
+    }
+  ],
+  "bank_snapshot_utf8": 133084,
+  "old_bank_parser_error": "PAYLOAD_TOO_LARGE"
+}

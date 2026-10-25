@@ -1,0 +1,32 @@
+{
+  "implementation_commit": "a75ee619d4f64f2e073c62d5626e605aff028402",
+  "original_delivery_commit": "5129c57461c7daed1c20999d5c3b0b82382f9d00",
+  "kind": "build-followup-content-manifest",
+  "audit_documents_committed": false,
+  "followup_pushed": false,
+  "excluded_preexisting_change": "client/settings/v2/packages/cocos-service.json",
+  "files": {
+    ".gitignore": "f151e1bd26baa141a572600048d9aad111b1f93e3dfa73f2b189ab1e81792205",
+    "backend/src/bank/bank-service.ts": "2e2ba675ee51c1a72172a31d1598e5a4b547d863a7dc74d025313ac1a77dc00e",
+    "backend/src/equipment/equipment-service.ts": "3e6cfbcbf2f60d4133c7628d389c522f167b22fdb6e100adc7e2b03a3e3c3d87",
+    "backend/src/inventory/inventory-service.ts": "3a3ecca9507ca169bf3cf48f5ba1d4d7071a9ac0aa0dcf45965433f19c47700d",
+    "backend/test/bank-budget.test.mjs": "ac85cfeaa82698e795bed8498ce820f978ce021e24505a20559a233ad72880ee",
+    "backend/test/bank-v2.test.mjs": "036d095ee077354a404c841509c55b6d873eb2f31535449642fcb8bbec323804",
+    "client/assets/scripts/ui/BankPanel.ts": "210454c75bcf6bb44ebd10542cb7f88c2b676aaa0ff9fd3602e98616e2668664",
+    "docs/backend/api-contract-v2.md": "bee6a148019b020ad28298528a08548c94cd77a72fc1d193c7337cb07190cf0d",
+    "docs/backend/asset-physical-mapping-v1.md": "d46927b773c095c916ade400a38e2a46527225b5a175982432e8b0f89b42460f",
+    "docs/backend/data-dictionary-v2.md": "3844696f0b6e29f0c3970d9f0ca0a072dae390978785c05c102a0afa3681bd1a",
+    "docs/reviews/st09-build-fix-verification.md": "5ba484b5069dc8ce8cfcd857279f54bcb77a014374a612403528704ae1e727a0",
+    "docs/reviews/st09-build-merge-verification.md": "febf3e0e28d37ccb53de0b2c5ad30337bb16a616b9567a3f3b09cc0fe9b82053",
+    "docs/reviews/st09-build-process-audit.md": "899744f5ec2e6236a514f9d60a740f7b6e6e895777824b5ea80676b53a013c06",
+    "docs/reviews/st09-build-spec-review.md": "3445a22a126e921f914a5690159df62a5d57dc1c3a42286e96917e13364eff4a",
+    "docs/reviews/st09-build-standards-review.md": "9f3ed045646becee6c163092fa943085e60292a4ad460901057e6dffa635a882",
+    "docs/reviews/st09-original-size-probe.json": "f8a7e3eaeccd418482dfd3b82185c2b772a7fd8ca99c7a180c77c753a1aa35cc",
+    "docs/stories/warrior-loop/st09/README.md": "ba3cec8966e35c941df1b935899a709a3a09cd72a4cab6458878f998ae93ced5",
+    "docs/stories/warrior-loop/st09/build-audit-checks.json": "0d78d709272f38ebbfb016767af57efc34a2b78361a90e68e5144055cc68bb2c",
+    "docs/stories/warrior-loop/st09/execution.json": "584226bd62b633cd1b9124a70cb3f2f6ae69303ded2dd41dd89a80234938fcec",
+    "docs/stories/warrior-loop/st09/verify-build-audit.py": "18d7231c16c8d26948aca7ec4e144919e6750e813e3ea14eecb89cd15f396e67",
+    "shared/src/asset-budgets.ts": "8c7e03f4ef784f27b484533156d030b1479bec7c0cfb7ac630ee23e18668207d",
+    "shared/src/protocol/asset-v2.ts": "986cc22d2e2da135f8b381a6a4158b4a266d42b8fcd16b9a048b3c0628bebb36"
+  }
+}

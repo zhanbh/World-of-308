@@ -1,0 +1,86 @@
+{
+  "reviewed_commit": "a75ee619d4f64f2e073c62d5626e605aff028402",
+  "original_delivery_commit": "5129c57461c7daed1c20999d5c3b0b82382f9d00",
+  "base": "04a1cc7ead33e1f01f65a8c901766bfe306018a0",
+  "diff_sha256": "52575f744737165ff9a7aac6f5856371dc72ab2bb1b35b7e7e1722a01c87ce67",
+  "spec_revision": "9394d40b88d29d4203c7deda0a5418e20f644557fef7cf1c7b54795635794bec",
+  "tickets": [
+    {
+      "id": "ST09-01",
+      "path": "docs/stories/warrior-loop/st09/issues/01-bank-access.md",
+      "revision": "5fc2b51810a24e28e213f9d490a0314c078b6845e12938a5463f6fafcc9d82c4",
+      "blocked_by": [],
+      "status": "accepted"
+    },
+    {
+      "id": "ST09-02",
+      "path": "docs/stories/warrior-loop/st09/issues/02-stack-transfer.md",
+      "revision": "cfb08691cda768b199fbf8e7d4cce584a58ef2314db1fb2ea601f1d2b30af315",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted"
+    },
+    {
+      "id": "ST09-03",
+      "path": "docs/stories/warrior-loop/st09/issues/03-equipment-transfer.md",
+      "revision": "02d29be2a7c18635a10eee90af0c2c7bb85052aec4a69db65f10737c5ee7126b",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted"
+    },
+    {
+      "id": "ST09-04",
+      "path": "docs/stories/warrior-loop/st09/issues/04-container-expansion.md",
+      "revision": "5cc1e442431aaf9b4d3e10a3e330177435c4ec9004c5d938c92900a5c5c2ce1b",
+      "blocked_by": [
+        1
+      ],
+      "status": "accepted"
+    }
+  ],
+  "plan_gate": {
+    "result": "pass",
+    "errors": [],
+    "frontiers": [
+      [
+        1
+      ],
+      [
+        2,
+        3,
+        4
+      ]
+    ]
+  },
+  "original_manifest": {
+    "files": 51,
+    "mismatches": []
+  },
+  "worktree_changes_since_original_manifest": [
+    "backend/src/bank/bank-service.ts",
+    "backend/test/bank-v2.test.mjs",
+    "client/assets/scripts/ui/BankPanel.ts",
+    "docs/backend/api-contract-v2.md",
+    "docs/backend/asset-physical-mapping-v1.md",
+    "docs/backend/data-dictionary-v2.md",
+    "docs/stories/warrior-loop/st09/README.md",
+    "docs/stories/warrior-loop/st09/execution.json",
+    "shared/src/protocol/asset-v2.ts"
+  ],
+  "local_security_screen": {
+    "result": "pass",
+    "rules": [
+      "private-key",
+      "github-token",
+      "aws-access-id",
+      "slack-token"
+    ],
+    "matches": [],
+    "scope": "Reviewed implementation text diff only; not a comprehensive security audit"
+  },
+  "remote_ci": "not-run-no-configured-ci",
+  "jira_actions": false,
+  "external_issue_actions": false
+}

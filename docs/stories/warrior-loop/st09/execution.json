@@ -3,36 +3,102 @@
   "date": "2026-10-23",
   "base": "04a1cc7",
   "branch": "feat-1.0.0",
-  "status": "local-capability-verified-platform-device-pending",
+  "status": "build-audit-fixed-local-checks-passed-cocos-rebuild-pending",
   "approval_evidence": "好的，开始吧",
   "accepted_spec_revision": "9394d40b88d29d4203c7deda0a5418e20f644557fef7cf1c7b54795635794bec",
   "tickets": [
     {
       "id": "ST09-01",
       "accepted_revision": "5fc2b51810a24e28e213f9d490a0314c078b6845e12938a5463f6fafcc9d82c4",
-      "execution_state": "local-verified",
-      "evidence": "docs/reviews/st09-local-verification.md"
+      "execution_state": "local-verified-followup-rechecked",
+      "evidence": "docs/reviews/st09-local-verification.md",
+      "implementation_commit": "a75ee619d4f64f2e073c62d5626e605aff028402",
+      "followup_evidence": "docs/reviews/st09-build-fix-verification.md"
     },
     {
       "id": "ST09-02",
       "accepted_revision": "cfb08691cda768b199fbf8e7d4cce584a58ef2314db1fb2ea601f1d2b30af315",
-      "execution_state": "local-verified",
-      "evidence": "docs/reviews/st09-local-verification.md"
+      "execution_state": "local-verified-followup-rechecked",
+      "evidence": "docs/reviews/st09-local-verification.md",
+      "implementation_commit": "a75ee619d4f64f2e073c62d5626e605aff028402",
+      "followup_evidence": "docs/reviews/st09-build-fix-verification.md"
     },
     {
       "id": "ST09-03",
       "accepted_revision": "02d29be2a7c18635a10eee90af0c2c7bb85052aec4a69db65f10737c5ee7126b",
-      "execution_state": "local-verified",
-      "evidence": "docs/reviews/st09-local-verification.md"
+      "execution_state": "local-verified-followup-rechecked",
+      "evidence": "docs/reviews/st09-local-verification.md",
+      "implementation_commit": "a75ee619d4f64f2e073c62d5626e605aff028402",
+      "followup_evidence": "docs/reviews/st09-build-fix-verification.md"
     },
     {
       "id": "ST09-04",
       "accepted_revision": "5cc1e442431aaf9b4d3e10a3e330177435c4ec9004c5d938c92900a5c5c2ce1b",
-      "execution_state": "local-verified",
-      "evidence": "docs/reviews/st09-local-verification.md"
+      "execution_state": "local-verified-followup-rechecked",
+      "evidence": "docs/reviews/st09-local-verification.md",
+      "implementation_commit": "a75ee619d4f64f2e073c62d5626e605aff028402",
+      "followup_evidence": "docs/reviews/st09-build-fix-verification.md"
     }
   ],
   "checks": {
+    "all": "7/7",
+    "tooling_tests": 7,
+    "shared_tests": 112,
+    "backend_tests": 341,
+    "cocos_types": "passed-at-a75ee61",
+    "cocos_h5": "not-rerun-permission-rejected",
+    "browser_mouse": "historical-5129c57",
+    "browser_touch_emulation": "historical-5129c57",
+    "unknown_close_reopen": "historical-5129c57"
+  },
+  "gaps": [
+    "formal-expansion-prices",
+    "wechat-sdk-identity-and-transactions",
+    "device-acceptance",
+    "town-ST05-ST08-ui-integration"
+  ],
+  "external_actions": false,
+  "committed": true,
+  "pushed": true,
+  "recorded_before_commit": {
+    "committed": false,
+    "pushed": false,
+    "date": "2026-10-23"
+  },
+  "delivery_commit": "5129c57461c7daed1c20999d5c3b0b82382f9d00",
+  "delivery_branch": "feat-1.0.0",
+  "as_of": "2026-10-24",
+  "build_process": {
+    "original_execution": "partial-not-full-skill-conformance",
+    "audit": "docs/reviews/st09-build-process-audit.md",
+    "local_plan_gate": "passed",
+    "full_diff_standards_review": "docs/reviews/st09-build-standards-review.md",
+    "full_diff_spec_review": "docs/reviews/st09-build-spec-review.md",
+    "followup_findings": [
+      "S1-equipment-opposite-concurrency",
+      "S2-personal-vault-stage-currency-matrix",
+      "S3-maximum-utf8-encoding"
+    ],
+    "followup_status": "S1-S3-fixed-independently-rechecked",
+    "remote_ci": "not-run",
+    "jira_actions": false,
+    "implementation_commit": "a75ee619d4f64f2e073c62d5626e605aff028402",
+    "workspace_setup_commit": "7a6b2d14d339740a02d906153718e6d32d9eda40",
+    "fix_evidence": "docs/reviews/st09-build-fix-verification.md",
+    "merge_evidence": "docs/reviews/st09-build-merge-verification.md",
+    "followup_pushed": false,
+    "audit_docs_committed": true,
+    "cocos_rebuild": "not-run-permission-rejected",
+    "standards_hard_open": 0,
+    "standards_nonblocking_open": 1,
+    "spec_open": 0,
+    "full_historical_build_conformance": false,
+    "cleanup": "completed-both-temporary-worktrees-removed-or-archived",
+    "current_gate": "review-and-local-regression-passed-cocos-rebuild-not-run"
+  },
+  "next_story": "ST10",
+  "town_ui_integration": "deferred-gap-not-ST10-prerequisite",
+  "checks_before_build_audit": {
     "all": "7/7",
     "tooling_tests": 7,
     "shared_tests": 112,
@@ -42,14 +108,5 @@
     "browser_mouse": "passed",
     "browser_touch_emulation": "passed",
     "unknown_close_reopen": "passed"
-  },
-  "gaps": [
-    "formal-expansion-prices",
-    "wechat-sdk-identity-and-transactions",
-    "device-acceptance",
-    "town-ST05-ST08-ui-integration"
-  ],
-  "external_actions": false,
-  "committed": false,
-  "pushed": false
+  }
 }
