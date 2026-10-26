@@ -46,7 +46,7 @@ try {
       results.push({ name, passed });
     }
     console.log(`\nSUMMARY: ${results.filter(r => r.passed).length}/${results.length} checks passed.`);
-    console.log('Local checks only: v2 business behavior, cloud SDK, Cocos scene types/build and device acceptance are not covered.');
+    console.log('Partial local v2 coverage only: full gameplay, cloud SDK, Cocos scene build and device acceptance are not covered.');
     process.exitCode = results.every(r => r.passed) ? 0 : 1;
   }
 } catch (error) {
