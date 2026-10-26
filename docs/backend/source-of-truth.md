@@ -46,4 +46,8 @@ ST11-04崩山击增量见[崩山击合同](bengshan-combat-contract-v1.md)，同
 
 当前大崩四节点、实际落点/独立地面尾伤、四技能有理候选顺序、profile5/scene6稳定槽与全局字典、公开256页/原结果1024页及完整字节预算按[大崩与连续战斗合同](earth-combat-contract-v1.md)执行。旧profile/schema严格兼容；future怪物912条仅编码域夹具，ST12 AI未实现。实际证据见[06验证](../reviews/st11-06-verification.md)。
 
-ST12-01显式profile6/scene7近战组合与权威玩家受击增量见[近战组合合同](monster-melee-combat-contract-v1.md)。字段、API、状态、CP/包络同步；实际本地测试、原子预算和平台缺口见[01验证](../reviews/st12-01-verification.md)。后续02～06尚未因此完成。
+ST12-01显式profile6/scene7近战组合与权威玩家受击增量见[近战组合合同](monster-melee-combat-contract-v1.md)。字段、API、状态、CP/包络同步；实际本地测试、原子预算和平台缺口见[01验证](../reviews/st12-01-verification.md)。
+
+## ST12-02 远程、冲锋与四档协同增量
+
+远程投石投射物生命周期、冲锋锁向扫掠与地图阻挡、四档难度角色预算（flanker/retreater）及重型技能并发许可按[远程与冲锋协同合同](monster-tactics-combat-contract-v1.md)执行。投射物分片切片保真与宿主独立性、冲锋穿怪不免伤与不可当硬墙、严格数据模式拒绝非对象值；实际证据见[02验证](../reviews/st12-02-verification.md)。后续03～06尚未因此完成。
