@@ -33,12 +33,16 @@
       ],
       "accepted_revision": "02731e474c2625de15b77b01584cd6574ecf8bcd84625cb59ef84c936e48fde5",
       "path": "docs/stories/warrior-loop/st12/issues/02-ranged-charge-ai.md",
-      "state": "implemented",
+      "state": "merged",
       "worktree": ".worktrees/st12-02-ranged-charge",
       "branch": "feat/st12-02-ranged-charge",
+      "implementation_commit": "c5e35f7",
+      "verified_code_head": "c5e35f7",
       "evidence": [
         "docs/backend/monster-tactics-combat-contract-v1.md",
-        "docs/reviews/st12-02-verification.md"
+        "docs/reviews/st12-02-verification.md",
+        "docs/reviews/st12-02-merge-verification.md",
+        "docs/reviews/st12-02-merged-check-all.log"
       ],
       "local_checks": "7/7; shared182; backend harness573;专项8/8",
       "platform_status": "gap"
