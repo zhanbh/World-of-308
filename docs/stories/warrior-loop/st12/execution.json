@@ -12,9 +12,18 @@
       "blocked_by": [],
       "accepted_revision": "62be806566077548f9dc3a78e665dd9cb5fd90dcb5712d2c111ee3fcf9865f11",
       "path": "docs/stories/warrior-loop/st12/issues/01-melee-composition.md",
-      "state": "in-progress",
+      "state": "merged",
       "worktree": ".worktrees/st12-01-melee",
-      "branch": "feat/st12-01-melee"
+      "branch": "feat/st12-01-melee",
+      "implementation_commit": "dfd002c5f9d8abcd765dc67894efe227fdea028a",
+      "verified_code_head": "e99b1b9475c5e556ecc470ee0335059e99c396ec",
+      "evidence": [
+        "docs/reviews/st12-01-verification.md",
+        "docs/reviews/st12-01-merge-verification.md",
+        "docs/reviews/st12-01-merged-check-all.log"
+      ],
+      "local_checks": "7/7; shared174; backend harness573;专项17/17",
+      "platform_status": "gap"
     },
     {
       "id": "ST12-02",
