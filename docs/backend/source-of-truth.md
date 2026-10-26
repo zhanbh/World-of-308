@@ -13,6 +13,7 @@
 | 主题 | 活跃正文 | 必须同步的视图/证据 |
 | --- | --- | --- |
 | 范围/战士闭环 | [主规格](../spec.md)、[三本内容](../design/warrior-three-dungeon-baseline-v1.md) | 猎人技能后置；后两本是可调整原型，不是已平衡产品 |
+| 怪物执行/阶段 | [组合遭遇](../design/dungeon-first-proposal-v1.md)、[ST12执行边界](monster-execution-contract-v1.md) | 半血交接、吼叫霸体/最大生命快照；AI/CP/公开状态及预算须同步，候选参数不当正式数值 |
 | 加载/转场 | [加载握手](room-loading-handshake-v1.md) | H.transitionClock独立保存至ready；字段、API、状态、加载/恢复测试 |
 | 恢复/活动时钟 | [恢复时序](recovery-timeline-proposal-v1.md) | inputGapBaseAt、原截止、代次及ready幂等；时间基线/CP/输入验收 |
 | 精确运算/回复 | [算术合同](combat-arithmetic-contract-v1.md) | HP/MP余数、生命周期与分段一致性；编码/发布上界验证 |
