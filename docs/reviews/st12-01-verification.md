@@ -40,3 +40,11 @@ $node = 'C:/Users/bohan.zhan/.cache/codex-runtimes/codex-primary-runtime/depende
 ## 限制
 
 本地候选敌技能为确定命中、非暴击近战，AP系数/防端K与控制时长不是正式平衡参数。角色HP0/dead阻止后续动作与自然回复，挑战级死亡/复活完整生命周期由ST14承接；奖励由ST15承接。未安装SDK、未云操作、未推送/部署、未构建Cocos或验收微信/Note20 Ultra。客户端预测可修正，最终伤害与私有随机仍服务端权威。
+
+## 独立merger修订：runtime action严格可空
+
+2026-10-26，原提交dfd002c独立检查发现`if(m.action)`接受false/0/空串，违背仅null或动作object的严格合同。保留上述原始16项与全量日志为历史证据，本次单独修复。
+
+先在真实公开proof边界注入action=false，观察原实现进入hash mismatch而非runtime拒绝（RED）；再对真实MemoryStore的scene块注入false并同步内容hash/引用，使其通过完整性外壳，原公开simulation.submit竟成功提交、未返回CONFIG_NOT_READY（RED）。改为`m.action !== null`后false/0/空串均进入严格字段验证，真实提交拒绝且存储完全不变，公开恢复也首先拒绝非法runtime，不自动重建/归零（GREEN）。
+
+同一实际Node24命令重跑joint12+service4+client1 **17/17通过**，见[修订日志](st12-01-runtime-strict-recheck.log)。backend与client模型真实TypeScript5.8.2检查均通过。只修严格判别和新增回归，不改Accepted正文、不声称重新跑过前述全量。

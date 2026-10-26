@@ -120,7 +120,7 @@ export function validateMonsterRuntime(v: unknown): MonsterRuntime {
     integer(m.intentY, -1000, 1000);
     for (const r of [m.remainderX, m.remainderY])
         check(typeof r === 'string' && /^(0|-?[1-9][0-9]{0,4})$/.test(r) && BigInt(r) > -100000n && BigInt(r) < 100000n);
-    if (m.action) {
+    if (m.action !== null) {
         const a = m.action;
         fields(a, ['startTick', 'hitTick', 'endTick', 'facing', 'damage', 'released']);
         integer(a.startTick);
@@ -208,7 +208,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                     m.intentY = 0;
                     continue;
                 }
-                if (m.action) {
+                if (m.action !== null) {
                     const a = m.action;
                     if (!a.released && tick >= a.hitTick) {
                         a.released = true;

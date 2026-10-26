@@ -1,0 +1,29 @@
+(node:20784) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st12-01-melee/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st12-01-melee\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ durable caller restores hostile CP public runtime, HP and original events after a lost response (147.6078ms)
+✔ real entry, submit, public proof contains hostile action and real HP loss (59.9065ms)
+✔ hostile submit original result and every real write remain atomic under faults and races (482.3793ms)
+✔ caller cannot inject AI outcomes or rebind original operation to a new stream (48.8081ms)
+✔ strict runtime rejects false, zero and empty actions in real CP and public recovery (77.4114ms)
+✔ joint boundary: enemy hit changes HP and blocks later same-batch player input, split preserves state (26.7334ms)
+✔ enemy damage reads exact live defense at each node instead of raw fixed damage (19.6184ms)
+✔ illegal sub-500ms attack cadence and unknown template are rejected at publication boundary (14.2866ms)
+✔ same-boundary attacks released by both actors resolve even when both die (17.7354ms)
+✔ ordinary nonlethal damage does not cancel hostile windup; legal knockdown does and keeps cooldown (41.1263ms)
+✔ per-type defaults and individual overrides leave Boss identity independent of bleed/control (26.2547ms)
+✔ recovered control expiring inside a batch does not cancel a later legal skill (25.8096ms)
+✔ stable actor ordering and arbitrary split points preserve the joined stream (99.3388ms)
+✔ chase moves only one tick and respects map collision rather than pre-spending the decision interval (15.7458ms)
+✔ same-node skill knockback cannot retroactively move an already due hostile hit out of range (17.1458ms)
+✔ fractional attack snapshot combines defense before the single final floor (21.6051ms)
+✔ a strictly earlier fractional skill control cancels a later integer hostile node (22.089ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1350.5029
