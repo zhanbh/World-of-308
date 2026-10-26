@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st12",
-  "status": "authorized-implementation-starting",
+  "status": "implementation-in-progress",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "47dc8c6",
   "approved_spec_revision": "26fc51d20aa68ff91e7cc72c0a9768ece64c0359710e36dd363d02f2577cebd7",
@@ -12,7 +12,9 @@
       "blocked_by": [],
       "accepted_revision": "62be806566077548f9dc3a78e665dd9cb5fd90dcb5712d2c111ee3fcf9865f11",
       "path": "docs/stories/warrior-loop/st12/issues/01-melee-composition.md",
-      "state": "pending"
+      "state": "in-progress",
+      "worktree": ".worktrees/st12-01-melee",
+      "branch": "feat/st12-01-melee"
     },
     {
       "id": "ST12-02",
@@ -71,5 +73,15 @@
     "durable client and playable Cocos integration"
   ],
   "jira_actions": false,
-  "platform_device_status": "pending"
+  "platform_device_status": "pending",
+  "plan_commit": "41e9ef8",
+  "baseline_checks": {
+    "head": "98c66cd",
+    "node": "24.22.1",
+    "typescript": "5.8.2",
+    "all": "7/7",
+    "backend_harness_executions": 568,
+    "log": "docs/reviews/st12-baseline-check.log",
+    "scope": "local regression only; no cloud SDK or device acceptance"
+  }
 }
