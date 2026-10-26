@@ -472,3 +472,7 @@ ST11-01的role内部schema3增加movement.configHash与精确state（x/y、带�
 
 
 ST11最终评审算术域修订：训练profile发布/入口须证明完整合法属性/等级域下直接节点及流血施放预算/末跳暴击均可编码uint64；超域在入口前CONFIG_NOT_READY且无资产变化，禁止留待首次施放失败。死亡清除失效的directSinceRise但保留原伤害事件，存活累计不变。精确上界及分配顺序见[大崩合同·算术发布域](earth-combat-contract-v1.md)。
+
+## ST12-01 怪物runtime
+
+scene7.monsters保留actorId/index/templateRef、独立身份、AP、决策/冷却/动作节点、控制时钟、移动intent/余数；monsterControlUntilTick保存玩家当前控制。字段上界及schema版本见[合同](monster-melee-combat-contract-v1.md)，原role/scene/effect块物理位置不变。

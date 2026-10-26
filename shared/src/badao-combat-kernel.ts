@@ -129,7 +129,7 @@ export function advanceBadaoCombat(state: BadaoState, inputs: readonly ActionInp
     sceneEpoch: number;
     actorId: string;
     immuneToBleed?: number[];
-    processUntilUs?: Rational;
+    tagDamage?:boolean;processUntilUs?: Rational;
 }, current: BadaoCurrent, targets: readonly CombatTarget[], random: (cursor: number) => number): {
     state: BadaoState;
     targets: CombatTarget[];
@@ -160,7 +160,7 @@ export function advanceBadaoCombat(state: BadaoState, inputs: readonly ActionInp
     if (ts.length > 8 || new Set(ts.map(t => t.actorIndex)).size !== ts.length || new Set(ts.map(t => t.actorId)).size !== ts.length)
         fail();
     const emit = (kind: CombatEvent['kind'], at: Rational, sequence: number, node: number, jump: number, targetId: string | null = null, damage: string | null = null, critical: boolean | null = null, seq: number | null = null, code: string | null = null) => { const tuple = JSON.stringify([context.challengeId, context.sceneEpoch, context.actorId, 'badao', kind, sequence, node, jump, targetId, seq, at]); let h = 2166136261n; for (const ch of tuple)
-        h = ((h ^ BigInt(ch.codePointAt(0)!)) * 1099511628211n) & ((1n << 128n) - 1n); events.push({ kind, eventId: `combat:${h.toString(16).padStart(32, '0')}`, actorId: context.actorId, tick: atTick(at), seq, targetId, damage, critical, code }); };
+        h = ((h ^ BigInt(ch.codePointAt(0)!)) * 1099511628211n) & ((1n << 128n) - 1n); events.push({ kind, eventId: `combat:${h.toString(16).padStart(32, '0')}`, actorId: context.actorId, tick: atTick(at), seq, targetId, damage, critical, code:kind==='damage'&&context.tagDamage?(jump<0?'DIRECT_badao':'DOT'):code }); };
     const draw = (chance: Rational) => { const n = random(s.randomCursor++); integer(n, 0, 4294967295); return BigInt(n) * BigInt(chance.d) < BigInt(chance.n) * 4294967296n; };
     const damage = (t: CombatTarget, amount: Rational, shot: BadaoSnapshot, at: Rational, sequence: number, node: number, jump: number, dot: boolean) => { const critical = draw(shot.crit); if (critical)
         amount = mul(amount, shot.critMultiplier); amount = mul(amount, q(BigInt(t.mitigation.d) - BigInt(t.mitigation.n), BigInt(t.mitigation.d))); const n = t.damageImmune ? 0n : floor(amount); t.hp = String(n >= BigInt(t.hp) ? 0n : BigInt(t.hp) - n); if (!dot)

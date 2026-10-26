@@ -115,3 +115,7 @@ role schema3持久移动意图与精确带符号/100000余数，兼容role1/2；
 ## ST11-06 连续战斗增量
 
 当前大崩四节点、实际落点/独立地面尾伤、四技能有理候选顺序、profile5/scene6稳定槽与全局字典、公开256页/原结果1024页及完整字节预算按[大崩与连续战斗合同](earth-combat-contract-v1.md)执行。旧profile/schema严格兼容；future怪物912条仅编码域夹具，ST12 AI未实现。实际证据见[06验证](../reviews/st11-06-verification.md)。
+
+## ST12-01 近战组合增量
+
+显式profile6/scene7的怪物runtime、玩家控制时钟及原四lane compact存储，按[近战组合合同](monster-melee-combat-contract-v1.md)执行。公开monsterRuntime/playerControl进入完整proof/hash；旧版本不隐式升级。

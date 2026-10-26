@@ -1,3 +1,4 @@
+import {validateMonsterRuntime} from '../monster-simulation.ts';
 import {validateEarthPublicState} from '../earth-combat-kernel.ts';
 import {validateBadaoPublicState} from '../badao-combat-kernel.ts';
 import {validateBengshanPublicState} from '../bengshan-combat-kernel.ts';
@@ -146,6 +147,8 @@ const bengshanActionRecord=object({kind:enumOf('bengshanAction'),actorId:text(),
 const crossEffectRecord=object({kind:enumOf('crossEffect'),actorId:text(),index:integer(0,3647),state:validateCrossPublicState});
 const crossActionRecord=object({kind:enumOf('crossAction'),actorId:text(),state:validateCrossPublicState});
 const targetControlRecord=object({kind:enumOf('targetControl'),actorId:text(),directSinceRise:resourceWire,downUntilTick:nullable(logicTick)});
+const monsterRuntimeRecord=object({kind:enumOf('monsterRuntime'),actorId:text(),state:validateMonsterRuntime});
+const playerControlRecord=object({kind:enumOf('playerControl'),actorId:text(),untilTick:logicTick});
 const buffRecord = object({ kind: enumOf('buff'), buffId: text(), actorId: text(), templateRef: text(64), endsAtTick: logicTick });
 function publicRecord(value: unknown) {
   const kind = value && typeof value === 'object' ? Object.getOwnPropertyDescriptor(value, 'kind')?.value : undefined;
@@ -170,6 +173,8 @@ function publicRecord(value: unknown) {
     case 'bengshanAction': {const r=bengshanActionRecord(value);if(r.state.effects.length!==0)throw new TypeError('INVALID_BENGSHAN_ACTION');return r;}
     case 'crossEffect': {const r=crossEffectRecord(value);if(r.state.cast!==null||r.state.effects.length!==1)throw new TypeError('INVALID_CROSS_EFFECT');return r;}
     case 'crossAction': {const r=crossActionRecord(value);if(r.state.effects.length!==0)throw new TypeError('INVALID_CROSS_ACTION');return r;}
+    case 'monsterRuntime': {const r=monsterRuntimeRecord(value);if(r.actorId!==r.state.actorId)throw new TypeError('INVALID_MONSTER_ACTOR');return r;}
+    case 'playerControl': return playerControlRecord(value);
     case 'targetControl': return targetControlRecord(value);
     case 'movement': return movementRecord(value);
     case 'buff': return buffRecord(value);
@@ -191,7 +196,7 @@ export function assembleRecoveryPages(values: unknown[]) {
   if (pages.length !== first.totalPages || pages.some((p, index) => p.pageIndex !== index || identity(p) !== identity(first))) throw new TypeError('INCOMPLETE_RECOVERY');
   const records = pages.flatMap(p => p.records), seen = new Set<string>();
   for (const r of records) {
-    const key = r.kind === 'actor' ? ['actor', r.actorId] : r.kind === 'cooldown' ? ['cooldown', r.actorId, r.cooldownId] : r.kind === 'effect' ? ['effect', r.effectId] : r.kind==='earthEffect'?['earthEffect',r.actorId,r.index]:r.kind==='earthAction'?['earthAction',r.actorId]:r.kind==='badaoEffect'?['badaoEffect',r.actorId,r.index]:r.kind==='badaoAction'?['badaoAction',r.actorId]:r.kind==='bengshanEffect'?['bengshanEffect',r.actorId,r.index]:r.kind==='bengshanAction'?['bengshanAction',r.actorId]:r.kind==='crossEffect'?['crossEffect',r.actorId,r.index]:r.kind==='crossAction'?['crossAction',r.actorId]:r.kind==='combatAction'?['combatAction',r.actorId]:r.kind==='targetControl'?['targetControl',r.actorId]:r.kind==='movement'?['movement',r.actorId]:['buff', r.buffId];
+    const key = r.kind === 'actor' ? ['actor', r.actorId] : r.kind === 'cooldown' ? ['cooldown', r.actorId, r.cooldownId] : r.kind === 'effect' ? ['effect', r.effectId] : r.kind==='earthEffect'?['earthEffect',r.actorId,r.index]:r.kind==='earthAction'?['earthAction',r.actorId]:r.kind==='badaoEffect'?['badaoEffect',r.actorId,r.index]:r.kind==='badaoAction'?['badaoAction',r.actorId]:r.kind==='bengshanEffect'?['bengshanEffect',r.actorId,r.index]:r.kind==='bengshanAction'?['bengshanAction',r.actorId]:r.kind==='crossEffect'?['crossEffect',r.actorId,r.index]:r.kind==='crossAction'?['crossAction',r.actorId]:r.kind==='combatAction'?['combatAction',r.actorId]:r.kind==='monsterRuntime'?['monsterRuntime',r.actorId]:r.kind==='playerControl'?['playerControl',r.actorId]:r.kind==='targetControl'?['targetControl',r.actorId]:r.kind==='movement'?['movement',r.actorId]:['buff', r.buffId];
     const encoded = JSON.stringify(key);
     if (seen.has(encoded)) throw new TypeError('DUPLICATE_PUBLIC_RECORD'); seen.add(encoded);
   }
@@ -199,7 +204,7 @@ export function assembleRecoveryPages(values: unknown[]) {
   if (!actors.length || actors.length > 9 || new Set(actors.map(r => r.actorIndex)).size !== actors.length) throw new TypeError('INVALID_PUBLIC_ACTORS');
   const actorIds = new Set(actors.map(r => r.actorId));
   for (const r of records) {
-    if ((r.kind === 'cooldown' || r.kind === 'buff' || r.kind==='movement'||r.kind==='combatAction'||r.kind==='targetControl'||r.kind==='crossAction'||r.kind==='crossEffect'||r.kind==='earthAction'||r.kind==='earthEffect'||r.kind==='badaoAction'||r.kind==='badaoEffect'||r.kind==='bengshanAction'||r.kind==='bengshanEffect') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
+    if ((r.kind === 'cooldown' || r.kind === 'buff' || r.kind==='movement'||r.kind==='combatAction'||r.kind==='targetControl'||r.kind==='monsterRuntime'||r.kind==='playerControl'||r.kind==='crossAction'||r.kind==='crossEffect'||r.kind==='earthAction'||r.kind==='earthEffect'||r.kind==='badaoAction'||r.kind==='badaoEffect'||r.kind==='bengshanAction'||r.kind==='bengshanEffect') && !actorIds.has(r.actorId)) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
     if (r.kind === 'effect' && (!actorIds.has(r.ownerId) || (r.targetId !== null && !actorIds.has(r.targetId)))) throw new TypeError('UNKNOWN_PUBLIC_ACTOR');
   }
   return { ...cpReadyTicket({ readyTicketId: first.readyTicketId, sceneEpoch: first.sceneEpoch, timelineEpoch: first.timelineEpoch, checkpointRevision: first.checkpointRevision, publicStateHash: first.publicStateHash, manifestHash: first.manifestHash, deadline: first.deadline }), records };

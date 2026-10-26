@@ -175,3 +175,7 @@ ST11-01 active/connected接受连续移动片段后原子推进acceptedSeq/Tick�
 
 
 ST11最终评审算术域修订：训练profile发布/入口须证明完整合法属性/等级域下直接节点及流血施放预算/末跳暴击均可编码uint64；超域在入口前CONFIG_NOT_READY且无资产变化，禁止留待首次施放失败。死亡清除失效的directSinceRise但保留原伤害事件，存活累计不变。精确上界及分配顺序见[大崩合同·算术发布域](earth-combat-contract-v1.md)。
+
+## ST12-01 联合对抗
+
+起手消耗CD→锁向命中→收招；合法控制/死亡只取消严格未来本体节点，同刻到期集合保留，中断不返还CD。玩家受控按节点判断，到期后新输入恢复；HP0仅本票role死亡事实，挑战复活生命周期仍由ST14承接。详见[合同](monster-melee-combat-contract-v1.md)。
