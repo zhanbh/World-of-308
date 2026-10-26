@@ -1,0 +1,16 @@
+{
+  "feature": "warrior-loop-st12",
+  "status": "passed",
+  "kind": "repository-local-not-external-gate",
+  "spec_hash": "26fc51d20aa68ff91e7cc72c0a9768ece64c0359710e36dd363d02f2577cebd7",
+  "source_hash_matches": true,
+  "ticket_count": 6,
+  "ids_unique": true,
+  "coverage": [
+    "ST12"
+  ],
+  "dependencies_exist": true,
+  "acyclic": true,
+  "acceptance_present": true,
+  "human_approval": true
+}

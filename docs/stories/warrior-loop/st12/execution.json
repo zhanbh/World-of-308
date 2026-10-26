@@ -1,0 +1,75 @@
+{
+  "feature": "warrior-loop-st12",
+  "status": "authorized-implementation-starting",
+  "integration_branch": "feat-1.0.0",
+  "baseline_head": "47dc8c6",
+  "approved_spec_revision": "26fc51d20aa68ff91e7cc72c0a9768ece64c0359710e36dd363d02f2577cebd7",
+  "approval_evidence": "好的，开始吧",
+  "tickets": [
+    {
+      "id": "ST12-01",
+      "number": 1,
+      "blocked_by": [],
+      "accepted_revision": "62be806566077548f9dc3a78e665dd9cb5fd90dcb5712d2c111ee3fcf9865f11",
+      "path": "docs/stories/warrior-loop/st12/issues/01-melee-composition.md",
+      "state": "pending"
+    },
+    {
+      "id": "ST12-02",
+      "number": 2,
+      "blocked_by": [
+        1
+      ],
+      "accepted_revision": "02731e474c2625de15b77b01584cd6574ecf8bcd84625cb59ef84c936e48fde5",
+      "path": "docs/stories/warrior-loop/st12/issues/02-ranged-charge-ai.md",
+      "state": "pending"
+    },
+    {
+      "id": "ST12-03",
+      "number": 3,
+      "blocked_by": [
+        2
+      ],
+      "accepted_revision": "f76b8673f8a11b175263b7dbc70f59f948b39c7e57d414f6e7e5acc4acb8f487",
+      "path": "docs/stories/warrior-loop/st12/issues/03-encounter-clear.md",
+      "state": "pending"
+    },
+    {
+      "id": "ST12-04",
+      "number": 4,
+      "blocked_by": [
+        3
+      ],
+      "accepted_revision": "b5b20ec772fd11cfd2b6fc1d1ea01821e948875e554b1ae8bb2cf8c2edb373de",
+      "path": "docs/stories/warrior-loop/st12/issues/04-elite-boss-phase.md",
+      "state": "pending"
+    },
+    {
+      "id": "ST12-05",
+      "number": 5,
+      "blocked_by": [
+        4
+      ],
+      "accepted_revision": "901b4c5ce7f00843cabf5ec817dbc0b33f84983ba97f04ab7a2000e6b12b863b",
+      "path": "docs/stories/warrior-loop/st12/issues/05-boss-roar-charge.md",
+      "state": "pending"
+    },
+    {
+      "id": "ST12-06",
+      "number": 6,
+      "blocked_by": [
+        5
+      ],
+      "accepted_revision": "efab9da3e74dfa5b185e58edc16157ffddad7663cc47ee8e78b1333577a666c7",
+      "path": "docs/stories/warrior-loop/st12/issues/06-playable-integration.md",
+      "state": "pending"
+    }
+  ],
+  "testing_seams": [
+    "deterministic combined simulation",
+    "public trusted service and real MemoryStore",
+    "durable client and playable Cocos integration"
+  ],
+  "jira_actions": false,
+  "platform_device_status": "pending"
+}
