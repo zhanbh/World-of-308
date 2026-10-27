@@ -1,0 +1,109 @@
+{
+  "feature": "warrior-loop-st13",
+  "status": "planned",
+  "integration_branch": "feat-1.0.0",
+  "baseline_head": "5a89338",
+  "approved_spec_revision": "09bc9716057a26d11b177816d25259d8cfdcee64c6771359a60a2ea158ae278b",
+  "approval_evidence": "确认，开始吧",
+  "tickets": [
+    {
+      "id": "ST13-01",
+      "number": 1,
+      "blocked_by": [],
+      "accepted_revision": "1608d5525d6914d82d652ca1c61ffc57b4b323cca7c59702c8babc1490f1227e",
+      "path": "docs/stories/warrior-loop/st13/issues/01-battle-potion.md",
+      "state": "open",
+      "worktree": null,
+      "branch": null,
+      "implementation_commit": null,
+      "verified_code_head": null,
+      "evidence": [],
+      "local_checks": null,
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST13-02",
+      "number": 2,
+      "blocked_by": [
+        1
+      ],
+      "accepted_revision": "5935f4175621d2aa0460fd74fb02b3f2d6d8176d7bb96b578a508ed56b36fdde",
+      "path": "docs/stories/warrior-loop/st13/issues/02-active-trinket.md",
+      "state": "open",
+      "worktree": null,
+      "branch": null,
+      "implementation_commit": null,
+      "verified_code_head": null,
+      "evidence": [],
+      "local_checks": null,
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST13-03",
+      "number": 3,
+      "blocked_by": [
+        2
+      ],
+      "accepted_revision": "de2d821a52f896912d0ad38a41579bd51cbf1cae367950aa7346d347d1989ceb",
+      "path": "docs/stories/warrior-loop/st13/issues/03-hybrid-supply-lifecycle.md",
+      "state": "open",
+      "worktree": null,
+      "branch": null,
+      "implementation_commit": null,
+      "verified_code_head": null,
+      "evidence": [],
+      "local_checks": null,
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST13-04",
+      "number": 4,
+      "blocked_by": [
+        3
+      ],
+      "accepted_revision": "e40f718bee191f294ad32c752e7846c3167ee5003e36d24e9e08697d04e3b904",
+      "path": "docs/stories/warrior-loop/st13/issues/04-cocos-supply-hud.md",
+      "state": "open",
+      "worktree": null,
+      "branch": null,
+      "implementation_commit": null,
+      "verified_code_head": null,
+      "evidence": [],
+      "local_checks": null,
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST13-05",
+      "number": 5,
+      "blocked_by": [
+        4
+      ],
+      "accepted_revision": "83835beac2e15341e3537a4c71e887763e0c983d3bfcd4704b44d3d2c809d106",
+      "path": "docs/stories/warrior-loop/st13/issues/05-joint-budget-review.md",
+      "state": "open",
+      "worktree": null,
+      "branch": null,
+      "implementation_commit": null,
+      "verified_code_head": null,
+      "evidence": [],
+      "local_checks": null,
+      "platform_status": "gap"
+    }
+  ],
+  "testing_seams": [
+    "pure supply and combat timing kernel",
+    "real MemoryStore and transaction consistency",
+    "MovementCoordinator and Cocos playable supply HUD"
+  ],
+  "jira_actions": false,
+  "platform_device_status": "pending",
+  "plan_commit": null,
+  "baseline_checks": {
+    "head": "5a89338",
+    "node": "24.22.1",
+    "typescript": "5.8.2",
+    "all": "7/7",
+    "backend_harness_executions": 587,
+    "scope": "local regression only; no cloud SDK or device acceptance"
+  }
+}
