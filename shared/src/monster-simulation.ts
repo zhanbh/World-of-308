@@ -8,6 +8,7 @@ import { tacticalDestination } from './monster-tactics.ts';
 export type MonsterTemplate = {
     type: 'humanoid' | 'beast' | 'undead' | 'mechanical';
     skillRef: string;
+    skillRefs?: string[];
     behavior: 'chase';
     rewardTag: string;
     resist: {
@@ -17,8 +18,15 @@ export type MonsterTemplate = {
         knockdown: boolean;
     };
 };
+export type MeleeSkillKind = 'melee' | 'cleave' | 'sweep' | 'smash' | 'stomp';
+export function isMeleeFamily(kind: string): kind is MeleeSkillKind {
+    return ['melee', 'cleave', 'sweep', 'smash', 'stomp'].includes(kind);
+}
+export function isMeleeSkill(s: unknown): s is MeleeSkill {
+    return s !== null && typeof s === 'object' && Object.hasOwn(s, 'kind') && isMeleeFamily((s as any).kind);
+}
 export type MeleeSkill = {
-    kind: 'melee';
+    kind: MeleeSkillKind;
     windupTicks: number;
     recoveryTicks: number;
     cooldownTicks: number;
@@ -27,6 +35,7 @@ export type MeleeSkill = {
     speed: number;
     coefficient: Rational;
     staggerTicks: number;
+    superArmorTicks?: number;
 };
 export type MonsterConfig = {
     version: 'local-melee-v1' | 'local-tactics-v1';
@@ -80,6 +89,8 @@ export type MonsterRuntime = {
         damage: Rational;
         released: boolean;
         activeEndTick?: number;
+        superArmorEndTick?: number;
+        skillRef?: string;
     };
     staggerUntilTick: number;
     intentX: number;
@@ -87,6 +98,9 @@ export type MonsterRuntime = {
     remainderX: string;
     remainderY: string;
     tactics: MonsterTacticsRuntime;
+    phase?: number;
+    pendingPhase?: number | null;
+    cooldowns?: Record<string, number>;
 };
 export type MonsterPlayer = {
     hp: string;
@@ -115,11 +129,21 @@ export function validateMonsterConfig(v: unknown): MonsterConfig {
     check(Object.keys(c.templates).length > 0 && Object.keys(c.templates).length <= 32 && Object.keys(c.skills).length > 0 && Object.keys(c.skills).length <= 32);
     for (const [id, t] of Object.entries(c.templates)) {
         token(id);
-        fields(t, ['type', 'skillRef', 'behavior', 'rewardTag', 'resist']);
+        const templateKeys = ['type', 'skillRef', 'behavior', 'rewardTag', 'resist'];
+        if (Object.hasOwn(t, 'skillRefs'))
+            templateKeys.push('skillRefs');
+        fields(t, templateKeys);
         check(['humanoid', 'beast', 'undead', 'mechanical'].includes(t.type) && t.behavior === 'chase');
         token(t.rewardTag);
         token(t.skillRef);
         check(Object.hasOwn(c.skills, t.skillRef));
+        if (t.skillRefs !== undefined) {
+            check(Array.isArray(t.skillRefs) && t.skillRefs.length > 0 && t.skillRefs.length <= 16);
+            for (const ref of t.skillRefs) {
+                token(ref);
+                check(Object.hasOwn(c.skills, ref));
+            }
+        }
         fields(t.resist, ['bleed', 'stagger', 'knockback', 'knockdown']);
         for (const r of Object.values(t.resist))
             check(typeof r === 'boolean');
@@ -127,13 +151,18 @@ export function validateMonsterConfig(v: unknown): MonsterConfig {
     for (const [id, s] of Object.entries(c.skills)) {
         token(id);
         check(s && typeof s === 'object' && !Array.isArray(s));
-        if (s.kind === 'melee') {
-            fields(s, ['kind', 'windupTicks', 'recoveryTicks', 'cooldownTicks', 'rangeX', 'rangeY', 'speed', 'coefficient', 'staggerTicks']);
+        if (isMeleeSkill(s)) {
+            const meleeKeys = ['kind', 'windupTicks', 'recoveryTicks', 'cooldownTicks', 'rangeX', 'rangeY', 'speed', 'coefficient', 'staggerTicks'];
+            if (Object.hasOwn(s, 'superArmorTicks'))
+                meleeKeys.push('superArmorTicks');
+            fields(s, meleeKeys);
             for (const k of ['windupTicks', 'recoveryTicks', 'cooldownTicks'] as const)
                 integer(s[k], 1, 10000);
             check(s.cooldownTicks >= Math.max(50, s.windupTicks + s.recoveryTicks));
             for (const k of ['rangeX', 'rangeY', 'speed', 'staggerTicks'] as const)
                 integer(s[k], 0, 1000000);
+            if (s.superArmorTicks !== undefined)
+                integer(s.superArmorTicks, 0, s.windupTicks + s.recoveryTicks);
             fields(s.coefficient, ['n', 'd']);
             check(/^(0|[1-9][0-9]{0,5})$/.test(s.coefficient.n) && /^[1-9][0-9]{0,5}$/.test(s.coefficient.d) && BigInt(s.coefficient.n) <= 100n * BigInt(s.coefficient.d));
         } else if (s.kind === 'ranged') {
@@ -171,6 +200,12 @@ export function validateMonsterRuntime(v: unknown): MonsterRuntime {
     const runtimeKeys = ['actorId', 'actorIndex', 'templateRef', 'identity', 'attackPower', 'nextDecisionTick', 'readyAtTick', 'sequence', 'action', 'staggerUntilTick', 'intentX', 'intentY', 'remainderX', 'remainderY'];
     if (m && typeof m === 'object' && Object.hasOwn(m, 'tactics'))
         runtimeKeys.push('tactics');
+    if (m && typeof m === 'object' && Object.hasOwn(m, 'phase'))
+        runtimeKeys.push('phase');
+    if (m && typeof m === 'object' && Object.hasOwn(m, 'pendingPhase'))
+        runtimeKeys.push('pendingPhase');
+    if (m && typeof m === 'object' && Object.hasOwn(m, 'cooldowns'))
+        runtimeKeys.push('cooldowns');
     fields(m, runtimeKeys);
     token(m.actorId);
     token(m.templateRef);
@@ -184,12 +219,27 @@ export function validateMonsterRuntime(v: unknown): MonsterRuntime {
     integer(m.intentY, -1000, 1000);
     for (const r of [m.remainderX, m.remainderY])
         check(typeof r === 'string' && /^(0|-?[1-9][0-9]{0,4})$/.test(r) && BigInt(r) > -100000n && BigInt(r) < 100000n);
+    if (m.phase !== undefined)
+        integer(m.phase, 1, 10);
+    if (m.pendingPhase !== undefined && m.pendingPhase !== null)
+        integer(m.pendingPhase, 1, 10);
+    if (m.cooldowns !== undefined) {
+        check(m.cooldowns && typeof m.cooldowns === 'object' && !Array.isArray(m.cooldowns));
+        for (const [k, v] of Object.entries(m.cooldowns)) {
+            token(k);
+            integer(v, 0, Number.MAX_SAFE_INTEGER);
+        }
+    }
     if (m.action !== null) {
         check(m.action && typeof m.action === 'object' && !Array.isArray(m.action));
         const a = m.action;
         const actionKeys = ['startTick', 'hitTick', 'endTick', 'facing', 'damage', 'released'];
         if (Object.hasOwn(a, 'activeEndTick'))
             actionKeys.push('activeEndTick');
+        if (Object.hasOwn(a, 'superArmorEndTick'))
+            actionKeys.push('superArmorEndTick');
+        if (Object.hasOwn(a, 'skillRef'))
+            actionKeys.push('skillRef');
         fields(a, actionKeys);
         integer(a.startTick);
         integer(a.hitTick, a.startTick + 1);
@@ -199,6 +249,10 @@ export function validateMonsterRuntime(v: unknown): MonsterRuntime {
         } else {
             integer(a.endTick, a.hitTick + 1);
         }
+        if (a.superArmorEndTick !== undefined)
+            integer(a.superArmorEndTick, a.startTick, a.endTick);
+        if (a.skillRef !== undefined)
+            token(a.skillRef);
         fields(a.damage, ['n', 'd']);
         check(/^(0|[1-9][0-9]{0,18})$/.test(a.damage.n) && /^[1-9][0-9]{0,5}$/.test(a.damage.d));
         check((a.facing === 1 || a.facing === -1) && typeof a.released === 'boolean');
@@ -231,6 +285,12 @@ export function validateMonsterRuntime(v: unknown): MonsterRuntime {
     const cloned = structuredClone(m);
     if (!cloned.tactics)
         cloned.tactics = { role: 'frontline', effects: [] };
+    if (cloned.phase === undefined)
+        cloned.phase = 1;
+    if (cloned.pendingPhase === undefined)
+        cloned.pendingPhase = null;
+    if (!cloned.cooldowns)
+        cloned.cooldowns = {};
     return cloned;
 }
 export const initialMonsterState = (
@@ -249,8 +309,13 @@ export const initialMonsterState = (
     return sorted.map(s => {
         let role: TacticalRole = 'frontline';
         const template = config?.templates?.[s.templateRef];
-        const skill = template ? config?.skills?.[template.skillRef] : undefined;
-        if (skill?.kind === 'ranged') {
+        const primarySkillRef = template?.skillRefs?.[0] ?? template?.skillRef;
+        const skill = primarySkillRef ? config?.skills?.[primarySkillRef] : undefined;
+        if (s.identity === 'boss') {
+            role = 'area_controller';
+        } else if (s.identity === 'elite') {
+            role = 'heavy_guard';
+        } else if (skill?.kind === 'ranged') {
             role = 'artillery';
         } else if (skill?.kind === 'charge') {
             role = 'charger';
@@ -273,6 +338,9 @@ export const initialMonsterState = (
             intentY: 0,
             remainderX: '0',
             remainderY: '0',
+            phase: 1,
+            pendingPhase: null,
+            cooldowns: {},
             tactics: {
                 role,
                 effects: [],
@@ -323,9 +391,10 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
             if (!m || !t || t.lifeState === 'dead')
                 continue;
             const resist = cfg.templates[m.templateRef].resist;
+            const isArmored = m.action !== null && m.action.superArmorEndTick !== undefined && tick < m.action.superArmorEndTick;
             if (!resist.stagger)
                 m.staggerUntilTick = Math.max(m.staggerUntilTick, tick + cfg.control.staggerTicks);
-            if (!resist.knockback) {
+            if (!resist.knockback && !isArmored) {
                 const moved = advanceMovement({ x: String(t.x), y: String(t.y), remainderX: '0', remainderY: '0', intentX: 0, intentY: 0, facing: movement.facing }, [{ seq: 1, tick, kind: 'move', x: movement.facing * 1000, y: 0 }], tick, tick + 1, { ...input.movementConfig, walkSpeed: cfg.control.knockback * 100, runSpeed: cfg.control.knockback * 100, ySpeed: 0 }).state;
                 t.x = Number(moved.x);
                 t.y = Number(moved.y);
@@ -336,7 +405,14 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
             if (input.playerResources)
                 Object.assign(player, input.playerResources(player));
             playerAliveAtBoundary = player.lifeState === 'alive';
-            due = new Set(monsters.filter(m => m.action && !m.action.released && m.action.hitTick === tick && cfg.skills[cfg.templates[m.templateRef].skillRef].kind === 'melee' && targets.some(t => t.actorId === m.actorId && t.lifeState === 'alive' && m.staggerUntilTick <= tick && (t.downUntilTick === null || t.downUntilTick <= tick))).map(m => m.actorId));
+            due = new Set(monsters.filter(m => {
+                if (!m.action || m.action.released || m.action.hitTick !== tick) return false;
+                const currentSkillRef = m.action.skillRef ?? cfg.templates[m.templateRef].skillRef;
+                const skill = cfg.skills[currentSkillRef];
+                if (!isMeleeSkill(skill)) return false;
+                const isArmored = m.action.superArmorEndTick !== undefined && tick < m.action.superArmorEndTick;
+                return targets.some(t => t.actorId === m.actorId && t.lifeState === 'alive' && (isArmored || (m.staggerUntilTick <= tick && (t.downUntilTick === null || t.downUntilTick <= tick))));
+            }).map(m => m.actorId));
             duePositions = new Map(targets.filter(t => due.has(t.actorId)).map(t => [t.actorId, { x: t.x, y: t.y }]));
         }, joint: (tick, movement, targets, events) => {
             // 1. Process in-flight tactical effects (projectiles)
@@ -376,19 +452,46 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
             // 2. Count active special skills for difficulty concurrency limit
             const specialCap = cfg.tactics?.specialCap ?? 2;
             let activeSpecialCount = monsters.filter(o => {
-                const s = cfg.skills[cfg.templates[o.templateRef].skillRef];
-                return (o.action && (s.kind === 'ranged' || s.kind === 'charge')) || o.tactics.effects.length > 0;
+                const s = cfg.skills[o.action?.skillRef ?? cfg.templates[o.templateRef].skillRef];
+                return (o.action && (s?.kind === 'ranged' || s?.kind === 'charge')) || o.tactics.effects.length > 0;
             }).length;
 
             let currentRetreaters = 0;
 
             // 3. Process each monster runtime
             for (const m of monsters) {
-                const t = targets.find(t => t.actorId === m.actorId)!, template = cfg.templates[m.templateRef], skill = cfg.skills[template.skillRef];
+                const t = targets.find(t => t.actorId === m.actorId)!, template = cfg.templates[m.templateRef];
                 t.controlImmune = template.resist.knockdown;
-                const unavailable = t.lifeState === 'dead' || m.staggerUntilTick > tick || t.downUntilTick !== null && t.downUntilTick > tick;
+
+                const isDead = t.lifeState === 'dead' || BigInt(t.hp) === 0n;
+                if (isDead) {
+                    t.lifeState = 'dead';
+                    m.pendingPhase = null;
+                }
+
+                // 50% HP threshold check: triggers pendingPhase = 2
+                if (!isDead && BigInt(t.hp) * 2n <= BigInt(t.maxHp) && (m.phase ?? 1) === 1) {
+                    if (m.pendingPhase === null || m.pendingPhase === undefined) {
+                        m.pendingPhase = 2;
+                    }
+                    if (m.action === null) {
+                        m.phase = 2;
+                        m.pendingPhase = null;
+                    }
+                }
+
+                const isArmored = m.action !== null && m.action.superArmorEndTick !== undefined && tick < m.action.superArmorEndTick;
+                const isControlled = m.staggerUntilTick > tick || (t.downUntilTick !== null && t.downUntilTick > tick);
+                const unavailable = isDead || (isControlled && !isArmored);
+
                 if (unavailable && !due.has(m.actorId)) {
-                    m.action = null;
+                    if (m.action !== null) {
+                        m.action = null;
+                        if (!isDead && m.pendingPhase !== null && m.pendingPhase !== undefined) {
+                            m.phase = m.pendingPhase;
+                            m.pendingPhase = null;
+                        }
+                    }
                     m.intentX = 0;
                     m.intentY = 0;
                     continue;
@@ -396,7 +499,10 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
 
                 if (m.action !== null) {
                     const a = m.action;
-                    if (skill.kind === 'melee') {
+                    const currentSkillRef = a.skillRef ?? template.skillRef;
+                    const skill = cfg.skills[currentSkillRef];
+
+                    if (isMeleeSkill(skill)) {
                         if (!a.released && tick >= a.hitTick) {
                             a.released = true;
                             const at = duePositions.get(m.actorId) ?? t, dx = (Number(movement.x) - at.x) * a.facing;
@@ -415,8 +521,13 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                 input.onPlayerChange?.(player);
                             }
                         }
-                        if (tick >= a.endTick || unavailable)
+                        if (tick >= a.endTick || unavailable) {
                             m.action = null;
+                            if (!isDead && m.pendingPhase !== null && m.pendingPhase !== undefined) {
+                                m.phase = m.pendingPhase;
+                                m.pendingPhase = null;
+                            }
+                        }
                     } else if (skill.kind === 'ranged') {
                         if (!a.released && tick >= a.hitTick) {
                             a.released = true;
@@ -438,8 +549,13 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                 sourceSequence: m.sequence,
                             });
                         }
-                        if (tick >= a.endTick || unavailable)
+                        if (tick >= a.endTick || unavailable) {
                             m.action = null;
+                            if (!isDead && m.pendingPhase !== null && m.pendingPhase !== undefined) {
+                                m.phase = m.pendingPhase;
+                                m.pendingPhase = null;
+                            }
+                        }
                     } else if (skill.kind === 'charge') {
                         const activeEnd = a.activeEndTick ?? (a.hitTick + skill.activeTicks);
                         if (tick >= a.hitTick && tick < activeEnd) {
@@ -477,8 +593,13 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                 }
                             }
                         }
-                        if (tick >= a.endTick || unavailable)
+                        if (tick >= a.endTick || unavailable) {
                             m.action = null;
+                            if (!isDead && m.pendingPhase !== null && m.pendingPhase !== undefined) {
+                                m.phase = m.pendingPhase;
+                                m.pendingPhase = null;
+                            }
+                        }
                     }
                 }
 
@@ -493,40 +614,109 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                 const dx = Number(movement.x) - t.x, dy = Number(movement.y) - t.y;
                 const distToPlayer = Math.hypot(dx, dy);
 
-                if (skill.kind === 'ranged') {
-                    // Check retreat condition
-                    if (cfg.tactics && cfg.tactics.maxConcurrentRetreaters > 0 && distToPlayer < cfg.tactics.retreatTriggerDistance) {
-                        if (currentRetreaters < cfg.tactics.maxConcurrentRetreaters) {
-                            currentRetreaters++;
-                            const retreatDest = tacticalDestination('artillery', m.actorIndex, t, { x: Number(movement.x), y: Number(movement.y) }, cfg.tactics, true);
-                            if (retreatDest) {
-                                if (tick >= m.nextDecisionTick) {
-                                    m.intentX = Math.sign(retreatDest.x - t.x) * 1000;
-                                    m.intentY = Math.sign(retreatDest.y - t.y) * 1000;
-                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                // Skill candidate selection
+                const candidateRefs = template.skillRefs && template.skillRefs.length > 0 ? template.skillRefs : [template.skillRef];
+                let skillTriggered = false;
+
+                if (!m.cooldowns) m.cooldowns = {};
+
+                for (const ref of candidateRefs) {
+                    const skill = cfg.skills[ref];
+                    if (!skill) continue;
+                    const readyAt = m.cooldowns[ref] ?? m.readyAtTick;
+                    if (tick < readyAt) continue;
+
+                    if (skill.kind === 'ranged') {
+                        // Check retreat condition
+                        if (cfg.tactics && cfg.tactics.maxConcurrentRetreaters > 0 && distToPlayer < cfg.tactics.retreatTriggerDistance) {
+                            if (currentRetreaters < cfg.tactics.maxConcurrentRetreaters) {
+                                currentRetreaters++;
+                                const retreatDest = tacticalDestination('artillery', m.actorIndex, t, { x: Number(movement.x), y: Number(movement.y) }, cfg.tactics, true);
+                                if (retreatDest) {
+                                    if (tick >= m.nextDecisionTick) {
+                                        m.intentX = Math.sign(retreatDest.x - t.x) * 1000;
+                                        m.intentY = Math.sign(retreatDest.y - t.y) * 1000;
+                                        m.nextDecisionTick = tick + cfg.decisionTicks;
+                                    }
+                                    const step = advanceMovement(
+                                        { x: String(t.x), y: String(t.y), facing: dx >= 0 ? 1 : -1, intentX: 0, intentY: 0, remainderX: m.remainderX, remainderY: m.remainderY },
+                                        [{ seq: 1, tick, kind: 'move', x: m.intentX, y: m.intentY }],
+                                        tick,
+                                        tick + 1,
+                                        { ...input.movementConfig, walkSpeed: skill.speed, runSpeed: skill.speed, ySpeed: skill.speed }
+                                    ).state;
+                                    t.x = Number(step.x);
+                                    t.y = Number(step.y);
+                                    m.remainderX = step.remainderX;
+                                    m.remainderY = step.remainderY;
+                                    skillTriggered = true;
+                                    break;
                                 }
-                                const step = advanceMovement(
-                                    { x: String(t.x), y: String(t.y), facing: dx >= 0 ? 1 : -1, intentX: 0, intentY: 0, remainderX: m.remainderX, remainderY: m.remainderY },
-                                    [{ seq: 1, tick, kind: 'move', x: m.intentX, y: m.intentY }],
-                                    tick,
-                                    tick + 1,
-                                    { ...input.movementConfig, walkSpeed: skill.speed, runSpeed: skill.speed, ySpeed: skill.speed }
-                                ).state;
-                                t.x = Number(step.x);
-                                t.y = Number(step.y);
-                                m.remainderX = step.remainderX;
-                                m.remainderY = step.remainderY;
-                                continue;
                             }
                         }
-                    }
 
-                    if (distToPlayer <= skill.reach) {
-                        m.intentX = 0;
-                        m.intentY = 0;
-                        if (tick >= m.nextDecisionTick && tick >= m.readyAtTick) {
-                            if (activeSpecialCount < specialCap) {
-                                activeSpecialCount++;
+                        if (distToPlayer <= skill.reach) {
+                            m.intentX = 0;
+                            m.intentY = 0;
+                            if (tick >= m.nextDecisionTick && tick >= readyAt) {
+                                if (activeSpecialCount < specialCap) {
+                                    activeSpecialCount++;
+                                    m.action = {
+                                        startTick: tick,
+                                        hitTick: tick + skill.windupTicks,
+                                        endTick: tick + skill.windupTicks + skill.recoveryTicks,
+                                        facing: dx >= 0 ? 1 : -1,
+                                        damage: attackSnapshot(m.attackPower, skill.coefficient),
+                                        released: false,
+                                        skillRef: ref,
+                                    };
+                                    m.readyAtTick = tick + skill.cooldownTicks;
+                                    m.cooldowns[ref] = tick + skill.cooldownTicks;
+                                    m.sequence++;
+                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                                    emit(events, m, 'actionAccepted', tick);
+                                } else {
+                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                                }
+                            }
+                            skillTriggered = true;
+                            break;
+                        }
+                    } else if (skill.kind === 'charge') {
+                        if (distToPlayer <= skill.reach) {
+                            m.intentX = 0;
+                            m.intentY = 0;
+                            if (tick >= m.nextDecisionTick && tick >= readyAt) {
+                                if (activeSpecialCount < specialCap) {
+                                    activeSpecialCount++;
+                                    m.action = {
+                                        startTick: tick,
+                                        hitTick: tick + skill.windupTicks,
+                                        activeEndTick: tick + skill.windupTicks + skill.activeTicks,
+                                        endTick: tick + skill.windupTicks + skill.activeTicks + skill.recoveryTicks,
+                                        facing: dx >= 0 ? 1 : -1,
+                                        damage: attackSnapshot(m.attackPower, skill.coefficient),
+                                        released: false,
+                                        skillRef: ref,
+                                    };
+                                    m.readyAtTick = tick + skill.cooldownTicks;
+                                    m.cooldowns[ref] = tick + skill.cooldownTicks;
+                                    m.sequence++;
+                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                                    emit(events, m, 'actionAccepted', tick);
+                                } else {
+                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                                }
+                            }
+                            skillTriggered = true;
+                            break;
+                        }
+                    } else if (isMeleeSkill(skill)) {
+                        if (Math.abs(dx) <= skill.rangeX && Math.abs(dy) <= skill.rangeY) {
+                            m.intentX = 0;
+                            m.intentY = 0;
+                            if (tick >= m.nextDecisionTick && tick >= readyAt) {
+                                const superArmorEndTick = skill.superArmorTicks !== undefined ? tick + skill.superArmorTicks : undefined;
                                 m.action = {
                                     startTick: tick,
                                     hitTick: tick + skill.windupTicks,
@@ -534,64 +724,23 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                     facing: dx >= 0 ? 1 : -1,
                                     damage: attackSnapshot(m.attackPower, skill.coefficient),
                                     released: false,
+                                    skillRef: ref,
+                                    ...(superArmorEndTick !== undefined ? { superArmorEndTick } : {}),
                                 };
                                 m.readyAtTick = tick + skill.cooldownTicks;
+                                m.cooldowns[ref] = tick + skill.cooldownTicks;
                                 m.sequence++;
                                 m.nextDecisionTick = tick + cfg.decisionTicks;
                                 emit(events, m, 'actionAccepted', tick);
-                            } else {
-                                m.nextDecisionTick = tick + cfg.decisionTicks;
                             }
+                            skillTriggered = true;
+                            break;
                         }
-                        continue;
-                    }
-                } else if (skill.kind === 'charge') {
-                    if (distToPlayer <= skill.reach) {
-                        m.intentX = 0;
-                        m.intentY = 0;
-                        if (tick >= m.nextDecisionTick && tick >= m.readyAtTick) {
-                            if (activeSpecialCount < specialCap) {
-                                activeSpecialCount++;
-                                m.action = {
-                                    startTick: tick,
-                                    hitTick: tick + skill.windupTicks,
-                                    activeEndTick: tick + skill.windupTicks + skill.activeTicks,
-                                    endTick: tick + skill.windupTicks + skill.activeTicks + skill.recoveryTicks,
-                                    facing: dx >= 0 ? 1 : -1,
-                                    damage: attackSnapshot(m.attackPower, skill.coefficient),
-                                    released: false,
-                                };
-                                m.readyAtTick = tick + skill.cooldownTicks;
-                                m.sequence++;
-                                m.nextDecisionTick = tick + cfg.decisionTicks;
-                                emit(events, m, 'actionAccepted', tick);
-                            } else {
-                                m.nextDecisionTick = tick + cfg.decisionTicks;
-                            }
-                        }
-                        continue;
-                    }
-                } else if (skill.kind === 'melee') {
-                    if (Math.abs(dx) <= skill.rangeX && Math.abs(dy) <= skill.rangeY) {
-                        m.intentX = 0;
-                        m.intentY = 0;
-                        if (tick >= m.nextDecisionTick && tick >= m.readyAtTick) {
-                            m.action = {
-                                startTick: tick,
-                                hitTick: tick + skill.windupTicks,
-                                endTick: tick + skill.windupTicks + skill.recoveryTicks,
-                                facing: dx >= 0 ? 1 : -1,
-                                damage: attackSnapshot(m.attackPower, skill.coefficient),
-                                released: false,
-                            };
-                            m.readyAtTick = tick + skill.cooldownTicks;
-                            m.sequence++;
-                            m.nextDecisionTick = tick + cfg.decisionTicks;
-                            emit(events, m, 'actionAccepted', tick);
-                        }
-                        continue;
                     }
                 }
+
+                if (skillTriggered)
+                    continue;
 
                 // General movement towards tactical target
                 let targetDest = { x: Number(movement.x), y: Number(movement.y) };
@@ -599,6 +748,10 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                     const flankDest = tacticalDestination('flanker', m.actorIndex, t, targetDest, cfg.tactics, false);
                     if (flankDest)
                         targetDest = flankDest;
+                } else if (cfg.tactics && (m.tactics?.role === 'heavy_guard' || m.tactics?.role === 'area_controller')) {
+                    const tacticDest = tacticalDestination(m.tactics.role, m.actorIndex, t, targetDest, cfg.tactics, false);
+                    if (tacticDest)
+                        targetDest = tacticDest;
                 }
                 const moveDx = targetDest.x - t.x, moveDy = targetDest.y - t.y;
                 if (tick >= m.nextDecisionTick) {
@@ -606,12 +759,14 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                     m.intentY = Math.sign(moveDy) * 1000;
                     m.nextDecisionTick = tick + cfg.decisionTicks;
                 }
+                const primarySkill = cfg.skills[template.skillRefs?.[0] ?? template.skillRef];
+                const moveSpeed = primarySkill?.speed ?? 1000;
                 const step = advanceMovement(
                     { x: String(t.x), y: String(t.y), facing: dx >= 0 ? 1 : -1, intentX: 0, intentY: 0, remainderX: m.remainderX, remainderY: m.remainderY },
                     [{ seq: 1, tick, kind: 'move', x: m.intentX, y: m.intentY }],
                     tick,
                     tick + 1,
-                    { ...input.movementConfig, walkSpeed: skill.speed, runSpeed: skill.speed, ySpeed: skill.speed }
+                    { ...input.movementConfig, walkSpeed: moveSpeed, runSpeed: moveSpeed, ySpeed: moveSpeed }
                 ).state;
                 t.x = Number(step.x);
                 t.y = Number(step.y);

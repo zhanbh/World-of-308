@@ -88,6 +88,57 @@ export const DIFFICULTY_PROFILES: Record<TacticsDifficulty, DifficultyTacticsCon
     },
 };
 
+export type CleaveSkill = {
+    kind: 'cleave';
+    windupTicks: number;
+    recoveryTicks: number;
+    cooldownTicks: number;
+    rangeX: number;
+    rangeY: number;
+    speed: number;
+    coefficient: Rational;
+    staggerTicks: number;
+};
+
+export type SweepSkill = {
+    kind: 'sweep';
+    windupTicks: number;
+    recoveryTicks: number;
+    cooldownTicks: number;
+    rangeX: number;
+    rangeY: number;
+    speed: number;
+    coefficient: Rational;
+    staggerTicks: number;
+    superArmorTicks: number;
+};
+
+export type SmashSkill = {
+    kind: 'smash';
+    windupTicks: number;
+    recoveryTicks: number;
+    cooldownTicks: number;
+    rangeX: number;
+    rangeY: number;
+    speed: number;
+    coefficient: Rational;
+    staggerTicks: number;
+    superArmorTicks: number;
+};
+
+export type StompSkill = {
+    kind: 'stomp';
+    windupTicks: number;
+    recoveryTicks: number;
+    cooldownTicks: number;
+    rangeX: number;
+    rangeY: number;
+    speed: number;
+    coefficient: Rational;
+    staggerTicks: number;
+    superArmorTicks: number;
+};
+
 export function localTacticsConfig(
     mapping: Record<string, string>,
     difficulty: TacticsDifficulty = 'normal'
@@ -98,6 +149,172 @@ export function localTacticsConfig(
 
     for (const [ref, kind] of Object.entries(mapping)) {
         const skillRef = `${ref}_skill`;
+        if (kind === 'elite') {
+            const cleaveRef = `${ref}_cleave`;
+            const sweepRef = `${ref}_sweep`;
+            templates[ref] = {
+                type: 'humanoid',
+                skillRef: cleaveRef,
+                skillRefs: [cleaveRef, sweepRef],
+                behavior: 'chase',
+                rewardTag: 'none',
+                resist: defaultMonsterResist('humanoid'),
+            };
+            skills[cleaveRef] = {
+                kind: 'cleave',
+                windupTicks: 60,
+                recoveryTicks: 70,
+                cooldownTicks: 300,
+                rangeX: 64000,
+                rangeY: 26000,
+                speed: 1000,
+                coefficient: { n: '25', d: '10' },
+                staggerTicks: 24,
+            };
+            skills[sweepRef] = {
+                kind: 'sweep',
+                windupTicks: 100,
+                recoveryTicks: 100,
+                superArmorTicks: 115,
+                cooldownTicks: 600,
+                rangeX: 64000,
+                rangeY: 32000,
+                speed: 1000,
+                coefficient: { n: '25', d: '10' },
+                staggerTicks: 30,
+            };
+            continue;
+        }
+
+        if (kind === 'boss') {
+            const smashRef = `${ref}_smash`;
+            const stompRef = `${ref}_stomp`;
+            templates[ref] = {
+                type: 'humanoid',
+                skillRef: smashRef,
+                skillRefs: [smashRef, stompRef],
+                behavior: 'chase',
+                rewardTag: 'none',
+                resist: defaultMonsterResist('humanoid'),
+            };
+            skills[smashRef] = {
+                kind: 'smash',
+                windupTicks: 100,
+                recoveryTicks: 100,
+                superArmorTicks: 115,
+                cooldownTicks: 400,
+                rangeX: 72000,
+                rangeY: 32000,
+                speed: 1000,
+                coefficient: { n: '25', d: '10' },
+                staggerTicks: 35,
+            };
+            skills[stompRef] = {
+                kind: 'stomp',
+                windupTicks: 130,
+                recoveryTicks: 100,
+                superArmorTicks: 150,
+                cooldownTicks: 500,
+                rangeX: 72000,
+                rangeY: 36000,
+                speed: 1000,
+                coefficient: { n: '25', d: '10' },
+                staggerTicks: 40,
+            };
+            continue;
+        }
+
+        if (kind === 'cleave') {
+            templates[ref] = {
+                type: 'humanoid',
+                skillRef,
+                behavior: 'chase',
+                rewardTag: 'none',
+                resist: defaultMonsterResist('humanoid'),
+            };
+            skills[skillRef] = {
+                kind: 'cleave',
+                windupTicks: 60,
+                recoveryTicks: 70,
+                cooldownTicks: 300,
+                rangeX: 64000,
+                rangeY: 26000,
+                speed: 1000,
+                coefficient: { n: '25', d: '10' },
+                staggerTicks: 24,
+            };
+            continue;
+        }
+
+        if (kind === 'sweep') {
+            templates[ref] = {
+                type: 'humanoid',
+                skillRef,
+                behavior: 'chase',
+                rewardTag: 'none',
+                resist: defaultMonsterResist('humanoid'),
+            };
+            skills[skillRef] = {
+                kind: 'sweep',
+                windupTicks: 100,
+                recoveryTicks: 100,
+                superArmorTicks: 115,
+                cooldownTicks: 600,
+                rangeX: 64000,
+                rangeY: 32000,
+                speed: 1000,
+                coefficient: { n: '25', d: '10' },
+                staggerTicks: 30,
+            };
+            continue;
+        }
+
+        if (kind === 'smash') {
+            templates[ref] = {
+                type: 'humanoid',
+                skillRef,
+                behavior: 'chase',
+                rewardTag: 'none',
+                resist: defaultMonsterResist('humanoid'),
+            };
+            skills[skillRef] = {
+                kind: 'smash',
+                windupTicks: 100,
+                recoveryTicks: 100,
+                superArmorTicks: 115,
+                cooldownTicks: 400,
+                rangeX: 72000,
+                rangeY: 32000,
+                speed: 1000,
+                coefficient: { n: '25', d: '10' },
+                staggerTicks: 35,
+            };
+            continue;
+        }
+
+        if (kind === 'stomp') {
+            templates[ref] = {
+                type: 'humanoid',
+                skillRef,
+                behavior: 'chase',
+                rewardTag: 'none',
+                resist: defaultMonsterResist('humanoid'),
+            };
+            skills[skillRef] = {
+                kind: 'stomp',
+                windupTicks: 130,
+                recoveryTicks: 100,
+                superArmorTicks: 150,
+                cooldownTicks: 500,
+                rangeX: 72000,
+                rangeY: 36000,
+                speed: 1000,
+                coefficient: { n: '25', d: '10' },
+                staggerTicks: 40,
+            };
+            continue;
+        }
+
         templates[ref] = {
             type: 'humanoid',
             skillRef,
@@ -171,6 +388,12 @@ export function tacticalDestination(
     difficultyCfg: DifficultyTacticsConfig,
     canRetreat: boolean
 ): { x: number; y: number } | null {
+    if (role === 'heavy_guard' || role === 'area_controller') {
+        return {
+            x: player.x - (player.x >= origin.x ? 1 : -1) * 32000,
+            y: player.y,
+        };
+    }
     if (role === 'artillery') {
         if (!canRetreat || difficultyCfg.maxConcurrentRetreaters <= 0) return null;
         const dx = origin.x - player.x, dy = origin.y - player.y;
