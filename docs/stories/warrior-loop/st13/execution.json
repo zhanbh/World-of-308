@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st13",
-  "status": "planned",
+  "status": "completed",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "5a89338",
   "approved_spec_revision": "09bc9716057a26d11b177816d25259d8cfdcee64c6771359a60a2ea158ae278b",
@@ -95,13 +95,16 @@
       ],
       "accepted_revision": "83835beac2e15341e3537a4c71e887763e0c983d3bfcd4704b44d3d2c809d106",
       "path": "docs/stories/warrior-loop/st13/issues/05-joint-budget-review.md",
-      "state": "open",
-      "worktree": null,
-      "branch": null,
-      "implementation_commit": null,
-      "verified_code_head": null,
-      "evidence": [],
-      "local_checks": null,
+      "state": "verified",
+      "worktree": ".worktrees/st13-05-joint-review",
+      "branch": "feat/st13-05-joint-review",
+      "implementation_commit": "d300e04",
+      "verified_code_head": "d300e04",
+      "evidence": [
+        "docs/reviews/st13-joint-acceptance.md",
+        "backend/test/battle-joint-acceptance.test.mjs"
+      ],
+      "local_checks": "7/7 checks passed (616 backend, all client/UI regression passed; 4/4 ST13-05 joint tests passed)",
       "platform_status": "gap"
     }
   ],
