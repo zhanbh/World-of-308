@@ -99,13 +99,15 @@
       ],
       "accepted_revision": "901b4c5ce7f00843cabf5ec817dbc0b33f84983ba97f04ab7a2000e6b12b863b",
       "path": "docs/stories/warrior-loop/st12/issues/05-boss-roar-charge.md",
-      "state": "implemented",
+      "state": "merged",
       "worktree": ".worktrees/st12-05-boss-roar-charge",
       "branch": "feat/st12-05-boss-roar-charge",
+      "implementation_commit": "e277ffa",
       "evidence": [
         "docs/backend/monster-roar-charge-contract-v1.md",
         "docs/reviews/st12-05-verification.md",
-        "docs/reviews/st12-05-check-all.log"
+        "docs/reviews/st12-05-merge-verification.md",
+        "docs/reviews/st12-05-merged-check-all.log"
       ],
       "local_checks": "7/7; shared199; backend harness578; 专项9/9",
       "platform_status": "gap"
