@@ -14,6 +14,8 @@ import { InventoryPanel } from './ui/InventoryPanel';
 import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
+import { MovementCoordinator } from './net/MovementCoordinator';
+import { connectChallengePreview } from './net/ChallengePreview';
 
 const { ccclass } = _decorator;
 const stages = ['交叉斩', '反手上挑', '下劈收势'];
@@ -67,6 +69,11 @@ export class Prototype extends Component {
     private inventoryHadStats = false;
     private inventoryNotice!: Label;
     private operationSequence = 0;
+    private challengeCoordinator: MovementCoordinator | null = null;
+    private challengeConnecting = false;
+    private challengeGeneration = 0;
+    private challengeNotice!: Label;
+    private challengeTick = 0;
 
     onLoad(): void {
         view.setDesignResolutionSize(960, 540, ResolutionPolicy.SHOW_ALL);
@@ -80,6 +87,7 @@ export class Prototype extends Component {
         this.text('背包 B', 430, 242, 16, 80);
         this.text('银行 N', 430, 198, 16, 80);
         this.inventoryNotice = this.text('N：银行（需本机预览服务）', 0, 150, 17, 800);
+        this.challengeNotice = this.text('战斗链路：本地沙盒模式（按 C 或传参 challengePreview=1 连权威服务）', 0, 126, 14, 800);
         this.text('WASD/摇杆移动 · 空格普攻 · E/F/Q/G技能 · 1首本/2工坊/3裂隙 · 走向右侧绿门/换房', 0, 212, 14);
         this.healthStatus = this.text('', -130, 178, 17, 660);
         this.healthStatus.horizontalAlign = Label.HorizontalAlign.LEFT;
@@ -107,6 +115,9 @@ export class Prototype extends Component {
         this.text('受击预警 · 走出红框躲避', 0, -208, 16);
         this.speedLabels = attackSpeedTuning.presets.map((rate, index) => this.text(`${rate}×`, -360 + index * 70, 126, 12, 64));
         this.restartEncounter();
+        if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('challengePreview') === '1') {
+            void this.toggleChallenge();
+        }
         input.on(Input.EventType.TOUCH_START, this.touchStart, this);
         input.on(Input.EventType.TOUCH_MOVE, this.touchMove, this);
         input.on(Input.EventType.TOUCH_END, this.touchEnd, this);
@@ -153,6 +164,34 @@ export class Prototype extends Component {
             templateLabel: id => labels[id] ?? id,
             onVisibility: visible => { if (visible) { this.clearInput(); this.bankHadStats = profiler.isShowingStats(); profiler.hideStats(); } else if (this.bankHadStats) profiler.showStats(); },
         });
+    }
+
+    public attachChallenge(coordinator: MovementCoordinator, preview = false): void {
+        this.challengeCoordinator = coordinator;
+        this.challengeNotice.string = preview ? '权威战斗已连接 · MovementCoordinator 服务端驱动' : '';
+    }
+
+    private async toggleChallenge(): Promise<void> {
+        if (this.challengeCoordinator) {
+            this.challengeCoordinator = null;
+            this.challengeNotice.string = '战斗链路：已切换回本地沙盒模式';
+            return;
+        }
+        if (this.challengeConnecting) return;
+        const gen = ++this.challengeGeneration;
+        this.challengeConnecting = true;
+        this.challengeNotice.string = '正在连接权威战斗服务…';
+        try {
+            const preview = await connectChallengePreview();
+            if (!this.isValid || gen !== this.challengeGeneration) return;
+            this.attachChallenge(preview.coordinator, true);
+        } catch {
+            if (this.isValid && gen === this.challengeGeneration) {
+                this.challengeNotice.string = '权威战斗服务未启动（8790 端口未就绪）；保持本地沙盒模式';
+            }
+        } finally {
+            if (gen === this.challengeGeneration) this.challengeConnecting = false;
+        }
     }
     private async toggleBank(): Promise<void> {
         if (this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
@@ -281,6 +320,7 @@ export class Prototype extends Component {
     }
 
     private keyDown(e: EventKeyboard): void {
+        if (e.keyCode === KeyCode.KEY_C) { void this.toggleChallenge(); return; }
         if (e.keyCode === KeyCode.KEY_N) { if (!this.bankKeyHeld) { this.bankKeyHeld = true; void this.toggleBank(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
@@ -346,6 +386,45 @@ export class Prototype extends Component {
             if (this.feedback.update(fixedDt)) { this.accumulator -= fixedDt; continue; }
             this.skillEffects.update(fixedDt);
             this.skills.update(fixedDt);
+            if (this.challengeCoordinator) {
+                this.challengeTick++;
+                if (x !== 0 || y !== 0) {
+                    try {
+                        this.challengeCoordinator.enqueue({
+                            seq: 0,
+                            tick: this.challengeTick,
+                            kind: 'move',
+                            x: Math.round(x * 1000),
+                            y: Math.round(y * 1000),
+                        });
+                    } catch {}
+                }
+                if (this.keys.has(KeyCode.SPACE)) {
+                    try {
+                        this.challengeCoordinator.enqueue({
+                            seq: 0,
+                            tick: this.challengeTick,
+                            kind: 'basic',
+                            pressed: true,
+                        });
+                    } catch {}
+                }
+                try {
+                    this.challengeCoordinator.predict(this.challengeTick);
+                } catch {}
+                if (this.challengeTick % 10 === 0 && this.challengeCoordinator.state.queued > 0) {
+                    void this.challengeCoordinator.submit(`op-${this.challengeTick}`, this.challengeTick);
+                }
+                const coordMonsters = this.challengeCoordinator.state.monsters;
+                if (coordMonsters && coordMonsters.length > 0) {
+                    for (let i = 0; i < Math.min(this.enemies.length, coordMonsters.length); i++) {
+                        const cm = coordMonsters[i];
+                        if (cm.action && cm.action.superArmorEndTick && cm.action.superArmorEndTick > this.challengeTick) {
+                            this.enemies[i].superArmor = true;
+                        }
+                    }
+                }
+            }
             if (this.skills.casting && this.skills.canMove && (x !== 0 || y !== 0)) this.skills.cancel();
             this.model.update(fixedDt, this.skills.casting ? 0 : x, this.skills.casting ? 0 : y);
             this.model.x = Math.max(-218, Math.min(218, this.model.x + this.skills.motionDelta));

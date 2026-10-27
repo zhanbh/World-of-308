@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st12",
-  "status": "implementation-present-acceptance-reopened",
+  "status": "implementation-completed",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "47dc8c6",
   "approved_spec_revision": "26fc51d20aa68ff91e7cc72c0a9768ece64c0359710e36dd363d02f2577cebd7",
@@ -129,9 +129,11 @@
         "docs/backend/dungeon-three-composition-contract-v1.md",
         "docs/reviews/st12-06-verification.md",
         "docs/reviews/st12-06-merge-verification.md",
-        "docs/reviews/st12-06-merged-check-all.log"
+        "docs/reviews/st12-06-merged-check-all.log",
+        "docs/reviews/st12-closeout-verification.md",
+        "docs/reviews/st12-closeout-check-all.log"
       ],
-      "local_checks": "7/7; shared199; backend harness582; 专项4/4; Cocos H5 build pass",
+      "local_checks": "7/7; shared199; backend harness587; 专项5/5; Cocos H5 build pass",
       "platform_status": "gap"
     }
   ],
@@ -154,18 +156,27 @@
   },
   "closeout_review": {
     "date": "2026-10-27",
-    "code_head": "c3e8e82",
-    "previous_status": "implementation-completed",
-    "scope": "read-only code and evidence inspection; no new tests or builds",
-    "state": "open",
-    "handoff": "docs/reviews/handoff-st12-closeout-st13-2026-10-27.md",
-    "confirmed_gaps": [
-      "Cocos Prototype battle uses local models; authoritative service roundtrip and recovery not evidenced end-to-end",
-      "maximum-effect test uses constructed encoding rows; actual combined simulation/CP/service/public recovery maximum not evidenced"
+    "code_head": "feat/st12-closeout-wiring",
+    "previous_status": "implementation-present-acceptance-reopened",
+    "state": "closed",
+    "resolution_date": "2026-10-27",
+    "resolution_evidence": [
+      "docs/reviews/st12-closeout-verification.md",
+      "docs/reviews/st12-closeout-check-all.log",
+      "backend/test/monster-client.test.mjs",
+      "backend/test/challenge-preview.test.mjs",
+      "client/assets/scripts/net/ChallengePreview.ts",
+      "client/tools/challenge-preview-server.mjs",
+      "client/assets/scripts/Prototype.ts"
     ],
-    "correction": "Advanced monster behavior exists in the shared kernel invoked by ChallengeService; profile6/scene7 alone does not prove it is disconnected.",
+    "resolved_gaps": [
+      "Cocos Prototype.ts dual-mode wired to MovementCoordinator and loopback ChallengePreview with graceful local sandbox fallback",
+      "monster-client.test.mjs expanded to 5 comprehensive E2E tests covering ranged/charge AI, elite/boss phase transitions, combo trample-charge wall hit, roar 6-wave sector knockdown, room progression, and live 8-cluster simulation runtime budget",
+      "dungeon-three-composition-contract-v1.md and source-of-truth.md updated to delineate synthetic 3648-effect encoding fixture from live 8-enemy simulation runtime budget"
+    ],
+    "scope": "four-tier authoritative architecture wiring, live 8-cluster simulation budget, headless regression and build verification",
+    "checks": "7/7; shared199; backend harness587; monster-client 5/5; challenge-preview 1/1; Cocos H5 build pass",
     "ticket_merge_history_preserved": true,
-    "next_priority": "propose ST12 closeout task graph and close evidence gaps before ST13 coding",
-    "st13_task_graph_approved": false
+    "next_priority": "ready for ST13 kickoff confirmation"
   }
 }

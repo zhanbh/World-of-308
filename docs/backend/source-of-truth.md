@@ -66,5 +66,6 @@ P2连续践踏（3段72px圆判）接锁向冲撞、碰墙即停解除霸体与3
 
 ## ST12-06 三本组合与可玩战斗联调增量
 
-后两本（失落工坊7房34怪，R5精英R7Boss；裂隙遗址7房41怪，R5精英R7Boss，R6峰值8怪并发）遭遇布局、种族抗性规则（人形/野兽可流血可受控，亡灵/机械免流血可受控）、发布前严格类型校验（INVALID_MONSTER_CATEGORY与UNKNOWN_MONSTER_KIND拒绝未知配置）、技能跨种族复用（melee/ranged/charge/cleave/sweep/smash/stomp且不复制牛头专属冲撞吼叫）、离线H5可玩战斗演示构建、8敌群与3648条全效果共存（UTF-8块<=81920B，总计<=655360B）及MemoryStore原子事务严格兼容按[三本组合与可玩联调合同](dungeon-three-composition-contract-v1.md)执行。实际证据见[06验证](../reviews/st12-06-verification.md)。
+后两本（失落工坊7房34怪，R5精英R7Boss；裂隙遗址7房41怪，R5精英R7Boss，R6峰值8怪并发）遭遇布局、种族抗性规则（人形/野兽可流血可受控，亡灵/机械免流血可受控）、发布前严格类型校验（INVALID_MONSTER_CATEGORY与UNKNOWN_MONSTER_KIND拒绝未知配置）、技能跨种族复用（melee/ranged/charge/cleave/sweep/smash/stomp且不复制牛头专属冲撞吼叫）、四层权威架构（纯内核 -> 服务/CP -> 客户端协调器 -> Cocos视图）与双模自适应接线（`MovementCoordinator` + `ChallengePreview` 权威驱动与本地沙盒兜底）、离线H5构建、理论合成3648条全效果极限治具（UTF-8块<=81920B，总计<=655360B）与实时8敌群并发运行预算（单CP ~8.2KB，集群 ~65.6KB，提交 <30ms）双轨分离，以及MemoryStore原子事务严格兼容按[三本组合与可玩联调合同](dungeon-three-composition-contract-v1.md)执行。实际证据见[06验证](../reviews/st12-06-verification.md)及[收尾加固验证](../reviews/st12-closeout-verification.md)。
+
 
