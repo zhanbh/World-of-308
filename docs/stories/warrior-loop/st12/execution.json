@@ -63,7 +63,8 @@
       "evidence": [
         "docs/backend/encounter-clear-contract-v1.md",
         "docs/reviews/st12-03-verification.md",
-        "docs/reviews/st12-03-check-all.log"
+        "docs/reviews/st12-03-merge-verification.md",
+        "docs/reviews/st12-03-merged-check-all.log"
       ],
       "local_checks": "7/7; shared182; backend harness578; 专项5/5",
       "platform_status": "gap"
