@@ -12,6 +12,7 @@ export interface ChallengeContent {
     combat?: import('./basic-training.ts').BasicTrainingProfile;
     movement?: import('../../../shared/src/movement-kernel.ts').MovementConfig;
     exitInteraction?: {profile:'local-test';rulesRef:string;radius:number};
+    encounterLayout?: boolean;
     dungeons: {
         dungeonId: string;
         kind: 'first' | 'second' | 'special';
@@ -66,6 +67,7 @@ export interface EntryChallenge extends HandoffChallenge {
     roomCost: number;
     purpleRoomNo: number | null;
     purpleEncounter: {roomNo:number;spawnId:string;templateRef:string} | null;
+    confirmedKills?: import('../../../shared/src/encounter-layout.ts').ConfirmedKillFact[];
     lifeState: 'alive';
     roomCount: 7;
     acceptedSeq: number;

@@ -55,7 +55,18 @@
       ],
       "accepted_revision": "f76b8673f8a11b175263b7dbc70f59f948b39c7e57d414f6e7e5acc4acb8f487",
       "path": "docs/stories/warrior-loop/st12/issues/03-encounter-clear.md",
-      "state": "pending"
+      "state": "merged",
+      "worktree": ".worktrees/st12-03-encounter-clear",
+      "branch": "feat/st12-03-encounter-clear",
+      "implementation_commit": "c5958a5",
+      "verified_code_head": "c5958a5",
+      "evidence": [
+        "docs/backend/encounter-clear-contract-v1.md",
+        "docs/reviews/st12-03-verification.md",
+        "docs/reviews/st12-03-check-all.log"
+      ],
+      "local_checks": "7/7; shared182; backend harness578; 专项5/5",
+      "platform_status": "gap"
     },
     {
       "id": "ST12-04",

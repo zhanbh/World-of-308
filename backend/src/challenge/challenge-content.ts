@@ -7,7 +7,7 @@ export async function entryContentFromE01(text: string, authorization: TestAutho
     x: number;
     y: number;
     radius: number;
-}): Promise<ChallengeContent> {
+}, options?: { encounterLayout?: boolean }): Promise<ChallengeContent> {
     const release = await verifyTestRelease(text, authorization);
     const dungeon = release.nodes.find(n => n.id === release.entryDungeonRef.id && n.version === release.entryDungeonRef.version && n.kind === 'dungeon')!;
     const rooms = dungeon.data.rooms as {spawns: {monsterRef:{id:string;version:number};role:string}[]}[];
@@ -16,7 +16,7 @@ export async function entryContentFromE01(text: string, authorization: TestAutho
         id: string;
         version: number;
     };
-    const content: ChallengeContent = { schemaVersion: 1, releaseRef: release.releaseId, profile: 'local-test', purpose: 'contract-fixture-only', release, dungeons: [{ dungeonId: 'first', kind: 'first', purpleTemplateRef:`${ordinary.id}@${ordinary.version}`, mapId: entry.mapId, anchor: { x: entry.x, y: entry.y, radius: entry.radius }, minLevel: 1, maxMonsterLevel: 15, difficulties: [{ difficultyId: 'normal', roomCost: 1, levels: { 1: { monsterStatsRef: `${dungeon.id}@${dungeon.version}`, equipmentSourceRef: `${reward.id}@${reward.version}` } } }] }] };
+    const content: ChallengeContent = { schemaVersion: 1, releaseRef: release.releaseId, profile: 'local-test', purpose: 'contract-fixture-only', release, ...options?.encounterLayout !== undefined ? { encounterLayout: options.encounterLayout } : {}, dungeons: [{ dungeonId: 'first', kind: 'first', purpleTemplateRef:`${ordinary.id}@${ordinary.version}`, mapId: entry.mapId, anchor: { x: entry.x, y: entry.y, radius: entry.radius }, minLevel: 1, maxMonsterLevel: 15, difficulties: [{ difficultyId: 'normal', roomCost: 1, levels: { 1: { monsterStatsRef: `${dungeon.id}@${dungeon.version}`, equipmentSourceRef: `${reward.id}@${reward.version}` } } }] }] };
     function freeze(value: unknown): void { if (value && typeof value === 'object') {
         Object.values(value).forEach(freeze);
         Object.freeze(value);
