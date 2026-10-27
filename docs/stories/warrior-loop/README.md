@@ -87,3 +87,8 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 ## ST11 本地实施续接
 
 2026-10-25～2026-10-26：用户已确认六项任务图并授权本地实施，integration为`feat-1.0.0`。移动、三段普攻、十字斩、崩山击、拔刀斩、大崩均已按frontier独立实现合入，经Standards/Spec独立评审及集中修复，两轴复查通过，全量7/7（含568/568后台测试）及Cocos类型检查通过。见[ST11入口](st11/README.md)、[本地交付与限制](../../reviews/st11-local-verification.md)、[Standards复核](../../reviews/st11-build-standards-recheck.md)、[Spec复核](../../reviews/st11-build-spec-recheck.md)。未声称Cocos构建/真机/云端SDK或后续怪物AI(ST12)通过。
+
+## ST12 本地实施续接
+
+2026-10-26～2026-10-27：用户已确认六项任务图并授权本地实施，integration为`feat-1.0.0`。ST12-01～ST12-06全部6项单据均已独立实现并快进合入主干（近战组合、远程投石与冲锋突进、首本七房紫名与权威清场、精英横扫顺劈与牛头Boss重槌践踏50%半血切阶段、牛头Boss二阶段践踏冲撞接撞墙虚弱与中距离扇形吼叫、三本遭遇组合与Cocos可玩联调及8敌群/3648条状态效果CP预算签署）。全量门禁7/7（含shared 199项、backend 582项测试）、纯模型测试19/19、离线Cocos H5构建全部通过，无外部网络依赖，两轴独立复查合入完成并推送远程。见[ST12入口](st12/README.md)、[执行记录](st12/execution.json)、[三本合同](../../backend/dungeon-three-composition-contract-v1.md)、[06验证报告](../../reviews/st12-06-verification.md)与[06合入核验](../../reviews/st12-06-merge-verification.md)。
+
