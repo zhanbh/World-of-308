@@ -296,7 +296,7 @@ export class Prototype extends Component {
                 this.restartEncounter();
                 this.encounter.start();
             }
-        } else if (this.encounter.state !== 'fighting') {
+        } else if (this.encounter.state !== 'fighting' && !this.roomCleared) {
             return;
         } else if (this.touchSupplyButton(p.x, p.y)) {
             return;
@@ -348,18 +348,18 @@ export class Prototype extends Component {
         }
         if (e.keyCode === KeyCode.KEY_R) { this.restartEncounter(); return; }
         if (e.keyCode === KeyCode.DIGIT_1) {
-            if (this.encounter.state === 'fighting') { this.useSupplySlot(0); return; }
+            if (this.encounter.state === 'fighting' || this.roomCleared) { this.useSupplySlot(0); return; }
             this.mode = 7; this.dungeonKind = 'first'; this.roomNo = 0; this.restartEncounter(); return;
         }
         if (e.keyCode === KeyCode.DIGIT_2) {
-            if (this.encounter.state === 'fighting') { this.useSupplySlot(1); return; }
+            if (this.encounter.state === 'fighting' || this.roomCleared) { this.useSupplySlot(1); return; }
             this.mode = 7; this.dungeonKind = 'workshop'; this.roomNo = 0; this.restartEncounter(); return;
         }
         if (e.keyCode === KeyCode.DIGIT_3) {
-            if (this.encounter.state === 'fighting') { this.useSupplySlot(2); return; }
+            if (this.encounter.state === 'fighting' || this.roomCleared) { this.useSupplySlot(2); return; }
             this.mode = 7; this.dungeonKind = 'rift'; this.roomNo = 0; this.restartEncounter(); return;
         }
-        if (this.encounter.state !== 'fighting') return;
+        if (this.encounter.state !== 'fighting' && !this.roomCleared) return;
         if (this.keys.has(e.keyCode)) return;
         this.keys.add(e.keyCode);
         if (e.keyCode === KeyCode.SPACE && !this.skills.casting) this.model.press();
@@ -468,7 +468,7 @@ export class Prototype extends Component {
                 this.clearInput(); this.model.reset(); this.model.moving = this.model.running = false;
                 this.skills.cancel(); this.skillEffects.clear();
             }
-            if (this.roomCleared && this.roomNo < 6 && this.model.x >= 170 && Math.abs(this.model.y - 20) <= 30) {
+            if (this.roomCleared && this.roomNo < 6 && this.model.x >= 165 && this.model.y >= -20 && this.model.y <= 65) {
                 this.roomNo++;
                 this.restartEncounter();
                 this.encounter.start();
