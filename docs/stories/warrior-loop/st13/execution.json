@@ -97,7 +97,7 @@
   ],
   "jira_actions": false,
   "platform_device_status": "pending",
-  "plan_commit": null,
+  "plan_commit": "5f9bce5",
   "baseline_checks": {
     "head": "5a89338",
     "node": "24.22.1",
