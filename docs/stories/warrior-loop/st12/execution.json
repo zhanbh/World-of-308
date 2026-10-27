@@ -77,7 +77,18 @@
       ],
       "accepted_revision": "b5b20ec772fd11cfd2b6fc1d1ea01821e948875e554b1ae8bb2cf8c2edb373de",
       "path": "docs/stories/warrior-loop/st12/issues/04-elite-boss-phase.md",
-      "state": "pending"
+      "state": "implemented",
+      "worktree": ".worktrees/st12-04-elite-boss-phase",
+      "branch": "feat/st12-04-elite-boss-phase",
+      "implementation_commit": "cb7a3d0",
+      "verified_code_head": "cb7a3d0",
+      "evidence": [
+        "docs/backend/monster-elite-boss-contract-v1.md",
+        "docs/reviews/st12-04-verification.md",
+        "docs/reviews/st12-04-check-all.log"
+      ],
+      "local_checks": "7/7; shared190; backend harness578; 专项8/8",
+      "platform_status": "gap"
     },
     {
       "id": "ST12-05",
