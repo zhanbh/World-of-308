@@ -392,7 +392,7 @@ export class Prototype extends Component {
                     try {
                         this.challengeCoordinator.enqueue({
                             seq: 0,
-                            tick: this.challengeTick,
+                            tick: this.challengeTick as any,
                             kind: 'move',
                             x: Math.round(x * 1000),
                             y: Math.round(y * 1000),
@@ -403,7 +403,7 @@ export class Prototype extends Component {
                     try {
                         this.challengeCoordinator.enqueue({
                             seq: 0,
-                            tick: this.challengeTick,
+                            tick: this.challengeTick as any,
                             kind: 'basic',
                             pressed: true,
                         });
@@ -442,10 +442,11 @@ export class Prototype extends Component {
             this.bodyAnimation.update(fixedDt, this.model.moving, this.model.running, this.model.hitStun,
                 this.skills.casting || this.model.stage >= 0, this.model.hp <= 0);
             this.encounter.update(fixedDt, this.model.hp, this.enemies);
-            if (this.encounter.state === 'victory') {
+            const encounterState: string = this.encounter.state;
+            if (encounterState === 'victory') {
                 this.roomCleared = true;
             }
-            if (this.encounter.state !== 'fighting' && !this.roomCleared) {
+            if (encounterState !== 'fighting' && !this.roomCleared) {
                 this.clearInput(); this.model.reset(); this.model.moving = this.model.running = false;
                 this.skills.cancel(); this.skillEffects.clear();
             }
