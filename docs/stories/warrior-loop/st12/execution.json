@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st12",
-  "status": "implementation-in-progress",
+  "status": "implementation-completed",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "47dc8c6",
   "approved_spec_revision": "26fc51d20aa68ff91e7cc72c0a9768ece64c0359710e36dd363d02f2577cebd7",
@@ -120,15 +120,18 @@
       ],
       "accepted_revision": "efab9da3e74dfa5b185e58edc16157ffddad7663cc47ee8e78b1333577a666c7",
       "path": "docs/stories/warrior-loop/st12/issues/06-playable-integration.md",
-      "state": "implemented",
+      "state": "merged",
       "worktree": ".worktrees/st12-06-playable-integration",
       "branch": "feat/st12-06-playable-integration",
+      "implementation_commit": "3e5048a",
+      "verified_code_head": "3e5048a",
       "evidence": [
         "docs/backend/dungeon-three-composition-contract-v1.md",
         "docs/reviews/st12-06-verification.md",
-        "docs/reviews/st12-06-check-all.log"
+        "docs/reviews/st12-06-merge-verification.md",
+        "docs/reviews/st12-06-merged-check-all.log"
       ],
-      "local_checks": "7/7; shared199; backend harness582; 专项4/4",
+      "local_checks": "7/7; shared199; backend harness582; 专项4/4; Cocos H5 build pass",
       "platform_status": "gap"
     }
   ],
