@@ -54,13 +54,16 @@
       ],
       "accepted_revision": "de2d821a52f896912d0ad38a41579bd51cbf1cae367950aa7346d347d1989ceb",
       "path": "docs/stories/warrior-loop/st13/issues/03-hybrid-supply-lifecycle.md",
-      "state": "open",
-      "worktree": null,
-      "branch": null,
-      "implementation_commit": null,
-      "verified_code_head": null,
-      "evidence": [],
-      "local_checks": null,
+      "state": "verified",
+      "worktree": ".worktrees/st13-03-hybrid-supply",
+      "branch": "feat/st13-03-hybrid-supply",
+      "implementation_commit": "cf4853e",
+      "verified_code_head": "cf4853e",
+      "evidence": [
+        "docs/reviews/st13-03-verification.md",
+        "backend/test/battle-hybrid-supply.test.mjs"
+      ],
+      "local_checks": "7/7 checks passed (610 backend, all client/UI regression passed; 8/8 ST13-03 tests passed)",
       "platform_status": "gap"
     },
     {
