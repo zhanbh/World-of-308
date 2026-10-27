@@ -33,13 +33,17 @@
       ],
       "accepted_revision": "5935f4175621d2aa0460fd74fb02b3f2d6d8176d7bb96b578a508ed56b36fdde",
       "path": "docs/stories/warrior-loop/st13/issues/02-active-trinket.md",
-      "state": "open",
-      "worktree": null,
-      "branch": null,
-      "implementation_commit": null,
-      "verified_code_head": null,
-      "evidence": [],
-      "local_checks": null,
+      "state": "verified",
+      "worktree": ".worktrees/st13-02-active-trinket",
+      "branch": "feat/st13-02-active-trinket",
+      "implementation_commit": "fe1ce92",
+      "verified_code_head": "fe1ce92",
+      "evidence": [
+        "docs/reviews/st13-02-verification.md",
+        "backend/test/battle-trinket.test.mjs",
+        "shared/test/trinket-kernel.test.mjs"
+      ],
+      "local_checks": "7/7 checks passed (602 backend, 222 shared, all client/UI regression passed; 16/16 ST13-02 tests passed)",
       "platform_status": "gap"
     },
     {

@@ -6,18 +6,19 @@ import {advanceMovement} from './movement-kernel.ts';
 import type {MovementState,MovementConfig} from './movement-kernel.ts';
 import type {ActionInput} from './protocol/simulation-v2.ts';
 /** Shared fixed-step authority/display orchestration. Resource callback runs at each logical input boundary. */
-export function advanceCrossSimulation(movement:MovementState,basic:CombatState,cross:CrossState,targets:CombatTarget[],inputs:ActionInput[],fromTick:number,toTick:number,movementConfig:MovementConfig,basicConfig:CombatConfig,crossConfig:CrossConfig,context:{challengeId:string;sceneEpoch:number;actorId:string;immuneToBleed?:number[]},stats:CrossCurrent,random:(cursor:number)=>number,resources?:(tick:number,mp:string)=>string,supply?:(input:ActionInput&{kind:'item'},tick:number)=>{event:CombatEvent;mp?:string}){
+export function advanceCrossSimulation(movement:MovementState,basic:CombatState,cross:CrossState,targets:CombatTarget[],inputs:ActionInput[],fromTick:number,toTick:number,movementConfig:MovementConfig,basicConfig:CombatConfig,crossConfig:CrossConfig,context:{challengeId:string;sceneEpoch:number;actorId:string;immuneToBleed?:number[]},stats:CrossCurrent,random:(cursor:number)=>number,resources?:(tick:number,mp:string)=>string,supply?:(input:ActionInput&({kind:'item'}|{kind:'trinket'}),tick:number)=>{event:CombatEvent;mp?:string},activeStats?:(tick:number,stats:CrossCurrent)=>CrossCurrent){
  let m=structuredClone(movement),b=structuredClone(basic),s=structuredClone(cross),ts=structuredClone(targets),mp=stats.mp;const events:CombatEvent[]=[];
  for(let tick=fromTick;tick<toTick;tick++){
-  if(resources)mp=resources(tick,mp);const at=inputs.filter(i=>i.tick===tick),current={...stats,mp,x:Number(m.x),y:Number(m.y),facing:m.facing};
-  for(const item of at.filter(i=>i.kind==='item').sort((a,b)=>a.seq-b.seq)){
-   if(supply){const res=supply(item as ActionInput&{kind:'item'},tick);if(res.event)events.push(res.event);if(res.mp!==undefined)mp=res.mp;}
+  if(resources)mp=resources(tick,mp);const at=inputs.filter(i=>i.tick===tick);
+  for(const item of at.filter(i=>i.kind==='item'||i.kind==='trinket').sort((a,b)=>a.seq-b.seq)){
+   if(supply){const res=supply(item as ActionInput&({kind:'item'}|{kind:'trinket'}),tick);if(res.event)events.push(res.event);if(res.mp!==undefined)mp=res.mp;}
   }
+  const effectiveStats=activeStats?activeStats(tick,stats):stats,current={...effectiveStats,mp,x:Number(m.x),y:Number(m.y),facing:m.facing};
   const priorCross=s.cast,before=b.cast;if(current.controlled){s.cast=null;b.cast=null;b.held=false;b.buffered=false;b.nextStage=0;b.comboExpiresUs=null;}const {level,mp:_,controlled,mastery,...base}=current;
   const runCross=(list:ActionInput[])=>{s.randomCursor=b.randomCursor;const result=advanceCrossCombat(s,list,tick,tick+1,crossConfig,context,{...current,mp},ts,random);s=result.state;ts=result.targets;mp=result.mp;b.randomCursor=s.randomCursor;events.push(...result.events);if(result.accepted.length){b.cast=null;b.held=false;b.buffered=false;b.nextStage=0;b.comboExpiresUs=null;}};
   runCross([]);
   for(const input of [...at].sort((a,b)=>a.seq-b.seq)){
-   if(input.kind==='item')continue;
+   if(input.kind==='item'||input.kind==='trinket')continue;
    if(input.kind==='skill'&&input.skillId==='cross'){runCross([input]);continue;}
    if((current.controlled||s.cast)&&input.kind==='basic'){
     if(input.pressed)events.push({kind:'actionRejected',eventId:`combat:cross-lock:${context.challengeId}:${context.sceneEpoch}:${tick}:${input.seq}`,actorId:context.actorId,tick,seq:input.seq,targetId:null,damage:null,critical:null,code:current.controlled?'CONTROLLED':'ACTION_LOCKED'});

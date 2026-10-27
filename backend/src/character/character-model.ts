@@ -32,6 +32,7 @@ export interface CharacterEntity extends CharacterSummary {
   scoreReachedAt?: number;
   scoreConfigRef?: string;
   trinketCooldownUntil?: number;
+  trinketEquippedAt?: number;
   progressionConfigRef: { id: string; version: number };
   createdAt: number;
   updatedAt: number;

@@ -73,6 +73,7 @@ export interface EntryChallenge extends HandoffChallenge {
     acceptedSeq: number;
     acceptedTick: number;
     createdAt: number;
+    trinketEquipWaitUntilTick?: number;
     controlSeq?:number;
     heartbeatSeq?:number;
     lease?:{mode:'connected'|'recovery';lastEvidenceAt:number;leaseUntil:number;lastHeartbeatAt:number;lastHeartbeatSeq:number;revision:number;recoveryUntil?:number};

@@ -125,6 +125,7 @@ export async function handoff(tx: Transaction, account: LoginAccount, now: numbe
       const updated: HandoffCharacter = { ...character, version: integer(character.version + 1), rolePlayEpoch: epoch, location: { kind: 'inn', characterId }, stamina,
         roleState: { kind: 'inn', rolePlayEpoch: epoch, resetAt: now, lifeState: 'alive', hp: 'full', mp: 'full', cooldowns: 'cleared', buffs: 'cleared', control: 'cleared', hpRegenerationRemainder: { numerator: 0, denominator: 1 }, mpRegenerationRemainder: { numerator: 0, denominator: 1 } } };
       delete updated.staminaReservation;
+      delete (updated as any).trinketCooldownUntil;
       tx.set(characterId, updated);
       if (characterId === account.selectedCharacterId) selectedCharacter = { characterId, rolePlayEpoch: updated.rolePlayEpoch };
       resultVersions.push({ kind: 'character', id: characterId, version: updated.version });

@@ -11,24 +11,25 @@ import type {MovementState,MovementConfig} from './movement-kernel.ts';
 import type {ActionInput} from './protocol/simulation-v2.ts';
 import {sweepDisplacement} from './skill-displacement.ts';
 const currentControlled=(stats:CrossCurrent)=>stats.controlled;
-export type BadaoSimulationInput={movement:MovementState;basic:CombatState;cross:CrossState;bengshan:BengshanState;badao:BadaoState;targets:CombatTarget[];inputs:ActionInput[];fromTick:number;toTick:number;movementConfig:MovementConfig;basicConfig:CombatConfig;crossConfig:CrossConfig;bengshanConfig:BengshanConfig;badaoConfig:BadaoConfig;context:{challengeId:string;sceneEpoch:number;actorId:string;immuneToBleed?:number[]};stats:CrossCurrent;random:(cursor:number)=>number;resources?:(tick:number,mp:string)=>string;supply?:(input:ActionInput&{kind:'item'},tick:number)=>{event:CombatEvent;mp?:string}};
-export function advanceBadaoSimulation({movement,basic,cross,bengshan,badao,targets,inputs,fromTick,toTick,movementConfig,basicConfig,crossConfig,bengshanConfig,badaoConfig,context,stats,random,resources,supply}:BadaoSimulationInput){
+export type BadaoSimulationInput={movement:MovementState;basic:CombatState;cross:CrossState;bengshan:BengshanState;badao:BadaoState;targets:CombatTarget[];inputs:ActionInput[];fromTick:number;toTick:number;movementConfig:MovementConfig;basicConfig:CombatConfig;crossConfig:CrossConfig;bengshanConfig:BengshanConfig;badaoConfig:BadaoConfig;context:{challengeId:string;sceneEpoch:number;actorId:string;immuneToBleed?:number[]};stats:CrossCurrent;random:(cursor:number)=>number;resources?:(tick:number,mp:string)=>string;supply?:(input:ActionInput&({kind:'item'}|{kind:'trinket'}),tick:number)=>{event:CombatEvent;mp?:string};activeStats?:(tick:number,stats:CrossCurrent)=>CrossCurrent};
+export function advanceBadaoSimulation({movement,basic,cross,bengshan,badao,targets,inputs,fromTick,toTick,movementConfig,basicConfig,crossConfig,bengshanConfig,badaoConfig,context,stats,random,resources,supply,activeStats}:BadaoSimulationInput){
  let m=structuredClone(movement),b=structuredClone(basic),s=structuredClone(cross),g=structuredClone(bengshan),d=structuredClone(badao),ts=structuredClone(targets),mp=stats.mp;const events:CombatEvent[]=[];
  const cancel=()=>{b.cast=null;b.held=false;b.buffered=false;b.nextStage=0;b.comboExpiresUs=null;};
  for(let tick=fromTick;tick<toTick;tick++){
   if(resources)mp=resources(tick,mp);const at=inputs.filter(i=>i.tick===tick),priorCross=s.cast,priorBengshan=g.cast,priorBadao=d.cast,before=b.cast;
-  for(const item of at.filter(i=>i.kind==='item').sort((a,b)=>a.seq-b.seq)){
-   if(supply){const res=supply(item as ActionInput&{kind:'item'},tick);if(res.event)events.push(res.event);if(res.mp!==undefined)mp=res.mp;}
+  for(const item of at.filter(i=>i.kind==='item'||i.kind==='trinket').sort((a,b)=>a.seq-b.seq)){
+   if(supply){const res=supply(item as ActionInput&({kind:'item'}|{kind:'trinket'}),tick);if(res.event)events.push(res.event);if(res.mp!==undefined)mp=res.mp;}
   }
-  if(currentControlled(stats)){g.cast=null;d.cast=null;s.cast=null;cancel();}
+  const effectiveStats=activeStats?activeStats(tick,stats):stats;
+  if(currentControlled(effectiveStats)){g.cast=null;d.cast=null;s.cast=null;cancel();}
   if(g.cast)m=sweepDisplacement({movement:m,originUs:g.cast.originUs,endUs:g.cast.endUs,facing:g.cast.snapshot.facing,tick,distance:bengshanConfig.displacement,map:movementConfig});
-  const current={...stats,mp,x:Number(m.x),y:Number(m.y),facing:m.facing};const {level,mp:_,controlled,mastery,...base}=current;
+  const current={...effectiveStats,mp,x:Number(m.x),y:Number(m.y),facing:m.facing};const {level,mp:_,controlled,mastery,...base}=current;
   const runCross=(list:ActionInput[])=>{s.randomCursor=b.randomCursor;const result=advanceCrossCombat(s,list,tick,tick+1,crossConfig,context,{...current,mp,controlled:current.controlled||Boolean(g.cast||d.cast)},ts,random);s=result.state;ts=result.targets;mp=result.mp;b.randomCursor=s.randomCursor;events.push(...result.events);if(result.accepted.length)cancel();};
   const runBengshan=(list:ActionInput[])=>{g.randomCursor=b.randomCursor;const result=advanceBengshanCombat(g,list,tick,tick+1,bengshanConfig,context,{...current,mp,controlled:current.controlled||Boolean(s.cast||d.cast)},ts,random);g=result.state;ts=result.targets;mp=result.mp;b.randomCursor=g.randomCursor;events.push(...result.events);if(result.accepted.length)cancel();};
   const runBadao=(list:ActionInput[])=>{d.randomCursor=b.randomCursor;const result=advanceBadaoCombat(d,list,tick,tick+1,badaoConfig,context,{...current,mp,controlled:current.controlled||Boolean(s.cast||g.cast)},ts,random);d=result.state;ts=result.targets;mp=result.mp;b.randomCursor=d.randomCursor;events.push(...result.events);if(result.accepted.length)cancel();};
   runCross([]);runBengshan([]);runBadao([]);
   for(const input of [...at].sort((a,b)=>a.seq-b.seq)){
-   if(input.kind==='item')continue;
+   if(input.kind==='item'||input.kind==='trinket')continue;
    if(input.kind==='skill'&&input.skillId==='badao'){runBadao([input]);continue;}
    if(input.kind==='skill'&&input.skillId==='cross'){runCross([input]);continue;}
    if(input.kind==='skill'&&input.skillId==='bengshan'){runBengshan([input]);continue;}

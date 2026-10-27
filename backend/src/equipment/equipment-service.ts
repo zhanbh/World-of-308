@@ -288,6 +288,9 @@ export class EquipmentService {
             // Trinket CD lock: if targetSlot is trinket and currently equipped trinket is on cooldown
             const currentEquippedTrinketId = equippedMap.trinket;
             if (targetSlot === 'trinket' && currentEquippedTrinketId) {
+              if (character.trinketCooldownUntil && nowMs < character.trinketCooldownUntil) {
+                requireValue(false, 'LOCATION_NOT_ALLOWED');
+              }
               if (character.staminaReservation && character.staminaReservation.startsWith('trinket-cd:')) {
                 const cdUntil = Number(character.staminaReservation.slice('trinket-cd:'.length));
                 requireValue(Number.isNaN(cdUntil) || nowMs >= cdUntil, 'LOCATION_NOT_ALLOWED');
@@ -352,6 +355,9 @@ export class EquipmentService {
 
             // Trinket CD lock: if unequipped slot is trinket and currently in cooldown
             if (slot === 'trinket') {
+              if (character.trinketCooldownUntil && nowMs < character.trinketCooldownUntil) {
+                requireValue(false, 'LOCATION_NOT_ALLOWED');
+              }
               if (character.staminaReservation && character.staminaReservation.startsWith('trinket-cd:')) {
                 const cdUntil = Number(character.staminaReservation.slice('trinket-cd:'.length));
                 requireValue(Number.isNaN(cdUntil) || nowMs >= cdUntil, 'LOCATION_NOT_ALLOWED');
@@ -435,6 +441,13 @@ export class EquipmentService {
           writes.push([rankingKey, rankingEntry]);
 
           // Update character
+          const trinketEquippedAt =
+            command.command === 'equipment.equip' && command.payload.targetSlot === 'trinket'
+              ? nowMs
+              : command.command === 'equipment.unequip' && command.payload.slot === 'trinket'
+              ? undefined
+              : character.trinketEquippedAt;
+
           const nextCharacter = {
             ...character,
             equipped: equippedMap,
@@ -443,9 +456,13 @@ export class EquipmentService {
             score: newScore,
             scoreReachedAt,
             scoreConfigRef: 'score-v1',
+            ...(trinketEquippedAt !== undefined ? { trinketEquippedAt } : {}),
             version: increment(character.version),
             updatedAt: now,
           };
+          if (command.command === 'equipment.unequip' && command.payload.slot === 'trinket') {
+            delete nextCharacter.trinketEquippedAt;
+          }
           budget(nextCharacter, 16384);
           writes.push([character.id, nextCharacter]);
 
