@@ -396,7 +396,7 @@ export class Prototype extends Component {
         this.accumulator += Math.min(dt, 0.1);
         while (this.accumulator >= 1 / 120) {
             const fixedDt = 1 / 120;
-            if (this.encounter.state !== 'fighting') {
+            if (this.encounter.state !== 'fighting' && !this.roomCleared) {
                 this.feedback.update(fixedDt);
                 for (const enemy of this.enemies) if (enemy.state === 'dead') enemy.update(fixedDt, this.model, true);
                 this.accumulator -= fixedDt; continue;
