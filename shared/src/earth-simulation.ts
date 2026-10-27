@@ -13,12 +13,15 @@ import type {MovementState,MovementConfig} from './movement-kernel.ts';
 import type {ActionInput} from './protocol/simulation-v2.ts';
 import {sweepDisplacement} from './skill-displacement.ts';
 const currentControlled=(stats:CrossCurrent)=>stats.controlled;
-export type EarthSimulationInput={movement:MovementState;basic:CombatState;cross:CrossState;bengshan:BengshanState;badao:BadaoState;earth:EarthState;targets:CombatTarget[];inputs:ActionInput[];fromTick:number;toTick:number;movementConfig:MovementConfig;basicConfig:CombatConfig;crossConfig:CrossConfig;bengshanConfig:BengshanConfig;badaoConfig:BadaoConfig;earthConfig:EarthConfig;context:{challengeId:string;sceneEpoch:number;actorId:string;tagDamage?:boolean;immuneToBleed?:number[]};stats:CrossCurrent;random:(cursor:number)=>number;jointAfterNode?:(at:Rational,movement:MovementState,targets:CombatTarget[],events:CombatEvent[])=>void;jointControlled?:(tick:number)=>boolean;jointPrepare?:(tick:number,targets:CombatTarget[])=>void;joint?:(tick:number,movement:MovementState,targets:CombatTarget[],events:CombatEvent[])=>boolean;resources?:(tick:number,mp:string)=>string};
-export function advanceEarthSimulation({movement,basic,cross,bengshan,badao,earth,targets,inputs,fromTick,toTick,movementConfig,basicConfig,crossConfig,bengshanConfig,badaoConfig,earthConfig,context,stats,random,resources,joint,jointPrepare,jointControlled,jointAfterNode}:EarthSimulationInput){
+export type EarthSimulationInput={movement:MovementState;basic:CombatState;cross:CrossState;bengshan:BengshanState;badao:BadaoState;earth:EarthState;targets:CombatTarget[];inputs:ActionInput[];fromTick:number;toTick:number;movementConfig:MovementConfig;basicConfig:CombatConfig;crossConfig:CrossConfig;bengshanConfig:BengshanConfig;badaoConfig:BadaoConfig;earthConfig:EarthConfig;context:{challengeId:string;sceneEpoch:number;actorId:string;tagDamage?:boolean;immuneToBleed?:number[]};stats:CrossCurrent;random:(cursor:number)=>number;jointAfterNode?:(at:Rational,movement:MovementState,targets:CombatTarget[],events:CombatEvent[])=>void;jointControlled?:(tick:number)=>boolean;jointPrepare?:(tick:number,targets:CombatTarget[])=>void;joint?:(tick:number,movement:MovementState,targets:CombatTarget[],events:CombatEvent[])=>boolean;resources?:(tick:number,mp:string)=>string;supply?:(input:ActionInput&{kind:'item'},tick:number)=>{event:CombatEvent;mp?:string}};
+export function advanceEarthSimulation({movement,basic,cross,bengshan,badao,earth,targets,inputs,fromTick,toTick,movementConfig,basicConfig,crossConfig,bengshanConfig,badaoConfig,earthConfig,context,stats,random,resources,joint,jointPrepare,jointControlled,jointAfterNode,supply}:EarthSimulationInput){
  let m=structuredClone(movement),b=structuredClone(basic),s=structuredClone(cross),g=structuredClone(bengshan),d=structuredClone(badao),e=structuredClone(earth),ts=structuredClone(targets),mp=stats.mp;const events:CombatEvent[]=[];
  const cancel=()=>{b.cast=null;b.held=false;b.buffered=false;b.nextStage=0;b.comboExpiresUs=null;};
  for(let tick=fromTick;tick<toTick;tick++){
   if(resources)mp=resources(tick,mp);const at=inputs.filter(i=>i.tick===tick),priorCross=s.cast,priorBengshan=g.cast,priorBadao=d.cast,priorEarth=e.cast,before=b.cast;
+  for(const item of at.filter(i=>i.kind==='item').sort((a,b)=>a.seq-b.seq)){
+   if(supply){const res=supply(item as ActionInput&{kind:'item'},tick);if(res.event)events.push(res.event);if(res.mp!==undefined)mp=res.mp;}
+  }
   if(jointControlled?jointControlled(tick):currentControlled(stats)){g.cast=null;d.cast=null;s.cast=null;e.cast=null;cancel();}
   if(e.cast&&e.cast.node===0)m=sweepDisplacement({movement:m,originUs:e.cast.originUs,endUs:e.cast.nodesUs[0],facing:e.cast.snapshot.facing,tick,distance:earthConfig.displacement,map:movementConfig});
   if(g.cast)m=sweepDisplacement({movement:m,originUs:g.cast.originUs,endUs:g.cast.endUs,facing:g.cast.snapshot.facing,tick,distance:bengshanConfig.displacement,map:movementConfig});
@@ -46,6 +49,7 @@ export function advanceEarthSimulation({movement,basic,cross,bengshan,badao,eart
   }
   if(joint){current.controlled=joint(tick,m,ts,events);if(current.controlled){g.cast=null;d.cast=null;s.cast=null;e.cast=null;cancel();}}
   for(const input of [...at].sort((a,b)=>a.seq-b.seq)){
+   if(input.kind==='item')continue;
    if(input.kind==='skill'&&input.skillId==='earth'){runEarth([input]);continue;}
    if(input.kind==='skill'&&input.skillId==='badao'){runBadao([input]);continue;}
    if(input.kind==='skill'&&input.skillId==='cross'){runCross([input]);continue;}

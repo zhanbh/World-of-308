@@ -12,13 +12,17 @@
       "blocked_by": [],
       "accepted_revision": "1608d5525d6914d82d652ca1c61ffc57b4b323cca7c59702c8babc1490f1227e",
       "path": "docs/stories/warrior-loop/st13/issues/01-battle-potion.md",
-      "state": "open",
-      "worktree": null,
-      "branch": null,
-      "implementation_commit": null,
-      "verified_code_head": null,
-      "evidence": [],
-      "local_checks": null,
+      "state": "verified",
+      "worktree": ".worktrees/st13-01-battle-potion",
+      "branch": "feat/st13-01-battle-potion",
+      "implementation_commit": "db1e11b",
+      "verified_code_head": "db1e11b",
+      "evidence": [
+        "docs/reviews/st13-01-verification.md",
+        "backend/test/battle-potion.test.mjs",
+        "shared/test/potion-kernel.test.mjs"
+      ],
+      "local_checks": "7/7 checks passed (596 backend, 212 shared, all client/UI regression passed; 22/22 ST13-01 tests passed)",
       "platform_status": "gap"
     },
     {
