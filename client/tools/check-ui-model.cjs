@@ -180,4 +180,139 @@ const brokenStats = ui.computeCharacterStats();
 assert.equal(brokenStats.armor, 50, 'Broken chest armor must be excluded from total stats');
 console.log('PASS: stats computation and 0-durability attribute expiry verified');
 
+// --- Test 8: ST13-04 战斗补给 HUD (SupplyHUDModel) 状态机与几何热区隔离验证 ---
+const supplyFile = path.join(__dirname, '../assets/scripts/SupplyHUDModel.ts');
+const supplyOutput = transpileCode(fs.readFileSync(supplyFile, 'utf8'), supplyFile);
+const supplyMod = { exports: {} };
+new Function('module', 'exports', supplyOutput)(supplyMod, supplyMod.exports);
+const { SupplyHUDModel, SUPPLY_BUTTON_LAYOUT } = supplyMod.exports;
+
+const hud = new SupplyHUDModel();
+
+// 1. 几何无重叠与热区互斥断言
+// 补给按钮4个：slot0 (135,10), slot1 (205,10), slot2 (275,10), trinket (345,10) 各半径28
+const supplyButtons = [SUPPLY_BUTTON_LAYOUT.slot0, SUPPLY_BUTTON_LAYOUT.slot1, SUPPLY_BUTTON_LAYOUT.slot2, SUPPLY_BUTTON_LAYOUT.trinket];
+for (let i = 0; i < supplyButtons.length; i++) {
+    for (let j = i + 1; j < supplyButtons.length; j++) {
+        const dist = Math.hypot(supplyButtons[i].x - supplyButtons[j].x, supplyButtons[i].y - supplyButtons[j].y);
+        assert.ok(dist >= supplyButtons[i].radius + supplyButtons[j].radius, 'Supply buttons must not overlap each other');
+    }
+}
+
+// 与四技能按钮 (150/215/280/345, -65, 半径31) 距离严格大于 28 + 31 = 59
+const skillButtons = [{ x: 150, y: -65 }, { x: 215, y: -65 }, { x: 280, y: -65 }, { x: 345, y: -65 }];
+for (const sb of supplyButtons) {
+    for (const sk of skillButtons) {
+        const dist = Math.hypot(sb.x - sk.x, sb.y - sk.y);
+        assert.ok(dist >= sb.radius + 31, 'Supply buttons must not overlap warrior skill buttons');
+    }
+    // 与普攻 (345, -150, 半径68) 隔离
+    assert.ok(Math.hypot(sb.x - 345, sb.y + 150) >= sb.radius + 68, 'Supply buttons must not overlap attack button');
+    // 与摇杆 (-345, -150, 半径95) 隔离
+    assert.ok(Math.hypot(sb.x + 345, sb.y + 150) >= sb.radius + 95, 'Supply buttons must not overlap joystick');
+}
+
+// 2. hitTest 命中测试
+assert.deepEqual(hud.hitTest(135, 10), { target: 'quickSlot', index: 0 });
+assert.deepEqual(hud.hitTest(205, 10), { target: 'quickSlot', index: 1 });
+assert.deepEqual(hud.hitTest(275, 10), { target: 'quickSlot', index: 2 });
+assert.deepEqual(hud.hitTest(345, 10), { target: 'trinket' });
+assert.equal(hud.hitTest(135, 60), null, 'Out of bounds touch must return null');
+assert.equal(hud.hitTest(0, 0), null);
+
+// 3. 快捷药位状态机推导
+// 初始状态：未绑定
+assert.equal(hud.quickSlots[0].status, 'unbound');
+assert.equal(hud.trinket.status, 'unbound');
+
+// 同步权威快照：slot 0 绑定小红 (无货耗尽)，slot 1 绑定小蓝 (5瓶可用)，slot 2 未绑定
+hud.syncFromSnapshot({
+    quickSlots: ['item:hp-potion-small-v1', 'item:mp-potion-small-v1', null],
+    backpackStacks: [{ templateId: 'item:mp-potion-small-v1', quantity: 5 }],
+    equippedTrinket: { itemId: 'trinket-1', templateRef: 'item:trinket-warrior-glory-v1' },
+    trinketEquipWaitUntilTick: 6000,
+    cooldowns: [],
+    buffs: [],
+    currentTick: 1000,
+    lifeState: 'alive',
+    isFighting: true
+});
+
+assert.equal(hud.quickSlots[0].status, 'empty', 'Slot 0 has template but zero quantity -> empty');
+assert.ok(hud.quickSlots[0].label.includes('耗尽'));
+assert.equal(hud.quickSlots[1].status, 'ready', 'Slot 1 has 5 potions -> ready');
+assert.ok(hud.quickSlots[1].label.includes('×5'));
+assert.equal(hud.quickSlots[2].status, 'unbound', 'Slot 2 no template -> unbound');
+
+// 饰品处于 60s 换装等待中 (tick 1000 < 6000)
+assert.equal(hud.trinket.status, 'waiting');
+assert.equal(hud.trinket.waitLeftSec, 50); // (6000 - 1000) * 0.01 = 50s
+
+// 时间推进至等待结束：饰品变为就绪
+hud.syncFromSnapshot({
+    quickSlots: ['item:hp-potion-small-v1', 'item:mp-potion-small-v1', null],
+    backpackStacks: [{ templateId: 'item:mp-potion-small-v1', quantity: 5 }],
+    equippedTrinket: { itemId: 'trinket-1', templateRef: 'item:trinket-warrior-glory-v1' },
+    trinketEquipWaitUntilTick: 6000,
+    cooldowns: [],
+    buffs: [],
+    currentTick: 6000,
+    lifeState: 'alive',
+    isFighting: true
+});
+assert.equal(hud.trinket.status, 'ready');
+
+// 4. 输入触发与提交状态
+const emptyTrigger = hud.triggerQuickSlot(0, 6000);
+assert.equal(emptyTrigger, null, 'Empty potion slot cannot trigger');
+
+const mpTrigger = hud.triggerQuickSlot(1, 6000);
+assert.deepEqual(mpTrigger, { kind: 'item', quickSlotIndex: 1, templateId: 'item:mp-potion-small-v1', tick: 6000 });
+assert.equal(hud.quickSlots[1].status, 'submitting', 'Triggered slot transitions to submitting');
+
+const trinketTrigger = hud.triggerTrinket(6000);
+assert.deepEqual(trinketTrigger, { kind: 'trinket', itemId: 'trinket-1', tick: 6000 });
+assert.equal(hud.trinket.status, 'submitting', 'Triggered trinket transitions to submitting');
+
+// 5. 冷却与 Buff 激活状态
+hud.resolveSubmission('quickSlot', 1);
+hud.resolveSubmission('trinket');
+
+hud.syncFromSnapshot({
+    quickSlots: ['item:hp-potion-small-v1', 'item:mp-potion-small-v1', null],
+    backpackStacks: [{ templateId: 'item:mp-potion-small-v1', quantity: 4 }],
+    equippedTrinket: { itemId: 'trinket-1', templateRef: 'item:trinket-warrior-glory-v1' },
+    trinketEquipWaitUntilTick: 6000,
+    cooldowns: [
+        { cooldownId: 'mpPotion', readyAtTick: 7000 },
+        { cooldownId: 'trinket', readyAtTick: 18000 }
+    ],
+    buffs: [
+        { buffId: 'b-1', templateRef: 'item:trinket-warrior-glory-v1', endsAtTick: 7500 }
+    ],
+    currentTick: 6100,
+    lifeState: 'alive',
+    isFighting: true
+});
+
+assert.equal(hud.quickSlots[1].status, 'cooldown');
+assert.equal(hud.quickSlots[1].cooldownLeftSec, 9); // (7000 - 6100) * 0.01 = 9s
+assert.equal(hud.trinket.status, 'active', 'Trinket buff active overrides cooldown display for button');
+assert.equal(hud.trinket.buffLeftSec, 14); // (7500 - 6100) * 0.01 = 14s
+
+// 6. 角色死亡时全补给禁用
+hud.syncFromSnapshot({
+    quickSlots: ['item:hp-potion-small-v1', 'item:mp-potion-small-v1', null],
+    backpackStacks: [{ templateId: 'item:mp-potion-small-v1', quantity: 4 }],
+    equippedTrinket: { itemId: 'trinket-1', templateRef: 'item:trinket-warrior-glory-v1' },
+    cooldowns: [],
+    buffs: [],
+    currentTick: 8000,
+    lifeState: 'dead',
+    isFighting: true
+});
+assert.equal(hud.quickSlots[1].status, 'disabled');
+assert.equal(hud.trinket.status, 'disabled');
+console.log('PASS: SupplyHUDModel hotzones, lifecycle state machine, and trigger actions verified (ST13-04)');
+
 console.log('\nALL UI MODEL TESTS PASSED (100% SUCCESS)');

@@ -16,6 +16,7 @@ import type { InventoryCoordinator } from './net/InventoryCoordinator';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
 import { MovementCoordinator } from './net/MovementCoordinator';
 import { connectChallengePreview } from './net/ChallengePreview';
+import { SupplyHUDModel, SUPPLY_BUTTON_LAYOUT } from './SupplyHUDModel';
 
 const { ccclass } = _decorator;
 const stages = ['交叉斩', '反手上挑', '下劈收势'];
@@ -36,6 +37,11 @@ export class Prototype extends Component {
     private status!: Label;
     private healthStatus!: Label;
     private skillLabels: Partial<Record<WarriorSkillId, Label>> = {};
+    private supplyHUD = new SupplyHUDModel();
+    private supplyLabels: Label[] = [];
+    private localCooldowns: { cooldownId: string; readyAtTick: number }[] = [];
+    private localBuffs: { buffId: string; templateRef: string; endsAtTick: number }[] = [];
+    private localElapsedTicks = 0;
     private stickId: number | null = null;
     private attackIds = new Set<number>();
     private axis = { x: 0, y: 0 };
@@ -112,6 +118,12 @@ export class Prototype extends Component {
             { id: 'earth', x: 345, label: '大蹦 G' },
         ];
         for (const button of skillButtons) this.skillLabels[button.id] = this.text(button.label, button.x, -65, 11, 62);
+        this.supplyLabels = [
+            this.text('1 药', SUPPLY_BUTTON_LAYOUT.slot0.x, SUPPLY_BUTTON_LAYOUT.slot0.y, 11, 56),
+            this.text('2 药', SUPPLY_BUTTON_LAYOUT.slot1.x, SUPPLY_BUTTON_LAYOUT.slot1.y, 11, 56),
+            this.text('3 药', SUPPLY_BUTTON_LAYOUT.slot2.x, SUPPLY_BUTTON_LAYOUT.slot2.y, 11, 56),
+            this.text('饰品 T', SUPPLY_BUTTON_LAYOUT.trinket.x, SUPPLY_BUTTON_LAYOUT.trinket.y, 11, 56),
+        ];
         this.text('受击预警 · 走出红框躲避', 0, -208, 16);
         this.speedLabels = attackSpeedTuning.presets.map((rate, index) => this.text(`${rate}×`, -360 + index * 70, 126, 12, 64));
         this.restartEncounter();
@@ -286,6 +298,8 @@ export class Prototype extends Component {
             }
         } else if (this.encounter.state !== 'fighting') {
             return;
+        } else if (this.touchSupplyButton(p.x, p.y)) {
+            return;
         } else if (this.touchSkillButton(p.x, p.y)) {
             return;
         } else if (this.stickId === null && Math.hypot(p.x + 345, p.y + 150) < 95) {
@@ -334,12 +348,15 @@ export class Prototype extends Component {
         }
         if (e.keyCode === KeyCode.KEY_R) { this.restartEncounter(); return; }
         if (e.keyCode === KeyCode.DIGIT_1) {
+            if (this.encounter.state === 'fighting') { this.useSupplySlot(0); return; }
             this.mode = 7; this.dungeonKind = 'first'; this.roomNo = 0; this.restartEncounter(); return;
         }
         if (e.keyCode === KeyCode.DIGIT_2) {
+            if (this.encounter.state === 'fighting') { this.useSupplySlot(1); return; }
             this.mode = 7; this.dungeonKind = 'workshop'; this.roomNo = 0; this.restartEncounter(); return;
         }
         if (e.keyCode === KeyCode.DIGIT_3) {
+            if (this.encounter.state === 'fighting') { this.useSupplySlot(2); return; }
             this.mode = 7; this.dungeonKind = 'rift'; this.roomNo = 0; this.restartEncounter(); return;
         }
         if (this.encounter.state !== 'fighting') return;
@@ -350,6 +367,7 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.KEY_F) this.castSkill('bengshan');
         if (e.keyCode === KeyCode.KEY_Q) this.castSkill('badao');
         if (e.keyCode === KeyCode.KEY_G) this.castSkill('earth');
+        if (e.keyCode === KeyCode.KEY_T) this.useTrinket();
     }
 
     private keyUp(e: EventKeyboard): void {
@@ -474,7 +492,10 @@ export class Prototype extends Component {
         this.status.string = `${this.fps} FPS | 攻速${this.model.attackSpeedMultiplier.toFixed(2)}× | ${state} | ${this.model.stage < 0 ? (this.model.moving ? (this.model.running ? '跑' : '走') : '待机') : stages[this.model.stage]} | ${skillState}`;
         this.speedLabels.forEach((label, index) => label.color = new Color().fromHEX(
             this.model.attackSpeedMultiplier === attackSpeedTuning.presets[index] ? '#a5ffcf' : '#d0dadd'));
+        this.localElapsedTicks += dt * 100;
+        this.syncSupplyHUD();
         this.updateSkillLabels();
+        this.updateSupplyLabels();
     }
 
     private rect(g: Graphics, x: number, y: number, w: number, h: number, color: string): void {
@@ -571,6 +592,38 @@ export class Prototype extends Component {
             ui.fillColor = this.skills.ready(button.id) ? new Color(67, 151, 158, 230) : new Color(67, 91, 96, 210);
             ui.circle(button.x, -65, 29); ui.fill();
         }
+        const supplyGeom = SUPPLY_BUTTON_LAYOUT;
+        for (let i = 0; i < 3; i++) {
+            const slot = this.supplyHUD.quickSlots[i];
+            const pos = [supplyGeom.slot0, supplyGeom.slot1, supplyGeom.slot2][i];
+            let color = new Color(50, 60, 65, 200);
+            if (slot.status === 'ready') {
+                color = slot.kind === 'hp' ? new Color(180, 50, 50, 230) : slot.kind === 'mp' ? new Color(50, 100, 200, 230) : new Color(60, 140, 100, 230);
+            } else if (slot.status === 'cooldown') {
+                color = new Color(75, 75, 80, 210);
+            } else if (slot.status === 'empty') {
+                color = new Color(90, 40, 40, 180);
+            } else if (slot.status === 'submitting') {
+                color = new Color(200, 160, 40, 240);
+            }
+            ui.fillColor = color;
+            ui.circle(pos.x, pos.y, pos.radius);
+            ui.fill();
+        }
+        const tState = this.supplyHUD.trinket;
+        let tColor = new Color(50, 60, 65, 200);
+        if (tState.status === 'ready') {
+            tColor = new Color(140, 60, 180, 230);
+        } else if (tState.status === 'active') {
+            tColor = new Color(210, 170, 50, 240);
+        } else if (tState.status === 'cooldown' || tState.status === 'waiting') {
+            tColor = new Color(75, 75, 80, 210);
+        } else if (tState.status === 'submitting') {
+            tColor = new Color(200, 160, 40, 240);
+        }
+        ui.fillColor = tColor;
+        ui.circle(supplyGeom.trinket.x, supplyGeom.trinket.y, supplyGeom.trinket.radius);
+        ui.fill();
     }
 
     private restartEncounter(): void {
@@ -649,6 +702,120 @@ export class Prototype extends Component {
         if (!button) return false;
         this.castSkill(button.id);
         return true;
+    }
+
+    private touchSupplyButton(x: number, y: number): boolean {
+        const hit = this.supplyHUD.hitTest(x, y);
+        if (!hit) return false;
+        if (hit.target === 'quickSlot') {
+            this.useSupplySlot(hit.index);
+        } else {
+            this.useTrinket();
+        }
+        return true;
+    }
+
+    private useSupplySlot(index: number): void {
+        const tick = Math.floor(this.localElapsedTicks);
+        const input = this.supplyHUD.triggerQuickSlot(index, tick);
+        if (!input) return;
+        if (this.challengeCoordinator && this.challengeCoordinator.state.status === 'active') {
+            try {
+                this.challengeCoordinator.enqueue(input);
+            } catch {
+                this.supplyHUD.resolveSubmission('quickSlot', index);
+            }
+        } else {
+            const slot = this.supplyHUD.quickSlots[index];
+            if (slot.kind === 'hp') {
+                this.model.hp = Math.min(100, this.model.hp + 20);
+                const cd = this.localCooldowns.find(c => c.cooldownId === 'hpPotion');
+                if (cd) cd.readyAtTick = tick + 1000;
+                else this.localCooldowns.push({ cooldownId: 'hpPotion', readyAtTick: tick + 1000 });
+            } else if (slot.kind === 'mp') {
+                this.skills.mana = Math.min(this.skills.maxMana, this.skills.mana + 40);
+                const cd = this.localCooldowns.find(c => c.cooldownId === 'mpPotion');
+                if (cd) cd.readyAtTick = tick + 1000;
+                else this.localCooldowns.push({ cooldownId: 'mpPotion', readyAtTick: tick + 1000 });
+            }
+            this.supplyHUD.resolveSubmission('quickSlot', index);
+        }
+    }
+
+    private useTrinket(): void {
+        const tick = Math.floor(this.localElapsedTicks);
+        const input = this.supplyHUD.triggerTrinket(tick);
+        if (!input) return;
+        if (this.challengeCoordinator && this.challengeCoordinator.state.status === 'active') {
+            try {
+                this.challengeCoordinator.enqueue(input);
+            } catch {
+                this.supplyHUD.resolveSubmission('trinket');
+            }
+        } else {
+            const cd = this.localCooldowns.find(c => c.cooldownId === 'trinket');
+            if (cd) cd.readyAtTick = tick + 12000;
+            else this.localCooldowns.push({ cooldownId: 'trinket', readyAtTick: tick + 12000 });
+            this.localBuffs = [{ buffId: `b-local-${tick}`, templateRef: 'item:trinket-warrior-glory-v1', endsAtTick: tick + 1500 }];
+            this.supplyHUD.resolveSubmission('trinket');
+        }
+    }
+
+    private syncSupplyHUD(): void {
+        const coord = this.challengeCoordinator;
+        if (coord && coord.state.status === 'active' && coord.state.confirmed) {
+            const cState = coord.state;
+            const actor = cState.confirmed;
+            const inv = this.inventoryPanel?.coordinator?.state;
+            const quick = inv?.quickSlots?.slots ?? [];
+            const quickSlotTemplates: (string | null)[] = [null, null, null];
+            for (const s of quick) {
+                if (s.slotIndex >= 0 && s.slotIndex < 3) quickSlotTemplates[s.slotIndex] = s.templateId;
+            }
+            const backpackStacks = (inv?.backpack?.slots ?? [])
+                .filter(s => s && s.kind === 'stack')
+                .map(s => ({ templateId: s!.templateRef.id, quantity: s!.quantity }));
+
+            if (cState.actionResults.length > 0) {
+                this.supplyHUD.clearSubmissions();
+            }
+
+            this.supplyHUD.syncFromSnapshot({
+                quickSlots: quickSlotTemplates,
+                backpackStacks,
+                equippedTrinket: null,
+                cooldowns: [],
+                buffs: [],
+                currentTick: actor.acceptedTick,
+                lifeState: cState.player ? cState.player.lifeState : (this.model.hp > 0 ? 'alive' : 'dead'),
+                isFighting: this.encounter.state === 'fighting'
+            });
+        } else {
+            this.supplyHUD.syncFromSnapshot({
+                quickSlots: ['item:hp-potion-small-v1', 'item:mp-potion-small-v1', null],
+                backpackStacks: [
+                    { templateId: 'item:hp-potion-small-v1', quantity: 5 },
+                    { templateId: 'item:mp-potion-small-v1', quantity: 5 }
+                ],
+                equippedTrinket: { itemId: 'inst-trinket-glory-1', templateRef: 'item:trinket-warrior-glory-v1' },
+                cooldowns: this.localCooldowns,
+                buffs: this.localBuffs,
+                currentTick: Math.floor(this.localElapsedTicks),
+                lifeState: this.model.hp > 0 ? 'alive' : 'dead',
+                isFighting: this.encounter.state === 'fighting'
+            });
+        }
+    }
+
+    private updateSupplyLabels(): void {
+        for (let i = 0; i < 3; i++) {
+            if (this.supplyLabels[i]) {
+                this.supplyLabels[i].string = this.supplyHUD.quickSlots[i].label;
+            }
+        }
+        if (this.supplyLabels[3]) {
+            this.supplyLabels[3].string = this.supplyHUD.trinket.label;
+        }
     }
 
     private updateSkillLabels(): void {

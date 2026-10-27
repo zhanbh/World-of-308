@@ -8,7 +8,7 @@ try { ({ ts } = loadTypeScript(process.argv[2] || process.env.WORLD308_TYPESCRIP
 catch (error) { console.error(error.message); process.exit(1); }
 function transpileCode(code, filename) { return transpile(ts, code, filename); }
 
-for (const name of ['WarriorSkillAnimation.ts', 'WarriorSkillEffects.ts', 'WarriorAttackAnimation.ts', 'WarriorSpriteSheetView.ts', 'CombatModel.ts', 'EnemyModel.ts', 'WarriorView.ts', 'WarriorSkillsModel.ts', 'Prototype.ts']) {
+for (const name of ['WarriorSkillAnimation.ts', 'WarriorSkillEffects.ts', 'WarriorAttackAnimation.ts', 'WarriorSpriteSheetView.ts', 'CombatModel.ts', 'EnemyModel.ts', 'WarriorView.ts', 'WarriorSkillsModel.ts', 'SupplyHUDModel.ts', 'Prototype.ts']) {
     const file = path.join(__dirname, '../assets/scripts', name);
     const output = transpileCode(fs.readFileSync(file, 'utf8'), file);
     assert.ok(output.length > 0, `${name} should transpile without syntax errors`);

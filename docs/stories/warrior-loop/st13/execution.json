@@ -74,13 +74,17 @@
       ],
       "accepted_revision": "e40f718bee191f294ad32c752e7846c3167ee5003e36d24e9e08697d04e3b904",
       "path": "docs/stories/warrior-loop/st13/issues/04-cocos-supply-hud.md",
-      "state": "open",
-      "worktree": null,
-      "branch": null,
-      "implementation_commit": null,
-      "verified_code_head": null,
-      "evidence": [],
-      "local_checks": null,
+      "state": "verified",
+      "worktree": ".worktrees/st13-04-cocos-hud",
+      "branch": "feat/st13-04-cocos-hud",
+      "implementation_commit": "4d0a578",
+      "verified_code_head": "4d0a578",
+      "evidence": [
+        "docs/reviews/st13-04-verification.md",
+        "client/assets/scripts/SupplyHUDModel.ts",
+        "backend/test/supply-hud-coordinator.test.mjs"
+      ],
+      "local_checks": "7/7 checks passed (612 backend, all client/UI regression passed)",
       "platform_status": "gap"
     },
     {
