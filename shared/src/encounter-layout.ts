@@ -12,6 +12,7 @@ export interface EncounterSpawnCandidate {
     tacticsKind: EncounterTacticsKind;
     x: number;
     y: number;
+    category?: 'humanoid' | 'mechanical' | 'undead' | 'beast';
     experienceMultiplier?: number;
 }
 
@@ -128,32 +129,172 @@ export function validateSpawnGeometry(
     }
 }
 
+export const WORKSHOP_DUNGEON_SEVEN_ROOM_SPAWNS: readonly (readonly EncounterSpawnCandidate[])[] = [
+    // Room 0 (R1) - 4 base monsters (3 humanoid melee, 1 mechanical artillery)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'ranged', category: 'mechanical', x: 90000, y: -15000 },
+    ],
+    // Room 1 (R2) - 5 base monsters (3 humanoid melee, 2 mechanical charge)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'charge', category: 'mechanical', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'charge', category: 'mechanical', x: 135000, y: 55000 },
+    ],
+    // Room 2 (R3) - 5 base monsters (2 humanoid ranged, 3 mechanical melee)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 135000, y: 55000 },
+    ],
+    // Room 3 (R4) - 6 base monsters (2 humanoid melee, 2 mechanical charge, 2 mechanical artillery)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'charge', category: 'mechanical', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'charge', category: 'mechanical', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'ranged', category: 'mechanical', x: 135000, y: 55000 },
+        { spawnId: 'spawn-5', role: 'ordinary', tacticsKind: 'ranged', category: 'mechanical', x: 145000, y: 20000 },
+    ],
+    // Room 4 (R5) - 4 base monsters (1 humanoid elite, 2 mechanical melee, 1 humanoid ranged)
+    [
+        { spawnId: 'spawn-0', role: 'elite', tacticsKind: 'elite', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: -10000, y: -15000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 135000, y: 55000 },
+    ],
+    // Room 5 (R6) - 7 base monsters (3 humanoid melee, 2 mechanical charge, 2 humanoid ranged)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'charge', category: 'mechanical', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'charge', category: 'mechanical', x: 135000, y: 55000 },
+        { spawnId: 'spawn-5', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 145000, y: 20000 },
+        { spawnId: 'spawn-6', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 170000, y: -15000 },
+    ],
+    // Room 6 (R7) - 3 base monsters (1 humanoid boss, 2 mechanical guard)
+    [
+        { spawnId: 'spawn-0', role: 'boss', tacticsKind: 'boss', category: 'humanoid', x: 100000, y: 20000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 30000, y: -15000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 55000, y: 55000 },
+    ],
+] as const;
+
+export const RIFT_DUNGEON_SEVEN_ROOM_SPAWNS: readonly (readonly EncounterSpawnCandidate[])[] = [
+    // Room 0 (R1) - 5 base monsters (3 humanoid melee, 2 undead ranged)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'ranged', category: 'undead', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'ranged', category: 'undead', x: 135000, y: 55000 },
+    ],
+    // Room 1 (R2) - 6 base monsters (2 beast charge, 3 humanoid melee, 1 undead ranged)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'charge', category: 'beast', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'charge', category: 'beast', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 135000, y: 55000 },
+        { spawnId: 'spawn-5', role: 'ordinary', tacticsKind: 'ranged', category: 'undead', x: 145000, y: 20000 },
+    ],
+    // Room 2 (R3) - 7 base monsters (3 humanoid melee, 2 humanoid ranged, 2 mechanical melee)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 135000, y: 55000 },
+        { spawnId: 'spawn-5', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 145000, y: 20000 },
+        { spawnId: 'spawn-6', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 170000, y: -15000 },
+    ],
+    // Room 3 (R4) - 6 base monsters (2 humanoid ranged, 2 mechanical charge, 2 humanoid melee)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'charge', category: 'mechanical', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'charge', category: 'mechanical', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 135000, y: 55000 },
+        { spawnId: 'spawn-5', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 145000, y: 20000 },
+    ],
+    // Room 4 (R5) - 5 base monsters (1 humanoid elite, 2 undead melee, 2 humanoid ranged)
+    [
+        { spawnId: 'spawn-0', role: 'elite', tacticsKind: 'elite', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'undead', x: -10000, y: -15000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'undead', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 135000, y: 55000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'ranged', category: 'humanoid', x: 170000, y: -15000 },
+    ],
+    // Room 5 (R6) - 8 base monsters (peak concurrency: 3 humanoid melee, 2 beast charge, 2 undead ranged, 1 mechanical melee)
+    [
+        { spawnId: 'spawn-0', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: -10000, y: -15000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 25000, y: 20000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 65000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'charge', category: 'beast', x: 90000, y: -15000 },
+        { spawnId: 'spawn-4', role: 'ordinary', tacticsKind: 'charge', category: 'beast', x: 135000, y: 55000 },
+        { spawnId: 'spawn-5', role: 'ordinary', tacticsKind: 'ranged', category: 'undead', x: 145000, y: 20000 },
+        { spawnId: 'spawn-6', role: 'ordinary', tacticsKind: 'ranged', category: 'undead', x: 170000, y: -15000 },
+        { spawnId: 'spawn-7', role: 'ordinary', tacticsKind: 'melee', category: 'mechanical', x: 105000, y: 55000 },
+    ],
+    // Room 6 (R7) - 4 base monsters (1 humanoid boss, 2 humanoid melee, 1 undead ranged)
+    [
+        { spawnId: 'spawn-0', role: 'boss', tacticsKind: 'boss', category: 'humanoid', x: 100000, y: 20000 },
+        { spawnId: 'spawn-1', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 30000, y: -15000 },
+        { spawnId: 'spawn-2', role: 'ordinary', tacticsKind: 'melee', category: 'humanoid', x: 55000, y: 55000 },
+        { spawnId: 'spawn-3', role: 'ordinary', tacticsKind: 'ranged', category: 'undead', x: 150000, y: -15000 },
+    ],
+] as const;
+
+export type DungeonKind = 'first' | 'workshop' | 'rift';
+
+export const THREE_DUNGEON_SEVEN_ROOM_SPAWNS: Record<DungeonKind, readonly (readonly EncounterSpawnCandidate[])[]> = {
+    first: FIRST_DUNGEON_SEVEN_ROOM_SPAWNS,
+    workshop: WORKSHOP_DUNGEON_SEVEN_ROOM_SPAWNS,
+    rift: RIFT_DUNGEON_SEVEN_ROOM_SPAWNS,
+};
+
 /**
- * Build room spawns from the versioned seven-room encounter layout, appending purple monster if assigned to this room.
+ * Build room spawns for any of the three dungeons.
  */
-export function buildEncounterRoomSpawns(
+export function buildEncounterRoomSpawnsForDungeon(
+    dungeonKind: DungeonKind,
     roomNo: number,
     purpleRoomNo: number | null,
     templateRef: string,
     purpleTemplateRef = templateRef
-): { spawnId: string; templateRef: string; role: 'ordinary' | 'elite' | 'boss' | 'purple'; x: number; y: number }[] {
-    if (roomNo < 0 || roomNo >= FIRST_DUNGEON_SEVEN_ROOM_SPAWNS.length) {
+): { spawnId: string; templateRef: string; role: 'ordinary' | 'elite' | 'boss' | 'purple'; category?: 'humanoid' | 'mechanical' | 'undead' | 'beast'; tacticsKind: EncounterTacticsKind; x: number; y: number }[] {
+    const dungeonSpawns = THREE_DUNGEON_SEVEN_ROOM_SPAWNS[dungeonKind];
+    if (!dungeonSpawns) {
+        throw new TypeError('UNKNOWN_DUNGEON_KIND');
+    }
+    if (roomNo < 0 || roomNo >= dungeonSpawns.length) {
         throw new TypeError('INVALID_ROOM_NO');
     }
-    const base = FIRST_DUNGEON_SEVEN_ROOM_SPAWNS[roomNo];
-    const spawns: { spawnId: string; templateRef: string; role: 'ordinary' | 'elite' | 'boss' | 'purple'; x: number; y: number }[] = base.map(s => ({
+    const base = dungeonSpawns[roomNo];
+    const spawns: { spawnId: string; templateRef: string; role: 'ordinary' | 'elite' | 'boss' | 'purple'; category?: 'humanoid' | 'mechanical' | 'undead' | 'beast'; tacticsKind: EncounterTacticsKind; x: number; y: number }[] = base.map(s => ({
         spawnId: s.spawnId,
         templateRef,
         role: s.role,
+        category: s.category,
+        tacticsKind: s.tacticsKind,
         x: s.x,
         y: s.y,
     }));
-    // Purple monster can only spawn in eligible rooms 0..5, never in boss room 6
-    if (purpleRoomNo !== null && purpleRoomNo === roomNo && roomNo <= 5) {
+    // Purple monster only exists in first dungeon eligible rooms 0..5, never in workshop/rift or room 6
+    if (dungeonKind === 'first' && purpleRoomNo !== null && purpleRoomNo === roomNo && roomNo <= 5) {
         spawns.push({
             spawnId: PURPLE_SPAWN_CANDIDATE.spawnId,
             templateRef: purpleTemplateRef,
             role: 'purple',
+            category: 'humanoid',
+            tacticsKind: 'melee',
             x: PURPLE_SPAWN_CANDIDATE.x,
             y: PURPLE_SPAWN_CANDIDATE.y,
         });
@@ -162,4 +303,24 @@ export function buildEncounterRoomSpawns(
         throw new TypeError('EXCEEDS_MAX_ROOM_SPAWNS');
     }
     return spawns;
+}
+
+/**
+ * Build room spawns from the versioned seven-room encounter layout, appending purple monster if assigned to this room.
+ * Retains 100% backward compatibility for first dungeon callers.
+ */
+export function buildEncounterRoomSpawns(
+    roomNo: number,
+    purpleRoomNo: number | null,
+    templateRef: string,
+    purpleTemplateRef = templateRef
+): { spawnId: string; templateRef: string; role: 'ordinary' | 'elite' | 'boss' | 'purple'; x: number; y: number }[] {
+    const spawns = buildEncounterRoomSpawnsForDungeon('first', roomNo, purpleRoomNo, templateRef, purpleTemplateRef);
+    return spawns.map(s => ({
+        spawnId: s.spawnId,
+        templateRef: s.templateRef,
+        role: s.role,
+        x: s.x,
+        y: s.y,
+    }));
 }

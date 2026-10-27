@@ -2,7 +2,7 @@ import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
     input, Input, EventTouch, EventKeyboard, KeyCode, Vec3, view, ResolutionPolicy, game, Game, profiler } from 'cc';
 import { CombatModel, tuning, attackSpeedTuning } from './CombatModel';
 import { WarriorView } from './WarriorView';
-import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText, EncounterModel } from './EnemyModel';
+import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText, EncounterModel, enemyKnockdownPolicies } from './EnemyModel';
 import { WarriorSkillsModel, WarriorSkillId, warriorSkillNames, warriorSkillTuning, tryCastWarriorSkill } from './WarriorSkillsModel';
 import { WarriorSpriteSheetView } from './WarriorSpriteSheetView';
 import { WarriorSkillEffects } from './WarriorSkillEffects';
@@ -13,6 +13,7 @@ import type { BankCoordinator } from './net/BankCoordinator';
 import { InventoryPanel } from './ui/InventoryPanel';
 import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
+import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
 
 const { ccclass } = _decorator;
 const stages = ['交叉斩', '反手上挑', '下劈收势'];
@@ -42,12 +43,16 @@ export class Prototype extends Component {
     private frames = 0;
     private fps = 0;
     private enemies: EnemyModel[] = [];
+    private enemyLabels: Label[] = [];
     private feedback = new CombatFeedback();
     private damageLabels: Label[] = [];
     private bodyAnimation = new WarriorBodyAnimation();
     private speedLabels: Label[] = [];
     private lastImpactId = 0;
-    private mode: 1 | 3 = 1;
+    private mode: 1 | 3 | 7 = 7;
+    private dungeonKind: DungeonKind = 'first';
+    private roomNo = 0;
+    private roomCleared = false;
     private encounter = new EncounterModel();
     private roundLabel!: Label;
     private bankPanel: BankPanel | null = null;
@@ -71,11 +76,11 @@ export class Prototype extends Component {
         this.actor = this.makeGraphics('Warrior');
         this.warriorSprite = new WarriorSpriteSheetView(this.actor.node);
         this.controls = this.makeGraphics('Controls');
-        this.text('308 动作样板 · 战士技能动画', -30, 242, 22, 730);
+        this.text('308 动作样板 · 战士技能与三副本实机联调', -30, 242, 22, 730);
         this.text('背包 B', 430, 242, 16, 80);
         this.text('银行 N', 430, 198, 16, 80);
         this.inventoryNotice = this.text('N：银行（需本机预览服务）', 0, 150, 17, 800);
-        this.text('WASD移动 · 空格普攻 · E十字斩 · F崩山击 · Q拔刀斩 · G崩山裂地斩 · R重置 · 1/3敌人 · B背包', 0, 212, 14);
+        this.text('WASD/摇杆移动 · 空格普攻 · E/F/Q/G技能 · 1首本/2工坊/3裂隙 · 走向右侧绿门/换房', 0, 212, 14);
         this.healthStatus = this.text('', -130, 178, 17, 660);
         this.healthStatus.horizontalAlign = Label.HorizontalAlign.LEFT;
         this.healthStatus.overflow = Label.Overflow.SHRINK;
@@ -84,7 +89,12 @@ export class Prototype extends Component {
         this.status.overflow = Label.Overflow.SHRINK;
         this.status.enableWrapText = false;
         this.roundLabel = this.text('', 0, 75, 20, 850);
-        this.modeLabels = [this.text('单怪', 255, 168, 14, 70), this.text('三怪', 355, 168, 14, 70)];
+        this.modeLabels = [
+            this.text('首本', 215, 168, 14, 55),
+            this.text('工坊', 275, 168, 14, 55),
+            this.text('裂隙', 335, 168, 14, 55),
+            this.text('换房', 395, 168, 14, 55),
+        ];
         this.text('摇杆', -345, -218, 18);
         this.text('普攻', 345, -160, 22);
         const skillButtons: { id: WarriorSkillId; x: number; label: string }[] = [
@@ -223,10 +233,18 @@ export class Prototype extends Component {
             this.model.setAttackSpeedBonuses({ buff: attackSpeedTuning.presets[index] - 1 });
             return;
         }
-        if (p.y > 145 && p.y < 190 && Math.abs(p.x - 255) < 40) {
-            this.mode = 1; this.restartEncounter();
-        } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 355) < 40) {
-            this.mode = 3; this.restartEncounter();
+        if (p.y > 145 && p.y < 190 && Math.abs(p.x - 215) < 28) {
+            this.mode = 7; this.dungeonKind = 'first'; this.roomNo = 0; this.restartEncounter();
+        } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 275) < 28) {
+            this.mode = 7; this.dungeonKind = 'workshop'; this.roomNo = 0; this.restartEncounter();
+        } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 335) < 28) {
+            this.mode = 7; this.dungeonKind = 'rift'; this.roomNo = 0; this.restartEncounter();
+        } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 395) < 28) {
+            if (this.roomNo < 6) {
+                this.roomNo++;
+                this.restartEncounter();
+                this.encounter.start();
+            }
         } else if (this.encounter.state !== 'fighting') {
             return;
         } else if (this.touchSkillButton(p.x, p.y)) {
@@ -275,8 +293,14 @@ export class Prototype extends Component {
             this.encounter.start(); return;
         }
         if (e.keyCode === KeyCode.KEY_R) { this.restartEncounter(); return; }
-        if (e.keyCode === KeyCode.DIGIT_1 || e.keyCode === KeyCode.DIGIT_3) {
-            this.mode = e.keyCode === KeyCode.DIGIT_1 ? 1 : 3; this.restartEncounter(); return;
+        if (e.keyCode === KeyCode.DIGIT_1) {
+            this.mode = 7; this.dungeonKind = 'first'; this.roomNo = 0; this.restartEncounter(); return;
+        }
+        if (e.keyCode === KeyCode.DIGIT_2) {
+            this.mode = 7; this.dungeonKind = 'workshop'; this.roomNo = 0; this.restartEncounter(); return;
+        }
+        if (e.keyCode === KeyCode.DIGIT_3) {
+            this.mode = 7; this.dungeonKind = 'rift'; this.roomNo = 0; this.restartEncounter(); return;
         }
         if (this.encounter.state !== 'fighting') return;
         if (this.keys.has(e.keyCode)) return;
@@ -339,17 +363,30 @@ export class Prototype extends Component {
             this.bodyAnimation.update(fixedDt, this.model.moving, this.model.running, this.model.hitStun,
                 this.skills.casting || this.model.stage >= 0, this.model.hp <= 0);
             this.encounter.update(fixedDt, this.model.hp, this.enemies);
-            if (this.encounter.state !== 'fighting') {
+            if (this.encounter.state === 'victory') {
+                this.roomCleared = true;
+            }
+            if (this.encounter.state !== 'fighting' && !this.roomCleared) {
                 this.clearInput(); this.model.reset(); this.model.moving = this.model.running = false;
                 this.skills.cancel(); this.skillEffects.clear();
+            }
+            if (this.roomCleared && this.roomNo < 6 && this.model.x >= 170 && Math.abs(this.model.y - 20) <= 30) {
+                this.roomNo++;
+                this.restartEncounter();
+                this.encounter.start();
             }
             this.accumulator -= fixedDt;
         }
         const round = this.encounter.state;
-        this.roundLabel.string = round === 'fighting' ? '' : round === 'ready' ? '点击开始战斗 / Enter'
-            : `${round === 'victory' ? '胜利 · 清场' : '战败'} · ${this.encounter.elapsed.toFixed(1)}秒 · 点击再挑战 / Enter`;
+        const dName = this.dungeonKind === 'first' ? '首本牛头怪' : (this.dungeonKind === 'workshop' ? '失落工坊' : '裂隙遗址');
+        this.roundLabel.string = this.roomCleared
+            ? (this.roomNo < 6 ? '清场完毕！走向右侧绿门换房 ▶' : '通关！已击败首领！按R重新挑战')
+            : round === 'fighting' ? ''
+            : round === 'ready' ? `[${dName} R${this.roomNo + 1}/7] 点击场地上方开始战斗 / Enter`
+            : `战败 · ${this.encounter.elapsed.toFixed(1)}秒 · 点击再挑战 / Enter`;
         this.draw(dt);
-        this.healthStatus.string = `战士 ${this.healthBar(this.model.hp, 100)}     法力 ${this.skills.mana}/${this.skills.maxMana}     近战怪 ${this.mode} 只`;
+        const aliveEnemies = this.enemies.filter(e => e.state !== 'dead').length;
+        this.healthStatus.string = `战士 ${this.healthBar(this.model.hp, 100)}   法力 ${this.skills.mana}/${this.skills.maxMana}   [${dName} R${this.roomNo + 1}/7] 敌怪: ${aliveEnemies}/${this.enemies.length}`;
         const state = round !== 'fighting' ? '点击场地上方文字开始 / 再挑战' : this.enemies.some(enemy => enemy.state === 'telegraph') ? '红色预警 · 离开锁定区域' : '攻击怪物，闪开预警';
         const skillState = this.skills.activeId
             ? `${warriorSkillNames[this.skills.activeId]}出招`
@@ -374,6 +411,14 @@ export class Prototype extends Component {
         g.clear();
         this.rect(g, -240, -135, 480, 270, '#18252d');
         this.rect(g, -232, -42, 464, 135, '#34433d');
+        if (this.roomNo < 6) {
+            const doorColor = this.roomCleared ? new Color(70, 230, 110, 220) : new Color(180, 50, 50, 150);
+            const doorFill = this.roomCleared ? new Color(50, 200, 90, 80) : new Color(120, 30, 30, 60);
+            g.fillColor = doorFill;
+            g.rect(185, 0, 25, 40); g.fill();
+            g.strokeColor = doorColor; g.lineWidth = 2;
+            g.rect(185, 0, 25, 40); g.stroke();
+        }
         g.strokeColor = new Color(71, 87, 75); g.lineWidth = 0.5;
         for (let x = -224; x < 240; x += 16) { g.moveTo(x, -42); g.lineTo(x, 93); }
         for (let y = -42; y <= 93; y += 16) { g.moveTo(-232, y); g.lineTo(232, y); }
@@ -431,8 +476,10 @@ export class Prototype extends Component {
         }
         this.sortActorsByDepth();
         this.drawHealthBar(-330, 154, m.hp, 100, '#65d6b2');
-        this.rect(this.controls, 220, 154, 70, 28, this.mode === 1 ? '#53757e' : '#293941');
-        this.rect(this.controls, 320, 154, 70, 28, this.mode === 3 ? '#53757e' : '#293941');
+        this.rect(this.controls, 185, 154, 55, 28, this.dungeonKind === 'first' ? '#53757e' : '#293941');
+        this.rect(this.controls, 245, 154, 55, 28, this.dungeonKind === 'workshop' ? '#53757e' : '#293941');
+        this.rect(this.controls, 305, 154, 55, 28, this.dungeonKind === 'rift' ? '#53757e' : '#293941');
+        this.rect(this.controls, 365, 154, 55, 28, this.roomCleared ? '#3e7855' : '#293941');
         this.textMode();
         ui.fillColor = new Color(82, 111, 121, 155); ui.circle(-345, -150, 75); ui.fill();
         ui.fillColor = new Color(176, 207, 202, 210); ui.circle(-345 + this.axis.x * 55, -150 + this.axis.y * 55, 27); ui.fill();
@@ -448,19 +495,48 @@ export class Prototype extends Component {
 
     private restartEncounter(): void {
         this.clearInput(); this.encounter.reset(); this.accumulator = 0;
-        this.model.hp = 100; this.model.x = 0; this.model.y = 0;
+        this.model.hp = 100; this.model.x = -140; this.model.y = 20;
         this.model.reset(); this.model.hitStun = this.model.invulnerable = this.model.knockX = 0;
         this.skills.reset();
         this.skillEffects.clear();
         this.feedback.clear();
         this.bodyAnimation.reset();
         this.lastImpactId = this.model.impactId;
-        const starts = this.mode === 1 ? [[76, 2]] : [[76, -8], [-100, 16], [153, 25]];
-        this.enemies = starts.map(([x, y], index) => new EnemyModel(x, y, index));
+        this.roomCleared = false;
+
+        if (this.mode === 1) {
+            this.enemies = [new EnemyModel(76, 2, 0, 3, enemyKnockdownPolicies.normal, 'ordinary', 'humanoid', 'melee')];
+        } else if (this.mode === 3) {
+            this.enemies = [
+                new EnemyModel(76, -8, 0, 3, enemyKnockdownPolicies.normal, 'ordinary', 'humanoid', 'melee'),
+                new EnemyModel(-60, 16, 1, 3, enemyKnockdownPolicies.normal, 'ordinary', 'humanoid', 'ranged'),
+                new EnemyModel(140, 25, 2, 3, enemyKnockdownPolicies.normal, 'ordinary', 'humanoid', 'charge'),
+            ];
+        } else {
+            const spawns = buildEncounterRoomSpawnsForDungeon(this.dungeonKind, this.roomNo, null, 'monster');
+            this.enemies = spawns.map((s, index) => {
+                const maxHp = s.role === 'boss' ? 15 : (s.role === 'elite' ? 6 : (s.role === 'purple' ? 4 : 3));
+                const kdPolicy = s.role === 'boss' ? enemyKnockdownPolicies.boss : (s.role === 'elite' ? enemyKnockdownPolicies.elite : enemyKnockdownPolicies.normal);
+                return new EnemyModel(
+                    Math.round(s.x / 1000),
+                    Math.round(s.y / 1000),
+                    index,
+                    maxHp,
+                    kdPolicy,
+                    s.role,
+                    s.category ?? 'humanoid',
+                    s.tacticsKind
+                );
+            });
+        }
         while (this.enemyVisuals.length < this.enemies.length) {
             this.enemyVisuals.push(this.makeGraphics(`Enemy-${this.enemyVisuals.length}`));
         }
         this.enemyVisuals.forEach((view, index) => view.node.active = index < this.enemies.length);
+        while (this.enemyLabels.length < this.enemies.length) {
+            this.enemyLabels.push(this.text('', 0, 0, 11, 80));
+        }
+        this.enemyLabels.forEach((lbl, index) => lbl.node.active = index < this.enemies.length);
     }
 
     private resolveMeleeHit(): void {
@@ -598,12 +674,48 @@ export class Prototype extends Component {
             visual.node.setScale(2, 2, 1);
             visual.node.setPosition((enemy.x + this.feedback.shakeOffset.x) * 2, (enemy.y + this.feedback.shakeOffset.y) * 2);
             const eg = visual; eg.clear();
-            if (enemy.deathOpacity <= 0) continue;
+            if (enemy.deathOpacity <= 0) {
+                const enemyLabel = this.enemyLabels[enemy.id];
+                if (enemyLabel) enemyLabel.node.active = false;
+                continue;
+            }
             if (enemy.state === 'telegraph') {
-                g.fillColor = new Color(224, 67, 57, 75);
-                g.rect(enemy.lockedX - 40, enemy.lockedY - 18, 80, 36); g.fill();
-                g.strokeColor = new Color(255, 114, 90, 220); g.lineWidth = 2;
-                g.rect(enemy.lockedX - 40, enemy.lockedY - 18, 80, 36); g.stroke();
+                if (enemy.tacticsKind === 'ranged') {
+                    // Ranged: locked target ellipse and aim line
+                    g.fillColor = new Color(224, 67, 57, 65);
+                    g.ellipse(enemy.lockedX, enemy.lockedY, 28, 16); g.fill();
+                    g.strokeColor = new Color(255, 114, 90, 220); g.lineWidth = 1.5;
+                    g.ellipse(enemy.lockedX, enemy.lockedY, 28, 16); g.stroke();
+                    g.strokeColor = new Color(255, 80, 80, 140); g.lineWidth = 1;
+                    g.moveTo(enemy.x, enemy.y); g.lineTo(enemy.lockedX, enemy.lockedY); g.stroke();
+                } else if (enemy.tacticsKind === 'charge') {
+                    // Charge: directional warning strip
+                    const facing = Math.sign(enemy.lockedX - enemy.x) || 1;
+                    const stripW = 150;
+                    const startX = facing > 0 ? enemy.x : enemy.x - stripW;
+                    g.fillColor = new Color(255, 100, 50, 70);
+                    g.rect(startX, enemy.y - 12, stripW, 24); g.fill();
+                    g.strokeColor = new Color(255, 140, 60, 220); g.lineWidth = 2;
+                    g.rect(startX, enemy.y - 12, stripW, 24); g.stroke();
+                } else if (enemy.role === 'boss') {
+                    // Boss wide warning
+                    g.fillColor = new Color(240, 50, 50, 80);
+                    g.rect(enemy.lockedX - 72, enemy.lockedY - 36, 144, 72); g.fill();
+                    g.strokeColor = new Color(255, 70, 70, 240); g.lineWidth = 2.5;
+                    g.rect(enemy.lockedX - 72, enemy.lockedY - 36, 144, 72); g.stroke();
+                } else if (enemy.role === 'elite') {
+                    // Elite warning
+                    g.fillColor = new Color(235, 120, 50, 75);
+                    g.rect(enemy.lockedX - 64, enemy.lockedY - 32, 128, 64); g.fill();
+                    g.strokeColor = new Color(255, 150, 60, 220); g.lineWidth = 2;
+                    g.rect(enemy.lockedX - 64, enemy.lockedY - 32, 128, 64); g.stroke();
+                } else {
+                    // Standard melee
+                    g.fillColor = new Color(224, 67, 57, 75);
+                    g.rect(enemy.lockedX - 40, enemy.lockedY - 18, 80, 36); g.fill();
+                    g.strokeColor = new Color(255, 114, 90, 220); g.lineWidth = 2;
+                    g.rect(enemy.lockedX - 40, enemy.lockedY - 18, 80, 36); g.stroke();
+                }
             }
             const x = 0, y = 0;
             eg.fillColor = new Color(13, 19, 23, Math.round(140 * enemy.deathOpacity)); eg.ellipse(x, y, 11, 4); eg.fill();
@@ -613,7 +725,34 @@ export class Prototype extends Component {
                 eg.strokeColor = new Color(255, 136, 98); eg.lineWidth = 3;
                 eg.moveTo(-7, 25); eg.lineTo(facing * 13, 13); eg.stroke();
             }
-            if (enemy.state !== 'dead') this.drawHealthBar((enemy.x + this.feedback.shakeOffset.x) * 2 - 18, (enemy.y + this.feedback.shakeOffset.y) * 2 + 54, enemy.hp, enemy.maxHp, '#ff967c');
+            const enemyLabel = this.enemyLabels[enemy.id];
+            if (enemyLabel) {
+                if (enemy.state !== 'dead') {
+                    const roleBadge = enemy.role === 'boss'
+                        ? `[BOSS P${enemy.phase}]`
+                        : enemy.role === 'elite'
+                        ? '[精英]'
+                        : enemy.role === 'purple'
+                        ? '[紫名]'
+                        : '[普通]';
+                    enemyLabel.string = roleBadge;
+                    enemyLabel.color = enemy.role === 'boss'
+                        ? new Color(255, 70, 70)
+                        : enemy.role === 'elite'
+                        ? new Color(255, 185, 60)
+                        : enemy.role === 'purple'
+                        ? new Color(210, 110, 255)
+                        : new Color(185, 205, 215);
+                    enemyLabel.node.setPosition((enemy.x + this.feedback.shakeOffset.x) * 2, (enemy.y + this.feedback.shakeOffset.y) * 2 + 67);
+                    enemyLabel.node.active = true;
+                } else {
+                    enemyLabel.node.active = false;
+                }
+            }
+            if (enemy.state !== 'dead') {
+                const barColor = enemy.role === 'boss' ? '#ff3b4e' : enemy.role === 'elite' ? '#ffa033' : enemy.role === 'purple' ? '#bd4aff' : '#ff967c';
+                this.drawHealthBar((enemy.x + this.feedback.shakeOffset.x) * 2 - 18, (enemy.y + this.feedback.shakeOffset.y) * 2 + 54, enemy.hp, enemy.maxHp, barColor);
+            }
         }
     }
 
@@ -640,10 +779,30 @@ export class Prototype extends Component {
             quad(-7.5, 0.5, 15, 17, new Color(224, 43, 53, Math.round(70 * pulse)));
             quad(-6.5, 13.5, 13, 12, new Color(244, 50, 62, Math.round(60 * pulse)));
         }
-        quad(-6, 2, 12, 14, tint(128, 99, 72));
-        quad(-5, 15, 10, 9, tint(187, 137, 96));
-        quad(-6, 21, 12, 4, tint(68, 61, 55));
+        const categoryBase = enemy.category === 'mechanical'
+            ? { r: 110, g: 130, b: 155 }
+            : enemy.category === 'undead'
+            ? { r: 115, g: 150, b: 140 }
+            : enemy.category === 'beast'
+            ? { r: 160, g: 95, b: 55 }
+            : { r: 128, g: 99, b: 72 };
+        quad(-6, 2, 12, 14, tint(categoryBase.r, categoryBase.g, categoryBase.b));
+        quad(-5, 15, 10, 9, tint(Math.min(255, categoryBase.r + 50), Math.min(255, categoryBase.g + 35), Math.min(255, categoryBase.b + 20)));
+        quad(-6, 21, 12, 4, tint(Math.max(0, categoryBase.r - 60), Math.max(0, categoryBase.g - 40), Math.max(0, categoryBase.b - 20)));
         quad(facing * 3, 17, 2, 2, new Color(37, 31, 27));
+
+        if (enemy.superArmor) {
+            g.strokeColor = new Color(255, 215, 0, 230);
+            g.lineWidth = 2.5;
+            g.rect(-8, 0, 16, 26);
+            g.stroke();
+        }
+        if (enemy.state === 'stunned') {
+            g.strokeColor = new Color(255, 240, 80, 220);
+            g.lineWidth = 1.5;
+            g.ellipse(0, 27, 8, 4);
+            g.stroke();
+        }
     }
 
     private sortActorsByDepth(): void {
@@ -677,9 +836,11 @@ export class Prototype extends Component {
     private textMode(): void {
         // Mode names are drawn into the same screen space as their clickable pills.
         // Label nodes stay stable across frames so the display does not flicker.
-        if (!this.modeLabels) return;
-        this.modeLabels[0].string = this.mode === 1 ? '单怪 ✓' : '单怪';
-        this.modeLabels[1].string = this.mode === 3 ? '三怪 ✓' : '三怪';
+        if (!this.modeLabels || this.modeLabels.length < 4) return;
+        this.modeLabels[0].string = this.dungeonKind === 'first' ? '首本 ✓' : '首本';
+        this.modeLabels[1].string = this.dungeonKind === 'workshop' ? '工坊 ✓' : '工坊';
+        this.modeLabels[2].string = this.dungeonKind === 'rift' ? '裂隙 ✓' : '裂隙';
+        this.modeLabels[3].string = this.roomCleared ? '换房 ▶' : '下一房';
     }
 
     private modeLabels: Label[] = [];

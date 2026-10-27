@@ -172,26 +172,39 @@ export type StompSkill = {
     superArmorTicks: number;
 };
 
+export type TemplateMappingSpec = string | {
+    kind: string;
+    category?: MonsterTemplate['type'];
+    role?: 'ordinary' | 'elite' | 'boss' | 'purple';
+    skillRefs?: string[];
+    cooldownTicks?: number;
+};
+
 export function localTacticsConfig(
-    mapping: Record<string, string>,
+    mapping: Record<string, TemplateMappingSpec>,
     difficulty: TacticsDifficulty = 'normal'
 ): MonsterConfig {
     const diff = DIFFICULTY_PROFILES[difficulty] ?? DIFFICULTY_PROFILES.normal;
     const templates: Record<string, MonsterTemplate> = {};
     const skills: Record<string, MeleeSkill | RangedSkill | ChargeSkill | RoarSkill | ComboSkill> = {};
 
-    for (const [ref, kind] of Object.entries(mapping)) {
+    for (const [ref, spec] of Object.entries(mapping)) {
+        const kind = typeof spec === 'string' ? spec : spec.kind;
+        const category: MonsterTemplate['type'] = typeof spec === 'string' ? 'humanoid' : (spec.category ?? 'humanoid');
+        if (!['humanoid', 'beast', 'undead', 'mechanical'].includes(category)) {
+            throw new TypeError(`INVALID_MONSTER_CATEGORY: ${category}`);
+        }
         const skillRef = `${ref}_skill`;
         if (kind === 'elite') {
             const cleaveRef = `${ref}_cleave`;
             const sweepRef = `${ref}_sweep`;
             templates[ref] = {
-                type: 'humanoid',
+                type: category,
                 skillRef: cleaveRef,
                 skillRefs: [cleaveRef, sweepRef],
                 behavior: 'chase',
                 rewardTag: 'none',
-                resist: defaultMonsterResist('humanoid'),
+                resist: defaultMonsterResist(category),
             };
             skills[cleaveRef] = {
                 kind: 'cleave',
@@ -226,12 +239,12 @@ export function localTacticsConfig(
             const roarP2Ref = `${ref}_roar_p2`;
             const comboRef = `${ref}_combo`;
             templates[ref] = {
-                type: 'humanoid',
+                type: category,
                 skillRef: smashRef,
                 skillRefs: [comboRef, roarP2Ref, roarP1Ref, smashRef, stompRef],
                 behavior: 'chase',
                 rewardTag: 'none',
-                resist: defaultMonsterResist('humanoid'),
+                resist: defaultMonsterResist(category),
             };
             skills[smashRef] = {
                 kind: 'smash',
@@ -305,11 +318,11 @@ export function localTacticsConfig(
 
         if (kind === 'roar') {
             templates[ref] = {
-                type: 'humanoid',
+                type: category,
                 skillRef,
                 behavior: 'chase',
                 rewardTag: 'none',
-                resist: defaultMonsterResist('humanoid'),
+                resist: defaultMonsterResist(category),
             };
             skills[skillRef] = {
                 kind: 'roar',
@@ -328,11 +341,11 @@ export function localTacticsConfig(
 
         if (kind === 'combo') {
             templates[ref] = {
-                type: 'humanoid',
+                type: category,
                 skillRef,
                 behavior: 'chase',
                 rewardTag: 'none',
-                resist: defaultMonsterResist('humanoid'),
+                resist: defaultMonsterResist(category),
             };
             skills[skillRef] = {
                 kind: 'combo',
@@ -358,11 +371,11 @@ export function localTacticsConfig(
 
         if (kind === 'cleave') {
             templates[ref] = {
-                type: 'humanoid',
+                type: category,
                 skillRef,
                 behavior: 'chase',
                 rewardTag: 'none',
-                resist: defaultMonsterResist('humanoid'),
+                resist: defaultMonsterResist(category),
             };
             skills[skillRef] = {
                 kind: 'cleave',
@@ -380,11 +393,11 @@ export function localTacticsConfig(
 
         if (kind === 'sweep') {
             templates[ref] = {
-                type: 'humanoid',
+                type: category,
                 skillRef,
                 behavior: 'chase',
                 rewardTag: 'none',
-                resist: defaultMonsterResist('humanoid'),
+                resist: defaultMonsterResist(category),
             };
             skills[skillRef] = {
                 kind: 'sweep',
@@ -403,11 +416,11 @@ export function localTacticsConfig(
 
         if (kind === 'smash') {
             templates[ref] = {
-                type: 'humanoid',
+                type: category,
                 skillRef,
                 behavior: 'chase',
                 rewardTag: 'none',
-                resist: defaultMonsterResist('humanoid'),
+                resist: defaultMonsterResist(category),
             };
             skills[skillRef] = {
                 kind: 'smash',
@@ -426,11 +439,11 @@ export function localTacticsConfig(
 
         if (kind === 'stomp') {
             templates[ref] = {
-                type: 'humanoid',
+                type: category,
                 skillRef,
                 behavior: 'chase',
                 rewardTag: 'none',
-                resist: defaultMonsterResist('humanoid'),
+                resist: defaultMonsterResist(category),
             };
             skills[skillRef] = {
                 kind: 'stomp',
@@ -448,11 +461,11 @@ export function localTacticsConfig(
         }
 
         templates[ref] = {
-            type: 'humanoid',
+            type: category,
             skillRef,
             behavior: 'chase',
             rewardTag: 'none',
-            resist: defaultMonsterResist('humanoid'),
+            resist: defaultMonsterResist(category),
         };
 
         if (kind === 'ranged') {
@@ -484,7 +497,7 @@ export function localTacticsConfig(
                 staggerTicks: 24,
                 speed: 1000,
             };
-        } else {
+        } else if (kind === 'melee') {
             skills[skillRef] = {
                 kind: 'melee',
                 windupTicks: 35,
@@ -496,6 +509,8 @@ export function localTacticsConfig(
                 coefficient: { n: '1', d: '1' },
                 staggerTicks: 24,
             };
+        } else {
+            throw new TypeError(`UNKNOWN_MONSTER_KIND: ${kind}`);
         }
     }
 

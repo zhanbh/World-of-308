@@ -67,8 +67,19 @@ export class EnemyModel {
     fallDirection = 1;
     deathAge = 0;
     private deathPose = 0;
+    phase: 1 | 2 = 1;
+    superArmor = false;
 
-    constructor(public x: number, public y: number, public readonly id: number, public readonly maxHp = 3, public readonly knockdownPolicy: EnemyKnockdownPolicy = enemyKnockdownPolicies.normal) {
+    constructor(
+        public x: number,
+        public y: number,
+        public readonly id: number,
+        public readonly maxHp = 3,
+        public readonly knockdownPolicy: EnemyKnockdownPolicy = enemyKnockdownPolicies.normal,
+        public role: 'ordinary' | 'elite' | 'boss' | 'purple' = 'ordinary',
+        public category: 'humanoid' | 'mechanical' | 'undead' | 'beast' = 'humanoid',
+        public tacticsKind: 'melee' | 'ranged' | 'charge' | 'elite' | 'boss' = 'melee'
+    ) {
         this.hp = maxHp;
     }
 
@@ -132,14 +143,27 @@ export class EnemyModel {
             return;
         }
         if (passive) return; // Review targets still advance statuses but do not attack/move by AI.
+        if (this.role === 'boss') {
+            if (this.hp <= this.maxHp / 2 && this.phase === 1) {
+                this.phase = 2;
+            }
+            this.superArmor = this.state === 'telegraph' || this.state === 'attack';
+        } else if (this.role === 'elite') {
+            this.superArmor = this.state === 'attack';
+        } else {
+            this.superArmor = false;
+        }
+
         if (this.state === 'telegraph') {
             this.timer -= dt;
             if (this.timer <= 0) {
                 this.state = 'attack';
-                this.timer = 0.18;
+                this.timer = this.tacticsKind === 'charge' ? 0.35 : 0.18;
                 this.impactId++;
                 // A committed attack stays at its original area. Walking away avoids it.
-                if (Math.abs(player.x - this.lockedX) <= 40 && Math.abs(player.y - this.lockedY) <= 18) {
+                const reachX = this.role === 'boss' ? 72 : this.role === 'elite' ? 64 : (this.tacticsKind === 'ranged' ? 36 : 40);
+                const reachY = this.role === 'boss' ? 36 : this.role === 'elite' ? 32 : (this.tacticsKind === 'ranged' ? 24 : 18);
+                if (Math.abs(player.x - this.lockedX) <= reachX && Math.abs(player.y - this.lockedY) <= reachY) {
                     player.takeHit(this.x);
                 }
             }
@@ -147,14 +171,23 @@ export class EnemyModel {
         }
         if (this.state === 'attack' || this.state === 'recover') {
             this.timer -= dt;
+            if (this.tacticsKind === 'charge' && this.state === 'attack') {
+                const facing = Math.sign(this.lockedX - this.x) || 1;
+                this.x += facing * 140 * dt;
+                if (Math.abs(player.x - this.x) <= 28 && Math.abs(player.y - this.y) <= 20) {
+                    player.takeHit(this.x);
+                }
+            }
             if (this.timer <= 0) this.state = this.state === 'attack' ? 'recover' : 'approach';
             return;
         }
 
         const dx = player.x - this.x, dy = player.y - this.y;
-        if (Math.abs(dx) <= 43 && Math.abs(dy) <= 20) {
+        const triggerX = this.tacticsKind === 'ranged' ? 120 : (this.tacticsKind === 'charge' ? 130 : (this.role === 'boss' ? 65 : 43));
+        const triggerY = this.tacticsKind === 'ranged' ? 30 : (this.tacticsKind === 'charge' ? 24 : (this.role === 'boss' ? 32 : 20));
+        if (Math.abs(dx) <= triggerX && Math.abs(dy) <= triggerY) {
             this.state = 'telegraph';
-            this.timer = 0.68;
+            this.timer = this.tacticsKind === 'ranged' ? 0.8 : (this.role === 'boss' ? 0.9 : (this.role === 'elite' ? 0.75 : 0.68));
             this.lockedX = player.x;
             this.lockedY = player.y;
             return;
@@ -178,8 +211,15 @@ export class EnemyModel {
             return;
         }
         if (options.bleedFor && options.bleedFor > 0) {
-            if (this.bleedLeft <= 0) this.bleedAge = this.bleedTick = 0;
-            this.bleedLeft = options.bleedFor; // Refresh one status; never add stacks/duration.
+            const canBleed = this.category !== 'mechanical' && this.category !== 'undead';
+            if (canBleed) {
+                if (this.bleedLeft <= 0) this.bleedAge = this.bleedTick = 0;
+                this.bleedLeft = options.bleedFor; // Refresh one status; never add stacks/duration.
+            }
+        }
+        if (this.superArmor) {
+            // Super armor: immune to control interruptions and displacement
+            return;
         }
         if (this.knockdownPolicy.allowed && options.knockdownFor && options.knockdownFor > 0) {
             this.timer = this.state === 'knockedDown' ? Math.max(this.timer, options.knockdownFor) : options.knockdownFor;

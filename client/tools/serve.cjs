@@ -16,7 +16,10 @@ http.createServer((req, res) => {
     if (!file.startsWith(root + path.sep)) { res.writeHead(403).end(); return; }
     fs.readFile(file, (err, data) => {
         if (err) { res.writeHead(404).end(); return; }
-        res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream' });
+        res.writeHead(200, {
+            'Content-Type': types[path.extname(file)] || 'application/octet-stream',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+        });
         res.end(data);
     });
 }).listen(port, host, () => console.log(`Prototype (${buildDirectory}): http://${host}:${port}`));

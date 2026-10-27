@@ -120,7 +120,16 @@
       ],
       "accepted_revision": "efab9da3e74dfa5b185e58edc16157ffddad7663cc47ee8e78b1333577a666c7",
       "path": "docs/stories/warrior-loop/st12/issues/06-playable-integration.md",
-      "state": "pending"
+      "state": "implemented",
+      "worktree": ".worktrees/st12-06-playable-integration",
+      "branch": "feat/st12-06-playable-integration",
+      "evidence": [
+        "docs/backend/dungeon-three-composition-contract-v1.md",
+        "docs/reviews/st12-06-verification.md",
+        "docs/reviews/st12-06-check-all.log"
+      ],
+      "local_checks": "7/7; shared199; backend harness582; 专项4/4",
+      "platform_status": "gap"
     }
   ],
   "testing_seams": [
