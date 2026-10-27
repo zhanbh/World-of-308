@@ -34,6 +34,39 @@ export type ChargeSkill = {
     speed: number;
 };
 
+export type RoarSkill = {
+    kind: 'roar';
+    windupTicks: number;
+    recoveryTicks: number;
+    superArmorTicks: number;
+    cooldownTicks: number;
+    reach: number;
+    contactTicks: number[];
+    coefficient: Rational;
+    staggerTicks: number;
+    speed: number;
+};
+
+export type ComboSkill = {
+    kind: 'combo';
+    reach: number;
+    windupTicks: number;
+    trampleTicks: number[];
+    lockTick: number;
+    chargeStartTick: number;
+    maxTravelDistance: number;
+    chargeSpeed: number;
+    contactRadius: number;
+    bodyRadius: number;
+    cooldownTicks: number;
+    recoveryTicks: number;
+    wallWeaknessTicks: number;
+    trampleCoefficient: Rational;
+    chargeCoefficient: Rational;
+    staggerTicks: number;
+    speed: number;
+};
+
 export type DifficultyTacticsConfig = {
     difficulty: TacticsDifficulty;
     maxFlankers: number;
@@ -145,7 +178,7 @@ export function localTacticsConfig(
 ): MonsterConfig {
     const diff = DIFFICULTY_PROFILES[difficulty] ?? DIFFICULTY_PROFILES.normal;
     const templates: Record<string, MonsterTemplate> = {};
-    const skills: Record<string, MeleeSkill | RangedSkill | ChargeSkill> = {};
+    const skills: Record<string, MeleeSkill | RangedSkill | ChargeSkill | RoarSkill | ComboSkill> = {};
 
     for (const [ref, kind] of Object.entries(mapping)) {
         const skillRef = `${ref}_skill`;
@@ -189,10 +222,13 @@ export function localTacticsConfig(
         if (kind === 'boss') {
             const smashRef = `${ref}_smash`;
             const stompRef = `${ref}_stomp`;
+            const roarP1Ref = `${ref}_roar_p1`;
+            const roarP2Ref = `${ref}_roar_p2`;
+            const comboRef = `${ref}_combo`;
             templates[ref] = {
                 type: 'humanoid',
                 skillRef: smashRef,
-                skillRefs: [smashRef, stompRef],
+                skillRefs: [comboRef, roarP2Ref, roarP1Ref, smashRef, stompRef],
                 behavior: 'chase',
                 rewardTag: 'none',
                 resist: defaultMonsterResist('humanoid'),
@@ -220,6 +256,102 @@ export function localTacticsConfig(
                 speed: 1000,
                 coefficient: { n: '25', d: '10' },
                 staggerTicks: 40,
+            };
+            skills[roarP1Ref] = {
+                kind: 'roar',
+                windupTicks: 100,
+                recoveryTicks: 80,
+                superArmorTicks: 400,
+                cooldownTicks: 1200,
+                reach: 140000,
+                contactTicks: [150, 200, 250, 300, 350, 400],
+                coefficient: { n: '45', d: '100' },
+                staggerTicks: 24,
+                speed: 1000,
+            };
+            skills[roarP2Ref] = {
+                kind: 'roar',
+                windupTicks: 100,
+                recoveryTicks: 80,
+                superArmorTicks: 400,
+                cooldownTicks: 1200,
+                reach: 140000,
+                contactTicks: [150, 200, 250, 300, 350, 400],
+                coefficient: { n: '45', d: '100' },
+                staggerTicks: 24,
+                speed: 1000,
+            };
+            skills[comboRef] = {
+                kind: 'combo',
+                reach: 150000,
+                windupTicks: 80,
+                trampleTicks: [80, 140, 200],
+                lockTick: 240,
+                chargeStartTick: 320,
+                maxTravelDistance: 320000,
+                chargeSpeed: 1800,
+                contactRadius: 22000,
+                bodyRadius: 14000,
+                cooldownTicks: 1400,
+                recoveryTicks: 80,
+                wallWeaknessTicks: 300,
+                trampleCoefficient: { n: '25', d: '10' },
+                chargeCoefficient: { n: '30', d: '10' },
+                staggerTicks: 40,
+                speed: 1000,
+            };
+            continue;
+        }
+
+        if (kind === 'roar') {
+            templates[ref] = {
+                type: 'humanoid',
+                skillRef,
+                behavior: 'chase',
+                rewardTag: 'none',
+                resist: defaultMonsterResist('humanoid'),
+            };
+            skills[skillRef] = {
+                kind: 'roar',
+                windupTicks: 100,
+                recoveryTicks: 80,
+                superArmorTicks: 400,
+                cooldownTicks: 1200,
+                reach: 140000,
+                contactTicks: [150, 200, 250, 300, 350, 400],
+                coefficient: { n: '45', d: '100' },
+                staggerTicks: 24,
+                speed: 1000,
+            };
+            continue;
+        }
+
+        if (kind === 'combo') {
+            templates[ref] = {
+                type: 'humanoid',
+                skillRef,
+                behavior: 'chase',
+                rewardTag: 'none',
+                resist: defaultMonsterResist('humanoid'),
+            };
+            skills[skillRef] = {
+                kind: 'combo',
+                reach: 150000,
+                windupTicks: 80,
+                trampleTicks: [80, 140, 200],
+                lockTick: 240,
+                chargeStartTick: 320,
+                maxTravelDistance: 320000,
+                chargeSpeed: 1800,
+                contactRadius: 22000,
+                bodyRadius: 14000,
+                cooldownTicks: 1400,
+                recoveryTicks: 80,
+                wallWeaknessTicks: 300,
+                trampleCoefficient: { n: '25', d: '10' },
+                chargeCoefficient: { n: '30', d: '10' },
+                staggerTicks: 40,
+                speed: 1000,
             };
             continue;
         }

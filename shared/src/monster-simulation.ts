@@ -2,7 +2,7 @@ import { advanceEarthSimulation } from './earth-simulation.ts';
 import type { EarthSimulationInput } from './earth-simulation.ts';
 import type { CombatEvent, CombatTarget, Rational } from './basic-combat-kernel.ts';
 import { advanceMovement } from './movement-kernel.ts';
-import type { TacticalRole, RangedSkill, ChargeSkill, DifficultyTacticsConfig } from './monster-tactics.ts';
+import type { TacticalRole, RangedSkill, ChargeSkill, DifficultyTacticsConfig, RoarSkill, ComboSkill } from './monster-tactics.ts';
 import { tacticalDestination } from './monster-tactics.ts';
 
 export type MonsterTemplate = {
@@ -45,7 +45,7 @@ export type MonsterConfig = {
         knockback: number;
     };
     templates: Record<string, MonsterTemplate>;
-    skills: Record<string, MeleeSkill | RangedSkill | ChargeSkill>;
+    skills: Record<string, MeleeSkill | RangedSkill | ChargeSkill | RoarSkill | ComboSkill>;
     tactics?: DifficultyTacticsConfig;
 };
 
@@ -91,6 +91,18 @@ export type MonsterRuntime = {
         activeEndTick?: number;
         superArmorEndTick?: number;
         skillRef?: string;
+        kind?: string;
+        contactTicks?: number[];
+        contactsDone?: number[];
+        maxHpSnapshot?: string;
+        accumulatedRoarDamage?: string;
+        roarKnocked?: boolean;
+        chargeLocked?: boolean;
+        chargeHit?: boolean;
+        chargeEndTick?: number;
+        travelled?: number;
+        wallHit?: boolean;
+        trampleDone?: number[];
     };
     staggerUntilTick: number;
     intentX: number;
@@ -101,6 +113,7 @@ export type MonsterRuntime = {
     phase?: number;
     pendingPhase?: number | null;
     cooldowns?: Record<string, number>;
+    weakUntilTick?: number;
 };
 export type MonsterPlayer = {
     hp: string;
@@ -183,6 +196,31 @@ export function validateMonsterConfig(v: unknown): MonsterConfig {
                 integer(s[k], 0, 1000000);
             fields(s.coefficient, ['n', 'd']);
             check(/^(0|[1-9][0-9]{0,5})$/.test(s.coefficient.n) && /^[1-9][0-9]{0,5}$/.test(s.coefficient.d) && BigInt(s.coefficient.n) <= 100n * BigInt(s.coefficient.d));
+        } else if (s.kind === 'roar') {
+            fields(s, ['kind', 'windupTicks', 'recoveryTicks', 'superArmorTicks', 'cooldownTicks', 'reach', 'contactTicks', 'coefficient', 'staggerTicks', 'speed']);
+            for (const k of ['windupTicks', 'recoveryTicks', 'superArmorTicks', 'cooldownTicks'] as const)
+                integer(s[k], 1, 10000);
+            check(s.cooldownTicks >= Math.max(50, s.windupTicks + s.recoveryTicks));
+            for (const k of ['reach', 'staggerTicks', 'speed'] as const)
+                integer(s[k], 0, 1000000);
+            check(Array.isArray(s.contactTicks) && s.contactTicks.length === 6);
+            for (const t of s.contactTicks)
+                integer(t, 1, 10000);
+            fields(s.coefficient, ['n', 'd']);
+            check(/^(0|[1-9][0-9]{0,5})$/.test(s.coefficient.n) && /^[1-9][0-9]{0,5}$/.test(s.coefficient.d) && BigInt(s.coefficient.n) <= 100n * BigInt(s.coefficient.d));
+        } else if (s.kind === 'combo') {
+            fields(s, ['kind', 'reach', 'windupTicks', 'trampleTicks', 'lockTick', 'chargeStartTick', 'maxTravelDistance', 'chargeSpeed', 'contactRadius', 'bodyRadius', 'cooldownTicks', 'recoveryTicks', 'wallWeaknessTicks', 'trampleCoefficient', 'chargeCoefficient', 'staggerTicks', 'speed']);
+            for (const k of ['windupTicks', 'lockTick', 'chargeStartTick', 'cooldownTicks', 'recoveryTicks', 'wallWeaknessTicks'] as const)
+                integer(s[k], 1, 10000);
+            for (const k of ['reach', 'maxTravelDistance', 'chargeSpeed', 'contactRadius', 'bodyRadius', 'staggerTicks', 'speed'] as const)
+                integer(s[k], 0, 1000000);
+            check(Array.isArray(s.trampleTicks) && s.trampleTicks.length === 3);
+            for (const t of s.trampleTicks)
+                integer(t, 1, 10000);
+            fields(s.trampleCoefficient, ['n', 'd']);
+            check(/^(0|[1-9][0-9]{0,5})$/.test(s.trampleCoefficient.n) && /^[1-9][0-9]{0,5}$/.test(s.trampleCoefficient.d) && BigInt(s.trampleCoefficient.n) <= 100n * BigInt(s.trampleCoefficient.d));
+            fields(s.chargeCoefficient, ['n', 'd']);
+            check(/^(0|[1-9][0-9]{0,5})$/.test(s.chargeCoefficient.n) && /^[1-9][0-9]{0,5}$/.test(s.chargeCoefficient.d) && BigInt(s.chargeCoefficient.n) <= 100n * BigInt(s.chargeCoefficient.d));
         } else {
             throw new TypeError('INVALID_SKILL_KIND');
         }
@@ -206,6 +244,8 @@ export function validateMonsterRuntime(v: unknown): MonsterRuntime {
         runtimeKeys.push('pendingPhase');
     if (m && typeof m === 'object' && Object.hasOwn(m, 'cooldowns'))
         runtimeKeys.push('cooldowns');
+    if (m && typeof m === 'object' && Object.hasOwn(m, 'weakUntilTick'))
+        runtimeKeys.push('weakUntilTick');
     fields(m, runtimeKeys);
     token(m.actorId);
     token(m.templateRef);
@@ -230,16 +270,32 @@ export function validateMonsterRuntime(v: unknown): MonsterRuntime {
             integer(v, 0, Number.MAX_SAFE_INTEGER);
         }
     }
+    if (m.weakUntilTick !== undefined)
+        integer(m.weakUntilTick, 0, Number.MAX_SAFE_INTEGER);
     if (m.action !== null) {
         check(m.action && typeof m.action === 'object' && !Array.isArray(m.action));
         const a = m.action;
         const actionKeys = ['startTick', 'hitTick', 'endTick', 'facing', 'damage', 'released'];
-        if (Object.hasOwn(a, 'activeEndTick'))
-            actionKeys.push('activeEndTick');
-        if (Object.hasOwn(a, 'superArmorEndTick'))
-            actionKeys.push('superArmorEndTick');
-        if (Object.hasOwn(a, 'skillRef'))
-            actionKeys.push('skillRef');
+        for (const opt of [
+            'activeEndTick',
+            'superArmorEndTick',
+            'skillRef',
+            'kind',
+            'contactTicks',
+            'contactsDone',
+            'maxHpSnapshot',
+            'accumulatedRoarDamage',
+            'roarKnocked',
+            'chargeLocked',
+            'chargeHit',
+            'chargeEndTick',
+            'travelled',
+            'wallHit',
+            'trampleDone',
+        ]) {
+            if (Object.hasOwn(a, opt))
+                actionKeys.push(opt);
+        }
         fields(a, actionKeys);
         integer(a.startTick);
         integer(a.hitTick, a.startTick + 1);
@@ -247,12 +303,42 @@ export function validateMonsterRuntime(v: unknown): MonsterRuntime {
             integer(a.activeEndTick, a.hitTick);
             integer(a.endTick, a.activeEndTick + 1);
         } else {
-            integer(a.endTick, a.hitTick + 1);
+            integer(a.endTick, a.startTick + 1);
         }
         if (a.superArmorEndTick !== undefined)
-            integer(a.superArmorEndTick, a.startTick, a.endTick);
+            integer(a.superArmorEndTick, 0, a.endTick + 1000);
         if (a.skillRef !== undefined)
             token(a.skillRef);
+        if (a.kind !== undefined)
+            token(a.kind);
+        if (a.contactTicks !== undefined) {
+            check(Array.isArray(a.contactTicks));
+            for (const t of a.contactTicks) integer(t, 0, a.endTick + 1000);
+        }
+        if (a.contactsDone !== undefined) {
+            check(Array.isArray(a.contactsDone));
+            for (const t of a.contactsDone) integer(t, 0, a.endTick + 1000);
+        }
+        if (a.maxHpSnapshot !== undefined)
+            check(typeof a.maxHpSnapshot === 'string' && /^(0|[1-9][0-9]*)$/.test(a.maxHpSnapshot));
+        if (a.accumulatedRoarDamage !== undefined)
+            check(typeof a.accumulatedRoarDamage === 'string' && /^(0|[1-9][0-9]*)$/.test(a.accumulatedRoarDamage));
+        if (a.roarKnocked !== undefined)
+            check(typeof a.roarKnocked === 'boolean');
+        if (a.chargeLocked !== undefined)
+            check(typeof a.chargeLocked === 'boolean');
+        if (a.chargeHit !== undefined)
+            check(typeof a.chargeHit === 'boolean');
+        if (a.chargeEndTick !== undefined)
+            integer(a.chargeEndTick, 0, a.endTick + 1000);
+        if (a.travelled !== undefined)
+            integer(a.travelled, 0, 10000000);
+        if (a.wallHit !== undefined)
+            check(typeof a.wallHit === 'boolean');
+        if (a.trampleDone !== undefined) {
+            check(Array.isArray(a.trampleDone));
+            for (const t of a.trampleDone) integer(t, 0, a.endTick + 1000);
+        }
         fields(a.damage, ['n', 'd']);
         check(/^(0|[1-9][0-9]{0,18})$/.test(a.damage.n) && /^[1-9][0-9]{0,5}$/.test(a.damage.d));
         check((a.facing === 1 || a.facing === -1) && typeof a.released === 'boolean');
@@ -367,6 +453,13 @@ export type MonsterSimulationInput = EarthSimulationInput & {
     monsters: MonsterRuntime[];
     player: MonsterPlayer;
 };
+function segmentDistancePoint(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
+    const dx = x2 - x1, dy = y2 - y1;
+    const sq = dx * dx + dy * dy;
+    if (sq < 1e-12) return Math.hypot(px - x1, py - y1);
+    const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / sq));
+    return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+}
 /** Integer-tick enemy nodes join the existing rational player scheduler before new input. */
 export function advanceMonsterSimulation(input: MonsterSimulationInput) {
     const cfg = validateMonsterConfig(input.monsterConfig), monsters = input.monsters.map(validateMonsterRuntime).sort((a, b) => a.actorIndex - b.actorIndex), player = structuredClone(input.player);
@@ -453,7 +546,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
             const specialCap = cfg.tactics?.specialCap ?? 2;
             let activeSpecialCount = monsters.filter(o => {
                 const s = cfg.skills[o.action?.skillRef ?? cfg.templates[o.templateRef].skillRef];
-                return (o.action && (s?.kind === 'ranged' || s?.kind === 'charge')) || o.tactics.effects.length > 0;
+                return (o.action && (s?.kind === 'ranged' || s?.kind === 'charge' || s?.kind === 'roar' || s?.kind === 'combo')) || o.tactics.effects.length > 0;
             }).length;
 
             let currentRetreaters = 0;
@@ -483,6 +576,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                 const isArmored = m.action !== null && m.action.superArmorEndTick !== undefined && tick < m.action.superArmorEndTick;
                 const isControlled = m.staggerUntilTick > tick || (t.downUntilTick !== null && t.downUntilTick > tick);
                 const unavailable = isDead || (isControlled && !isArmored);
+                const isWeak = m.weakUntilTick !== undefined && tick < m.weakUntilTick;
 
                 if (unavailable && !due.has(m.actorId)) {
                     if (m.action !== null) {
@@ -600,10 +694,187 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                 m.pendingPhase = null;
                             }
                         }
+                    } else if (skill.kind === 'roar') {
+                        if (!a.contactsDone) a.contactsDone = [];
+                        const contactTicks = a.contactTicks ?? skill.contactTicks.map(tOffset => a.startTick + tOffset);
+                        for (const cTick of contactTicks) {
+                            if (!a.contactsDone.includes(cTick) && tick >= cTick) {
+                                a.contactsDone.push(cTick);
+                                const pdx = (Number(movement.x) - t.x) * a.facing;
+                                const pdy = Number(movement.y) - t.y;
+                                const pdist = Math.hypot(pdx, pdy);
+                                const inSector = pdx > 0 && pdist <= skill.reach && Math.atan2(Math.abs(pdy), pdx) <= Math.PI / 6;
+                                if (inSector && (player.lifeState === 'alive' || (due.has(m.actorId) && playerAliveAtBoundary))) {
+                                    const defense = input.defense?.(tick) ?? { armor: '0', armorConstant: '1', reduction: { n: '0', d: '1' } };
+                                    check(/^(0|[1-9][0-9]{0,11})$/.test(defense.armor) && /^[1-9][0-9]{0,11}$/.test(defense.armorConstant) && /^(0|[1-9][0-9]{0,9})$/.test(defense.reduction.n) && /^[1-9][0-9]{0,9}$/.test(defense.reduction.d) && BigInt(defense.reduction.n) <= BigInt(defense.reduction.d));
+                                    const n = BigInt(a.damage.n) * BigInt(defense.armorConstant) * (BigInt(defense.reduction.d) - BigInt(defense.reduction.n)) / ((BigInt(defense.armorConstant) + BigInt(defense.armor)) * BigInt(defense.reduction.d) * BigInt(a.damage.d));
+                                    const hp = BigInt(player.hp);
+                                    const actual = n >= hp ? hp : n;
+                                    player.hp = String(hp - actual);
+                                    emit(events, m, 'damage', tick, String(actual));
+                                    if (player.hp === '0' && hp > 0n) {
+                                        player.lifeState = 'dead';
+                                        emit(events, m, 'death', tick);
+                                    } else {
+                                        const acc = BigInt(a.accumulatedRoarDamage ?? '0') + actual;
+                                        a.accumulatedRoarDamage = String(acc);
+                                        const maxHp = BigInt(a.maxHpSnapshot ?? player.maxHp);
+                                        if (!a.roarKnocked && maxHp > 0n && acc * 100n >= maxHp * 15n) {
+                                            a.roarKnocked = true;
+                                            player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + 80);
+                                            emit(events, m, 'knockdown', tick);
+                                        } else if (actual > 0n) {
+                                            player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + skill.staggerTicks);
+                                        }
+                                        const kdx = Number(movement.x) - t.x;
+                                        const kdy = Number(movement.y) - t.y;
+                                        const kdist = Math.hypot(kdx, kdy);
+                                        const dirX = kdist < 1e-9 ? a.facing : kdx / kdist;
+                                        const dirY = kdist < 1e-9 ? 0 : kdy / kdist;
+                                        const bounds = input.movementConfig.bounds;
+                                        const footprint = input.movementConfig.footprint;
+                                        const minX = bounds.minX + footprint;
+                                        const maxX = bounds.maxX - footprint;
+                                        const minY = bounds.minY + footprint;
+                                        const maxY = bounds.maxY - footprint;
+                                        const newPx = Math.round(Number(movement.x) + 12000 * dirX);
+                                        const newPy = Math.round(Number(movement.y) + 12000 * dirY);
+                                        movement.x = String(Math.max(minX, Math.min(maxX, newPx)));
+                                        movement.y = String(Math.max(minY, Math.min(maxY, newPy)));
+                                    }
+                                    input.onPlayerChange?.(player);
+                                }
+                            }
+                        }
+                        if (a.contactsDone.length >= contactTicks.length) {
+                            a.released = true;
+                        }
+                        if (tick >= a.endTick || unavailable) {
+                            m.action = null;
+                            if (!isDead && m.pendingPhase !== null && m.pendingPhase !== undefined) {
+                                m.phase = m.pendingPhase;
+                                m.pendingPhase = null;
+                            }
+                        }
+                    } else if (skill.kind === 'combo') {
+                        const age = tick - a.startTick;
+                        if (!a.trampleDone) a.trampleDone = [];
+                        const trampleTicks = skill.trampleTicks.map(tOffset => a.startTick + tOffset);
+                        for (const tTick of trampleTicks) {
+                            if (!a.trampleDone.includes(tTick) && tick >= tTick) {
+                                a.trampleDone.push(tTick);
+                                const pdist = Math.hypot(Number(movement.x) - t.x, Number(movement.y) - t.y);
+                                if ((player.lifeState === 'alive' || (due.has(m.actorId) && playerAliveAtBoundary)) && pdist <= 72000) {
+                                    const trampleDmg = attackSnapshot(m.attackPower, skill.trampleCoefficient);
+                                    const defense = input.defense?.(tick) ?? { armor: '0', armorConstant: '1', reduction: { n: '0', d: '1' } };
+                                    check(/^(0|[1-9][0-9]{0,11})$/.test(defense.armor) && /^[1-9][0-9]{0,11}$/.test(defense.armorConstant) && /^(0|[1-9][0-9]{0,9})$/.test(defense.reduction.n) && /^[1-9][0-9]{0,9}$/.test(defense.reduction.d) && BigInt(defense.reduction.n) <= BigInt(defense.reduction.d));
+                                    const n = BigInt(trampleDmg.n) * BigInt(defense.armorConstant) * (BigInt(defense.reduction.d) - BigInt(defense.reduction.n)) / ((BigInt(defense.armorConstant) + BigInt(defense.armor)) * BigInt(defense.reduction.d) * BigInt(trampleDmg.d));
+                                    const hp = BigInt(player.hp);
+                                    const actual = n >= hp ? hp : n;
+                                    player.hp = String(hp - actual);
+                                    emit(events, m, 'damage', tick, String(actual));
+                                    if (player.hp === '0' && hp > 0n) {
+                                        player.lifeState = 'dead';
+                                        emit(events, m, 'death', tick);
+                                    } else if (actual > 0n) {
+                                        player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + skill.staggerTicks);
+                                    }
+                                    input.onPlayerChange?.(player);
+                                }
+                            }
+                        }
+
+                        if (age >= skill.lockTick && !a.chargeLocked) {
+                            a.chargeLocked = true;
+                            a.facing = Number(movement.x) >= t.x ? 1 : -1;
+                        }
+
+                        if (age >= skill.chargeStartTick && a.chargeEndTick === undefined) {
+                            const remaining = Math.max(0, skill.maxTravelDistance - (a.travelled ?? 0));
+                            const step = Math.min(skill.chargeSpeed, remaining);
+                            let targetX = t.x + step * a.facing;
+                            let wallHit = false;
+
+                            const bounds = input.movementConfig.bounds;
+                            const minX = bounds.minX + skill.bodyRadius;
+                            const maxX = bounds.maxX - skill.bodyRadius;
+
+                            if (a.facing === 1 && targetX >= maxX) {
+                                targetX = maxX;
+                                wallHit = true;
+                            } else if (a.facing === -1 && targetX <= minX) {
+                                targetX = minX;
+                                wallHit = true;
+                            }
+
+                            if (input.movementConfig.walls) {
+                                for (const w of input.movementConfig.walls) {
+                                    if (t.y > w.minY - skill.bodyRadius && t.y < w.maxY + skill.bodyRadius) {
+                                        if (a.facing === 1 && t.x <= w.minX - skill.bodyRadius && targetX >= w.minX - skill.bodyRadius) {
+                                            targetX = w.minX - skill.bodyRadius;
+                                            wallHit = true;
+                                        } else if (a.facing === -1 && t.x >= w.maxX + skill.bodyRadius && targetX <= w.maxX + skill.bodyRadius) {
+                                            targetX = w.maxX + skill.bodyRadius;
+                                            wallHit = true;
+                                        }
+                                    }
+                                }
+                            }
+
+                            const beforeX = t.x;
+                            t.x = targetX;
+                            const moved = Math.abs(t.x - beforeX);
+                            a.travelled = (a.travelled ?? 0) + moved;
+
+                            if (!a.chargeHit && player.lifeState === 'alive') {
+                                const px = Number(movement.x);
+                                const py = Number(movement.y);
+                                const segDist = segmentDistancePoint(px, py, beforeX, t.y, t.x, t.y);
+                                if (segDist <= skill.contactRadius) {
+                                    a.chargeHit = true;
+                                    const chargeDamage = attackSnapshot(m.attackPower, skill.chargeCoefficient);
+                                    const defense = input.defense?.(tick) ?? { armor: '0', armorConstant: '1', reduction: { n: '0', d: '1' } };
+                                    check(/^(0|[1-9][0-9]{0,11})$/.test(defense.armor) && /^[1-9][0-9]{0,11}$/.test(defense.armorConstant) && /^(0|[1-9][0-9]{0,9})$/.test(defense.reduction.n) && /^[1-9][0-9]{0,9}$/.test(defense.reduction.d) && BigInt(defense.reduction.n) <= BigInt(defense.reduction.d));
+                                    const n = BigInt(chargeDamage.n) * BigInt(defense.armorConstant) * (BigInt(defense.reduction.d) - BigInt(defense.reduction.n)) / ((BigInt(defense.armorConstant) + BigInt(defense.armor)) * BigInt(defense.reduction.d) * BigInt(chargeDamage.d));
+                                    const hp = BigInt(player.hp);
+                                    const actual = n >= hp ? hp : n;
+                                    player.hp = String(hp - actual);
+                                    emit(events, m, 'damage', tick, String(actual));
+                                    if (player.hp === '0' && hp > 0n) {
+                                        player.lifeState = 'dead';
+                                        emit(events, m, 'death', tick);
+                                    } else if (actual > 0n) {
+                                        player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + skill.staggerTicks);
+                                    }
+                                    input.onPlayerChange?.(player);
+                                }
+                            }
+
+                            if (wallHit || a.travelled >= skill.maxTravelDistance) {
+                                a.chargeEndTick = tick;
+                                a.superArmorEndTick = tick;
+                                if (wallHit) {
+                                    a.wallHit = true;
+                                    a.endTick = tick + skill.wallWeaknessTicks;
+                                    m.weakUntilTick = tick + skill.wallWeaknessTicks;
+                                } else {
+                                    a.wallHit = false;
+                                    a.endTick = tick + skill.recoveryTicks;
+                                }
+                            }
+                        }
+
+                        if (tick >= a.endTick || unavailable) {
+                            m.action = null;
+                            if (!isDead && m.pendingPhase !== null && m.pendingPhase !== undefined) {
+                                m.phase = m.pendingPhase;
+                                m.pendingPhase = null;
+                            }
+                        }
                     }
                 }
 
-                if (unavailable)
+                if (unavailable || isWeak)
                     continue;
                 if (player.lifeState === 'dead' || m.action) {
                     m.intentX = 0;
@@ -615,7 +886,14 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                 const distToPlayer = Math.hypot(dx, dy);
 
                 // Skill candidate selection
-                const candidateRefs = template.skillRefs && template.skillRefs.length > 0 ? template.skillRefs : [template.skillRef];
+                let candidateRefs = template.skillRefs && template.skillRefs.length > 0 ? template.skillRefs : [template.skillRef];
+                if (m.identity === 'boss') {
+                    if ((m.phase ?? 1) === 1) {
+                        candidateRefs = candidateRefs.filter(ref => !ref.endsWith('_combo') && !ref.endsWith('_roar_p2'));
+                    } else {
+                        candidateRefs = candidateRefs.filter(ref => !ref.endsWith('_roar_p1'));
+                    }
+                }
                 let skillTriggered = false;
 
                 if (!m.cooldowns) m.cooldowns = {};
@@ -623,7 +901,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                 for (const ref of candidateRefs) {
                     const skill = cfg.skills[ref];
                     if (!skill) continue;
-                    const readyAt = m.cooldowns[ref] ?? m.readyAtTick;
+                    const readyAt = m.cooldowns[ref] ?? (template.skillRefs ? 0 : m.readyAtTick);
                     if (tick < readyAt) continue;
 
                     if (skill.kind === 'ranged') {
@@ -698,6 +976,76 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                         damage: attackSnapshot(m.attackPower, skill.coefficient),
                                         released: false,
                                         skillRef: ref,
+                                    };
+                                    m.readyAtTick = tick + skill.cooldownTicks;
+                                    m.cooldowns[ref] = tick + skill.cooldownTicks;
+                                    m.sequence++;
+                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                                    emit(events, m, 'actionAccepted', tick);
+                                } else {
+                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                                }
+                            }
+                            skillTriggered = true;
+                            break;
+                        }
+                    } else if (skill.kind === 'roar') {
+                        if (distToPlayer <= skill.reach) {
+                            m.intentX = 0;
+                            m.intentY = 0;
+                            if (tick >= m.nextDecisionTick && tick >= readyAt) {
+                                if (activeSpecialCount < specialCap) {
+                                    activeSpecialCount++;
+                                    m.action = {
+                                        startTick: tick,
+                                        hitTick: tick + skill.windupTicks,
+                                        endTick: tick + skill.superArmorTicks + skill.recoveryTicks,
+                                        superArmorEndTick: tick + skill.superArmorTicks,
+                                        facing: dx >= 0 ? 1 : -1,
+                                        damage: attackSnapshot(m.attackPower, skill.coefficient),
+                                        released: false,
+                                        skillRef: ref,
+                                        kind: 'roar',
+                                        contactTicks: skill.contactTicks.map(dt => tick + dt),
+                                        contactsDone: [],
+                                        maxHpSnapshot: player.maxHp,
+                                        accumulatedRoarDamage: '0',
+                                        roarKnocked: false,
+                                    };
+                                    m.readyAtTick = tick + skill.cooldownTicks;
+                                    m.cooldowns[ref] = tick + skill.cooldownTicks;
+                                    m.sequence++;
+                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                                    emit(events, m, 'actionAccepted', tick);
+                                } else {
+                                    m.nextDecisionTick = tick + cfg.decisionTicks;
+                                }
+                            }
+                            skillTriggered = true;
+                            break;
+                        }
+                    } else if (skill.kind === 'combo') {
+                        if (distToPlayer <= skill.reach) {
+                            m.intentX = 0;
+                            m.intentY = 0;
+                            if (tick >= m.nextDecisionTick && tick >= readyAt) {
+                                if (activeSpecialCount < specialCap) {
+                                    activeSpecialCount++;
+                                    m.action = {
+                                        startTick: tick,
+                                        hitTick: tick + skill.trampleTicks[0],
+                                        endTick: tick + 800,
+                                        superArmorEndTick: tick + 800,
+                                        facing: dx >= 0 ? 1 : -1,
+                                        damage: attackSnapshot(m.attackPower, skill.trampleCoefficient),
+                                        released: false,
+                                        skillRef: ref,
+                                        kind: 'combo',
+                                        trampleDone: [],
+                                        chargeLocked: false,
+                                        chargeHit: false,
+                                        travelled: 0,
+                                        wallHit: false,
                                     };
                                     m.readyAtTick = tick + skill.cooldownTicks;
                                     m.cooldowns[ref] = tick + skill.cooldownTicks;
