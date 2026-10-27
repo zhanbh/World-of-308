@@ -1,5 +1,7 @@
 # ST12 怪物行为实施准备
 
+当前状态（2026-10-27）：六项已有实现/合入记录，但本次代码核对发现Cocos权威服务联调及真实最大预算路径的验收证据缺口，整体验收重新打开；不要将`merged`或历史“完成”摘要当完整闭环通过。接续以[收尾交接](../../../reviews/handoff-st12-closeout-st13-2026-10-27.md)及execution的closeout_review为准，保留原始证据。
+
 2026-10-26。集成分支`feat-1.0.0`，准备基点`47dc8c6`。用户以“好的，开始吧”整体确认[任务图](task-plan.md)、测试边界与候选细节，并授权连续实施；当前状态见[执行记录](execution.json)。
 
 来源：[ST12故事](../st12.md)、[开发真相源](../../../backend/source-of-truth.md)、[首本遭遇](../../../design/dungeon-first-proposal-v1.md)、[三本内容原型](../../../design/warrior-three-dungeon-baseline-v1.md)。ST11现有权威内核和真实ST10开房流程为实施基础。

@@ -1,5 +1,7 @@
 # ST12-06 本地验证报告
 
+> 当前状态补注（2026-10-27）：以下保留原实施记录。本次后续代码核对发现，Cocos本地战斗与权威服务联调、真实最大状态业务路径的结论证据不足，不能将本报告作为ST12完整端到端完成证明；见[收尾交接](handoff-st12-closeout-st13-2026-10-27.md)。本补注未重跑或否定所有历史测试。
+
 日期：2026-10-27。分支 `feat/st12-06-playable-integration`；初始基点 `e277ffa`（合入ST12-05后的 `feat-1.0.0`）。本记录为实施者证据，不代表整包ST12/平台/真机设备验收。
 
 只读来源：spec accepted_revision `26fc51d20aa68ff91e7cc72c0a9768ece64c0359710e36dd363d02f2577cebd7`；ST12-06 accepted_revision `efab9da3e74dfa5b185e58edc16157ffddad7663cc47ee8e78b1333577a666c7`。

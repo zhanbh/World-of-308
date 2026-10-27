@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st12",
-  "status": "implementation-completed",
+  "status": "implementation-present-acceptance-reopened",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "47dc8c6",
   "approved_spec_revision": "26fc51d20aa68ff91e7cc72c0a9768ece64c0359710e36dd363d02f2577cebd7",
@@ -151,5 +151,21 @@
     "backend_harness_executions": 568,
     "log": "docs/reviews/st12-baseline-check.log",
     "scope": "local regression only; no cloud SDK or device acceptance"
+  },
+  "closeout_review": {
+    "date": "2026-10-27",
+    "code_head": "c3e8e82",
+    "previous_status": "implementation-completed",
+    "scope": "read-only code and evidence inspection; no new tests or builds",
+    "state": "open",
+    "handoff": "docs/reviews/handoff-st12-closeout-st13-2026-10-27.md",
+    "confirmed_gaps": [
+      "Cocos Prototype battle uses local models; authoritative service roundtrip and recovery not evidenced end-to-end",
+      "maximum-effect test uses constructed encoding rows; actual combined simulation/CP/service/public recovery maximum not evidenced"
+    ],
+    "correction": "Advanced monster behavior exists in the shared kernel invoked by ChallengeService; profile6/scene7 alone does not prove it is disconnected.",
+    "ticket_merge_history_preserved": true,
+    "next_priority": "propose ST12 closeout task graph and close evidence gaps before ST13 coding",
+    "st13_task_graph_approved": false
   }
 }
