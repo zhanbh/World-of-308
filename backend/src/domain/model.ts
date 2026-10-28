@@ -13,7 +13,7 @@ export interface Character {
   stamina: { value: number; refillWindow: number }; version: number;
 }
 export interface Wallet { gold: number; points: number; version: number; }
-export type Slot = { kind: 'stack'; templateId: string; quantity: number }
+export type Slot = { kind: 'stack'; templateId: string; quantity: number; binding?: 'none' | 'account' | 'character' }
   | { kind: 'equipment'; itemId: string };
 export interface Backpack { accountId: string; characterId: string; capacity: number; slots: Slot[]; version: number; }
 export interface Equipment {

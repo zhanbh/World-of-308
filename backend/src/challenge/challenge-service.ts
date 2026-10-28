@@ -25,7 +25,7 @@ import { parseDungeonEntryQuery, parseDungeonEntryResponse, parseChallengeReques
 import { identityKey, isVerifiedIdentity, loginKey } from '../identity/identity-v2.ts';
 import type { IdentityPort } from '../identity/identity-v2.ts';
 import type { LoginAccount, LoginSession, IdentityLink } from '../identity/login-model.ts';
-import type { CharacterEntity, EquipmentEntity, ContainerEntity } from '../character/character-model.ts';
+import type { CharacterEntity, EquipmentEntity, ContainerEntity, ContainerSlotStack } from '../character/character-model.ts';
 import { applyPotionInput } from '../../../shared/src/potion-kernel.ts';
 import type { PotionExecutionState } from '../../../shared/src/potion-kernel.ts';
 import { applyTrinketInput, applyTrinketStats, pruneExpiredBuffs } from '../../../shared/src/trinket-kernel.ts';
@@ -174,6 +174,7 @@ export class ChallengeService {
         if(raw&&typeof raw==='object'){const command=Object.getOwnPropertyDescriptor(raw,'command')?.value;if(['heartbeat','scene.suspend','scene.resumePrepare'].includes(command))return this.sceneControl(raw);if(command==='scene.status')return Object.getOwnPropertyDescriptor(raw,'payload')?.value?.readyTicketId!==null?this.queryOriginalReady(raw):this.sceneControl(raw);if(command==='scene.ready'){const q=parseSceneRequest(raw);if(q.command!=='scene.ready')throw new TypeError('UNSUPPORTED_COMMAND');const h=await this.options.store.run(tx=>tx.get<EntryChallenge>(q.payload.challengeId));return h?.connection==='recovery'||h?.controlReceipts?.some(r=>r.command==='scene.ready'&&r.sequence===q.controlSeq)||q.payload.sceneEpoch===0?this.sceneControl(raw):this.ready(raw);}}
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.activateRoom') return this.activate(raw);
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.prepareRoom') return this.prepare(raw);
+        if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.revive') return this.revive(raw);
         const command = parseChallengeRequest(raw);
         if (command.command !== 'challenge.start')
             throw new TypeError('UNSUPPORTED_COMMAND');
@@ -642,12 +643,13 @@ export class ChallengeService {
                 if(res.consumed)bagChanged=true;
                 return {event:res.event,mp:resourceRole.player.mp};
             };
+            let hostileSimPlayer: import('../../../shared/src/monster-simulation.ts').MonsterPlayer | null = null;
             const activeStatsCallback=<S extends import('../../../shared/src/basic-combat-kernel.ts').CombatStats>(tick:number,currentStats:S):S=>applyTrinketStats(currentStats,resourceRole.buffs,tick);
             if(combat){requireValue(scene.schemaVersion>=2&&scene.combat,'CONFIG_NOT_READY');const combatHash=await manifestDigest(combat);requireValue(!cp.role.combat||cp.role.combat.configHash===combatHash,'CONFIG_NOT_READY');
                 const state=combatState??initialCombatState(),extraSamples=(combat.earth?512+(q.payload.inputs.filter(i=>i.kind==='skill'&&i.skillId==='earth').length+(scene.earth?.cast?1:0))*64*(4+combat.earth.bleed.jumps)+(scene.earth?.effects.reduce((n,e)=>n+(e.kind==='bleed'?combat.earth!.bleed.jumps-e.nextJump:8*4*(2+combat.earth!.bleed.jumps)),0)??0):0)+(combat.badao?256+(q.payload.inputs.filter(i=>i.kind==='skill'&&i.skillId==='badao').length+(scene.badao?.cast?1:0))*16*(1+combat.badao.bleed.jumps)+(scene.badao?.effects.reduce((n,e)=>n+combat.badao!.bleed.jumps-e.nextJump,0)??0):0)+(combat.bengshan?256+(q.payload.inputs.filter(i=>i.kind==='skill'&&i.skillId==='bengshan').length+(scene.bengshan?.cast?1:0))*16*(3+combat.bengshan.bleed.jumps)+(scene.bengshan?.effects.reduce((n,e)=>n+combat.bengshan!.bleed.jumps-e.nextJump,0)??0):0),sampleBudget=extraSamples+(combat.cross?256+(q.payload.inputs.filter(i=>i.kind==='skill'&&i.skillId==='cross').length+(scene.cross?.cast?1:0))*16*(2+combat.cross.bleed.jumps)+(scene.cross?.effects.reduce((n,e)=>n+(e.kind==='bleed'?combat.cross!.bleed.jumps-e.nextJump:8*(2+combat.cross!.bleed.jumps)),0)??0):256),tape=await (combat.cross?crossRandomTape(scene.combat.seed,state.randomCursor,sampleBudget):combatRandomTape(scene.combat.seed,state.randomCursor,256)),stats=currentBasicStats(c,equipment,combat,{x:Number(initial.x),y:Number(initial.y),facing:initial.facing},this.options.setConfigs);
                 const targets=scene.combat.targets.map(t=>({...t,controlImmune:scene.enemies.find(e=>e.actor.actorId===t.actorId)!.immuneToControl}));
                 const joint=scene.monsters?{defense:()=>currentMonsterDefense(equipment,this.options.setConfigs),playerResources:(player:import('../../../shared/src/monster-simulation.ts').MonsterPlayer)=>({...player,hp:resourceRole.player.hp,lifeState:resourceRole.player.lifeState==='alive'?'alive' as const:'dead' as const}),onPlayerChange:(player:import('../../../shared/src/monster-simulation.ts').MonsterPlayer)=>{resourceRole.player.hp=player.hp;resourceRole.player.lifeState=player.lifeState;},monsterConfig:combat.monsters!,monsters:scene.monsters,player:{hp:cp.role.player.hp,maxHp:cp.role.player.maxHp,lifeState:cp.role.player.lifeState==='alive'?'alive' as const:'dead' as const,controlledUntilTick:scene.monsterControlUntilTick!}}:null;const result=combat.earth?(joint?advanceMonsterSimulation:advanceEarthSimulation)({...joint!,movement:initial,basic:state,cross:scene.cross!,bengshan:scene.bengshan!,badao:scene.badao!,earth:scene.earth!,targets:targets,inputs:q.payload.inputs,fromTick:q.payload.fromTick,toTick:q.payload.toTick,movementConfig:config,basicConfig:combat.config,crossConfig:combat.cross!,bengshanConfig:combat.bengshan!,badaoConfig:combat.badao!,earthConfig:combat.earth!,context:{challengeId:h.id,sceneEpoch:h.sceneEpoch,actorId:c.id,immuneToBleed:scene.enemies.filter(e=>e.immuneToBleed).map(e=>e.actor.actorIndex)},stats:{...stats,level:c.level,mp:cp.role.player.mp,controlled:cp.role.player.lifeState!=='alive'||cp.role.player.actionId==='knockdown',mastery:currentSkillMastery(equipment,combat,this.options.setConfigs)},random:cursor=>{requireValue(cursor-state.randomCursor<tape.length,'CONFIG_NOT_READY');return tape[cursor-state.randomCursor];},resources:(tick,mp)=>{resourceRole.player.mp=mp;const elapsed=(tick-q.payload.fromTick)*10,next=advanceRole(resourceRole,resourceAt,cp.header.logicalTimeMs+elapsed,this.options.content!);resourceRole=next;resourceAt=cp.header.logicalTimeMs+elapsed;return next.player.mp;},supply:supplyHandler,activeStats:activeStatsCallback}):combat.badao?advanceBadaoSimulation({movement:initial,basic:state,cross:scene.cross!,bengshan:scene.bengshan!,badao:scene.badao!,targets:targets,inputs:q.payload.inputs,fromTick:q.payload.fromTick,toTick:q.payload.toTick,movementConfig:config,basicConfig:combat.config,crossConfig:combat.cross!,bengshanConfig:combat.bengshan!,badaoConfig:combat.badao!,context:{challengeId:h.id,sceneEpoch:h.sceneEpoch,actorId:c.id,immuneToBleed:scene.enemies.filter(e=>e.immuneToBleed).map(e=>e.actor.actorIndex)},stats:{...stats,level:c.level,mp:cp.role.player.mp,controlled:cp.role.player.lifeState!=='alive'||cp.role.player.actionId==='knockdown',mastery:currentSkillMastery(equipment,combat,this.options.setConfigs)},random:cursor=>{requireValue(cursor-state.randomCursor<tape.length,'CONFIG_NOT_READY');return tape[cursor-state.randomCursor];},resources:(tick,mp)=>{resourceRole.player.mp=mp;const elapsed=(tick-q.payload.fromTick)*10,next=advanceRole(resourceRole,resourceAt,cp.header.logicalTimeMs+elapsed,this.options.content!);resourceRole=next;resourceAt=cp.header.logicalTimeMs+elapsed;return next.player.mp;},supply:supplyHandler,activeStats:activeStatsCallback}):combat.bengshan?advanceBengshanSimulation({movement:initial,basic:state,cross:scene.cross!,bengshan:scene.bengshan!,targets:targets,inputs:q.payload.inputs,fromTick:q.payload.fromTick,toTick:q.payload.toTick,movementConfig:config,basicConfig:combat.config,crossConfig:combat.cross!,bengshanConfig:combat.bengshan!,context:{challengeId:h.id,sceneEpoch:h.sceneEpoch,actorId:c.id,immuneToBleed:scene.enemies.filter(e=>e.immuneToBleed).map(e=>e.actor.actorIndex)},stats:{...stats,level:c.level,mp:cp.role.player.mp,controlled:cp.role.player.lifeState!=='alive'||cp.role.player.actionId==='knockdown',mastery:currentSkillMastery(equipment,combat,this.options.setConfigs)},random:cursor=>{requireValue(cursor-state.randomCursor<tape.length,'CONFIG_NOT_READY');return tape[cursor-state.randomCursor];},resources:(tick,mp)=>{resourceRole.player.mp=mp;const elapsed=(tick-q.payload.fromTick)*10,next=advanceRole(resourceRole,resourceAt,cp.header.logicalTimeMs+elapsed,this.options.content!);resourceRole=next;resourceAt=cp.header.logicalTimeMs+elapsed;return next.player.mp;},supply:supplyHandler,activeStats:activeStatsCallback}):combat.cross?advanceCrossSimulation(initial,state,scene.cross!,targets,q.payload.inputs,q.payload.fromTick,q.payload.toTick,config,combat.config,combat.cross,{challengeId:h.id,sceneEpoch:h.sceneEpoch,actorId:c.id,immuneToBleed:scene.enemies.filter(e=>e.immuneToBleed).map(e=>e.actor.actorIndex)},{...stats,level:c.level,mp:cp.role.player.mp,controlled:cp.role.player.lifeState!=='alive'||cp.role.player.actionId==='knockdown',mastery:currentSkillMastery(equipment,combat,this.options.setConfigs)},cursor=>{requireValue(cursor-state.randomCursor<tape.length,'CONFIG_NOT_READY');return tape[cursor-state.randomCursor];},(tick,mp)=>{resourceRole.player.mp=mp;const elapsed=(tick-q.payload.fromTick)*10,next=advanceRole(resourceRole,resourceAt,cp.header.logicalTimeMs+elapsed,this.options.content!);resourceRole=next;resourceAt=cp.header.logicalTimeMs+elapsed;return next.player.mp;},supplyHandler,activeStatsCallback):advanceBasicSimulation(initial,state,targets,q.payload.inputs,q.payload.fromTick,q.payload.toTick,config,combat.config,{challengeId:h.id,sceneEpoch:h.sceneEpoch,actorId:c.id},stats,cursor=>{requireValue(cursor-state.randomCursor<tape.length,'CONFIG_NOT_READY');return tape[cursor-state.randomCursor];},supplyHandler,activeStatsCallback);
-                if(joint){const hostile=result as ReturnType<typeof advanceMonsterSimulation>;scene.monsters=hostile.monsters;scene.monsterControlUntilTick=hostile.player.controlledUntilTick;resourceRole.player.hp=hostile.player.hp;resourceRole.player.lifeState=hostile.player.lifeState;}if(combat.cross){const skillResult=result as ReturnType<typeof advanceCrossSimulation>;scene.cross=skillResult.cross;if(combat.earth)scene.earth=(result as ReturnType<typeof advanceEarthSimulation>).earth;if(combat.badao)scene.badao=(result as ReturnType<typeof advanceBadaoSimulation>).badao;if(combat.bengshan)scene.bengshan=(result as ReturnType<typeof advanceBengshanSimulation>).bengshan;resourceRole.player.mp=skillResult.mp;}computed.state=result.movement;combatState=result.state;combatEvents=result.events;scene.combat.targets=result.targets;scene.randomCursor=result.state.randomCursor;scene.eventCursor+=result.events.length;
+                if(joint){const hostile=result as ReturnType<typeof advanceMonsterSimulation>;hostileSimPlayer=hostile.player;scene.monsters=hostile.monsters;scene.monsterControlUntilTick=hostile.player.controlledUntilTick;resourceRole.player.hp=hostile.player.hp;resourceRole.player.lifeState=hostile.player.lifeState;}if(combat.cross){const skillResult=result as ReturnType<typeof advanceCrossSimulation>;scene.cross=skillResult.cross;if(combat.earth)scene.earth=(result as ReturnType<typeof advanceEarthSimulation>).earth;if(combat.badao)scene.badao=(result as ReturnType<typeof advanceBadaoSimulation>).badao;if(combat.bengshan)scene.bengshan=(result as ReturnType<typeof advanceBengshanSimulation>).bengshan;resourceRole.player.mp=skillResult.mp;}computed.state=result.movement;combatState=result.state;combatEvents=result.events;scene.combat.targets=result.targets;scene.randomCursor=result.state.randomCursor;scene.eventCursor+=result.events.length;
                 for(const enemy of scene.enemies){const target=result.targets.find(t=>t.actorId===enemy.actor.actorId)!;const runtime=scene.monsters?.find(m=>m.actorId===enemy.actor.actorId);enemy.actor={...enemy.actor,x:target.x,y:target.y,facing:runtime?.action?.facing??enemy.actor.facing,hp:target.hp,lifeState:target.lifeState,actionId:target.lifeState==='dead'?'dead':target.downUntilTick!==null?'knockdown':runtime?.action?(runtime.action.released?'recover':'melee'):'idle',phase:runtime?.phase??0};enemy.aiPhase=runtime?.phase??0;}
             }
             if(cp.role.regenerationRef!==null)requireValue(cp.role.regenerationHash===await manifestDigest(this.options.content!.regeneration),'CONFIG_NOT_READY');
@@ -677,18 +679,25 @@ export class ChallengeService {
                 this.validateMovement(q,currentA,currentC,currentH,latest.header,now);
                 const currentBag=await tx.get<ContainerEntity>(c.backpackId);
                 requireValue(canonical(latest)===canonical(cp)&&canonical(currentC)===canonical(c)&&canonical(currentBag)===canonical(bag),'VERSION_CONFLICT');for(const item of equipment)requireValue(canonical(await tx.get(item.id))===canonical(item),'VERSION_CONFLICT');
+                const isDead=role.player.lifeState==='dead';
                 const allEnemiesDead=scene.enemies.length>0&&scene.enemies.every(e=>e.actor.lifeState==='dead'&&e.actor.hp==='0');
+                const isBossRoom=currentH.currentRoomNo===currentH.roomCount-1||scene.enemies.some(e=>e.role==='boss');
+                let playerLifeState:'alive'|'dead'=isDead?'dead':'alive';
+                const hostilePlayer=hostileSimPlayer;
+                const playerDeathIndex=hostilePlayer?.deathIndex??(isDead?((currentH.deathIndex??0)+1):(currentH.deathIndex??0));
+                let playerDeathDeadline:number|null=isDead?(hostilePlayer?.deathDeadline??currentH.deathDeadline??(now+10_000)):null;
+                if(isDead&&allEnemiesDead&&isBossRoom){playerLifeState='alive';playerDeathDeadline=null;role.player.lifeState='alive';role.player.hp=role.player.maxHp;role.player.mp=role.player.maxMp;}
                 const nextRoomPhase=(allEnemiesDead||latest.header.state.roomPhase==='cleared')?'cleared' as const:'active' as const;
                 const newlyDead=scene.enemies.filter(e=>e.actor.lifeState==='dead'&&e.actor.hp==='0');
                 const existingKills=currentH.confirmedKills??[];
                 const existingIds=new Set(existingKills.map(k=>`${currentH.currentRoomNo}:${k.spawnId}`));
                 const newKillFacts=newlyDead.filter(e=>!existingIds.has(`${currentH.currentRoomNo}:${e.actor.actorId}`)).map(e=>({spawnId:e.actor.actorId,role:e.role,templateRef:e.templateRef,roomNo:currentH.currentRoomNo,xpMultiplier:e.role==='purple'?2:1}));
                 const confirmedKills=newKillFacts.length>0?[...existingKills,...newKillFacts]:existingKills;
-                const revision=increment(latest.header.revision),state={...latest.header.state,checkpointRevision:revision,publicStateHash:hash,acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,roomPhase:nextRoomPhase,inputGapBaseAt:now,lastAcceptedInputAt:now};
+                const revision=increment(latest.header.revision),state={...latest.header.state,checkpointRevision:revision,publicStateHash:hash,acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,roomPhase:nextRoomPhase,lifeState:playerLifeState,deathDeadline:playerDeathDeadline,inputGapBaseAt:now,lastAcceptedInputAt:now};
                 const activeChunks=[...latest.header.activeChunks.slice(0,2)];if(chunk.hash!==activeChunks[0].hash){tx.set(chunk.id,chunk);activeChunks[0]={...activeChunks[0],chunkRevision:chunk.chunkRevision,hash:chunk.hash};}
                 if(sceneChunk.hash!==activeChunks[1].hash){tx.set(sceneChunk.id,sceneChunk);activeChunks[1]={...activeChunks[1],chunkRevision:sceneChunk.chunkRevision,hash:sceneChunk.hash};}
                 for(const effect of effectChunks){const oldRef=latest.header.activeChunks.find(r=>r.ordinal===effect.ordinal);if(oldRef?.hash===effect.hash)activeChunks.push(oldRef);else{tx.set(effect.id,effect);activeChunks.push({ordinal:effect.ordinal,chunkRevision:effect.chunkRevision,hash:effect.hash,sceneEpoch:h.sceneEpoch});}}const nextHeader={...latest.header,revision,activeChunks,state,logicalTimeMs,timeRemainderMs:logicalTimeMs%10};
-                const nextH={...currentH,version:increment(currentH.version),roomPhase:nextRoomPhase,confirmedKills,acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,lease:{...currentH.lease!,lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(currentH.lease!.revision)}};
+                const nextH={...currentH,version:increment(currentH.version),roomPhase:nextRoomPhase,confirmedKills,acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,lifeState:playerLifeState,...playerLifeState==='dead'?{deathIndex:playerDeathIndex,deathDeadline:playerDeathDeadline!}:{deathDeadline:undefined},lease:{...currentH.lease!,lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(currentH.lease!.revision)}};
                 const nextBag=bagChanged?{...workingBag,version:increment(bag.version),updatedAt:now}:bag;
                 if(bagChanged)tx.set(nextBag.id,nextBag);
                 let nextC=currentC;
@@ -713,7 +722,217 @@ export class ChallengeService {
         requireValue(q.expected.some(v=>v.kind==='challenge'&&v.id===h.id&&v.version===h.version)&&q.expected.some(v=>v.kind==='character'&&v.id===c.id&&v.version===c.version),'VERSION_CONFLICT');
         const s=header.state;requireValue(s.anchorWallAt!==null&&s.anchorTick!==null&&now>=s.anchorWallAt&&p.toTick-s.anchorTick<=Math.floor((now-s.anchorWallAt)/10),'TIME_FRONTIER');
     }
+    private async revive(raw: unknown) {
+        const command = parseChallengeRequest(raw);
+        if (command.command !== 'challenge.revive') throw new TypeError('UNSUPPORTED_COMMAND');
+        let now = this.options.clock.now();
+        const reply = (outcome: unknown, replayed = false) => parseChallengeResponse({ protocolVersion: 2, command: command.command, operationId: command.operationId, serverTime: now, replayed, outcome });
+        try {
+            const caller = await this.caller();
+            return await this.options.store.run(async (tx) => {
+                now = this.options.clock.now();
+                const a = await this.authorize(tx, caller, command.sessionId, command.sessionEpoch);
+                const opId = await loginKey('assetOp', [a.id, command.operationId]);
+                const journalId = await loginKey('assetJournal', [a.id, command.operationId]);
+                const tuple = canonical(command);
+                const previous = await tx.get<{
+                    schemaVersion: number;
+                    id: string;
+                    accountId: string;
+                    command: string;
+                    tuple: string;
+                    result: unknown;
+                }>(opId);
+                if (previous) {
+                    requireValue(previous.schemaVersion === 2 && previous.id === opId && previous.accountId === a.id && previous.command === command.command, 'SERVICE_UNAVAILABLE');
+                    requireValue(previous.tuple === tuple, 'OPERATION_MISMATCH');
+                    let original;
+                    try { original = parseChallengeResponse(previous.result); } catch { throw new Refusal('SERVICE_UNAVAILABLE'); }
+                    requireValue(original.command === command.command && original.operationId === command.operationId, 'SERVICE_UNAVAILABLE');
+                    return parseChallengeResponse({ ...original, serverTime: now, replayed: true });
+                }
+                requireValue(await tx.get(journalId) === undefined, 'SERVICE_UNAVAILABLE');
+                try {
+                    const h = await tx.get<EntryChallenge>(command.payload.challengeId);
+                    requireValue(h?.schemaVersion === 2 && h.id === command.payload.challengeId && h.accountId === a.id, 'NOT_FOUND_OR_FORBIDDEN');
+                    if (await this.expire(tx, a, h, now)) return reply({ status: 'rejected', code: 'DEADLINE_EXPIRED' });
+                    requireValue(h.result === 'active' && h.sceneState !== 'closed', 'CHALLENGE_TERMINAL');
+                    requireValue(h.sessionId === command.sessionId && a.activeChallengeId === h.id && a.openSceneChallengeId === h.id, 'VERSION_CONFLICT');
+                    for (const exp of command.expected) {
+                        if (exp.kind === 'challenge' && exp.id === h.id) requireValue(exp.version === h.version, 'VERSION_CONFLICT');
+                        if (exp.kind === 'account' && exp.id === a.id) requireValue(exp.version === a.version, 'VERSION_CONFLICT');
+                    }
+                    requireValue(h.lifeState === 'dead' && h.deathIndex === command.payload.deathIndex, 'NOT_DEAD');
+                    requireValue(h.deathDeadline !== undefined && now <= h.deathDeadline, 'DEADLINE_EXPIRED');
+                    const d = this.dungeon(h.dungeonId);
+                    if (d.kind === 'special' || (d as any).special) {
+                        const limit = (d as any).reviveLimit ?? 3;
+                        requireValue((h.paidRevives ?? 0) < limit, 'REVIVE_LIMIT_REACHED');
+                    }
+                    const c = await this.character(tx, a, h.characterId, h.rolePlayEpoch);
+                    for (const exp of command.expected) {
+                        if (exp.kind === 'character' && exp.id === c.id) requireValue(exp.version === c.version, 'VERSION_CONFLICT');
+                    }
+                    const bag = await tx.get<ContainerEntity>(c.backpackId);
+                    requireValue(bag?.schemaVersion === 2 && bag.id === c.backpackId && bag.accountId === a.id, 'CONFIG_NOT_READY');
+                    for (const exp of command.expected) {
+                        if (exp.kind === 'container' && exp.id === bag.id) requireValue(exp.version === bag.version, 'VERSION_CONFLICT');
+                    }
+                    const eligible: { slotIndex: number; slot: ContainerSlotStack; rank: number }[] = [];
+                    for (const [keyStr, slot] of Object.entries(bag.slots)) {
+                        const slotIndex = Number(keyStr);
+                        if (slot && slot.kind === 'stack' && (slot.templateRef?.id === 'resurrection-emblem' || (slot as any).templateId === 'resurrection-emblem') && slot.quantity > 0) {
+                            const kind = slot.binding?.kind ?? 'none';
+                            const rank = kind === 'character' ? 0 : kind === 'account' ? 1 : 2;
+                            eligible.push({ slotIndex, slot, rank });
+                        }
+                    }
+                    requireValue(eligible.length > 0, 'EMBLEM_NOT_ENOUGH');
+                    eligible.sort((x, y) => x.rank - y.rank || x.slotIndex - y.slotIndex);
+                    const chosen = eligible[0];
+                    const nextBag = structuredClone(bag);
+                    const targetSlot = nextBag.slots[chosen.slotIndex] as ContainerSlotStack;
+                    targetSlot.quantity -= 1;
+                    if (targetSlot.quantity <= 0) {
+                        delete nextBag.slots[chosen.slotIndex];
+                    }
+                    nextBag.version = increment(nextBag.version);
+                    nextBag.updatedAt = now;
+                    budget(nextBag, 65536);
+                    tx.set(nextBag.id, nextBag);
 
+                    let cpRevision = 0;
+                    let stateRef = h.id;
+
+                    if (h.sceneEpoch > 0) {
+                        const { header, role, scene } = await readCheckpoint(tx, h);
+                        for (const cd of role.cooldowns) {
+                            if (['cross', 'bengshan', 'badao', 'earth'].includes(cd.cooldownId)) {
+                                cd.readyAtTick = logicTick(0);
+                            }
+                        }
+                        role.player.hp = role.player.maxHp;
+                        role.player.mp = role.player.maxMp;
+                        role.player.lifeState = 'alive';
+                        role.player.actionId = 'idle';
+                        role.player.phase = 0;
+                        if (role.combat) {
+                            role.combat.state = initialCombatState();
+                        }
+                        if (scene.cross) {
+                            scene.cross.readyAtUs = { n: '0', d: '1' };
+                            scene.cross.cast = null;
+                        }
+                        if (scene.bengshan) {
+                            scene.bengshan.readyAtUs = { n: '0', d: '1' };
+                            scene.bengshan.cast = null;
+                        }
+                        if (scene.badao) {
+                            scene.badao.readyAtUs = { n: '0', d: '1' };
+                            scene.badao.cast = null;
+                        }
+                        if (scene.earth) {
+                            scene.earth.readyAtUs = { n: '0', d: '1' };
+                            scene.earth.cast = null;
+                        }
+                        if (scene.monsters) {
+                            scene.monsterControlUntilTick = 0;
+                        }
+
+                        const chunk0 = await writeChunk(h, 0, increment(header.activeChunks[0].chunkRevision), role);
+                        tx.set(chunk0.id, chunk0);
+                        const chunk1 = await writeChunk(h, 1, increment(header.activeChunks[1].chunkRevision), scene);
+                        tx.set(chunk1.id, chunk1);
+
+                        const nextRevision = increment(header.revision);
+                        const nextStateHash = await stateHash(role, scene);
+                        const activeChunks = [...header.activeChunks];
+                        activeChunks[0] = { ...activeChunks[0], chunkRevision: chunk0.chunkRevision, hash: chunk0.hash };
+                        activeChunks[1] = { ...activeChunks[1], chunkRevision: chunk1.chunkRevision, hash: chunk1.hash };
+
+                        const nextHeader: RoomCheckpointHeader = {
+                            ...header,
+                            revision: nextRevision,
+                            activeChunks,
+                            state: {
+                                ...header.state,
+                                checkpointRevision: nextRevision,
+                                publicStateHash: nextStateHash,
+                                lifeState: 'alive',
+                                deathDeadline: null,
+                            }
+                        };
+                        budget(nextHeader, 16384);
+                        tx.set(nextHeader.id, nextHeader);
+                        cpRevision = nextRevision;
+                        stateRef = nextStateHash;
+                    }
+
+                    const nextH: EntryChallenge = {
+                        ...h,
+                        version: increment(h.version),
+                        lifeState: 'alive',
+                        paidRevives: (h.paidRevives ?? 0) + 1,
+                        protectionUntil: now + 2000,
+                    };
+                    delete nextH.deathDeadline;
+                    budget(nextH, 131072);
+                    tx.set(nextH.id, nextH);
+
+                    const nextA = { ...a, writeRevision: increment(a.writeRevision) };
+                    tx.set(nextA.id, nextA);
+
+                    const resultVersions = [
+                        { kind: 'character' as const, id: c.id, version: c.version },
+                        { kind: 'challenge' as const, id: h.id, version: nextH.version },
+                        { kind: 'container' as const, id: nextBag.id, version: nextBag.version },
+                    ];
+                    const result = reply({
+                        status: 'committed',
+                        data: {
+                            challengeId: h.id,
+                            deathIndex: command.payload.deathIndex,
+                            checkpointRevision: cpRevision,
+                            stateRef,
+                        },
+                        resultVersions
+                    });
+                    const receipt = { schemaVersion: 2, id: opId, accountId: a.id, command: command.command, tuple, result };
+                    const journal = {
+                        schemaVersion: 2,
+                        id: journalId,
+                        accountId: a.id,
+                        operationId: command.operationId,
+                        command: command.command,
+                        occurredAt: now,
+                        tuple,
+                        changes: [{
+                            kind: 'revive',
+                            challengeId: h.id,
+                            deathIndex: command.payload.deathIndex,
+                            slotIndex: chosen.slotIndex,
+                            paidRevives: nextH.paidRevives,
+                        }]
+                    };
+                    budget(receipt, 16384);
+                    budget(journal, 131072);
+                    tx.set(opId, receipt);
+                    tx.set(journalId, journal);
+                    return result;
+                } catch (e) {
+                    if (!(e instanceof Refusal) && !(e instanceof TypeError)) throw e;
+                    const result = reply({ status: 'rejected', code: e instanceof Refusal ? e.message : 'CONFIG_NOT_READY' });
+                    tx.set(opId, { schemaVersion: 2, id: opId, accountId: a.id, command: command.command, tuple, result });
+                    return result;
+                }
+            });
+        } catch (e) {
+            if (e instanceof CommitUnknown) return reply({ status: 'unknown', code: 'RESULT_UNKNOWN' });
+            if (e instanceof StoreUnavailable) return reply({ status: 'rejected', code: 'SERVICE_UNAVAILABLE' });
+            if (e instanceof Refusal) return reply({ status: 'rejected', code: e.message });
+            throw e;
+        }
+    }
 }
 
 /** Leave wrapper room below32KiB, preserving every legal record and stable order. */
