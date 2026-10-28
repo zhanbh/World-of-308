@@ -37,9 +37,9 @@ export function validateCommand(input: unknown): asserts input is Command {
   for (const e of events) {
     requireRule(object(e), 'INVALID_ARGUMENT');
     if (e.kind === 'playerDied') {
-      shape(e, ['seq','kind','deathIndex','simulationTick','lingeringSourceIds']);
+      shape(e, ['seq','kind','deathIndex','simulationTick','lingeringSourceIds'], ['deathOccurredAt']);
       requireRule(integer(e.deathIndex, 1) && Array.isArray(e.lingeringSourceIds) && e.lingeringSourceIds.length <= 64 &&
-        e.lingeringSourceIds.every(text), 'INVALID_ARGUMENT');
+        e.lingeringSourceIds.every(text) && (e.deathOccurredAt === undefined || integer(e.deathOccurredAt, 0)), 'INVALID_ARGUMENT');
     } else {
       shape(e, ['seq','kind','spawnId','simulationTick','source']);
       requireRule(e.kind === 'monsterKilled' && text(e.spawnId), 'INVALID_ARGUMENT');

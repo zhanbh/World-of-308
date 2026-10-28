@@ -120,6 +120,9 @@ export type MonsterPlayer = {
     maxHp: string;
     lifeState: 'alive' | 'dead';
     controlledUntilTick: number;
+    deathIndex?: number;
+    deathDeadline?: number;
+    deathAtTick?: number;
 };
 function check(v: unknown): asserts v {
     if (!v)
@@ -468,7 +471,22 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
         check(cfg.templates[m.templateRef] && input.targets.some(t => t.actorId === m.actorId && t.actorIndex === m.actorIndex));
     check(/^(0|[1-9][0-9]*)$/.test(player.hp) && BigInt(player.hp) <= BigInt(player.maxHp) && (player.lifeState === 'dead') === (player.hp === '0'));
     integer(player.controlledUntilTick, 0, Number.MAX_SAFE_INTEGER);
-    const emit = (events: CombatEvent[], m: MonsterRuntime, kind: CombatEvent['kind'], tick: number, damage: string | null = null) => events.push({ kind, eventId: `monster:${input.context.challengeId}:${input.context.sceneEpoch}:${m.actorIndex}:${m.sequence}:${kind}`, actorId: m.actorId, tick, seq: null, targetId: input.context.actorId, damage, critical: damage === null ? null : false, code: null });
+    if (player.deathIndex !== undefined) integer(player.deathIndex, 0, Number.MAX_SAFE_INTEGER);
+    if (player.deathDeadline !== undefined) integer(player.deathDeadline, 0, Number.MAX_SAFE_INTEGER);
+    if (player.deathAtTick !== undefined) integer(player.deathAtTick, 0, Number.MAX_SAFE_INTEGER);
+    const emit = (events: CombatEvent[], m: MonsterRuntime, kind: CombatEvent['kind'], tick: number, damage: string | null = null, code: string | null = null) => events.push({ kind, eventId: `monster:${input.context.challengeId}:${input.context.sceneEpoch}:${m.actorIndex}:${m.sequence}:${kind}`, actorId: m.actorId, tick, seq: null, targetId: input.context.actorId, damage, critical: damage === null ? null : false, code });
+    const markPlayerDead = (events: CombatEvent[], tick: number, m: MonsterRuntime) => {
+        player.hp = '0';
+        player.lifeState = 'dead';
+        player.deathIndex = (player.deathIndex ?? 0) + 1;
+        player.deathAtTick = tick;
+        const baseTime = (input.context as any)?.serverTime ?? 0;
+        const deathTime = baseTime + tick * 10;
+        player.deathDeadline = (player.deathDeadline !== undefined && player.deathDeadline > deathTime)
+            ? player.deathDeadline
+            : (deathTime + 10_000);
+        emit(events, m, 'death', tick, null, `DEATH_INDEX_${player.deathIndex}`);
+    };
     let due = new Set<string>(), eventOffset = 0, playerAliveAtBoundary = false;
     let duePositions = new Map<string, {
         x: number;
@@ -495,7 +513,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
         }
     };
     const result = advanceEarthSimulation({ ...input, context: { ...input.context, tagDamage: true, immuneToBleed: monsters.filter(m => cfg.templates[m.templateRef].resist.bleed).map(m => m.actorIndex) }, jointAfterNode: (at, movement, targets, events) => applyControls(Number((BigInt(at.n) + 10000n * BigInt(at.d) - 1n) / (10000n * BigInt(at.d))), movement, targets, events), jointDead: tick => player.lifeState === 'dead', jointControlled: tick => player.lifeState === 'dead' || tick < player.controlledUntilTick, jointPrepare: (tick, targets) => {
-            if (input.playerResources)
+            if (input.playerResources && player.lifeState === 'alive')
                 Object.assign(player, input.playerResources(player));
             playerAliveAtBoundary = player.lifeState === 'alive';
             due = new Set(monsters.filter(m => {
@@ -529,8 +547,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                         player.hp = String(n >= hp ? 0n : hp - n);
                         emit(events, m, 'damage', tick, String(n));
                         if (player.hp === '0' && hp > 0n) {
-                            player.lifeState = 'dead';
-                            emit(events, m, 'death', tick);
+                            markPlayerDead(events, tick, m);
                         } else if (n > 0n) {
                             player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + eff.staggerTicks);
                         }
@@ -607,8 +624,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                 player.hp = String(n >= hp ? 0n : hp - n);
                                 emit(events, m, 'damage', tick, String(n));
                                 if (player.hp === '0' && hp > 0n) {
-                                    player.lifeState = 'dead';
-                                    emit(events, m, 'death', tick);
+                                    markPlayerDead(events, tick, m);
                                 }
                                 else if (n > 0n)
                                     player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + skill.staggerTicks);
@@ -679,8 +695,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                     player.hp = String(n >= hp ? 0n : hp - n);
                                     emit(events, m, 'damage', tick, String(n));
                                     if (player.hp === '0' && hp > 0n) {
-                                        player.lifeState = 'dead';
-                                        emit(events, m, 'death', tick);
+                                        markPlayerDead(events, tick, m);
                                     } else if (n > 0n)
                                         player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + skill.staggerTicks);
                                     input.onPlayerChange?.(player);
@@ -713,8 +728,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                     player.hp = String(hp - actual);
                                     emit(events, m, 'damage', tick, String(actual));
                                     if (player.hp === '0' && hp > 0n) {
-                                        player.lifeState = 'dead';
-                                        emit(events, m, 'death', tick);
+                                        markPlayerDead(events, tick, m);
                                     } else {
                                         const acc = BigInt(a.accumulatedRoarDamage ?? '0') + actual;
                                         a.accumulatedRoarDamage = String(acc);
@@ -774,8 +788,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                     player.hp = String(hp - actual);
                                     emit(events, m, 'damage', tick, String(actual));
                                     if (player.hp === '0' && hp > 0n) {
-                                        player.lifeState = 'dead';
-                                        emit(events, m, 'death', tick);
+                                        markPlayerDead(events, tick, m);
                                     } else if (actual > 0n) {
                                         player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + skill.staggerTicks);
                                     }
@@ -841,8 +854,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                                     player.hp = String(hp - actual);
                                     emit(events, m, 'damage', tick, String(actual));
                                     if (player.hp === '0' && hp > 0n) {
-                                        player.lifeState = 'dead';
-                                        emit(events, m, 'death', tick);
+                                        markPlayerDead(events, tick, m);
                                     } else if (actual > 0n) {
                                         player.controlledUntilTick = Math.max(player.controlledUntilTick, tick + skill.staggerTicks);
                                     }

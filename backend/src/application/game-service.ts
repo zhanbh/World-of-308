@@ -261,7 +261,8 @@ export class GameService {
       room.simulationTick = event.simulationTick;
       if (event.kind === 'playerDied') {
         requireRule(challenge.result === 'active' && challenge.lifeState === 'alive' && event.deathIndex === challenge.deathIndex + 1, 'INVALID_EVENT');
-        challenge.lifeState = 'dead'; challenge.deathIndex = event.deathIndex; challenge.deathDeadline = this.clock.now() + 10_000;
+        challenge.lifeState = 'dead'; challenge.deathIndex = event.deathIndex;
+        challenge.deathDeadline = (event.deathOccurredAt !== undefined ? event.deathOccurredAt : this.clock.now()) + 10_000;
         challenge.lingeringSources = [...new Set(event.lingeringSourceIds)];
       } else freeRevived = this.kill(tx, account, character, challenge, config, room, wallet, bag, event, plans) || freeRevived;
       challenge.lastEventSeq = event.seq;

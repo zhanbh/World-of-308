@@ -630,3 +630,29 @@ saSkills.cancel();
 saSkills.cast('earth', 1);
 assert.equal(saSkills.isSuperArmor, true, '崩山裂地斩 has super armor');
 console.log('PASS: monster attack cadence, friendly telegraph, recovery pause, and warrior super armor state');
+
+// ST14-01: CombatModel death state, deathIndex, input blocking, and reset
+const deathModel = new CombatModel();
+assert.equal(deathModel.lifeState, 'alive');
+assert.equal(deathModel.deathIndex, 0);
+// Take lethal hit
+deathModel.takeHit(10, false, 150);
+assert.equal(deathModel.hp, 0, 'HP clamped to 0');
+assert.equal(deathModel.lifeState, 'dead', 'lifeState transitions to dead');
+assert.equal(deathModel.deathIndex, 1, 'deathIndex increments on death');
+assert.equal(deathModel.isDead, true, 'isDead getter returns true');
+assert.equal(deathModel.takeHit(10, false, 50), false, 'dead player cannot take hit again');
+
+deathModel.press();
+assert.equal(deathModel.held, false, 'dead player cannot press attack');
+assert.equal(deathModel.stage, -1, 'dead player cannot start combo');
+
+deathModel.update(0.016, 1.0, 0);
+assert.equal(deathModel.moving, false, 'dead player cannot move');
+assert.equal(deathModel.running, false, 'dead player cannot run');
+
+deathModel.reset();
+assert.equal(deathModel.hp, 100, 'reset restores full HP');
+assert.equal(deathModel.lifeState, 'alive', 'reset restores alive state');
+assert.equal(deathModel.deathIndex, 0, 'reset clears deathIndex');
+console.log('PASS: ST14-01 CombatModel death state, deathIndex tracking, input blocking, and reset');

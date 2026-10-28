@@ -18,8 +18,12 @@ export function advanceEarthSimulation({movement,basic,cross,bengshan,badao,eart
  let m=structuredClone(movement),b=structuredClone(basic),s=structuredClone(cross),g=structuredClone(bengshan),d=structuredClone(badao),e=structuredClone(earth),ts=structuredClone(targets),mp=stats.mp;const events:CombatEvent[]=[];
  const cancel=()=>{b.cast=null;b.held=false;b.buffered=false;b.nextStage=0;b.comboExpiresUs=null;};
  for(let tick=fromTick;tick<toTick;tick++){
-  if(resources)mp=resources(tick,mp);const at=inputs.filter(i=>i.tick===tick),priorCross=s.cast,priorBengshan=g.cast,priorBadao=d.cast,priorEarth=e.cast,before=b.cast;
+  if(resources && !jointDead?.(tick))mp=resources(tick,mp);const at=inputs.filter(i=>i.tick===tick),priorCross=s.cast,priorBengshan=g.cast,priorBadao=d.cast,priorEarth=e.cast,before=b.cast;
   for(const item of at.filter(i=>i.kind==='item'||i.kind==='trinket').sort((a,b)=>a.seq-b.seq)){
+   if(jointDead?.(tick)){
+    events.push({kind:'actionRejected',eventId:`combat:dead:${context.challengeId}:${context.sceneEpoch}:${tick}:${item.seq}`,actorId:context.actorId,tick,seq:item.seq,targetId:null,damage:null,critical:null,code:'DEAD'});
+    continue;
+   }
    if(supply){const res=supply(item as ActionInput&({kind:'item'}|{kind:'trinket'}),tick);if(res.event)events.push(res.event);if(res.mp!==undefined)mp=res.mp;}
   }
   const effectiveStats=activeStats?activeStats(tick,stats):stats;
@@ -58,7 +62,7 @@ export function advanceEarthSimulation({movement,basic,cross,bengshan,badao,eart
    if(input.kind==='skill'&&input.skillId==='badao'){runBadao([input]);continue;}
    if(input.kind==='skill'&&input.skillId==='cross'){runCross([input]);continue;}
    if(input.kind==='skill'&&input.skillId==='bengshan'){runBengshan([input]);continue;}
-   if((current.controlled||s.cast||g.cast||d.cast||e.cast)&&input.kind==='basic'){if(input.pressed)events.push({kind:'actionRejected',eventId:`combat:skill-lock:${context.challengeId}:${context.sceneEpoch}:${tick}:${input.seq}`,actorId:context.actorId,tick,seq:input.seq,targetId:null,damage:null,critical:null,code:current.controlled?'CONTROLLED':'ACTION_LOCKED'});else b.held=false;continue;}
+   if((current.controlled||s.cast||g.cast||d.cast||e.cast)&&input.kind==='basic'){if(input.pressed)events.push({kind:'actionRejected',eventId:`combat:skill-lock:${context.challengeId}:${context.sceneEpoch}:${tick}:${input.seq}`,actorId:context.actorId,tick,seq:input.seq,targetId:null,damage:null,critical:null,code:jointDead?.(tick)?'DEAD':(current.controlled?'CONTROLLED':'ACTION_LOCKED')});else b.held=false;continue;}
    const result=advanceBasicCombat(b,[input],tick,tick,basicConfig,{...context,processUntilUs:boundary},base,ts,random);b=result.state;ts=result.targets;events.push(...result.events);
   }
   for(const lane of [s,g,d,e])lane.effects=lane.effects.filter(effect=>effect.kind!=='bleed'||ts.some(t=>t.actorIndex===effect.targetIndex&&t.lifeState==='alive')) as any;
@@ -66,5 +70,5 @@ export function advanceEarthSimulation({movement,basic,cross,bengshan,badao,eart
   const action=before??b.cast,locked=current.controlled||Boolean(priorCross||s.cast||priorBengshan||g.cast||priorBadao||d.cast||priorEarth||e.cast)||action!==null&&BigInt(tick)*10000n*BigInt(action.moveUnlockUs.d)<BigInt(action.moveUnlockUs.n);
   m=advanceMovement(m,at.filter(i=>i.kind==='move'),tick,tick+1,locked?{...movementConfig,walkSpeed:0,runSpeed:0,ySpeed:0}:movementConfig).state;
  }
- if(resources)mp=resources(toTick,mp);return {movement:m,state:b,cross:s,bengshan:g,badao:d,earth:e,targets:ts,events,mp};
+ if(resources && !jointDead?.(toTick))mp=resources(toTick,mp);return {movement:m,state:b,cross:s,bengshan:g,badao:d,earth:e,targets:ts,events,mp};
 }

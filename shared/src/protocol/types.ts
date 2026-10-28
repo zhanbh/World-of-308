@@ -5,7 +5,7 @@ export type Loot =
   | { kind: 'material'; templateId: string; quantity: number }
   | { kind: 'equipment'; templateId: string; quality: Quality; itemLevel: number };
 export type BattleEvent =
-  | { seq: number; kind: 'playerDied'; deathIndex: number; simulationTick: number; lingeringSourceIds: string[] }
+  | { seq: number; kind: 'playerDied'; deathIndex: number; simulationTick: number; lingeringSourceIds: string[]; deathOccurredAt?: number }
   | { seq: number; kind: 'monsterKilled'; spawnId: string; simulationTick: number;
       source: { kind: 'direct' | 'dot' | 'lingering'; sourceId: string } };
 export type Payloads = {

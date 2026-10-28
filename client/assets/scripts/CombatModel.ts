@@ -36,6 +36,11 @@ export class CombatModel {
     moving = false;
     running = false;
     hp = 100;
+    maxHp = 100;
+    lifeState: 'alive' | 'dead' = 'alive';
+    deathIndex = 0;
+    deathDeadline = 0;
+    get isDead(): boolean { return this.lifeState === 'dead' || this.hp <= 0; }
     hitStun = 0;
     invulnerable = 0;
     knockX = 0;
@@ -44,7 +49,7 @@ export class CombatModel {
     private impactSent = false;
 
     press(): void {
-        if (this.hp <= 0 || this.hitStun > 0) return;
+        if (this.hp <= 0 || this.lifeState === 'dead' || this.hitStun > 0) return;
         this.held = true;
         if (this.stage < 0) this.begin();
         else if ((tuning.durations[this.stage] - this.elapsed) / this.stageAttackSpeed <= tuning.bufferWindow) this.buffered = true;
@@ -53,12 +58,23 @@ export class CombatModel {
     release(): void { this.held = false; }
 
     reset(): void {
-        this.attackMotionDelta = 0;        this.elapsed = 0;
+        this.attackMotionDelta = 0;
+        this.elapsed = 0;
         this.stage = -1;
         this.nextStage = 0;
         this.windowLeft = 0;
         this.buffered = false;
         this.held = false;
+        this.moving = false;
+        this.running = false;
+        this.hp = this.maxHp;
+        this.lifeState = 'alive';
+        this.deathIndex = 0;
+        this.deathDeadline = 0;
+        this.hitStun = 0;
+        this.invulnerable = 0;
+        this.knockX = 0;
+        this.facing = 1;
     }
 
     private begin(): void {
@@ -112,6 +128,11 @@ export class CombatModel {
             ? Math.sign(axisX) * (Math.min(1, Math.abs(axisX)) - tuning.deadZone) / (1 - tuning.deadZone) : 0;
         const y = Math.abs(axisY) > tuning.deadZone ? Math.sign(axisY) : 0;
         this.invulnerable = Math.max(0, this.invulnerable - dt);
+        if (this.hp <= 0 || this.lifeState === 'dead') {
+            this.moving = false;
+            this.running = false;
+            return;
+        }
         if (this.hitStun > 0) {
             this.hitStun = Math.max(0, this.hitStun - dt);
             this.x = Math.max(-218, Math.min(218, this.x + this.knockX * dt));
@@ -134,9 +155,22 @@ export class CombatModel {
     superArmor = false;
 
     takeHit(fromX: number, superArmor = this.superArmor, damage = 10): boolean {
-        if (this.invulnerable > 0 || this.hp <= 0) return false;
+        if (this.invulnerable > 0 || this.hp <= 0 || this.lifeState === 'dead') return false;
+        const prevHp = this.hp;
         this.hp = Math.max(0, this.hp - damage);
         this.invulnerable = 0.90;
+        if (this.hp === 0 && prevHp > 0) {
+            this.lifeState = 'dead';
+            this.deathIndex++;
+            this.stage = -1;
+            this.nextStage = 0;
+            this.windowLeft = 0;
+            this.buffered = false;
+            this.held = false;
+            this.moving = false;
+            this.running = false;
+            return true;
+        }
         if (superArmor) {
             // Super Armor: player takes damage and receives invulnerability frames,
             // but is NOT interrupted: no hitStun, no knockX displacement, no combo reset.
