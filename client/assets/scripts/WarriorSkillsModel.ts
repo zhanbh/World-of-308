@@ -189,6 +189,10 @@ export class WarriorSkillsModel {
         this.lastImpact = null;
     }
 
+    resetCooldowns(): void {
+        this.cooldowns = { cross: 0, bengshan: 0, badao: 0, earth: 0 };
+    }
+
     reset(): void {
         this.cancel();
         this.casts = []; this.currentCast = null;

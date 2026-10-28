@@ -315,4 +315,159 @@ assert.equal(hud.quickSlots[1].status, 'disabled');
 assert.equal(hud.trinket.status, 'disabled');
 console.log('PASS: SupplyHUDModel hotzones, lifecycle state machine, and trigger actions verified (ST13-04)');
 
+// --- Test 9: ST14-04 DeathReviveHUDModel 死亡复活 HUD、状态机与视觉交互 ---
+const deathFile = path.join(__dirname, '../assets/scripts/DeathReviveHUDModel.ts');
+const deathOutput = transpileCode(fs.readFileSync(deathFile, 'utf8'), deathFile);
+assert.ok(deathOutput.length > 0, 'DeathReviveHUDModel.ts should transpile without syntax errors');
+
+const deathMod = { exports: {} };
+new Function('module', 'exports', deathOutput)(deathMod, deathMod.exports);
+const { DeathReviveHUDModel, DEATH_REVIVE_LAYOUT } = deathMod.exports;
+
+// 1. Layout & Non-overlapping Button Geometries
+const layout = DEATH_REVIVE_LAYOUT;
+assert.equal(layout.panel.width, 320);
+assert.equal(layout.panel.height, 220);
+assert.equal(layout.progressBar.width, 240);
+assert.equal(layout.progressBar.height, 16);
+assert.equal(layout.reviveButton.x, -75);
+assert.equal(layout.reviveButton.width, 120);
+assert.equal(layout.leaveButton.x, 75);
+assert.equal(layout.leaveButton.width, 120);
+const reviveRight = layout.reviveButton.x + layout.reviveButton.width / 2;
+const leaveLeft = layout.leaveButton.x - layout.leaveButton.width / 2;
+assert.ok(leaveLeft > reviveRight, 'Revive and Leave buttons must have a clear gap without overlap');
+
+// 2. Hit Testing
+const dHud = new DeathReviveHUDModel();
+assert.equal(dHud.hitTest(-75, -55), null, 'Hidden HUD must not hit any button');
+assert.equal(dHud.hitTest(75, -55), null);
+
+dHud.open(1, 10000, 10000, 10, false, 0);
+assert.equal(dHud.hitTest(-75, -55), 'revive', 'Center of revive button must hit revive');
+assert.equal(dHud.hitTest(-75 - 55, -55), 'revive', 'Inside revive button bounds must hit revive');
+assert.equal(dHud.hitTest(75, -55), 'leave', 'Center of leave button must hit leave');
+assert.equal(dHud.hitTest(75 + 55, -55), 'leave', 'Inside leave button bounds must hit leave');
+assert.equal(dHud.hitTest(0, 0), null, 'Center of dialog background must not hit button');
+assert.equal(dHud.hitTest(-300, -200), null, 'Outside dialog must not hit button');
+
+// 3. 10.0s Smooth Countdown Progress & Label
+assert.equal(dHud.status, 'active');
+assert.equal(dHud.remainingSec, 10);
+assert.equal(dHud.progress, 1.0);
+assert.equal(dHud.countdownLabel, '剩余时间: 10.0s');
+const step1 = dHud.update(2.45);
+assert.equal(step1.timeoutTriggered, false);
+assert.ok(Math.abs(dHud.remainingSec - 7.55) < 0.001);
+assert.ok(Math.abs(dHud.progress - 0.755) < 0.001);
+assert.equal(dHud.countdownLabel, '剩余时间: 7.5s');
+
+// 4. Realtime Backpack Emblem & Limit Display
+assert.equal(dHud.emblemLabel, '复活纹章: 10');
+assert.equal(dHud.limitLabel, '普通副本无次数限制');
+assert.equal(dHud.reviveButtonState, 'ready');
+assert.equal(dHud.reviveButtonLabel, '立即复活');
+
+// Special dungeon 3-revive limit
+dHud.open(1, 10000, 10000, 10, true, 1);
+assert.equal(dHud.limitLabel, '剩余复活: 2/3');
+assert.equal(dHud.remainingRevives, 2);
+
+// Reached limit in special dungeon
+dHud.open(1, 10000, 10000, 10, true, 3);
+assert.equal(dHud.limitLabel, '剩余复活: 0/3');
+assert.equal(dHud.reviveButtonState, 'disabled');
+assert.equal(dHud.disabledReason, 'REVIVE_LIMIT_REACHED');
+assert.equal(dHud.reviveButtonLabel, '已达上限 (3/3)');
+assert.deepEqual(dHud.onReviveClicked(), { success: false, reason: 'REVIVE_LIMIT_REACHED' });
+
+// Out of emblems
+dHud.open(1, 10000, 10000, 0, false, 0);
+assert.equal(dHud.reviveButtonState, 'disabled');
+assert.equal(dHud.disabledReason, 'EMBLEM_NOT_ENOUGH');
+assert.equal(dHud.reviveButtonLabel, '纹章不足');
+assert.deepEqual(dHud.onReviveClicked(), { success: false, reason: 'EMBLEM_NOT_ENOUGH' });
+
+// 5. Revive State Machine & Golden Aura Feedback
+dHud.open(1, 10000, 10000, 5, false, 0);
+assert.equal(dHud.reviveButtonState, 'ready');
+const clickRes = dHud.onReviveClicked();
+assert.deepEqual(clickRes, { success: true });
+assert.equal(dHud.status, 'submittingRevive');
+assert.equal(dHud.reviveButtonState, 'submitting');
+assert.equal(dHud.reviveButtonLabel, '复活中...');
+assert.equal(dHud.leaveButtonState, 'ready', 'Player may still choose to leave while revive is in-flight');
+
+// Error tolerance
+dHud.onReviveFailed('RATE_LIMITED', '请求过快，请稍后');
+assert.equal(dHud.status, 'active');
+assert.equal(dHud.promptMessage, '请求过快，请稍后');
+assert.equal(dHud.reviveButtonState, 'ready');
+
+// Successful revive triggers golden aura for 2.0s
+dHud.onReviveClicked();
+dHud.onReviveSuccess();
+assert.equal(dHud.status, 'revived');
+assert.equal(dHud.isVisible, false, 'HUD closes upon revival');
+assert.equal(dHud.goldenAura.active, true);
+assert.equal(dHud.goldenAura.elapsedSec, 0);
+dHud.update(1.0);
+assert.equal(dHud.goldenAura.active, true);
+assert.equal(dHud.goldenAura.elapsedSec, 1.0);
+dHud.update(1.2);
+assert.equal(dHud.goldenAura.active, false, 'Golden aura expires after 2.0s');
+
+// 6. Timeout & Abandon Exit with Fade-Out
+dHud.open(2, 10000, 500, 5, false, 0);
+const timeoutStep = dHud.update(0.6);
+assert.equal(timeoutStep.timeoutTriggered, true);
+assert.equal(dHud.status, 'submittingLeave');
+assert.ok(dHud.promptMessage && dHud.promptMessage.includes('超时'));
+
+dHud.onLeaveSuccess();
+assert.equal(dHud.status, 'exited');
+assert.equal(dHud.fadeOut.active, true);
+assert.equal(dHud.fadeOut.alpha, 0);
+const fadeStep1 = dHud.update(0.25);
+assert.equal(fadeStep1.fadeOutComplete, false);
+assert.ok(Math.abs(dHud.fadeOut.alpha - 0.5) < 0.001);
+const fadeStep2 = dHud.update(0.3);
+assert.equal(fadeStep2.fadeOutComplete, true);
+assert.equal(dHud.fadeOut.alpha, 1.0);
+
+// Manual abandon
+dHud.open(3, 10000, 8000, 5, false, 0);
+const abandonRes = dHud.onLeaveClicked();
+assert.deepEqual(abandonRes, { success: true });
+assert.equal(dHud.status, 'submittingLeave');
+assert.equal(dHud.leaveButtonLabel, '退出中...');
+
+// 7. Snapshot Synchronization
+dHud.syncFromSnapshot({
+    isDead: true,
+    deathIndex: 4,
+    deathDeadline: 1700000010000,
+    now: 1700000002000,
+    emblemCount: 8,
+    isSpecialDungeon: true,
+    paidRevives: 2,
+    maxRevives: 3
+});
+assert.equal(dHud.status, 'active');
+assert.equal(dHud.remainingMs, 8000);
+assert.equal(dHud.remainingRevives, 1);
+assert.equal(dHud.emblemCount, 8);
+
+dHud.syncFromSnapshot({
+    isDead: false,
+    deathIndex: 4,
+    deathDeadline: 0,
+    now: 1700000005000,
+    emblemCount: 8,
+    isSpecialDungeon: true,
+    paidRevives: 2
+});
+assert.equal(dHud.status, 'hidden');
+console.log('PASS: DeathReviveHUDModel hotzones, 10s countdown, emblem/limit display, aura, and fadeout verified (ST14-04)');
+
 console.log('\nALL UI MODEL TESTS PASSED (100% SUCCESS)');

@@ -32,6 +32,8 @@
     "../client/assets/scripts/net/LoadingCoordinator.ts",
     "../client/assets/scripts/net/ActivationCoordinator.ts",
     "../client/assets/scripts/net/RecoveryCoordinator.ts",
-    "../client/assets/scripts/net/MovementCoordinator.ts"
+    "../client/assets/scripts/net/MovementCoordinator.ts",
+    "../client/assets/scripts/SupplyHUDModel.ts",
+    "../client/assets/scripts/DeathReviveHUDModel.ts"
   ]
 }

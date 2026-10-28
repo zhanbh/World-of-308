@@ -74,11 +74,17 @@
       ],
       "accepted_revision": "0b71b596809e98cebf6bc3fc101a0bfbdb7045ee9fce0db712a2d12b2502978d",
       "path": "docs/stories/warrior-loop/st14/issues/04-cocos-revive-hud.md",
-      "state": "planned",
+      "state": "verified",
       "worktree": ".worktrees/st14-04-cocos-hud",
       "branch": "feat/st14-04-cocos-hud",
-      "evidence": [],
-      "local_checks": "pending",
+      "commit": "6ae60f368d18b6e680a67120ae866d9c6ca160b4",
+      "evidence": [
+        "client/tools/check-ui-model.cjs (Test 9 DeathReviveHUDModel passed)",
+        "client/tools/check-model.cjs (Model checks passed)",
+        "tools/check-all.cjs (7/7 gates passed, 633/633 backend tests passed)",
+        "docs/reviews/st14-04-verification.md"
+      ],
+      "local_checks": "passed",
       "platform_status": "gap"
     },
     {

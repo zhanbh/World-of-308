@@ -17,6 +17,7 @@ import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../s
 import { MovementCoordinator } from './net/MovementCoordinator';
 import { connectChallengePreview } from './net/ChallengePreview';
 import { SupplyHUDModel, SUPPLY_BUTTON_LAYOUT } from './SupplyHUDModel';
+import { DeathReviveHUDModel, DEATH_REVIVE_LAYOUT } from './DeathReviveHUDModel';
 
 const { ccclass } = _decorator;
 const stages = ['交叉斩', '反手上挑', '下劈收势'];
@@ -39,6 +40,16 @@ export class Prototype extends Component {
     private skillLabels: Partial<Record<WarriorSkillId, Label>> = {};
     private supplyHUD = new SupplyHUDModel();
     private supplyLabels: Label[] = [];
+    private deathReviveHUD = new DeathReviveHUDModel();
+    private deathTitleLabel!: Label;
+    private deathCountdownLabel!: Label;
+    private deathEmblemLabel!: Label;
+    private deathLimitLabel!: Label;
+    private deathReviveBtnLabel!: Label;
+    private deathLeaveBtnLabel!: Label;
+    private deathPromptLabel!: Label;
+    private sandboxEmblemCount = 10;
+    private paidRevives = 0;
     private localCooldowns: { cooldownId: string; readyAtTick: number }[] = [];
     private localBuffs: { buffId: string; templateRef: string; endsAtTick: number }[] = [];
     private localElapsedTicks = 0;
@@ -124,6 +135,25 @@ export class Prototype extends Component {
             this.text('3 药', SUPPLY_BUTTON_LAYOUT.slot2.x, SUPPLY_BUTTON_LAYOUT.slot2.y, 11, 56),
             this.text('饰品 T', SUPPLY_BUTTON_LAYOUT.trinket.x, SUPPLY_BUTTON_LAYOUT.trinket.y, 11, 56),
         ];
+        this.deathTitleLabel = this.text('角色阵亡', 0, 72, 20, 300);
+        this.deathTitleLabel.color = new Color(255, 210, 75);
+        this.deathTitleLabel.node.active = false;
+        this.deathCountdownLabel = this.text('剩余时间: 10.0s', 0, 35, 12, 240);
+        this.deathCountdownLabel.color = new Color(255, 255, 255);
+        this.deathCountdownLabel.node.active = false;
+        this.deathEmblemLabel = this.text('复活纹章: 10', 0, 5, 14, 280);
+        this.deathEmblemLabel.color = new Color(225, 240, 245);
+        this.deathEmblemLabel.node.active = false;
+        this.deathLimitLabel = this.text('普通副本无次数限制', 0, -18, 13, 280);
+        this.deathLimitLabel.color = new Color(165, 190, 200);
+        this.deathLimitLabel.node.active = false;
+        this.deathPromptLabel = this.text('', 0, -36, 12, 300);
+        this.deathPromptLabel.color = new Color(255, 140, 100);
+        this.deathPromptLabel.node.active = false;
+        this.deathReviveBtnLabel = this.text('立即复活', DEATH_REVIVE_LAYOUT.reviveButton.x, DEATH_REVIVE_LAYOUT.reviveButton.y, 14, 120);
+        this.deathReviveBtnLabel.node.active = false;
+        this.deathLeaveBtnLabel = this.text('放弃退出', DEATH_REVIVE_LAYOUT.leaveButton.x, DEATH_REVIVE_LAYOUT.leaveButton.y, 14, 120);
+        this.deathLeaveBtnLabel.node.active = false;
         this.text('受击预警 · 走出红框躲避', 0, -208, 16);
         this.speedLabels = attackSpeedTuning.presets.map((rate, index) => this.text(`${rate}×`, -360 + index * 70, 126, 12, 64));
         this.restartEncounter();
@@ -271,6 +301,15 @@ export class Prototype extends Component {
         const id = e.getID();
         if (id === null) return;
         const p = this.point(e);
+        if (this.deathReviveHUD.isVisible) {
+            const hit = this.deathReviveHUD.hitTest(p.x, p.y);
+            if (hit === 'revive') {
+                this.handleDeathRevive();
+            } else if (hit === 'leave') {
+                this.handleDeathLeave();
+            }
+            return;
+        }
         if (p.x >= 390 && p.x <= 470 && p.y >= 180 && p.y <= 215) { void this.toggleBank(); return; }
         if (p.x >= 390 && p.x <= 470 && p.y >= 225 && p.y <= 260) { void this.toggleInventory(); return; }
         if (this.inventoryConnecting || this.bankConnecting) return;
@@ -312,6 +351,7 @@ export class Prototype extends Component {
     }
 
     private touchMove(e: EventTouch): void {
+        if (this.deathReviveHUD.isVisible) return;
         if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting) return;
         if (e.getID() !== this.stickId) return;
         const p = this.point(e);
@@ -322,6 +362,7 @@ export class Prototype extends Component {
     }
 
     private touchEnd(e: EventTouch): void {
+        if (this.deathReviveHUD.isVisible) return;
         if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting) return;
         const id = e.getID();
         if (id === null) return;
@@ -334,6 +375,11 @@ export class Prototype extends Component {
     }
 
     private keyDown(e: EventKeyboard): void {
+        if (this.deathReviveHUD.isVisible) {
+            if (e.keyCode === KeyCode.ENTER) { this.handleDeathRevive(); return; }
+            if (e.keyCode === KeyCode.ESCAPE) { this.handleDeathLeave(); return; }
+            return;
+        }
         if (e.keyCode === KeyCode.KEY_C) { void this.toggleChallenge(); return; }
         if (e.keyCode === KeyCode.KEY_N) { if (!this.bankKeyHeld) { this.bankKeyHeld = true; void this.toggleBank(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
@@ -470,7 +516,16 @@ export class Prototype extends Component {
             if (encounterState === 'victory') {
                 this.roomCleared = true;
             }
-            if (encounterState !== 'fighting' && !this.roomCleared) {
+            if (this.model.isDead) {
+                this.clearInput();
+                this.skills.cancel();
+                this.skillEffects.clear();
+                if (this.deathReviveHUD.status === 'hidden') {
+                    const emblems = this.getEmblemCount();
+                    const isSpecial = this.dungeonKind === 'rift';
+                    this.deathReviveHUD.open(this.model.deathIndex, 10000, 10000, emblems, isSpecial, this.paidRevives);
+                }
+            } else if (encounterState !== 'fighting' && !this.roomCleared) {
                 this.clearInput(); this.model.reset(); this.model.moving = this.model.running = false;
                 this.skills.cancel(); this.skillEffects.clear();
             }
@@ -481,13 +536,20 @@ export class Prototype extends Component {
             }
             this.accumulator -= fixedDt;
         }
+        const { timeoutTriggered, fadeOutComplete } = this.deathReviveHUD.update(dt);
+        if (timeoutTriggered) {
+            this.handleDeathTimeout();
+        }
+        if (fadeOutComplete) {
+            this.handleFadeOutComplete();
+        }
         const round = this.encounter.state;
         const dName = this.dungeonKind === 'first' ? '首本牛头怪' : (this.dungeonKind === 'workshop' ? '失落工坊' : '裂隙遗址');
-        this.roundLabel.string = this.roomCleared
+        this.roundLabel.string = this.deathReviveHUD.isVisible ? '' : (this.roomCleared
             ? (this.roomNo < 6 ? '清场完毕！走向右侧绿门换房 ▶' : '通关！已击败首领！按R重新挑战')
             : round === 'fighting' ? ''
             : round === 'ready' ? `[${dName} R${this.roomNo + 1}/7] 点击场地上方开始战斗 / Enter`
-            : `战败 · ${this.encounter.elapsed.toFixed(1)}秒 · 点击再挑战 / Enter`;
+            : `战败 · ${this.encounter.elapsed.toFixed(1)}秒 · 点击再挑战 / Enter`);
         this.draw(dt);
         const aliveEnemies = this.enemies.filter(e => e.state !== 'dead').length;
         this.healthStatus.string = `战士 ${this.healthBar(this.model.hp, 100)}   法力 ${this.skills.mana}/${this.skills.maxMana}   [${dName} R${this.roomNo + 1}/7] 敌怪: ${aliveEnemies}/${this.enemies.length}`;
@@ -502,6 +564,7 @@ export class Prototype extends Component {
         this.syncSupplyHUD();
         this.updateSkillLabels();
         this.updateSupplyLabels();
+        this.updateDeathReviveLabels();
     }
 
     private rect(g: Graphics, x: number, y: number, w: number, h: number, color: string): void {
@@ -539,6 +602,18 @@ export class Prototype extends Component {
             g.strokeColor = new Color(255, 215, 0, 220);
             g.lineWidth = 2.0;
             g.ellipse(x, y + this.skills.jumpLift + 16, 14, 22);
+            g.stroke();
+        }
+        if (this.deathReviveHUD.goldenAura.active) {
+            const aura = this.deathReviveHUD.goldenAura;
+            const alpha = Math.max(0, 1 - aura.elapsedSec / aura.durationSec);
+            g.strokeColor = new Color(255, 215, 0, Math.round(230 * alpha));
+            g.lineWidth = 3.0;
+            g.ellipse(x, y + this.skills.jumpLift + 16, aura.radius * 0.7, aura.radius);
+            g.stroke();
+            g.strokeColor = new Color(255, 245, 160, Math.round(180 * alpha));
+            g.lineWidth = 1.5;
+            g.ellipse(x, y + this.skills.jumpLift + 16, aura.radius * 0.5, aura.radius * 0.7);
             g.stroke();
         }
         this.actor.node.setPosition((x + shake.x) * 2, (y + this.skills.jumpLift + shake.y) * 2);
@@ -636,6 +711,7 @@ export class Prototype extends Component {
         ui.fillColor = tColor;
         ui.circle(supplyGeom.trinket.x, supplyGeom.trinket.y, supplyGeom.trinket.radius);
         ui.fill();
+        this.drawDeathReviveHUD(dt);
     }
 
     private restartEncounter(): void {
@@ -648,6 +724,12 @@ export class Prototype extends Component {
         this.bodyAnimation.reset();
         this.lastImpactId = this.model.impactId;
         this.roomCleared = false;
+        if (this.roomNo === 0) {
+            this.paidRevives = 0;
+        }
+        this.deathReviveHUD.status = 'hidden';
+        this.deathReviveHUD.goldenAura.active = false;
+        this.deathReviveHUD.fadeOut.active = false;
 
         if (this.mode === 1) {
             this.enemies = [new EnemyModel(76, 2, 0, 3, enemyKnockdownPolicies.normal, 'ordinary', 'humanoid', 'melee')];
@@ -682,6 +764,159 @@ export class Prototype extends Component {
             this.enemyLabels.push(this.text('', 0, 0, 11, 80));
         }
         this.enemyLabels.forEach((lbl, index) => lbl.node.active = index < this.enemies.length);
+    }
+
+    private getEmblemCount(): number {
+        const inv = this.inventoryPanel?.coordinator?.state;
+        if (inv?.backpack?.slots) {
+            let count = 0;
+            for (const s of inv.backpack.slots) {
+                if (s && s.kind === 'stack' && (s.templateRef.id === 'item:resurrection-emblem' || s.templateRef.id === 'resurrection-emblem')) {
+                    count += s.quantity;
+                }
+            }
+            return count;
+        }
+        return this.sandboxEmblemCount;
+    }
+
+    private handleDeathRevive(): void {
+        const result = this.deathReviveHUD.onReviveClicked();
+        if (!result.success) return;
+        this.finishReviveLocally();
+    }
+
+    private finishReviveLocally(): void {
+        const count = this.getEmblemCount();
+        const isSpecial = this.dungeonKind === 'rift';
+        if (count <= 0) {
+            this.deathReviveHUD.onReviveFailed('EMBLEM_NOT_ENOUGH');
+            return;
+        }
+        if (isSpecial && this.paidRevives >= 3) {
+            this.deathReviveHUD.onReviveFailed('REVIVE_LIMIT_REACHED');
+            return;
+        }
+        if (this.sandboxEmblemCount > 0) {
+            this.sandboxEmblemCount--;
+        }
+        this.paidRevives++;
+        this.deathReviveHUD.emblemCount = this.getEmblemCount();
+        this.deathReviveHUD.paidRevives = this.paidRevives;
+        this.model.hp = this.model.maxHp;
+        this.model.lifeState = 'alive';
+        this.model.invulnerable = 2.0;
+        this.skills.mana = this.skills.maxMana;
+        this.skills.resetCooldowns();
+        this.encounter.state = 'fighting';
+        this.deathReviveHUD.onReviveSuccess();
+    }
+
+    private handleDeathLeave(): void {
+        const result = this.deathReviveHUD.onLeaveClicked();
+        if (!result.success) return;
+        this.deathReviveHUD.onLeaveSuccess();
+    }
+
+    private handleDeathTimeout(): void {
+        this.deathReviveHUD.onLeaveSuccess();
+    }
+
+    private handleFadeOutComplete(): void {
+        this.deathReviveHUD.status = 'hidden';
+        this.deathReviveHUD.fadeOut.active = false;
+        this.roomNo = 0;
+        this.restartEncounter();
+    }
+
+    private drawDeathReviveHUD(dt: number): void {
+        const ui = this.controls;
+        if (this.deathReviveHUD.isVisible) {
+            ui.fillColor = new Color(0, 0, 0, 160);
+            ui.rect(-480, -270, 960, 540);
+            ui.fill();
+
+            const p = DEATH_REVIVE_LAYOUT.panel;
+            ui.fillColor = new Color(24, 34, 40, 240);
+            ui.rect(p.x - p.width / 2, p.y - p.height / 2, p.width, p.height);
+            ui.fill();
+            ui.strokeColor = new Color(70, 95, 110, 255);
+            ui.lineWidth = 2.0;
+            ui.rect(p.x - p.width / 2, p.y - p.height / 2, p.width, p.height);
+            ui.stroke();
+
+            const pb = DEATH_REVIVE_LAYOUT.progressBar;
+            ui.fillColor = new Color(15, 22, 26, 230);
+            ui.rect(pb.x - pb.width / 2, pb.y - pb.height / 2, pb.width, pb.height);
+            ui.fill();
+
+            const fillWidth = Math.max(0, pb.width * this.deathReviveHUD.progress);
+            const barColor = this.deathReviveHUD.remainingSec > 3
+                ? new Color(60, 180, 120, 230)
+                : new Color(230, 80, 60, 240);
+            ui.fillColor = barColor;
+            ui.rect(pb.x - pb.width / 2, pb.y - pb.height / 2, fillWidth, pb.height);
+            ui.fill();
+
+            const rb = DEATH_REVIVE_LAYOUT.reviveButton;
+            let rbColor = new Color(45, 115, 85, 230);
+            if (this.deathReviveHUD.reviveButtonState === 'disabled') {
+                rbColor = new Color(55, 65, 70, 200);
+            } else if (this.deathReviveHUD.reviveButtonState === 'submitting') {
+                rbColor = new Color(170, 130, 40, 230);
+            }
+            ui.fillColor = rbColor;
+            ui.rect(rb.x - rb.width / 2, rb.y - rb.height / 2, rb.width, rb.height);
+            ui.fill();
+            ui.strokeColor = this.deathReviveHUD.reviveButtonState === 'ready' ? new Color(90, 200, 150, 230) : new Color(75, 85, 90, 180);
+            ui.lineWidth = 1.5;
+            ui.rect(rb.x - rb.width / 2, rb.y - rb.height / 2, rb.width, rb.height);
+            ui.stroke();
+
+            const lb = DEATH_REVIVE_LAYOUT.leaveButton;
+            let lbColor = new Color(125, 50, 50, 230);
+            if (this.deathReviveHUD.leaveButtonState === 'submitting') {
+                lbColor = new Color(170, 130, 40, 230);
+            }
+            ui.fillColor = lbColor;
+            ui.rect(lb.x - lb.width / 2, lb.y - lb.height / 2, lb.width, lb.height);
+            ui.fill();
+            ui.strokeColor = new Color(190, 80, 80, 230);
+            ui.lineWidth = 1.5;
+            ui.rect(lb.x - lb.width / 2, lb.y - lb.height / 2, lb.width, lb.height);
+            ui.stroke();
+        }
+
+        if (this.deathReviveHUD.fadeOut.active) {
+            ui.fillColor = new Color(0, 0, 0, Math.round(this.deathReviveHUD.fadeOut.alpha * 255));
+            ui.rect(-480, -270, 960, 540);
+            ui.fill();
+        }
+    }
+
+    private updateDeathReviveLabels(): void {
+        const visible = this.deathReviveHUD.isVisible;
+        this.deathTitleLabel.node.active = visible;
+        this.deathCountdownLabel.node.active = visible;
+        this.deathEmblemLabel.node.active = visible;
+        this.deathLimitLabel.node.active = visible;
+        this.deathReviveBtnLabel.node.active = visible;
+        this.deathLeaveBtnLabel.node.active = visible;
+        this.deathPromptLabel.node.active = visible && !!this.deathReviveHUD.promptMessage;
+
+        if (!visible) return;
+
+        this.deathCountdownLabel.string = this.deathReviveHUD.countdownLabel;
+        this.deathEmblemLabel.string = this.deathReviveHUD.emblemLabel;
+        this.deathLimitLabel.string = this.deathReviveHUD.limitLabel;
+        this.deathReviveBtnLabel.string = this.deathReviveHUD.reviveButtonLabel;
+        this.deathReviveBtnLabel.color = this.deathReviveHUD.reviveButtonState === 'disabled'
+            ? new Color(130, 140, 145)
+            : new Color(255, 255, 255);
+        this.deathLeaveBtnLabel.string = this.deathReviveHUD.leaveButtonLabel;
+        if (this.deathReviveHUD.promptMessage) {
+            this.deathPromptLabel.string = this.deathReviveHUD.promptMessage;
+        }
     }
 
     private resolveMeleeHit(): void {
