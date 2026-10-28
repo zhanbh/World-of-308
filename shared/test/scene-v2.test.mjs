@@ -20,6 +20,8 @@ test('challenge and ground commands express intent and cannot supply drops or re
     { ...base, command: 'challenge.start', payload: { characterId: 'c', rolePlayEpoch: 1, dungeonId: 'd', difficultyId: 'normal', entryContext: 'entry' } },
     { ...base, command: 'challenge.revive', payload: { challengeId: 'h', deathIndex: 1 } },
     { ...base, command: 'challenge.leave', payload: { challengeId: 'h', reason: 'finishLoot' } },
+    { ...base, command: 'challenge.leave', payload: { challengeId: 'h', reason: 'abandon' } },
+    { ...base, command: 'challenge.leave', payload: { challengeId: 'h', reason: 'deathTimeout' } },
     { ...base, command: 'drop.collect', payload: { challengeId: 'h', roomNo: 1, dropId: 'drop', roomToken: 'room', sceneEpoch: 1, positionHint: { x: 0, y: 0 } } },
   ];
   for (const value of examples) {

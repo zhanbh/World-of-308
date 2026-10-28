@@ -273,7 +273,7 @@ export function parseSimulationResponse(value: unknown) {
 
 const startRequest = object({ ...write, command: enumOf('challenge.start'), payload: object({ characterId: text(), rolePlayEpoch: integer(1), dungeonId: text(64), difficultyId: text(64), entryContext: text() }) });
 const reviveRequest = object({ ...write, command: enumOf('challenge.revive'), payload: object({ challengeId: text(), deathIndex: integer(1) }) });
-const leaveRequest = object({ ...write, command: enumOf('challenge.leave'), payload: object({ challengeId: text(), reason: enumOf('abandon', 'finishLoot') }) });
+const leaveRequest = object({ ...write, command: enumOf('challenge.leave'), payload: object({ challengeId: text(), reason: enumOf('abandon', 'finishLoot', 'deathTimeout') }) });
 const collectRequest = object({ ...write, command: enumOf('drop.collect'), payload: object({ challengeId: text(), roomNo: integer(0, 6), dropId: text(), roomToken: text(), sceneEpoch: integer(1), positionHint: object({ x: position, y: position }) }) });
 export function parseChallengeRequest(value: unknown) {
   const command = value && typeof value === 'object' ? Object.getOwnPropertyDescriptor(value, 'command')?.value : undefined;

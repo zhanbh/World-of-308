@@ -200,7 +200,11 @@ export class GameService {
     }
     this.version(challenge.version, cmd.expected?.challengeVersion);
     if (cmd.command === 'challenge.leave') {
-      requireRule(cmd.payload.reason === (challenge.result === 'completed' ? 'finishLoot' : 'abandon'), 'INVALID_ARGUMENT');
+      if (challenge.result === 'completed') {
+        requireRule(cmd.payload.reason === 'finishLoot', 'INVALID_ARGUMENT');
+      } else {
+        requireRule(cmd.payload.reason === 'abandon' || cmd.payload.reason === 'deathTimeout', 'INVALID_ARGUMENT');
+      }
       this.close(tx, account, challenge); return { result: challenge.result, sceneState: 'closed', restore: 'fullHpMp' };
     }
     requireRule(challenge.lease.mode === 'connected', 'RECOVERY_REQUIRED');

@@ -14,7 +14,7 @@ export type Payloads = {
   'challenge.enterRoom': { challengeId: string; roomNo: number };
   'challenge.reportEvents': { challengeId: string; roomToken: string; firstSeq: number; events: BattleEvent[] };
   'challenge.revive': { challengeId: string; deathIndex: number };
-  'challenge.leave': { challengeId: string; reason: 'abandon' | 'finishLoot' };
+  'challenge.leave': { challengeId: string; reason: 'abandon' | 'finishLoot' | 'deathTimeout' };
   'drop.collect': { challengeId: string; roomNo: number; dropId: string; sceneEpoch: number };
   'reward.claim': { sourceId: string };
 };

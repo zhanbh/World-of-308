@@ -53,11 +53,17 @@
       ],
       "accepted_revision": "0f854820d62e43545cfd9c7ffcbc38b47853214e4c624dbb6c1a09db826bcb32",
       "path": "docs/stories/warrior-loop/st14/issues/03-failure-timeout-and-exit.md",
-      "state": "planned",
+      "state": "verified",
       "worktree": ".worktrees/st14-03-timeout-exit",
       "branch": "feat/st14-03-timeout-exit",
-      "evidence": [],
-      "local_checks": "pending",
+      "commit": "e392bfe3a5d33778cfafadb38f6d4ebd3f54cf59",
+      "evidence": [
+        "backend/test/challenge-leave-timeout.test.mjs (8/8 passed)",
+        "shared/test/scene-v2.test.mjs (6/6 passed)",
+        "tools/check-all.cjs (7/7 gates passed, 633/633 backend tests passed)",
+        "docs/reviews/st14-03-verification.md"
+      ],
+      "local_checks": "passed",
       "platform_status": "gap"
     },
     {

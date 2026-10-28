@@ -30,7 +30,7 @@ export function validateCommand(input: unknown): asserts input is Command {
     else if (field !== 'events') requireRule(text(v), 'INVALID_ARGUMENT');
   }
   if (input.command === 'character.create') requireRule(['warrior','hunter'].includes(input.payload.classId as string), 'INVALID_ARGUMENT');
-  if (input.command === 'challenge.leave') requireRule(['abandon','finishLoot'].includes(input.payload.reason as string), 'INVALID_ARGUMENT');
+  if (input.command === 'challenge.leave') requireRule(['abandon','finishLoot','deathTimeout'].includes(input.payload.reason as string), 'INVALID_ARGUMENT');
   if (input.command !== 'challenge.reportEvents') return;
   const events = input.payload.events;
   requireRule(Array.isArray(events) && events.length > 0 && events.length <= 32, 'INVALID_ARGUMENT');

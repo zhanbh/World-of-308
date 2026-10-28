@@ -175,6 +175,7 @@ export class ChallengeService {
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.activateRoom') return this.activate(raw);
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.prepareRoom') return this.prepare(raw);
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.revive') return this.revive(raw);
+        if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.leave') return this.leave(raw);
         const command = parseChallengeRequest(raw);
         if (command.command !== 'challenge.start')
             throw new TypeError('UNSUPPORTED_COMMAND');
@@ -755,7 +756,11 @@ export class ChallengeService {
                 try {
                     const h = await tx.get<EntryChallenge>(command.payload.challengeId);
                     requireValue(h?.schemaVersion === 2 && h.id === command.payload.challengeId && h.accountId === a.id, 'NOT_FOUND_OR_FORBIDDEN');
-                    if (await this.expire(tx, a, h, now)) return reply({ status: 'rejected', code: 'DEADLINE_EXPIRED' });
+                    if (await this.expire(tx, a, h, now)) {
+                        const result = reply({ status: 'rejected', code: 'DEADLINE_EXPIRED' });
+                        tx.set(opId, { schemaVersion: 2, id: opId, accountId: a.id, command: command.command, tuple, result });
+                        return result;
+                    }
                     requireValue(h.result === 'active' && h.sceneState !== 'closed', 'CHALLENGE_TERMINAL');
                     requireValue(h.sessionId === command.sessionId && a.activeChallengeId === h.id && a.openSceneChallengeId === h.id, 'VERSION_CONFLICT');
                     for (const exp of command.expected) {
@@ -916,6 +921,197 @@ export class ChallengeService {
                     };
                     budget(receipt, 16384);
                     budget(journal, 131072);
+                    tx.set(opId, receipt);
+                    tx.set(journalId, journal);
+                    return result;
+                } catch (e) {
+                    if (!(e instanceof Refusal) && !(e instanceof TypeError)) throw e;
+                    const result = reply({ status: 'rejected', code: e instanceof Refusal ? e.message : 'CONFIG_NOT_READY' });
+                    tx.set(opId, { schemaVersion: 2, id: opId, accountId: a.id, command: command.command, tuple, result });
+                    return result;
+                }
+            });
+        } catch (e) {
+            if (e instanceof CommitUnknown) return reply({ status: 'unknown', code: 'RESULT_UNKNOWN' });
+            if (e instanceof StoreUnavailable) return reply({ status: 'rejected', code: 'SERVICE_UNAVAILABLE' });
+            if (e instanceof Refusal) return reply({ status: 'rejected', code: e.message });
+            throw e;
+        }
+    }
+
+    private async leave(raw: unknown) {
+        const command = parseChallengeRequest(raw);
+        if (command.command !== 'challenge.leave') throw new TypeError('UNSUPPORTED_COMMAND');
+        let now = this.options.clock.now();
+        const reply = (outcome: unknown, replayed = false) => parseChallengeResponse({
+            protocolVersion: 2,
+            command: command.command,
+            operationId: command.operationId,
+            serverTime: now,
+            replayed,
+            outcome
+        });
+        try {
+            const caller = await this.caller();
+            return await this.options.store.run(async (tx) => {
+                now = this.options.clock.now();
+                const a = await this.authorize(tx, caller, command.sessionId, command.sessionEpoch);
+                const opId = await loginKey('assetOp', [a.id, command.operationId]);
+                const journalId = await loginKey('assetJournal', [a.id, command.operationId]);
+                const tuple = canonical(command);
+                const previous = await tx.get<{
+                    schemaVersion: number;
+                    id: string;
+                    accountId: string;
+                    command: string;
+                    tuple: string;
+                    result: unknown;
+                }>(opId);
+                if (previous) {
+                    requireValue(previous.schemaVersion === 2 && previous.id === opId && previous.accountId === a.id && previous.command === command.command, 'SERVICE_UNAVAILABLE');
+                    requireValue(previous.tuple === tuple, 'OPERATION_MISMATCH');
+                    let original;
+                    try { original = parseChallengeResponse(previous.result); } catch { throw new Refusal('SERVICE_UNAVAILABLE'); }
+                    requireValue(original.command === command.command && original.operationId === command.operationId, 'SERVICE_UNAVAILABLE');
+                    return parseChallengeResponse({ ...original, serverTime: now, replayed: true });
+                }
+                requireValue(await tx.get(journalId) === undefined, 'SERVICE_UNAVAILABLE');
+                try {
+                    const h = await tx.get<EntryChallenge>(command.payload.challengeId);
+                    requireValue(h?.schemaVersion === 2 && h.id === command.payload.challengeId && h.accountId === a.id, 'NOT_FOUND_OR_FORBIDDEN');
+                    requireValue(h.sceneState !== 'closed', 'SCENE_CLOSED');
+                    requireValue(h.sessionId === command.sessionId, 'VERSION_CONFLICT');
+                    for (const exp of command.expected) {
+                        if (exp.kind === 'challenge' && exp.id === h.id) requireValue(exp.version === h.version, 'VERSION_CONFLICT');
+                        if (exp.kind === 'account' && exp.id === a.id) requireValue(exp.version === a.version, 'VERSION_CONFLICT');
+                    }
+                    if (command.payload.reason === 'finishLoot') {
+                        requireValue(h.result === 'completed', 'INVALID_ARGUMENT');
+                    } else if (command.payload.reason === 'abandon' || command.payload.reason === 'deathTimeout') {
+                        // abandon and deathTimeout are valid for ending active or failed challenges
+                    } else {
+                        throw new Refusal('INVALID_ARGUMENT');
+                    }
+
+                    const c = await tx.get<CharacterEntity>(h.characterId);
+                    requireValue(c?.schemaVersion === 2 && c.id === h.characterId && c.accountId === a.id, 'NOT_FOUND_OR_FORBIDDEN');
+                    for (const exp of command.expected) {
+                        if (exp.kind === 'character' && exp.id === c.id) requireValue(exp.version === c.version, 'VERSION_CONFLICT');
+                    }
+
+                    const d = this.dungeon(h.dungeonId);
+                    const currentWindow = Math.floor((now + 8 * 3600000) / (4 * 3600000));
+                    const snapshot = h.staminaSnapshot;
+                    const staminaValue = currentWindow > snapshot.entryRefillWindow ? 308 : snapshot.remaining;
+                    const settledStamina = { value: staminaValue, refillWindow: currentWindow };
+
+                    const nextResult = h.result === 'active' ? 'failed' as const : h.result;
+                    const nextH: EntryChallenge = {
+                        ...h,
+                        version: increment(h.version),
+                        result: nextResult,
+                        sceneState: 'closed',
+                        ...(h.roomPhase !== undefined ? { roomPhase: 'closed' as const } : {}),
+                        staminaSettlement: {
+                            state: 'settled',
+                            settledAt: now,
+                            loadedRefillWindow: currentWindow,
+                            loadedValue: staminaValue,
+                            sourceChallengeId: h.id
+                        }
+                    };
+                    delete nextH.deathDeadline;
+                    delete nextH.transitionClock;
+                    delete nextH.readyTicket;
+                    delete nextH.recoveryTicket;
+
+                    if (h.sceneEpoch > 0) {
+                        const headerId = await loginKey('cpHeader', [h.id]);
+                        const header = await tx.get<RoomCheckpointHeader>(headerId);
+                        if (header) {
+                            tx.set(header.id, {
+                                ...header,
+                                revision: increment(header.revision),
+                                acceptingInputs: false,
+                                closedAt: now
+                            });
+                        }
+                    }
+
+                    const returnAnchorRef = `town:${d.mapId}:${d.dungeonId}`;
+                    const staminaSettlementRef = `stamina:${h.id}:${now}`;
+
+                    const nextC: CharacterEntity = {
+                        ...c,
+                        version: increment(c.version),
+                        stamina: settledStamina,
+                        location: { kind: 'town', mapId: d.mapId, anchorId: `dungeon:${d.dungeonId}` },
+                        townState: {
+                            mapRef: d.mapId,
+                            sceneEpoch: c.townState?.sceneEpoch ?? 1,
+                            position: { x: d.anchor.x, y: d.anchor.y },
+                            velocityRemainder: 0,
+                            acceptedSeq: 0,
+                            locationRevision: increment(c.townState?.locationRevision ?? 0),
+                            updatedAt: now
+                        },
+                        updatedAt: now
+                    };
+                    delete nextC.staminaReservation;
+                    delete (nextC as any).trinketCooldownUntil;
+
+                    const nextA: LoginAccount = {
+                        ...a,
+                        version: increment(a.version),
+                        writeRevision: increment(a.writeRevision),
+                        updatedAt: now
+                    };
+                    if (nextA.activeChallengeId === h.id) delete nextA.activeChallengeId;
+                    if (nextA.openSceneChallengeId === h.id) delete nextA.openSceneChallengeId;
+
+                    const resultVersions = [
+                        { kind: 'account' as const, id: a.id, version: nextA.version },
+                        { kind: 'character' as const, id: c.id, version: nextC.version },
+                        { kind: 'challenge' as const, id: h.id, version: nextH.version }
+                    ];
+
+                    const result = reply({
+                        status: 'committed',
+                        data: {
+                            challengeId: h.id,
+                            result: nextResult,
+                            sceneState: 'closed',
+                            returnAnchorRef,
+                            staminaSettlementRef
+                        },
+                        resultVersions
+                    });
+
+                    const receipt = { schemaVersion: 2, id: opId, accountId: a.id, command: command.command, tuple, result };
+                    const journal = {
+                        schemaVersion: 2,
+                        id: journalId,
+                        accountId: a.id,
+                        operationId: command.operationId,
+                        command: command.command,
+                        occurredAt: now,
+                        tuple,
+                        changes: [{
+                            kind: 'challengeLeave',
+                            challengeId: h.id,
+                            reason: command.payload.reason,
+                            result: nextResult,
+                            characterId: c.id
+                        }]
+                    };
+
+                    budget(nextH, 131072);
+                    budget(receipt, 16384);
+                    budget(journal, 131072);
+
+                    tx.set(nextA.id, nextA);
+                    tx.set(nextC.id, nextC);
+                    tx.set(nextH.id, nextH);
                     tx.set(opId, receipt);
                     tx.set(journalId, journal);
                     return result;
