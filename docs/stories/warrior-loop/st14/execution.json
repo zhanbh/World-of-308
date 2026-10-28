@@ -33,11 +33,16 @@
       ],
       "accepted_revision": "4b4010b47eca258b3d4f263a1cf1c3a691bd22dce0c32b5e56bbcab50d82f13a",
       "path": "docs/stories/warrior-loop/st14/issues/02-manual-revive-emblem-transaction.md",
-      "state": "planned",
+      "state": "verified",
       "worktree": ".worktrees/st14-02-revive-transaction",
       "branch": "feat/st14-02-revive-transaction",
-      "evidence": [],
-      "local_checks": "pending",
+      "commit": "f91a7bd55eaec5fdf1963e62f02cb85ea0622a55",
+      "evidence": [
+        "backend/test/challenge-revive.test.mjs (9/9 passed)",
+        "tools/check-all.cjs (7/7 gates passed, 625/625 backend tests passed)",
+        "docs/reviews/st14-02-verification.md"
+      ],
+      "local_checks": "passed",
       "platform_status": "gap"
     },
     {
