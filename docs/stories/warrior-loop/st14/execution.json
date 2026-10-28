@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st14",
-  "status": "ready",
+  "status": "completed",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "4577f28",
   "approved_spec_revision": "185485034092276f09746a8100b3501bb015bfbc7d04a56625cad3fbb74f3d12",
@@ -95,11 +95,16 @@
       ],
       "accepted_revision": "3ad2cf0a05ff5dc8583546c98ac453a8a62cb9f5c3bfeb12db59118158bfa993",
       "path": "docs/stories/warrior-loop/st14/issues/05-joint-acceptance-and-review.md",
-      "state": "planned",
+      "state": "verified",
       "worktree": ".worktrees/st14-05-joint-acceptance",
       "branch": "feat/st14-05-joint-acceptance",
-      "evidence": [],
-      "local_checks": "pending",
+      "commit": "1e914b46c075778a877543202976b92f7ecfaae1",
+      "evidence": [
+        "backend/test/challenge-death-joint-acceptance.test.mjs (6/6 passed)",
+        "tools/check-all.cjs (7/7 gates passed, 639/639 backend tests passed)",
+        "docs/reviews/st14-local-verification.md"
+      ],
+      "local_checks": "passed",
       "platform_status": "gap"
     }
   ],
