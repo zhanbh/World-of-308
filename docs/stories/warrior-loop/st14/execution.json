@@ -1,0 +1,99 @@
+{
+  "feature": "warrior-loop-st14",
+  "status": "ready",
+  "integration_branch": "feat-1.0.0",
+  "baseline_head": "4577f28",
+  "approved_spec_revision": "185485034092276f09746a8100b3501bb015bfbc7d04a56625cad3fbb74f3d12",
+  "approval_evidence": "好的，开始",
+  "tickets": [
+    {
+      "id": "ST14-01",
+      "number": 1,
+      "blocked_by": [],
+      "accepted_revision": "67ff75d2f28b0491209d326df01740a8dc6f3cd95e167ca12b541b644eb3bdb4",
+      "path": "docs/stories/warrior-loop/st14/issues/01-authoritative-death-window.md",
+      "state": "planned",
+      "worktree": ".worktrees/st14-01-death-window",
+      "branch": "feat/st14-01-death-window",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST14-02",
+      "number": 2,
+      "blocked_by": [
+        1
+      ],
+      "accepted_revision": "4b4010b47eca258b3d4f263a1cf1c3a691bd22dce0c32b5e56bbcab50d82f13a",
+      "path": "docs/stories/warrior-loop/st14/issues/02-manual-revive-emblem-transaction.md",
+      "state": "planned",
+      "worktree": ".worktrees/st14-02-revive-transaction",
+      "branch": "feat/st14-02-revive-transaction",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST14-03",
+      "number": 3,
+      "blocked_by": [
+        2
+      ],
+      "accepted_revision": "0f854820d62e43545cfd9c7ffcbc38b47853214e4c624dbb6c1a09db826bcb32",
+      "path": "docs/stories/warrior-loop/st14/issues/03-failure-timeout-and-exit.md",
+      "state": "planned",
+      "worktree": ".worktrees/st14-03-timeout-exit",
+      "branch": "feat/st14-03-timeout-exit",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST14-04",
+      "number": 4,
+      "blocked_by": [
+        3
+      ],
+      "accepted_revision": "0b71b596809e98cebf6bc3fc101a0bfbdb7045ee9fce0db712a2d12b2502978d",
+      "path": "docs/stories/warrior-loop/st14/issues/04-cocos-revive-hud.md",
+      "state": "planned",
+      "worktree": ".worktrees/st14-04-cocos-hud",
+      "branch": "feat/st14-04-cocos-hud",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST14-05",
+      "number": 5,
+      "blocked_by": [
+        4
+      ],
+      "accepted_revision": "3ad2cf0a05ff5dc8583546c98ac453a8a62cb9f5c3bfeb12db59118158bfa993",
+      "path": "docs/stories/warrior-loop/st14/issues/05-joint-acceptance-and-review.md",
+      "state": "planned",
+      "worktree": ".worktrees/st14-05-joint-acceptance",
+      "branch": "feat/st14-05-joint-acceptance",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    }
+  ],
+  "testing_seams": [
+    "pure death and timing kernel",
+    "real MemoryStore and revive transaction consistency",
+    "DeathReviveModel and Cocos playable revive HUD"
+  ],
+  "jira_actions": false,
+  "platform_device_status": "pending",
+  "plan_commit": "a23938c",
+  "baseline_checks": {
+    "head": "4577f28",
+    "node": "24.22.1",
+    "typescript": "5.8.2",
+    "all": "7/7",
+    "backend_harness_executions": 616,
+    "scope": "local regression only; no cloud SDK or device acceptance"
+  }
+}
