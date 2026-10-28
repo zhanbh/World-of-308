@@ -226,12 +226,24 @@ export class GameService {
     }
     if (cmd.command === 'challenge.revive') {
       requireRule(challenge.result === 'active', 'CHALLENGE_TERMINAL'); requireRule(challenge.lifeState === 'dead' && challenge.deathIndex === cmd.payload.deathIndex, 'NOT_DEAD');
+      requireRule(!challenge.deathDeadline || this.clock.now() <= challenge.deathDeadline, 'DEADLINE_EXPIRED');
       requireRule(!config.special || challenge.paidRevives < config.reviveLimit!, 'REVIVE_LIMIT_REACHED');
       const bag = (await this.owned<Backpack>(tx, 'bag', character.id, account));
-      const index = bag.slots.findIndex(s => s.kind === 'stack' && s.templateId === 'resurrection-emblem' && s.quantity > 0);
-      requireRule(index >= 0, 'EMBLEM_NOT_ENOUGH'); const stack = bag.slots[index];
+      const eligible = bag.slots
+        .map((s, index) => ({ s, index }))
+        .filter(({ s }) => s.kind === 'stack' && s.templateId === 'resurrection-emblem' && s.quantity > 0)
+        .sort((a, b) => {
+          const kindA = a.s.kind === 'stack' ? (a.s.binding ?? 'none') : 'none';
+          const kindB = b.s.kind === 'stack' ? (b.s.binding ?? 'none') : 'none';
+          const rankA = kindA === 'character' ? 0 : kindA === 'account' ? 1 : 2;
+          const rankB = kindB === 'character' ? 0 : kindB === 'account' ? 1 : 2;
+          return rankA - rankB || a.index - b.index;
+        });
+      requireRule(eligible.length > 0, 'EMBLEM_NOT_ENOUGH');
+      const chosen = eligible[0];
+      const stack = bag.slots[chosen.index];
       requireRule(stack.kind === 'stack', 'EMBLEM_NOT_ENOUGH');
-      if (--stack.quantity === 0) bag.slots.splice(index, 1); bag.version++;
+      if (--stack.quantity === 0) bag.slots.splice(chosen.index, 1); bag.version++;
       challenge.lifeState = 'alive'; delete challenge.deathDeadline; challenge.paidRevives++; challenge.protectionUntil = this.clock.now() + 2000; challenge.version++;
       tx.set(key('bag', character.id), bag); tx.set(key('challenge', challenge.id), challenge);
       return { challengeVersion: challenge.version, containerVersion: bag.version, restore: 'fullHpMp', protectionUntil: challenge.protectionUntil,

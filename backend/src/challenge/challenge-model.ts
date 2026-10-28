@@ -68,7 +68,10 @@ export interface EntryChallenge extends HandoffChallenge {
     purpleRoomNo: number | null;
     purpleEncounter: {roomNo:number;spawnId:string;templateRef:string} | null;
     confirmedKills?: import('../../../shared/src/encounter-layout.ts').ConfirmedKillFact[];
-    lifeState: 'alive';
+    lifeState: 'alive' | 'dead';
+    deathIndex?: number;
+    paidRevives?: number;
+    protectionUntil?: number;
     roomCount: 7;
     acceptedSeq: number;
     acceptedTick: number;
