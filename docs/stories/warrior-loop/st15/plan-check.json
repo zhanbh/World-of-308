@@ -1,0 +1,16 @@
+{
+  "feature": "warrior-loop-st15",
+  "status": "passed",
+  "kind": "repository-local-not-external-gate",
+  "spec_hash": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+  "source_hash_matches": true,
+  "ticket_count": 5,
+  "ids_unique": true,
+  "coverage": [
+    "ST15"
+  ],
+  "dependencies_exist": true,
+  "acyclic": true,
+  "acceptance_present": true,
+  "human_approval": true
+}

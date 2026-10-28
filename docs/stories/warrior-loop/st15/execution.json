@@ -1,0 +1,97 @@
+{
+  "feature": "warrior-loop-st15",
+  "status": "ready",
+  "integration_branch": "feat-1.0.0",
+  "baseline_head": "4243635",
+  "approved_spec_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+  "approval_evidence": "好的，开始吧",
+  "tickets": [
+    {
+      "id": "ST15-01",
+      "number": 1,
+      "blocked_by": [],
+      "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "path": "docs/stories/warrior-loop/st15/issues/01-room-drop-collect.md",
+      "state": "planned",
+      "worktree": ".worktrees/st15-01-room-drop",
+      "branch": "feat/st15-01-room-drop",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST15-02",
+      "number": 2,
+      "blocked_by": [
+        1
+      ],
+      "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "path": "docs/stories/warrior-loop/st15/issues/02-boss-clear-and-free-revive.md",
+      "state": "planned",
+      "worktree": ".worktrees/st15-02-boss-clear",
+      "branch": "feat/st15-02-boss-clear",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST15-03",
+      "number": 3,
+      "blocked_by": [
+        2
+      ],
+      "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "path": "docs/stories/warrior-loop/st15/issues/03-terminal-settlement-and-routing.md",
+      "state": "planned",
+      "worktree": ".worktrees/st15-03-terminal-settlement",
+      "branch": "feat/st15-03-terminal-settlement",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST15-04",
+      "number": 4,
+      "blocked_by": [
+        3
+      ],
+      "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "path": "docs/stories/warrior-loop/st15/issues/04-cocos-loot-and-victory-hud.md",
+      "state": "planned",
+      "worktree": ".worktrees/st15-04-cocos-loot-hud",
+      "branch": "feat/st15-04-cocos-loot-hud",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    },
+    {
+      "id": "ST15-05",
+      "number": 5,
+      "blocked_by": [
+        4
+      ],
+      "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "path": "docs/stories/warrior-loop/st15/issues/05-joint-acceptance-and-budget-review.md",
+      "state": "planned",
+      "worktree": ".worktrees/st15-05-joint-acceptance",
+      "branch": "feat/st15-05-joint-acceptance",
+      "evidence": [],
+      "local_checks": "pending",
+      "platform_status": "gap"
+    }
+  ],
+  "testing_seams": [
+    "pure drop and pick kernel",
+    "real MemoryStore and terminal clear transaction consistency",
+    "LootModel and Cocos victory clear HUD"
+  ],
+  "jira_actions": false,
+  "platform_device_status": "pending",
+  "plan_commit": "4243635",
+  "baseline_checks": {
+    "head": "4243635",
+    "clean_git": true,
+    "check_all_passed": true,
+    "backend_test_count": 639
+  }
+}
