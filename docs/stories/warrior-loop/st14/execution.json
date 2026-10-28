@@ -12,11 +12,17 @@
       "blocked_by": [],
       "accepted_revision": "67ff75d2f28b0491209d326df01740a8dc6f3cd95e167ca12b541b644eb3bdb4",
       "path": "docs/stories/warrior-loop/st14/issues/01-authoritative-death-window.md",
-      "state": "planned",
+      "state": "verified",
       "worktree": ".worktrees/st14-01-death-window",
       "branch": "feat/st14-01-death-window",
-      "evidence": [],
-      "local_checks": "pending",
+      "commit": "7fdc856f6f6c994313f1751d202e49d1fd549af7",
+      "evidence": [
+        "shared/test/death-window-joint.test.mjs (4/4 passed)",
+        "client/tools/check-model.cjs (CombatModel death assertions passed)",
+        "tools/check-all.cjs (7/7 gates passed, 616/616 backend tests passed)",
+        "docs/reviews/st14-01-verification.md"
+      ],
+      "local_checks": "passed",
       "platform_status": "gap"
     },
     {
