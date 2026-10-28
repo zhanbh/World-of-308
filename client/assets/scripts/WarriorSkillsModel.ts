@@ -73,6 +73,9 @@ export class WarriorSkillsModel {
     private cooldowns: Record<WarriorSkillId, number> = { cross: 0, bengshan: 0, badao: 0, earth: 0 };
 
     get casting(): boolean { return this.activeId !== null; }
+    get isSuperArmor(): boolean {
+        return this.activeId === 'bengshan' || this.activeId === 'badao' || this.activeId === 'earth';
+    }
     get canMove(): boolean { return !this.activeId || this.elapsed >= skillAnimations[this.activeId].moveAt; }
     get progress(): number | null {
         if (!this.activeId) return null;

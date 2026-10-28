@@ -578,3 +578,55 @@ const finishTime = round.elapsed; round.update(10, 0, [foe]); assert.equal(round
 round.reset(); round.start(); round.update(.1, 0, [foe]); assert.equal(round.state, 'defeat', 'death wins simultaneous finish');
 round.reset(); assert.equal(round.state, 'ready'); assert.equal(round.elapsed, 0);
 console.log('PASS: bleed cadence/expiry/refresh/FPS/periodic feedback/death and ready/fighting/result/retry rounds');
+
+// Monster attack cadence & cooldown tests
+const pTest = new CombatModel();
+pTest.x = 0; pTest.y = 0;
+const ordinaryFoe = new EnemyModel(20, 0, 501, 100, undefined, 'ordinary', 'humanoid', 'melee');
+ordinaryFoe.update(0.01, pTest, false);
+assert.equal(ordinaryFoe.state, 'telegraph', 'enters telegraph when player within trigger range');
+assert.ok(Math.abs(ordinaryFoe.timer - 1.20) < 1e-4, 'ordinary monster telegraph is 1.20s friendly warning');
+
+// Advance telegraph (1.20s) to trigger attack
+for (let i = 0; i < 120; i++) ordinaryFoe.update(0.01, pTest, false);
+assert.equal(ordinaryFoe.state, 'attack', 'transitions to attack after telegraph finishes');
+assert.equal(pTest.hp, 90, 'ordinary monster deals 10 damage instead of 22');
+
+// Advance attack (0.18s) to recover
+for (let i = 0; i < 18; i++) ordinaryFoe.update(0.01, pTest, false);
+assert.equal(ordinaryFoe.state, 'recover', 'transitions to explicit recover state');
+assert.ok(ordinaryFoe.timer > 0.30, 'recover state has explicit pause timer');
+
+// Advance recover (0.35s) to approach
+for (let i = 0; i < 35; i++) ordinaryFoe.update(0.01, pTest, false);
+assert.equal(ordinaryFoe.state, 'approach', 'transitions to approach after recovery finishes');
+assert.ok(ordinaryFoe.attackCooldown > 2.0, 'sets 2.2s attack cooldown to prevent spamming');
+
+// Within trigger range, but attackCooldown blocks immediate telegraph
+ordinaryFoe.update(0.01, pTest, false);
+assert.equal(ordinaryFoe.state, 'approach', 'does not instantly re-attack during attackCooldown');
+
+// Super Armor tests on CombatModel and WarriorSkillsModel
+const saModel = new CombatModel();
+saModel.superArmor = true;
+saModel.stage = 1;
+assert.equal(saModel.takeHit(10), true);
+assert.equal(saModel.hp, 90);
+assert.equal(saModel.hitStun, 0, 'super armor prevents hit stun');
+assert.equal(saModel.knockX, 0, 'super armor prevents knockback displacement');
+assert.equal(saModel.stage, 1, 'super armor prevents action combo interruption');
+
+const saSkills = new WarriorSkillsModel();
+assert.equal(saSkills.isSuperArmor, false, 'idle has no super armor');
+saSkills.cast('cross', 1);
+assert.equal(saSkills.isSuperArmor, false, '十字斩 has NO super armor');
+saSkills.cancel();
+saSkills.cast('bengshan', 1);
+assert.equal(saSkills.isSuperArmor, true, '崩山击 has super armor');
+saSkills.cancel();
+saSkills.cast('badao', 1);
+assert.equal(saSkills.isSuperArmor, true, '拔刀斩 has super armor');
+saSkills.cancel();
+saSkills.cast('earth', 1);
+assert.equal(saSkills.isSuperArmor, true, '崩山裂地斩 has super armor');
+console.log('PASS: monster attack cadence, friendly telegraph, recovery pause, and warrior super armor state');

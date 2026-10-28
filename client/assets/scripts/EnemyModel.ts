@@ -69,6 +69,7 @@ export class EnemyModel {
     private deathPose = 0;
     phase: 1 | 2 = 1;
     superArmor = false;
+    attackCooldown = 0;
 
     constructor(
         public x: number,
@@ -109,6 +110,7 @@ export class EnemyModel {
 
     update(dt: number, player: CombatModel, passive = false): void {
         this.flash = Math.max(0, this.flash - dt);
+        if (this.attackCooldown > 0) this.attackCooldown = Math.max(0, this.attackCooldown - dt);
         if (this.state === 'dead') { this.deathAge += dt; return; }
         if (this.bleedLeft > 0) {
             const activeTime = Math.min(dt, this.bleedLeft);
@@ -137,8 +139,14 @@ export class EnemyModel {
                 if (this.state === 'knockedDown') {
                     this.state = 'gettingUp';
                     this.timer = Math.max(0, enemyFeedbackTuning.riseDuration - (dt - oldTimer));
-                    if (this.timer <= 0) this.state = 'approach';
-                } else this.state = 'approach';
+                    if (this.timer <= 0) {
+                        this.state = 'approach';
+                        this.attackCooldown = Math.max(this.attackCooldown, 0.8);
+                    }
+                } else {
+                    this.state = 'approach';
+                    this.attackCooldown = Math.max(this.attackCooldown, 0.8);
+                }
             }
             return;
         }
@@ -164,7 +172,8 @@ export class EnemyModel {
                 const reachX = this.role === 'boss' ? 72 : this.role === 'elite' ? 64 : (this.tacticsKind === 'ranged' ? 36 : 40);
                 const reachY = this.role === 'boss' ? 36 : this.role === 'elite' ? 32 : (this.tacticsKind === 'ranged' ? 24 : 18);
                 if (Math.abs(player.x - this.lockedX) <= reachX && Math.abs(player.y - this.lockedY) <= reachY) {
-                    player.takeHit(this.x);
+                    const dmg = this.role === 'boss' ? 18 : this.role === 'elite' ? 14 : 10;
+                    player.takeHit(this.x, player.superArmor, dmg);
                 }
             }
             return;
@@ -175,19 +184,28 @@ export class EnemyModel {
                 const facing = Math.sign(this.lockedX - this.x) || 1;
                 this.x += facing * 140 * dt;
                 if (Math.abs(player.x - this.x) <= 28 && Math.abs(player.y - this.y) <= 20) {
-                    player.takeHit(this.x);
+                    const dmg = this.role === 'boss' ? 18 : this.role === 'elite' ? 14 : 10;
+                    player.takeHit(this.x, player.superArmor, dmg);
                 }
             }
-            if (this.timer <= 0) this.state = this.state === 'attack' ? 'recover' : 'approach';
+            if (this.timer <= 0) {
+                if (this.state === 'attack') {
+                    this.state = 'recover';
+                    this.timer = this.tacticsKind === 'charge' ? 0.5 : 0.35;
+                } else {
+                    this.state = 'approach';
+                    this.attackCooldown = this.role === 'boss' ? 2.0 : (this.role === 'elite' ? 2.6 : (this.tacticsKind === 'ranged' ? 2.5 : 2.2));
+                }
+            }
             return;
         }
 
         const dx = player.x - this.x, dy = player.y - this.y;
         const triggerX = this.tacticsKind === 'ranged' ? 120 : (this.tacticsKind === 'charge' ? 130 : (this.role === 'boss' ? 65 : 43));
         const triggerY = this.tacticsKind === 'ranged' ? 30 : (this.tacticsKind === 'charge' ? 24 : (this.role === 'boss' ? 32 : 20));
-        if (Math.abs(dx) <= triggerX && Math.abs(dy) <= triggerY) {
+        if (this.attackCooldown <= 0 && Math.abs(dx) <= triggerX && Math.abs(dy) <= triggerY) {
             this.state = 'telegraph';
-            this.timer = this.tacticsKind === 'ranged' ? 0.8 : (this.role === 'boss' ? 0.9 : (this.role === 'elite' ? 0.75 : 0.68));
+            this.timer = this.tacticsKind === 'ranged' ? 1.30 : (this.role === 'boss' ? 1.40 : (this.role === 'elite' ? 1.25 : 1.20));
             this.lockedX = player.x;
             this.lockedY = player.y;
             return;
@@ -221,6 +239,7 @@ export class EnemyModel {
             // Super armor: immune to control interruptions and displacement
             return;
         }
+        this.attackCooldown = Math.max(this.attackCooldown, 0.8);
         if (this.knockdownPolicy.allowed && options.knockdownFor && options.knockdownFor > 0) {
             this.timer = this.state === 'knockedDown' ? Math.max(this.timer, options.knockdownFor) : options.knockdownFor;
             this.state = 'knockedDown';

@@ -131,10 +131,17 @@ export class CombatModel {
         }
     }
 
-    takeHit(fromX: number): boolean {
+    superArmor = false;
+
+    takeHit(fromX: number, superArmor = this.superArmor, damage = 10): boolean {
         if (this.invulnerable > 0 || this.hp <= 0) return false;
-        this.hp = Math.max(0, this.hp - 22);
-        this.invulnerable = 0.72;
+        this.hp = Math.max(0, this.hp - damage);
+        this.invulnerable = 0.90;
+        if (superArmor) {
+            // Super Armor: player takes damage and receives invulnerability frames,
+            // but is NOT interrupted: no hitStun, no knockX displacement, no combo reset.
+            return true;
+        }
         this.hitStun = 0.24;
         this.knockX = this.x >= fromX ? 105 : -105;
         this.stage = -1;

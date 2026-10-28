@@ -443,6 +443,8 @@ export class Prototype extends Component {
                     }
                 }
             }
+            const isPlayerSuperArmor = this.skills.isSuperArmor;
+            this.model.superArmor = isPlayerSuperArmor;
             if (this.skills.casting && this.skills.canMove && (x !== 0 || y !== 0)) this.skills.cancel();
             this.model.update(fixedDt, this.skills.casting ? 0 : x, this.skills.casting ? 0 : y);
             this.model.x = Math.max(-218, Math.min(218, this.model.x + this.skills.motionDelta));
@@ -455,8 +457,12 @@ export class Prototype extends Component {
             const hpBeforeEnemies = this.model.hp;
             for (const enemy of this.enemies) enemy.update(fixedDt, this.model);
             this.feedback.observe(this.enemies);
-            if (this.model.hp < hpBeforeEnemies) this.skills.cancel();
-            if (this.model.hp <= 0) this.skillEffects.clear();
+            if (this.model.hp <= 0) {
+                this.skills.cancel();
+                this.skillEffects.clear();
+            } else if (this.model.hp < hpBeforeEnemies && !isPlayerSuperArmor) {
+                this.skills.cancel();
+            }
             this.bodyAnimation.update(fixedDt, this.model.moving, this.model.running, this.model.hitStun,
                 this.skills.casting || this.model.stage >= 0, this.model.hp <= 0);
             this.encounter.update(fixedDt, this.model.hp, this.enemies);
@@ -487,7 +493,7 @@ export class Prototype extends Component {
         this.healthStatus.string = `战士 ${this.healthBar(this.model.hp, 100)}   法力 ${this.skills.mana}/${this.skills.maxMana}   [${dName} R${this.roomNo + 1}/7] 敌怪: ${aliveEnemies}/${this.enemies.length}`;
         const state = round !== 'fighting' ? '点击场地上方文字开始 / 再挑战' : this.enemies.some(enemy => enemy.state === 'telegraph') ? '红色预警 · 离开锁定区域' : '攻击怪物，闪开预警';
         const skillState = this.skills.activeId
-            ? `${warriorSkillNames[this.skills.activeId]}出招`
+            ? `${warriorSkillNames[this.skills.activeId]}出招${m.superArmor ? ' [霸体]' : ''}`
             : '十字斩 / 崩山击 / 拔刀斩 / 崩山裂地斩';
         this.status.string = `${this.fps} FPS | 攻速${this.model.attackSpeedMultiplier.toFixed(2)}× | ${state} | ${this.model.stage < 0 ? (this.model.moving ? (this.model.running ? '跑' : '走') : '待机') : stages[this.model.stage]} | ${skillState}`;
         this.speedLabels.forEach((label, index) => label.color = new Color().fromHEX(
@@ -529,6 +535,12 @@ export class Prototype extends Component {
         this.drawEnemies(g);
         const x = Math.round(m.x), y = Math.round(m.y);
         g.fillColor = new Color(15, 24, 25, 150); g.ellipse(x, y, 14, 4.8); g.fill();
+        if (m.superArmor) {
+            g.strokeColor = new Color(255, 215, 0, 220);
+            g.lineWidth = 2.0;
+            g.ellipse(x, y + this.skills.jumpLift + 16, 14, 22);
+            g.stroke();
+        }
         this.actor.node.setPosition((x + shake.x) * 2, (y + this.skills.jumpLift + shake.y) * 2);
         this.actor.node.setScale(2.4 * m.facing, 2.4, 1);
         this.actor.node.active = m.hitStun > 0 || m.invulnerable <= 0 || Math.floor(m.invulnerable * 16) % 2 === 0;

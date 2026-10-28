@@ -494,7 +494,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
             }
         }
     };
-    const result = advanceEarthSimulation({ ...input, context: { ...input.context, tagDamage: true, immuneToBleed: monsters.filter(m => cfg.templates[m.templateRef].resist.bleed).map(m => m.actorIndex) }, jointAfterNode: (at, movement, targets, events) => applyControls(Number((BigInt(at.n) + 10000n * BigInt(at.d) - 1n) / (10000n * BigInt(at.d))), movement, targets, events), jointControlled: tick => player.lifeState === 'dead' || tick < player.controlledUntilTick, jointPrepare: (tick, targets) => {
+    const result = advanceEarthSimulation({ ...input, context: { ...input.context, tagDamage: true, immuneToBleed: monsters.filter(m => cfg.templates[m.templateRef].resist.bleed).map(m => m.actorIndex) }, jointAfterNode: (at, movement, targets, events) => applyControls(Number((BigInt(at.n) + 10000n * BigInt(at.d) - 1n) / (10000n * BigInt(at.d))), movement, targets, events), jointDead: tick => player.lifeState === 'dead', jointControlled: tick => player.lifeState === 'dead' || tick < player.controlledUntilTick, jointPrepare: (tick, targets) => {
             if (input.playerResources)
                 Object.assign(player, input.playerResources(player));
             playerAliveAtBoundary = player.lifeState === 'alive';
