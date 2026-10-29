@@ -1,4 +1,5 @@
 import { MovementCoordinator } from './MovementCoordinator';
+import { LootSceneCoordinator } from './LootSceneCoordinator';
 import { LoadingCoordinator } from './LoadingCoordinator';
 import type { EntryPendingStore, EntryTransport } from './ChallengeEntryCoordinator';
 
@@ -6,6 +7,8 @@ export interface ChallengePreviewResult {
     coordinator: MovementCoordinator;
     challengeId: string;
     characterId: string;
+    loot: LootSceneCoordinator;
+    mode: string;
 }
 
 /** Explicit browser-only opt-in; production login supplies its own coordinator/transport. */
@@ -33,6 +36,9 @@ export async function connectChallengePreview(port = 8790): Promise<ChallengePre
     const bootstrapText = await post('/bootstrap', '{}');
     const bootstrap = JSON.parse(bootstrapText) as {
         previewInstanceId: string;
+        mode?: string;
+        authorization?: string;
+        activeRoomNo?: number;
         identity: { sessionId: string; sessionEpoch: number; characterId: string };
         context: { protocolVersion: 2; sessionId: string; sessionEpoch: number; characterId: string; rolePlayEpoch: number; challengeId: string };
         config: any;
@@ -63,14 +69,21 @@ export async function connectChallengePreview(port = 8790): Promise<ChallengePre
         }
     });
 
-    await loading.prepare(bootstrap.prepareCommand);
+    if(bootstrap.mode!=='local-test-terminal')await loading.prepare(bootstrap.prepareCommand);
+    else if(bootstrap.authorization!=='isolated-local-assets-only'||bootstrap.activeRoomNo!==6)throw Error('INVALID_LOOT_PREVIEW');
 
     const clock = { now: () => Date.now() };
     const coordinator = new MovementCoordinator(transport, pending, clock);
-    await coordinator.load(bootstrap.context, bootstrap.config, loading, bootstrap.basic);
+    if(bootstrap.mode==='local-test-terminal')await coordinator.resumeActive(bootstrap.context,bootstrap.config,bootstrap.activeRoomNo!,bootstrap.basic);
+    else await coordinator.load(bootstrap.context, bootstrap.config, loading, bootstrap.basic);
+    if(coordinator.state.status!=='active')throw Error(coordinator.state.code??'PREVIEW_NOT_ACTIVE');
+    const loot=new LootSceneCoordinator(coordinator,transport,pending,bootstrap.context);
+    await loot.open();
 
     return {
         coordinator,
+        loot,
+        mode: bootstrap.mode??'no-rewards',
         challengeId: bootstrap.context.challengeId,
         characterId: bootstrap.context.characterId
     };

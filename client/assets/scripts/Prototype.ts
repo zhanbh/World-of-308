@@ -16,6 +16,8 @@ import type { InventoryCoordinator } from './net/InventoryCoordinator';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
 import { MovementCoordinator } from './net/MovementCoordinator';
 import { connectChallengePreview } from './net/ChallengePreview';
+import type { LootSceneCoordinator } from './net/LootSceneCoordinator';
+import { LootVictoryPanel } from './ui/LootVictoryPanel';
 import { SupplyHUDModel, SUPPLY_BUTTON_LAYOUT } from './SupplyHUDModel';
 import { DeathReviveHUDModel, DEATH_REVIVE_LAYOUT } from './DeathReviveHUDModel';
 
@@ -80,6 +82,7 @@ export class Prototype extends Component {
     private bankKeyHeld = false;
     private bankHadStats = false;
     private inventoryPanel: InventoryPanel | null = null;
+    private inventoryCoordinator: InventoryCoordinator | null = null;
     private inventoryConnecting = false;
     private inventoryConnectGeneration = 0;
     private inventoryKeyHeld = false;
@@ -91,6 +94,10 @@ export class Prototype extends Component {
     private challengeGeneration = 0;
     private challengeNotice!: Label;
     private challengeTick = 0;
+    private lootScene: LootSceneCoordinator | null = null;
+    private lootPanel: LootVictoryPanel | null = null;
+    private authorityClockBase = 0;
+    private authorityBasicHeld = false;
 
     onLoad(): void {
         view.setDesignResolutionSize(960, 540, ResolutionPolicy.SHOW_ALL);
@@ -182,11 +189,14 @@ export class Prototype extends Component {
         this.bankPanel?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
+        this.lootPanel?.dispose();
+        this.lootScene?.close();
     }
 
     /** Production login may inject an authenticated transport; the action sample never invents assets. */
     public attachInventory(coordinator: InventoryCoordinator, labels: Record<string, string>, assignable: ReadonlySet<string>, preview = false): void {
         this.inventoryPanel?.dispose();
+        this.inventoryCoordinator=coordinator;
         this.inventoryPanel = new InventoryPanel(this.node, coordinator, {
             nextOperationId: () => `bag-${Date.now().toString(36)}-${++this.operationSequence}-${Math.random().toString(36).slice(2, 10)}`,
             templateLabel: id => labels[id] ?? id,
@@ -208,14 +218,24 @@ export class Prototype extends Component {
         });
     }
 
-    public attachChallenge(coordinator: MovementCoordinator, preview = false): void {
+    public attachChallenge(coordinator: MovementCoordinator, preview = false, loot?: LootSceneCoordinator): void {
+        this.lootScene?.close();
         this.challengeCoordinator = coordinator;
+        this.lootScene = loot ?? null;
+        this.lootPanel?.dispose();
+        this.lootPanel = loot ? new LootVictoryPanel(this.node) : null;
+        this.clearInput();
+        this.authorityBasicHeld = false;
+        this.authorityClockBase = Date.now();
         this.challengeNotice.string = preview ? '权威战斗已连接 · MovementCoordinator 服务端驱动' : '';
     }
 
     private async toggleChallenge(): Promise<void> {
         if (this.challengeCoordinator) {
+            if(this.lootScene?.busy){void this.lootScene.retry();return;}
             this.challengeCoordinator = null;
+            this.lootScene?.close();this.lootPanel?.dispose();this.lootPanel=null;this.lootScene=null;
+            this.restartEncounter();
             this.challengeNotice.string = '战斗链路：已切换回本地沙盒模式';
             return;
         }
@@ -226,7 +246,8 @@ export class Prototype extends Component {
         try {
             const preview = await connectChallengePreview();
             if (!this.isValid || gen !== this.challengeGeneration) return;
-            this.attachChallenge(preview.coordinator, true);
+            this.attachChallenge(preview.coordinator, true, preview.loot);
+            this.challengeNotice.string=preview.mode==='local-test-terminal'?'ST15 本机终局奖励测试 · 隔离临时资产':'ST12 无奖励训练 · 权威服务';
         } catch {
             if (this.isValid && gen === this.challengeGeneration) {
                 this.challengeNotice.string = '权威战斗服务未启动（8790 端口未就绪）；保持本地沙盒模式';
@@ -301,6 +322,7 @@ export class Prototype extends Component {
         const id = e.getID();
         if (id === null) return;
         const p = this.point(e);
+        if(this.challengeCoordinator){this.authorityTouch(p.x,p.y,id,e);return;}
         if (this.deathReviveHUD.isVisible) {
             const hit = this.deathReviveHUD.hitTest(p.x, p.y);
             if (hit === 'revive') {
@@ -375,6 +397,15 @@ export class Prototype extends Component {
     }
 
     private keyDown(e: EventKeyboard): void {
+        if(this.challengeCoordinator){
+            if(e.keyCode===KeyCode.KEY_C){void this.toggleChallenge();return;}
+            if(e.keyCode===KeyCode.KEY_P){this.authorityAction('collect');return;}
+            if(e.keyCode===KeyCode.KEY_L){this.authorityAction('leave');return;}
+            if(e.keyCode===KeyCode.KEY_V){this.authorityAction('retry');return;}
+            const combat=this.challengeCoordinator.state.confirmed?.result!=='completed';
+            if(!this.keys.has(e.keyCode)&&combat){const skill=e.keyCode===KeyCode.KEY_E?'cross':e.keyCode===KeyCode.KEY_F?'bengshan':e.keyCode===KeyCode.KEY_Q?'badao':e.keyCode===KeyCode.KEY_G?'earth':null;if(skill)this.authoritySkill(skill);}
+            this.keys.add(e.keyCode);return;
+        }
         if (this.deathReviveHUD.isVisible) {
             if (e.keyCode === KeyCode.ENTER) { this.handleDeathRevive(); return; }
             if (e.keyCode === KeyCode.ESCAPE) { this.handleDeathLeave(); return; }
@@ -433,6 +464,7 @@ export class Prototype extends Component {
     update(dt: number): void {
         this.inventoryPanel?.update();
         this.bankPanel?.update();
+        if(this.challengeCoordinator){this.updateAuthority(dt);return;}
         this.frames++; this.fpsTime += dt;
         if (this.fpsTime >= 0.5) { this.fps = Math.round(this.frames / this.fpsTime); this.frames = this.fpsTime = 0; }
         const has = (a: KeyCode, b: KeyCode) => Number(this.keys.has(a) || this.keys.has(b));
@@ -450,45 +482,6 @@ export class Prototype extends Component {
             if (this.feedback.update(fixedDt)) { this.accumulator -= fixedDt; continue; }
             this.skillEffects.update(fixedDt);
             this.skills.update(fixedDt);
-            if (this.challengeCoordinator) {
-                this.challengeTick++;
-                if (x !== 0 || y !== 0) {
-                    try {
-                        this.challengeCoordinator.enqueue({
-                            seq: 0,
-                            tick: this.challengeTick as any,
-                            kind: 'move',
-                            x: Math.round(x * 1000),
-                            y: Math.round(y * 1000),
-                        });
-                    } catch {}
-                }
-                if (this.keys.has(KeyCode.SPACE)) {
-                    try {
-                        this.challengeCoordinator.enqueue({
-                            seq: 0,
-                            tick: this.challengeTick as any,
-                            kind: 'basic',
-                            pressed: true,
-                        });
-                    } catch {}
-                }
-                try {
-                    this.challengeCoordinator.predict(this.challengeTick);
-                } catch {}
-                if (this.challengeTick % 10 === 0 && this.challengeCoordinator.state.queued > 0) {
-                    void this.challengeCoordinator.submit(`op-${this.challengeTick}`, this.challengeTick);
-                }
-                const coordMonsters = this.challengeCoordinator.state.monsters;
-                if (coordMonsters && coordMonsters.length > 0) {
-                    for (let i = 0; i < Math.min(this.enemies.length, coordMonsters.length); i++) {
-                        const cm = coordMonsters[i];
-                        if (cm.action && cm.action.superArmorEndTick && cm.action.superArmorEndTick > this.challengeTick) {
-                            this.enemies[i].superArmor = true;
-                        }
-                    }
-                }
-            }
             const isPlayerSuperArmor = this.skills.isSuperArmor;
             this.model.superArmor = isPlayerSuperArmor;
             if (this.skills.casting && this.skills.canMove && (x !== 0 || y !== 0)) this.skills.cancel();
@@ -555,7 +548,7 @@ export class Prototype extends Component {
         this.healthStatus.string = `战士 ${this.healthBar(this.model.hp, 100)}   法力 ${this.skills.mana}/${this.skills.maxMana}   [${dName} R${this.roomNo + 1}/7] 敌怪: ${aliveEnemies}/${this.enemies.length}`;
         const state = round !== 'fighting' ? '点击场地上方文字开始 / 再挑战' : this.enemies.some(enemy => enemy.state === 'telegraph') ? '红色预警 · 离开锁定区域' : '攻击怪物，闪开预警';
         const skillState = this.skills.activeId
-            ? `${warriorSkillNames[this.skills.activeId]}出招${m.superArmor ? ' [霸体]' : ''}`
+            ? `${warriorSkillNames[this.skills.activeId]}出招${this.model.superArmor ? ' [霸体]' : ''}`
             : '十字斩 / 崩山击 / 拔刀斩 / 崩山裂地斩';
         this.status.string = `${this.fps} FPS | 攻速${this.model.attackSpeedMultiplier.toFixed(2)}× | ${state} | ${this.model.stage < 0 ? (this.model.moving ? (this.model.running ? '跑' : '走') : '待机') : stages[this.model.stage]} | ${skillState}`;
         this.speedLabels.forEach((label, index) => label.color = new Color().fromHEX(
@@ -565,6 +558,54 @@ export class Prototype extends Component {
         this.updateSkillLabels();
         this.updateSupplyLabels();
         this.updateDeathReviveLabels();
+    }
+
+    private authorityAction(action:'collect'|'leave'|'retry'):void {
+        const scene=this.lootScene;if(!scene)return;
+        const task=action==='retry'?scene.retry():action==='leave'?scene.requestLeave(scene.nextOperation('leave')):scene.hud.nearest?scene.requestCollect(scene.nextOperation('collect'),scene.hud.nearest.dropId):Promise.resolve();
+        void task.catch(e=>{this.challengeNotice.string=e instanceof Error?e.message:'操作暂不可用';});
+    }
+    private authoritySkill(skill:WarriorSkillId):void {
+        const c=this.challengeCoordinator;if(!c||!this.lootScene?.canMove)return;
+        try{c.enqueue({seq:0,tick:c.state.confirmed!.acceptedTick,kind:'skill',skillId:skill});}catch{}
+    }
+    private authorityTouch(x:number,y:number,id:number,e:EventTouch):void {
+        const hit=this.lootPanel?.hitTest(x,y);if(hit){this.authorityAction(hit);return;}
+        if(this.stickId===null&&Math.hypot(x+345,y+150)<95){this.stickId=id;this.touchMove(e);return;}
+        if(this.challengeCoordinator?.state.confirmed?.result==='completed')return;
+        if(Math.hypot(x-345,y+150)<68){this.attackIds.add(id);return;}
+        const ids:WarriorSkillId[]=['cross','bengshan','badao','earth'];for(let i=0;i<4;i++)if(Math.abs(x-(150+i*65))<31&&Math.abs(y+65)<24)this.authoritySkill(ids[i]);
+    }
+    private updateAuthority(dt:number):void {
+        const c=this.challengeCoordinator!,scene=this.lootScene,state=c.state,confirmed=state.confirmed;
+        if(confirmed&&scene?.canMove&&state.status==='active'&&state.predictionEnabled){
+            const x=this.horizontalInput(),y=this.stickId!==null?this.axis.y:Number(this.keys.has(KeyCode.KEY_W)||this.keys.has(KeyCode.ARROW_UP))-Number(this.keys.has(KeyCode.KEY_S)||this.keys.has(KeyCode.ARROW_DOWN));
+            // Queue at the confirmed frontier and submit bounded 100Hz slices using wall time.
+            const elapsed=Math.floor((Date.now()-this.authorityClockBase)/10),toTick=confirmed.acceptedTick+Math.min(50,Math.max(0,elapsed));
+            if(toTick>confirmed.acceptedTick){
+                try{c.enqueue({seq:0,tick:confirmed.acceptedTick,kind:'move',x:Math.round(x*1000),y:Math.round(y*1000)});
+                    const held=this.keys.has(KeyCode.SPACE)||this.attackIds.size>0;
+                    if(confirmed.result!=='completed'&&held!==this.authorityBasicHeld){c.enqueue({seq:0,tick:confirmed.acceptedTick,kind:'basic',pressed:held});this.authorityBasicHeld=held;}
+                    c.predict(toTick);
+                }catch{}
+                if(elapsed>=10){this.authorityClockBase=Date.now();void scene.submit(scene.nextOperation('sim'),toTick).catch(()=>{});}
+            }
+        }
+        const current=c.state,p=current.position;
+        if(p){this.model.x=Number(p.x)/1000;this.model.y=Number(p.y)/1000;this.model.facing=p.facing;}
+        this.model.moving=!!p&&(this.horizontalInput()!==0||this.axis.y!==0||this.keys.has(KeyCode.KEY_W)||this.keys.has(KeyCode.KEY_S));
+        this.model.running=this.model.moving;this.model.stage=-1;this.model.hp=current.player?Number(current.player.hp):100;
+        // All enemies and terminal status come from recovered public state, never local damage/EncounterModel.
+        while(this.enemies.length<current.targets.length)this.enemies.push(new EnemyModel(0,0,this.enemies.length));
+        this.enemies.length=current.targets.length;
+        current.targets.forEach((t,i)=>{if(this.enemies[i].maxHp!==Number(t.maxHp))this.enemies[i]=new EnemyModel(t.x/1000,t.y/1000,i,Number(t.maxHp));const e=this.enemies[i];e.x=t.x/1000;e.y=t.y/1000;e.hp=Number(t.hp);e.state=BigInt(t.hp)<=0n?'dead':'approach';});
+        this.roomCleared=confirmed?.roomPhase==='cleared';this.roomNo=scene?.drops.state.view?.data.roomNo??0;
+        this.bodyAnimation.update(Math.min(dt,.05),this.model.moving,this.model.running,0,false,this.model.hp<=0);
+        this.roundLabel.string=confirmed?.result==='completed'?'已通关 · 可继续移动拾取':current.status==='active'?'权威战斗中':'等待服务确认 · V 恢复';
+        this.healthStatus.string=`确认 tick ${confirmed?.acceptedTick??0} · ${current.status} · ${current.targets.filter(t=>BigInt(t.hp)>0n).length} 敌怪`;
+        this.status.string='WASD / 摇杆移动 · 空格普攻 · P拾取 · L离开 · V恢复 · C切换沙盒';
+        this.draw(dt);scene?.update(dt);if(scene)this.lootPanel?.update(scene);
+        if(scene?.hud.fadeAlpha===1){this.clearInput();this.roundLabel.string='已返回城镇';this.challengeNotice.string='挑战已关闭 · 体力已回城结算';}
     }
 
     private rect(g: Graphics, x: number, y: number, w: number, h: number, color: string): void {
@@ -767,12 +808,12 @@ export class Prototype extends Component {
     }
 
     private getEmblemCount(): number {
-        const inv = this.inventoryPanel?.coordinator?.state;
+        const inv = this.inventoryCoordinator?.state;
         if (inv?.backpack?.slots) {
             let count = 0;
             for (const s of inv.backpack.slots) {
-                if (s && s.kind === 'stack' && (s.templateRef.id === 'item:resurrection-emblem' || s.templateRef.id === 'resurrection-emblem')) {
-                    count += s.quantity;
+                if (s.entry.kind === 'stack' && (s.entry.templateRef === 'item:resurrection-emblem' || s.entry.templateRef === 'resurrection-emblem')) {
+                    count += s.entry.quantity;
                 }
             }
             return count;
@@ -968,7 +1009,7 @@ export class Prototype extends Component {
         if (!input) return;
         if (this.challengeCoordinator && this.challengeCoordinator.state.status === 'active') {
             try {
-                this.challengeCoordinator.enqueue(input);
+                this.challengeCoordinator.enqueue({...input,seq:0,tick:this.challengeCoordinator.state.confirmed!.acceptedTick});
             } catch {
                 this.supplyHUD.resolveSubmission('quickSlot', index);
             }
@@ -995,7 +1036,7 @@ export class Prototype extends Component {
         if (!input) return;
         if (this.challengeCoordinator && this.challengeCoordinator.state.status === 'active') {
             try {
-                this.challengeCoordinator.enqueue(input);
+                this.challengeCoordinator.enqueue({...input,seq:0,tick:this.challengeCoordinator.state.confirmed!.acceptedTick});
             } catch {
                 this.supplyHUD.resolveSubmission('trinket');
             }
@@ -1013,15 +1054,14 @@ export class Prototype extends Component {
         if (coord && coord.state.status === 'active' && coord.state.confirmed) {
             const cState = coord.state;
             const actor = cState.confirmed;
-            const inv = this.inventoryPanel?.coordinator?.state;
+            const inv = this.inventoryCoordinator?.state;
             const quick = inv?.quickSlots?.slots ?? [];
             const quickSlotTemplates: (string | null)[] = [null, null, null];
             for (const s of quick) {
                 if (s.slotIndex >= 0 && s.slotIndex < 3) quickSlotTemplates[s.slotIndex] = s.templateId;
             }
             const backpackStacks = (inv?.backpack?.slots ?? [])
-                .filter(s => s && s.kind === 'stack')
-                .map(s => ({ templateId: s!.templateRef.id, quantity: s!.quantity }));
+                .flatMap(s => s.entry.kind==='stack'?[{templateId:s.entry.templateRef,quantity:s.entry.quantity}]:[]);
 
             if (cState.actionResults.length > 0) {
                 this.supplyHUD.clearSubmissions();
@@ -1033,7 +1073,7 @@ export class Prototype extends Component {
                 equippedTrinket: null,
                 cooldowns: [],
                 buffs: [],
-                currentTick: actor.acceptedTick,
+                currentTick: actor!.acceptedTick,
                 lifeState: cState.player ? cState.player.lifeState : (this.model.hp > 0 ? 'alive' : 'dead'),
                 isFighting: this.encounter.state === 'fighting'
             });

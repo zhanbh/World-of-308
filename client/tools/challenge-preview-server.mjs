@@ -5,6 +5,7 @@
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { monsterFixture } from '../../backend/test/fixtures/monster-fixture.mjs';
+import { terminalFixture } from '../../backend/test/fixtures/terminal-fixture.mjs';
 import { localTacticsConfig } from '../../shared/src/monster-tactics.ts';
 
 export async function createChallengePreview(tacticsPatch = localTacticsConfig({ 'humanoid@1': 'boss' }, 'normal')) {
@@ -65,6 +66,13 @@ export async function createChallengePreview(tacticsPatch = localTacticsConfig({
   };
 }
 
+/** Explicit reward fixture: active final room, isolated temporary assets. No shortcut RPCs. */
+export async function createLootChallengePreview() {
+ const h=await terminalFixture(),started=Date.now();h.clock.now=()=>1513+Date.now()-started;
+ const cp=await h.cp(),{attackPowerByLevel,...rates}=h.profile.attributes;
+ const context={...h.auth,characterId:h.characterId,rolePlayEpoch:h.character().rolePlayEpoch,challengeId:h.challengeId};
+ return {bootstrap:{previewInstanceId:globalThis.crypto.randomUUID(),mode:'local-test-terminal',authorization:'isolated-local-assets-only',activeRoomNo:6,context,config:h.config,basic:{profile:h.profile,stats:{attackPower:attackPowerByLevel[0],...rates,x:0,y:0,facing:1},targetRules:Object.fromEntries(cp.scene.combat.targets.map(t=>[t.actorId,{mitigation:t.mitigation,evasion:t.evasion,damageImmune:t.damageImmune,controlImmune:t.controlImmune}]))}},async rpc(value){return value&&Object.hasOwn(value,'query')?h.service.query(value):h.service.execute(value);}};
+}
 export function createPreviewServer(preview) {
   return http.createServer(async (req, res) => {
     const send = (status, body) => {
@@ -110,6 +118,6 @@ export function createPreviewServer(preview) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const port = Number(process.argv[2] ?? 8790);
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('INVALID_PORT');
-  const server = createPreviewServer(await createChallengePreview());
-  server.listen(port, '127.0.0.1', () => console.log(`ST12 challenge preview: http://127.0.0.1:${port}; temporary local data.`));
+  const server = createPreviewServer(process.argv.includes('--loot')?await createLootChallengePreview():await createChallengePreview());
+  server.listen(port, '127.0.0.1', () => console.log(`Local challenge preview (): http://127.0.0.1:${port}; temporary local data.`));
 }

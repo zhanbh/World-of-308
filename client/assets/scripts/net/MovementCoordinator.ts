@@ -55,6 +55,20 @@ export class MovementCoordinator {
   const saved=this.persistence.load(this.key());if(saved!==null){this.pending=decodeSimulationSubmit(saved);if(this.pending.sessionId!==context.sessionId||this.pending.sessionEpoch!==context.sessionEpoch||this.pending.payload.characterId!==context.characterId||this.pending.payload.rolePlayEpoch!==context.rolePlayEpoch||this.pending.payload.challengeId!==context.challengeId)throw Error('PENDING_CONTEXT_MISMATCH');this.current.status='unknown';await this.retry();return;}
   try{await this.refresh(generation);}catch(e){if(generation===this.generation){this.current.status=e instanceof Error&&e.message==='STALE_STATE'?'stale':'error';this.current.code=e instanceof Error?e.message:'LOAD_FAILED';this.current.predictionEnabled=false;}}
  }
+ /** Reconnect an already active scene; configuration is checked against the recovered public proof. */
+ async resumeActive(context:Context,config:MovementConfig,roomNo:number,basic?:BasicPrediction){
+  if(!Number.isInteger(roomNo)||roomNo<0||roomNo>6)throw Error('INVALID_ROOM');
+  const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.basic=basic?structuredClone(basic):null;this.roomNo=roomNo;this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
+  this.current={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0,combat:null,targets:[],actionResults:[]};
+  const saved=this.persistence.load(this.key());if(saved!==null){this.pending=decodeSimulationSubmit(saved);if(this.pending.sessionId!==context.sessionId||this.pending.sessionEpoch!==context.sessionEpoch||this.pending.payload.characterId!==context.characterId||this.pending.payload.rolePlayEpoch!==context.rolePlayEpoch||this.pending.payload.challengeId!==context.challengeId)throw Error('PENDING_CONTEXT_MISMATCH');this.current.status='unknown';await this.retry();return;}
+  try{await this.refresh(generation);}catch(e){if(generation===this.generation){this.current.status='error';this.current.code=e instanceof Error?e.message:'LOAD_FAILED';}}
+ }
+ /** CP position, never the speculative position, is the pickup authorizer. */
+ get confirmedPickupPosition(){return this.confirmedPosition?structuredClone(this.confirmedPosition):null;}
+ async flushQueued(operationId:string){if(this.pending)throw Error('PENDING_INPUT');if(this.queue.length)await this.submit(operationId,Math.max(this.current.confirmed!.acceptedTick,...this.queue.map(i=>i.tick))+1);}
+ async refreshConfirmed(){if(this.pending)throw Error('PENDING_INPUT');await this.refresh();}
+ close(){++this.generation;this.queue=[];this.current.predictionEnabled=false;this.current.status='frozen';}
+ get hasPending(){return this.pending!==null||this.current.status==='submitting';}
  private async refresh(generation=this.generation){
   const c=this.context!,config=this.config!,query={protocolVersion:2,sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,query:'challenge.get',requestId:'movement-current',payload:{challengeId:c.challengeId}};
   const first=parseChallengeQueryResponse(await this.scene(query));if(generation!==this.generation)return;
@@ -93,6 +107,7 @@ export class MovementCoordinator {
   this.versions=final.versions;this.confirmedAt=this.clock.now();this.current={status:'active',code:null,predictionEnabled:true,confirmed:s,position:structuredClone(this.confirmedPosition),queued:0,combat:structuredClone(this.confirmedCombat),targets:structuredClone(this.confirmedTargets),actionResults:this.current.actionResults,cross:structuredClone(this.confirmedCross),bengshan:structuredClone(this.confirmedBengshan),badao:structuredClone(this.confirmedBadao),earth:structuredClone(this.confirmedEarth),monsters:structuredClone(this.confirmedMonsters),player:structuredClone(this.confirmedPlayer)??undefined};
  }
  enqueue(input:ActionInput){
+  if(this.current.confirmed?.result==='completed'&&input.kind!=='move')throw Error('CHALLENGE_COMPLETED');
   this.guardClock();if(!this.current.predictionEnabled||!this.current.confirmed||this.pending)throw Error('PREDICTION_FROZEN');
   if(input.tick<this.current.confirmed.acceptedTick||input.tick>=this.current.confirmed.acceptedTick+100)throw Error('INPUT_TIME_BOUND');
   const previous=this.queue.at(-1);if(previous&&input.tick<previous.tick)throw Error('INPUT_ORDER');
