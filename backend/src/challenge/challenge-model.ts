@@ -78,6 +78,7 @@ export interface EntryChallenge extends HandoffChallenge {
     confirmedKills?: import('../../../shared/src/encounter-layout.ts').ConfirmedKillFact[];
     lifeState: 'alive' | 'dead';
     deathIndex?: number;
+    playerDeathAtTick?: number;
     paidRevives?: number;
     protectionUntil?: number;
     roomCount: 7;

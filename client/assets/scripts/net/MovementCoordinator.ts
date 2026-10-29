@@ -73,7 +73,7 @@ export class MovementCoordinator {
   const c=this.context!,config=this.config!,query={protocolVersion:2,sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,query:'challenge.get',requestId:'movement-current',payload:{challengeId:c.challengeId}};
   const first=parseChallengeQueryResponse(await this.scene(query));if(generation!==this.generation)return;
   if('error' in first)throw Error(first.error.code);const s=first.data;
-  if('kind' in s||!((s.roomPhase==='active'&&s.result==='active')||(s.roomPhase==='cleared'&&s.result==='completed'))||s.connection!=='connected'||s.lifeState!=='alive')throw Error('CURRENT_SCENE_NOT_ACTIVE');
+  if('kind' in s||!((s.roomPhase==='active'&&s.result==='active')||(s.roomPhase==='cleared'&&s.result==='completed'))||s.connection!=='connected')throw Error('CURRENT_SCENE_NOT_ACTIVE');
   if(this.current.confirmed&&(s.sceneEpoch!==this.current.confirmed.sceneEpoch||s.timelineEpoch!==this.current.confirmed.timelineEpoch||s.checkpointRevision<this.current.confirmed.checkpointRevision))throw Error('STALE_STATE');
   const pages=[];let total=1;
   for(let pageIndex=0;pageIndex<total;pageIndex++){
@@ -106,7 +106,9 @@ export class MovementCoordinator {
   if(this.basic?.profile.monsters){const records=proof.records.filter(r=>r.kind==='monsterRuntime'),control=proof.records.find(r=>r.kind==='playerControl'&&r.actorId===c.characterId);if(records.length!==this.confirmedTargets.length||!control||control.kind!=='playerControl')throw Error('MONSTER_STATE_MISSING');this.confirmedMonsters=records.map(r=>{if(r.kind!=='monsterRuntime'||!this.confirmedTargets.some(t=>t.actorId===r.actorId&&t.actorIndex===r.state.actorIndex)||!this.basic!.profile.monsters!.templates[r.state.templateRef])throw Error('MONSTER_STATE_MISMATCH');return r.state;});this.confirmedPlayer={hp:actor.hp,maxHp:actor.maxHp,lifeState:actor.lifeState==='alive'?'alive':'dead',controlledUntilTick:control.untilTick};}
   this.versions=final.versions;this.confirmedAt=this.clock.now();this.current={status:'active',code:null,predictionEnabled:true,confirmed:s,position:structuredClone(this.confirmedPosition),queued:0,combat:structuredClone(this.confirmedCombat),targets:structuredClone(this.confirmedTargets),actionResults:this.current.actionResults,cross:structuredClone(this.confirmedCross),bengshan:structuredClone(this.confirmedBengshan),badao:structuredClone(this.confirmedBadao),earth:structuredClone(this.confirmedEarth),monsters:structuredClone(this.confirmedMonsters),player:structuredClone(this.confirmedPlayer)??undefined};
  }
+ get hasReleasedDeathTail(){return this.current.confirmed?.lifeState==='dead'&&[this.confirmedCross,this.confirmedBengshan,this.confirmedBadao,this.confirmedEarth].some(lane=>lane&&lane.effects.length>0);}
  enqueue(input:ActionInput){
+  if(this.current.confirmed?.lifeState==='dead')throw Error('DEAD');
   if(this.current.confirmed?.result==='completed'&&input.kind!=='move')throw Error('CHALLENGE_COMPLETED');
   this.guardClock();if(!this.current.predictionEnabled||!this.current.confirmed||this.pending)throw Error('PREDICTION_FROZEN');
   if(input.tick<this.current.confirmed.acceptedTick||input.tick>=this.current.confirmed.acceptedTick+100)throw Error('INPUT_TIME_BOUND');

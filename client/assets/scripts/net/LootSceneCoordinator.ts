@@ -35,7 +35,8 @@ export class LootSceneCoordinator {
  private identity:TerminalIdentity;
  constructor(movement:MovementCoordinator,transport:EntryTransport,persistence:EntryPendingStore,identity:TerminalIdentity){this.movement=movement;this.drops=new DropCoordinator(transport,persistence);this.terminal=new TerminalCoordinator(transport,persistence);this.identity=identity;}
  get busy(){return this.working||this.movement.hasPending||['unknown','submitting'].includes(this.drops.state.status)||['unknown','submitting'].includes(this.terminal.state.status);}
- get canMove(){return !this.disposed&&!this.interactionPending&&!this.busy&&this.terminal.state.status!=='closed';}
+ get canAdvanceDeathTail(){return !this.disposed&&!this.interactionPending&&!this.busy&&this.terminal.state.status!=='closed'&&this.movement.hasReleasedDeathTail;}
+ get canMove(){return this.movement.state.confirmed?.lifeState==='alive'&&!this.disposed&&!this.interactionPending&&!this.busy&&this.terminal.state.status!=='closed';}
  async open(){return this.run(async()=>{await this.drops.open({...this.identity,sceneEpoch:this.movement.state.confirmed!.sceneEpoch});if(this.disposed)return;await this.terminal.open(this.identity);this.sync();});}
  sync(){if(this.disposed)return;this.hud.sync(this.drops.state,this.terminal.state.receipt,this.movement.confirmedPickupPosition);if(this.terminal.state.fadeReady)this.hud.beginFade();}
  update(dt:number){this.sync();this.hud.update(dt);}

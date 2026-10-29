@@ -578,14 +578,14 @@ export class Prototype extends Component {
     }
     private updateAuthority(dt:number):void {
         const c=this.challengeCoordinator!,scene=this.lootScene,state=c.state,confirmed=state.confirmed;
-        if(confirmed&&scene?.canMove&&state.status==='active'&&state.predictionEnabled){
+        if(confirmed&&(scene?.canMove||scene?.canAdvanceDeathTail)&&state.status==='active'&&state.predictionEnabled){
             const x=this.horizontalInput(),y=this.stickId!==null?this.axis.y:Number(this.keys.has(KeyCode.KEY_W)||this.keys.has(KeyCode.ARROW_UP))-Number(this.keys.has(KeyCode.KEY_S)||this.keys.has(KeyCode.ARROW_DOWN));
             // Queue at the confirmed frontier and submit bounded 100Hz slices using wall time.
             const elapsed=Math.floor((Date.now()-this.authorityClockBase)/10),toTick=confirmed.acceptedTick+Math.min(50,Math.max(0,elapsed));
             if(toTick>confirmed.acceptedTick){
-                try{c.enqueue({seq:0,tick:confirmed.acceptedTick,kind:'move',x:Math.round(x*1000),y:Math.round(y*1000)});
+                try{if(confirmed.lifeState==='alive'){c.enqueue({seq:0,tick:confirmed.acceptedTick,kind:'move',x:Math.round(x*1000),y:Math.round(y*1000)});
                     const held=this.keys.has(KeyCode.SPACE)||this.attackIds.size>0;
-                    if(confirmed.result!=='completed'&&held!==this.authorityBasicHeld){c.enqueue({seq:0,tick:confirmed.acceptedTick,kind:'basic',pressed:held});this.authorityBasicHeld=held;}
+                    if(confirmed.result!=='completed'&&held!==this.authorityBasicHeld){c.enqueue({seq:0,tick:confirmed.acceptedTick,kind:'basic',pressed:held});this.authorityBasicHeld=held;}}
                     c.predict(toTick);
                 }catch{}
                 if(elapsed>=10){this.authorityClockBase=Date.now();void scene.submit(scene.nextOperation('sim'),toTick).catch(()=>{});}

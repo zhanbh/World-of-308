@@ -349,3 +349,5 @@ simulation.confirmed与recoveryPage允许有界monsterRuntime及playerControl记
 ## ST15-02 实施接线（2026-10-29）
 
 simulation.submit通过真实战斗节点在重验事务内产生终局，客户端不提交通关/奖励事实；提交后CP公开result=completed、roomPhase=cleared、lifeState=alive与hash一致。公开状态分页与移动接受有效completed+looting场景，MovementCoordinator能恢复该状态；drop.list/collect及finishLoot继续沿已有协议授权。详见[首领通关合同](boss-clear-terminal-contract-v1.md)。03邮件/专属装备交付不在本轮完成声明内。
+
+ST15跨片死亡修复（2026-10-29）：simulation.confirmed允许当前connected/active/dead场景读取权威公开证明。simulation.submit在dead时只接受空inputs且CP仍有已释放合法效果；无尾效果或任一move/basic/skill/item/trinket输入拒绝ROOM_NOT_AVAILABLE。原身份、版本/代次、TIME_FRONTIER、2秒输入间断恢复门禁及原deathDeadline继续生效；客户端不新增死亡/结果或服务端时间字段。MovementCoordinator拒绝dead动作入队，帧循环仅沿现有传输提交空片等待尾伤，免费通关后正常恢复移动。详见[首领合同](boss-clear-terminal-contract-v1.md)。

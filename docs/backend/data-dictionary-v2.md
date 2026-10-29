@@ -215,6 +215,7 @@ EquipmentLocation候选：container{containerId}、equipped{characterId,slotId}�
 | staminaSettlement | 见下表，unsettled | 直到真正结束场景回城一次加载；通关仍拾取不提前结算 |
 | purpleEncounter | {roomNo,spawnId,templateRef}，适用首本时必填 | 创建时确定额外1只R1–R6，对应roomNo0–5；重连不重抽，权重/模板仍待配置 |
 | deathIndex/deathOccurredAt/deathDeadline | Int0／可选Time／可选Time | 每次死亡递增；按节点所属服务端时间锚点映射deathOccurredAt，首次确认固定deadline=occurredAt+10秒；不按响应/恢复时间延长 |
+| playerDeathAtTick | 可选LogicTick | 当前已确认死亡节点；跨submit给联合内核恢复死亡事实，手动复活后清除，通关事实另存terminalFact；不采纳客户端自报 |
 | paidRevives | Int0 | 特殊各3次，合法免费复活不增加；升级副本无额外次数上限 |
 | protectionUntilTick | 可选LogicTick | 复活保护沿既定2秒由内核换算，recovery随模拟暂停；旧protectionUntil命名不得当UTC截止混用，物理映射待E03 |
 | lastEventSeq/lastAcceptedBatch | Int0／可选旧有界摘要 | lastEventSeq仅服务端生成事实游标，不是客户端自报击杀序号；旧事件批摘要只读迁移，新输入游标在检查点、父片段原结果在operations，不接新C25 |
@@ -483,3 +484,5 @@ ST15-01实际room增量（2026-10-29）：drops为至多16条固定GroundDrop（
 ## ST15-02 实施字段增量（2026-10-29）
 
 挑战私有terminalFact保存bossActorId、精确有理微秒at、playerDied、playerDeathAtTick与derivedKills；rewardTotals保存已确认新增击杀累计gold/xp/kills，terminalRewardRef引用最小终局流水。配置rewards仅显式local-test授权。字段与限制见[boss-clear-terminal-contract-v1.md](boss-clear-terminal-contract-v1.md)；03完整奖励字段不在本增量中声明已实现。
+
+ST15评审修复：死亡首片按新增deathIndex扣死亡磨损，尾片通关仅扣房间磨损；H.playerDeathAtTick/deathDeadline跨片保留，装备写入和CP战力统一使用同一扣损后快照。尾片不改变原staminaSnapshot或unsettled语义。证据见[修复验证](../reviews/st15-review-fixes.md)。
