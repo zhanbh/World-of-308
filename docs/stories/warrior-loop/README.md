@@ -100,5 +100,10 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 ## ST14 本地实施续接
 
-2026-10-28：用户已确认开始 ST14 规划，integration为`feat-1.0.0`，基线为 `4577f28`。已整理五项实施任务图（权威死亡与10秒倒计时锚定、手动复活与纹章/状态重置事务、倒计时超时判败与落点退出、Cocos复活HUD与视觉交互、全链路联合集成与评审），已冻结只读[实施规格](st14/spec.md)、生成本地[实施票据](st14/issues/01-authoritative-death-window.md)、通过源hash与依赖无环检查并记录于[计划检查](st14/plan-check.json)与[执行记录](st14/execution.json)。准备推进首项实施任务 ST14-01。
+2026-10-28：用户已确认五项任务图并授权本地实施，integration为`feat-1.0.0`，基线为 `4577f28`。ST14-01～ST14-05全部5项单据均已独立实现并合入主干（权威死亡与10秒倒计时锚定、手动复活与纹章/状态重置事务、倒计时超时判败与落点退出、Cocos复活HUD与视觉交互、全链路联合集成与评审），commit 为 `4243635`。全量通过 7/7 门禁（包含 639 项后台测试、纯模型及 UI 模型回归），Standards 与 Spec 两轴独立复核通过。见[ST14入口](st14/README.md)、[执行记录](st14/execution.json)、[两轴独立评审报告](../../reviews/st14-local-verification.md)。
+
+## ST15 本地实施准备
+
+2026-10-28～2026-10-29：用户已确认五项任务图并授权本地连续实施，integration为`feat-1.0.0`，基准为 `4243635`。已冻结只读[实施规格](st15/spec.md)、生成五项本地[实施票据](st15/issues/01-room-drop-collect.md)、通过源hash与依赖无环检查并记录于[计划检查](st15/plan-check.json)与[执行记录](st15/execution.json)（commit `fc7d9e6`）。首个工作区已就绪于 `.worktrees/st15-01-room-drop`（分支 `feat/st15-01-room-drop`），代码基线整洁无污染，待推进首项实施票据：**ST15-01 房间怪物掉落生成、拾取入包与满包留地**。见[ST15入口](st15/README.md)。
+
 
