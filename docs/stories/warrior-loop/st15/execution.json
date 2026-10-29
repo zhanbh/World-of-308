@@ -27,7 +27,8 @@
       "code_head": "b0a6046",
       "merged_into": "feat-1.0.0",
       "independent_review": "passed:spec-and-standards;no-blocker",
-      "budget": "material CP2 R12/W5, get14/set5; equipment+1/+1; applicable holdings+1/+1; global terminal pending05"
+      "budget": "material CP2 R12/W5, get14/set5; equipment+1/+1; applicable holdings+1/+1; global terminal pending05",
+      "worktree_cleanup": "removed-after-clean-merged-verification"
     },
     {
       "id": "ST15-02",
@@ -37,12 +38,13 @@
       ],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/02-boss-clear-and-free-revive.md",
-      "state": "planned",
+      "state": "in-progress",
       "worktree": ".worktrees/st15-02-boss-clear",
       "branch": "feat/st15-02-boss-clear",
       "evidence": [],
       "local_checks": "pending",
-      "platform_status": "gap"
+      "platform_status": "gap",
+      "base_commit": "1be9083"
     },
     {
       "id": "ST15-03",
