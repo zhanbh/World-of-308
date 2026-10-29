@@ -22,3 +22,5 @@
 ## 03接续注意
 
 只结算newKillFacts，不能再把rewardTotals累计重复发放。completed禁止prepare换房，保持looting仅移动/拾取/退出，无新增战斗资产；用户最新裁决为通关只固定本局消耗、保留回城沉降；03不得在通关清reservation破坏在线拾取，finishLoot继续幂等回城沉降，原批准正文与后续decision分别保留。终局原子边界保持同笔，不拆为先completed后尽力发奖。
+
+收尾格式补充：首次提交前普通diff检查未覆盖untracked新增测试/日志；显式暂存后cached检查暴露这些文件CRLF，提交命令仍继续执行，形成0982421。随后单独格式提交统一新增测试/证据为LF，仅保留文本内容；历史独立报告正文和hash清单不改。最终检查应比较c3f39ed到最终HEAD，不以首次提交单独作为格式通过证据。
