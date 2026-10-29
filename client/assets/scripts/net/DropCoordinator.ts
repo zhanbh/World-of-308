@@ -15,18 +15,19 @@ export class DropCoordinator{
  close(){this.generation++;this.current.status='closed';}
  async open(identity:DropIdentity){this.identity={...identity};const generation=++this.generation;this.pending=null;this.current={status:'loading',view:null,code:null};
  const saved=this.persistence.load(this.key());if(saved!==null){const q=parseChallengeRequest(JSON.parse(saved));if(q.command!=='drop.collect'||q.sessionId!==identity.sessionId||q.sessionEpoch!==identity.sessionEpoch||q.payload.challengeId!==identity.challengeId)throw Error('INVALID_PENDING_DROP');this.pending=q;}
- await this.refresh(generation);if(generation===this.generation&&this.pending)this.current.status='unknown';
+ await this.read(generation);if(generation===this.generation&&this.pending)this.current.status='unknown';
  }
- private async refresh(generation:number){const i=this.identity!;try{const raw=JSON.parse(await this.transport.send(JSON.stringify({protocolVersion:2,sessionId:i.sessionId,sessionEpoch:i.sessionEpoch,query:'drop.list',requestId:`drop-q-${++this.sequence}`,payload:{challengeId:i.challengeId,sceneEpoch:i.sceneEpoch}}))),r=parseDropList(raw);if(generation!==this.generation)return;
+ private async read(generation:number){const i=this.identity!;try{const raw=JSON.parse(await this.transport.send(JSON.stringify({protocolVersion:2,sessionId:i.sessionId,sessionEpoch:i.sessionEpoch,query:'drop.list',requestId:`drop-q-${++this.sequence}`,payload:{challengeId:i.challengeId,sceneEpoch:i.sceneEpoch}}))),r=parseDropList(raw);if(generation!==this.generation)return;
  if('error'in r){this.current.status='failed';this.current.code=r.error.code;return;}if(r.data.challengeId!==i.challengeId||r.data.sceneEpoch!==i.sceneEpoch)throw Error('VIEW_MISMATCH');this.current={status:'ready',view:r,code:null};
  }catch{if(generation===this.generation){this.current.status='failed';this.current.code='SERVICE_UNAVAILABLE';}}}
+ async refresh(){if(!this.identity||this.pending||this.current.status==='submitting'||this.current.status==='loading')return;await this.read(this.generation);}
  async collect(operationId:string,dropId:string){if(!this.identity||this.pending||this.current.status!=='ready'||!this.current.view)throw Error('DROP_NOT_READY');const view=this.current.view,d=view.data.drops.find(d=>d.dropId===dropId&&!d.collected);if(!d)throw Error('DROP_NOT_AVAILABLE');const i=this.identity;
  this.pending=parseChallengeRequest({protocolVersion:2,sessionId:i.sessionId,sessionEpoch:i.sessionEpoch,command:'drop.collect',operationId,expected:view.versions,payload:{challengeId:i.challengeId,roomNo:view.data.roomNo,sceneEpoch:i.sceneEpoch,roomToken:view.data.roomToken,dropId,positionHint:{x:d.x,y:d.y}}}) as Collect;
  this.persistence.save(this.key(),JSON.stringify(this.pending));await this.sendPending(this.generation);
  }
  private async finish(value:unknown,generation:number){const q=this.pending!,r=parseChallengeResponse(value);if(r.command!=='drop.collect'||r.operationId!==q.operationId)throw Error('RESULT_MISMATCH');if(generation!==this.generation)return;
  if(r.outcome.status==='unknown'){this.current.status='unknown';return;}
- this.persistence.save(this.key(),null);this.pending=null;const code=r.outcome.status==='rejected'?r.outcome.code:null;await this.refresh(generation);if(generation===this.generation)this.current.code=code;
+ this.persistence.save(this.key(),null);this.pending=null;const code=r.outcome.status==='rejected'?r.outcome.code:null;await this.read(generation);if(generation===this.generation)this.current.code=code;
  }
  private async sendPending(generation:number){this.current.status='submitting';try{await this.finish(JSON.parse(await this.transport.send(JSON.stringify(this.pending))),generation);}catch{if(generation===this.generation)this.current.status='unknown';}}
  async retry(){if(!this.identity||!this.pending||this.current.status!=='unknown')throw Error('NO_UNKNOWN_DROP');const generation=this.generation,i=this.identity;this.current.status='submitting';

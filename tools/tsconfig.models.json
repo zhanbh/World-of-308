@@ -35,6 +35,10 @@
     "../client/assets/scripts/net/MovementCoordinator.ts",
     "../client/assets/scripts/net/DropCoordinator.ts",
     "../client/assets/scripts/SupplyHUDModel.ts",
-    "../client/assets/scripts/DeathReviveHUDModel.ts"
+    "../client/assets/scripts/DeathReviveHUDModel.ts",
+    "../client/assets/scripts/LootVictoryHUDModel.ts",
+    "../client/assets/scripts/net/TerminalCoordinator.ts",
+    "../client/assets/scripts/net/LootSceneCoordinator.ts",
+    "../client/assets/scripts/net/ChallengePreview.ts"
   ]
 }

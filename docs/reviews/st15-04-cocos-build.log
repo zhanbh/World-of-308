@@ -1,0 +1,1406 @@
+
+init **** success
+Arguments:
+  C:\ProgramData\cocos\editors\Creator\3.8.8\CocosCreator.exe: true
+  project: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client
+  build: configPath=D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\build-configs\web-mobile-inventory.json
+  dev: false
+  home: C:\Users\bohan.zhan\.CocosCreator
+ 
+[Package] metrics@1.0.0 enable
+[Package] menu@1.0.0 enable
+[Package] profile@1.0.0 enable
+[Package] project@1.0.6 enable
+[Package] messages@1.0.0 enable
+[Package] utils@1.0.0 enable
+[Package] program@1.0.4 enable
+[Package] tester@1.0.0 enable
+[Package] information@1.0.1 enable
+[Package] preferences@1.0.0 enable
+[EditorQuickCompiler]Version information looks good.
+Note, quick compiler does not get launched.
+engine:compile-builtin-engine-success (180ms)
+Load engine in C:\ProgramData\cocos\editors\Creator\3.8.8\resources\resources\3d\engine
+Register native engine in C:\ProgramData\cocos\editors\Creator\3.8.8\resources\resources\3d\engine\native
+[Package] engine@1.0.12 enable
+[Package] programming@1.0.0 enable
+[Package] window@1.0.0 enable
+Request namespace: device-list
+[Package] Profile migrateLocal: device(0.0.0)...
+[Package] device@1.0.1 enable
+[Package] ui-kit@1.0.1 enable
+[Package] asset-db@1.0.0 enable
+[Package] scene@1.0.3 enable
+[Package] server@1.0.0 enable
+[Package] preview@1.0.1 enable
+Preview import map: {
+  "imports": {
+    "cc": "cce:/internal/x/cc",
+    "cc/env": "cc/editor/populate-internal-constants",
+    "cce.env": "cc/editor/populate-internal-constants",
+    "cc/userland/macro": "./userland/macro"
+  }
+}
+[Package] animator@1.0.0 enable
+[Build] internalRegister pkg(scene) in android platform success!
+[Package] builder@1.3.9 enable
+[Build] internalRegister pkg(scene) in google-play platform success!
+[Build] internalRegister pkg(scene) in ohos platform success!
+[Build] internalRegister pkg(scene) in harmonyos-next platform success!
+[Build] internalRegister pkg(scene) in huawei-agc platform success!
+[Build] internalRegister pkg(scene) in ios platform success!
+[Build] internalRegister pkg(scene) in windows platform success!
+[Build] internalRegister pkg(scene) in mac platform success!
+[Build] internalRegister pkg(scene) in linux platform success!
+[Build] internalRegister pkg(scene) in openpaas platform success!
+[Build] internalRegister pkg(scene) in alipay-mini-game platform success!
+[Build] internalRegister pkg(scene) in taobao-creative-app platform success!
+[Build] internalRegister pkg(scene) in taobao-mini-game platform success!
+[Build] internalRegister pkg(scene) in bytedance-mini-game platform success!
+[Build] internalRegister pkg(scene) in oppo-mini-game platform success!
+[Build] internalRegister pkg(scene) in huawei-quick-game platform success!
+[Build] internalRegister pkg(scene) in migu-mini-game platform success!
+[Build] internalRegister pkg(scene) in honor-mini-game platform success!
+[Build] internalRegister pkg(scene) in vivo-mini-game platform success!
+[Build] internalRegister pkg(scene) in xiaomi-quick-game platform success!
+[Build] internalRegister pkg(scene) in baidu-mini-game platform success!
+[Build] internalRegister pkg(scene) in wechatgame platform success!
+[Build] internalRegister pkg(scene) in wechatprogram platform success!
+[Build] internalRegister pkg(scene) in link-sure platform success!
+[Build] internalRegister pkg(scene) in qtt platform success!
+[Build] internalRegister pkg(scene) in fb-instant-games platform success!
+[Build] internalRegister pkg(scene) in web-desktop platform success!
+[Build] internalRegister pkg(scene) in web-mobile platform success!
+[Build] internalRegister pkg(scene) in cocos-runtime platform success!
+[Build] internalRegister pkg(scene) in platform-example platform success!
+[Build] internalRegister pkg(scene) in online platform success!
+[Build] internalRegister pkg(scene) in xr-meta platform success!
+[Build] internalRegister pkg(scene) in xr-huaweivr platform success!
+[Build] internalRegister pkg(scene) in xr-pico platform success!
+[Build] internalRegister pkg(scene) in xr-rokid platform success!
+[Build] internalRegister pkg(scene) in xr-monado platform success!
+[Build] internalRegister pkg(scene) in xr-spaces platform success!
+[Build] internalRegister pkg(scene) in xr-seed platform success!
+[Build] internalRegister pkg(scene) in ar-android platform success!
+[Build] internalRegister pkg(scene) in ar-ios platform success!
+[Build] internalRegister pkg(scene) in xr-gsxr platform success!
+[Build] internalRegister pkg(scene) in xr-yvr platform success!
+[Build] internalRegister pkg(scene) in xr-htc platform success!
+[Build] internalRegister pkg(scene) in xr-iqiyi platform success!
+[Build] internalRegister pkg(scene) in xr-skyworth platform success!
+[Build] internalRegister pkg(scene) in xr-ffalcon platform success!
+[Build] internalRegister pkg(scene) in xr-nreal platform success!
+[Build] internalRegister pkg(scene) in xr-inmo platform success!
+[Build] internalRegister pkg(scene) in xr-lenovo platform success!
+[Build] internalRegister pkg(scene) in android-hmi platform success!
+[Build-plugin] register pkg scene: 31ms
+Builder PluginManager init: 33ms
+[Package] shortcuts@1.0.1 enable
+[Package] animation-graph@1.0.0 enable
+[Package] about@1.0.0 enable
+[Package] assets@1.0.0 enable
+[Package] console@1.0.0 enable
+[Package] crash-reporter@1.0.0 enable
+[Package] extension@3.1.4 enable
+[Package] feedback@1.0.0 enable
+[Package] hierarchy@1.0.0 enable
+[Package] inspector@1.0.0 enable
+[Package] light-probe@1.0.4 enable
+[Package] lightmap@1.0.4 enable
+[Package] node-library@1.0.1 enable
+[Package] package-asset@1.0.3 enable
+[Package] process@1.0.0 enable
+[Package] reference-image@1.0.0 enable
+[Package] reflection-probe@1.0.4 enable
+[Package] engine-extends@1.0.0 enable
+[Package] adsense-h5g-plugin@1.0.1 enable
+[Build] internalRegister pkg(adsense-h5g-plugin) in android platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in google-play platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in ohos platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in harmonyos-next platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in huawei-agc platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in ios platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in windows platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in mac platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in linux platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in openpaas platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in alipay-mini-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in taobao-creative-app platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in taobao-mini-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in bytedance-mini-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in oppo-mini-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in huawei-quick-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in migu-mini-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in honor-mini-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in vivo-mini-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xiaomi-quick-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in baidu-mini-game platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in wechatgame platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in wechatprogram platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in link-sure platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in qtt platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in fb-instant-games platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in web-desktop platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in web-mobile platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in cocos-runtime platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in platform-example platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in online platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-meta platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-huaweivr platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-pico platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-rokid platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-monado platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-spaces platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-seed platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in ar-android platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in ar-ios platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-gsxr platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-yvr platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-htc platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-iqiyi platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-skyworth platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-ffalcon platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-nreal platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-inmo platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in xr-lenovo platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in android-hmi platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in web-desktop platform success!
+[Build] internalRegister pkg(adsense-h5g-plugin) in web-mobile platform success!
+[Build-plugin] register pkg adsense-h5g-plugin: 4ms
+[Package] alipay-mini-game@1.0.2 enable
+[Build] internalRegister pkg(alipay-mini-game) in alipay-mini-game platform success!
+[Build-plugin] register pkg alipay-mini-game: 5ms
+[Package] android@1.0.1 enable
+[Build] internalRegister pkg(android) in android platform success!
+[Build] internalRegister pkg(android) in huawei-agc platform success!
+[Build-plugin] register pkg android: 8ms
+[Package] bytedance-mini-game@1.0.3 enable
+[Build] internalRegister pkg(bytedance-mini-game) in bytedance-mini-game platform success!
+[Build-plugin] register pkg bytedance-mini-game: 4ms
+[Package] certificate@1.0.0 enable
+[Package] channel-upload-tools@1.0.0 enable
+[Package] fb-instant-games@1.0.0 enable
+[Build] internalRegister pkg(fb-instant-games) in fb-instant-games platform success!
+[Build-plugin] register pkg fb-instant-games: 6ms
+[Package] google-play@1.0.1 enable
+[Build] internalRegister pkg(google-play) in google-play platform success!
+[Build-plugin] register pkg google-play: 5ms
+[Package] harmonyos-next@1.0.0 enable
+[Build] internalRegister pkg(harmonyos-next) in harmonyos-next platform success!
+[Build-plugin] register pkg harmonyos-next: 6ms
+[Package] honor-mini-game@1.0.0 enable
+[Build] internalRegister pkg(honor-mini-game) in honor-mini-game platform success!
+[Build-plugin] register pkg honor-mini-game: 5ms
+[Package] huawei-agc@1.0.0 enable
+[Build] internalRegister pkg(huawei-agc) in huawei-agc platform success!
+[Build-plugin] register pkg huawei-agc: 3ms
+[Package] huawei-quick-game@1.0.3 enable
+[Build] internalRegister pkg(huawei-quick-game) in huawei-quick-game platform success!
+[Build-plugin] register pkg huawei-quick-game: 5ms
+[Package] ios@1.0.1 enable
+[Build-plugin] register pkg ios: 4ms
+[Package] linux@1.0.0 enable
+linux platform does not exist, Can not register panelInfo
+[Package] mac@1.0.0 enable
+[Build-plugin] register pkg mac: 6ms
+[Package] migu-mini-game@1.0.0 enable
+[Build] internalRegister pkg(migu-mini-game) in migu-mini-game platform success!
+[Build-plugin] register pkg migu-mini-game: 4ms
+[Package] native@1.0.2 enable
+[Build] internalRegister pkg(native) in ios platform success!
+[Build] internalRegister pkg(native) in android platform success!
+[Build] internalRegister pkg(native) in huawei-agc platform success!
+[Build] internalRegister pkg(native) in windows platform success!
+[Build] internalRegister pkg(native) in mac platform success!
+[Build] internalRegister pkg(native) in google-play platform success!
+[Build] internalRegister pkg(native) in ohos platform success!
+[Build] internalRegister pkg(native) in harmonyos-next platform success!
+linux platform does not exist, registration to this platform is not supported
+[Build] internalRegister pkg(native) in xr-huaweivr platform success!
+[Build] internalRegister pkg(native) in xr-meta platform success!
+[Build] internalRegister pkg(native) in xr-pico platform success!
+[Build] internalRegister pkg(native) in xr-rokid platform success!
+[Build] internalRegister pkg(native) in xr-monado platform success!
+[Build] internalRegister pkg(native) in ar-android platform success!
+[Build] internalRegister pkg(native) in ar-ios platform success!
+[Build] internalRegister pkg(native) in xr-spaces platform success!
+[Build] internalRegister pkg(native) in xr-seed platform success!
+[Build] internalRegister pkg(native) in xr-gsxr platform success!
+[Build] internalRegister pkg(native) in xr-yvr platform success!
+[Build] internalRegister pkg(native) in xr-htc platform success!
+[Build] internalRegister pkg(native) in xr-iqiyi platform success!
+[Build] internalRegister pkg(native) in xr-skyworth platform success!
+[Build] internalRegister pkg(native) in xr-ffalcon platform success!
+[Build] internalRegister pkg(native) in xr-nreal platform success!
+[Build] internalRegister pkg(native) in xr-inmo platform success!
+[Build] internalRegister pkg(native) in xr-lenovo platform success!
+[Build-plugin] register pkg native: 8ms
+[Package] ohos@1.0.0 enable
+[Build] internalRegister pkg(ohos) in ohos platform success!
+[Build-plugin] register pkg ohos: 3ms
+[Package] oppo-mini-game@1.0.3 enable
+[Build] internalRegister pkg(oppo-mini-game) in oppo-mini-game platform success!
+[Build-plugin] register pkg oppo-mini-game: 5ms
+[Package] runtime-dev-tools@1.0.0 enable
+[Package] taobao-mini-game@1.0.1 enable
+[Build] internalRegister pkg(taobao-mini-game) in taobao-mini-game platform success!
+[Build-plugin] register pkg taobao-mini-game: 4ms
+[Package] vivo-mini-game@1.0.3 enable
+[Build] internalRegister pkg(vivo-mini-game) in vivo-mini-game platform success!
+[Build-plugin] register pkg vivo-mini-game: 4ms
+[Package] web-desktop@1.0.1 enable
+[Build] internalRegister pkg(web-desktop) in web-desktop platform success!
+[Build-plugin] register pkg web-desktop: 4ms
+[Package] web-mobile@1.0.1 enable
+[Build] internalRegister pkg(web-mobile) in web-mobile platform success!
+[Build-plugin] register pkg web-mobile: 4ms
+[Package] wechatgame@1.0.4 enable
+[Build] internalRegister pkg(wechatgame) in wechatgame platform success!
+[Build-plugin] register pkg wechatgame: 4ms
+[Package] wechatprogram@1.0.2 enable
+wechatprogram platform does not exist, Can not register panelInfo
+[Package] windows@1.0.1 enable
+[Build] internalRegister pkg(windows) in windows platform success!
+[Build-plugin] register pkg windows: 4ms
+[Package] xiaomi-quick-game@1.0.2 enable
+[Build] internalRegister pkg(xiaomi-quick-game) in xiaomi-quick-game platform success!
+[Build-plugin] register pkg xiaomi-quick-game: 4ms
+[builder-ui] card-page 本地服务已启动: http://127.0.0.1:62805/builder-home/
+[builder-ui][ota] {"stage":"schedule","status":"started","env":"prod","intervalMs":3600000,"id":1,"at":"2026-10-29T16:18:43.522+08:00"}
+[Package] builder-ui@1.1.16 enable
+init builder manager success
+[Package] cocos-service@3.0.9 enable
+[Build] internalRegister pkg(cocos-service) in android platform success!
+[Build] internalRegister pkg(cocos-service) in google-play platform success!
+[Build] internalRegister pkg(cocos-service) in ohos platform success!
+[Build] internalRegister pkg(cocos-service) in harmonyos-next platform success!
+[Build] internalRegister pkg(cocos-service) in huawei-agc platform success!
+[Build] internalRegister pkg(cocos-service) in ios platform success!
+[Build] internalRegister pkg(cocos-service) in windows platform success!
+[Build] internalRegister pkg(cocos-service) in mac platform success!
+[Build] internalRegister pkg(cocos-service) in linux platform success!
+[Build] internalRegister pkg(cocos-service) in openpaas platform success!
+[Build] internalRegister pkg(cocos-service) in alipay-mini-game platform success!
+[Build] internalRegister pkg(cocos-service) in taobao-creative-app platform success!
+[Build] internalRegister pkg(cocos-service) in taobao-mini-game platform success!
+[Build] internalRegister pkg(cocos-service) in bytedance-mini-game platform success!
+[Build] internalRegister pkg(cocos-service) in oppo-mini-game platform success!
+[Build] internalRegister pkg(cocos-service) in huawei-quick-game platform success!
+[Build] internalRegister pkg(cocos-service) in migu-mini-game platform success!
+[Build] internalRegister pkg(cocos-service) in honor-mini-game platform success!
+[Build] internalRegister pkg(cocos-service) in vivo-mini-game platform success!
+[Build] internalRegister pkg(cocos-service) in xiaomi-quick-game platform success!
+[Build] internalRegister pkg(cocos-service) in baidu-mini-game platform success!
+[Build] internalRegister pkg(cocos-service) in wechatgame platform success!
+[Build] internalRegister pkg(cocos-service) in wechatprogram platform success!
+[Build] internalRegister pkg(cocos-service) in link-sure platform success!
+[Build] internalRegister pkg(cocos-service) in qtt platform success!
+[Build] internalRegister pkg(cocos-service) in fb-instant-games platform success!
+[Build] internalRegister pkg(cocos-service) in web-desktop platform success!
+[Build] internalRegister pkg(cocos-service) in web-mobile platform success!
+[Build] internalRegister pkg(cocos-service) in cocos-runtime platform success!
+[Build] internalRegister pkg(cocos-service) in platform-example platform success!
+[Build] internalRegister pkg(cocos-service) in online platform success!
+[Build] internalRegister pkg(cocos-service) in xr-meta platform success!
+[Build] internalRegister pkg(cocos-service) in xr-huaweivr platform success!
+[Build] internalRegister pkg(cocos-service) in xr-pico platform success!
+[Build] internalRegister pkg(cocos-service) in xr-rokid platform success!
+[Build] internalRegister pkg(cocos-service) in xr-monado platform success!
+[Build] internalRegister pkg(cocos-service) in xr-spaces platform success!
+[Build] internalRegister pkg(cocos-service) in xr-seed platform success!
+[Build] internalRegister pkg(cocos-service) in ar-android platform success!
+[Build] internalRegister pkg(cocos-service) in ar-ios platform success!
+[Build] internalRegister pkg(cocos-service) in xr-gsxr platform success!
+[Build] internalRegister pkg(cocos-service) in xr-yvr platform success!
+[Build] internalRegister pkg(cocos-service) in xr-htc platform success!
+[Build] internalRegister pkg(cocos-service) in xr-iqiyi platform success!
+[Build] internalRegister pkg(cocos-service) in xr-skyworth platform success!
+[Build] internalRegister pkg(cocos-service) in xr-ffalcon platform success!
+[Build] internalRegister pkg(cocos-service) in xr-nreal platform success!
+[Build] internalRegister pkg(cocos-service) in xr-inmo platform success!
+[Build] internalRegister pkg(cocos-service) in xr-lenovo platform success!
+[Build] internalRegister pkg(cocos-service) in android-hmi platform success!
+[Build-plugin] register pkg cocos-service: 4ms
+[Package] im-plugin@3.0.14 enable
+[Package] openpaas@1.0.0 enable
+[Build] internalRegister pkg(openpaas) in openpaas platform success!
+[Build-plugin] register pkg openpaas: 5ms
+[Package] placeholder@1.0.0 enable
+Start enter command build with options {"configPath":"D:\\IdeaProjects\\World-of-308\\.worktrees\\st15-04-cocos-loot-hud\\client\\build-configs\\web-mobile-inventory.json"}
+Read config from path D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\build-configs\web-mobile-inventory.json...
+[builder-ui][ota] {"stage":"check","status":"success","url":"https://download.sudden.ltd/restricted-assets/pink-ide-web/prod/R010/builder-home-0.1.24.zip","version":"1.0.9","channel":"stable","durationMs":722,"id":2,"at":"2026-10-29T16:18:44.245+08:00"}
+[builder-ui][ota] {"stage":"download","status":"started","url":"https://download.sudden.ltd/restricted-assets/pink-ide-web/prod/R010/builder-home-0.1.24.zip","version":"1.0.9","channel":"stable","id":3,"at":"2026-10-29T16:18:44.245+08:00"}
+[builder-ui][ota] {"stage":"download","status":"success","url":"https://download.sudden.ltd/restricted-assets/pink-ide-web/prod/R010/builder-home-0.1.24.zip","version":"1.0.9","channel":"stable","durationMs":1318,"bytes":1966890,"id":4,"at":"2026-10-29T16:18:45.563+08:00"}
+[builder-ui][ota] {"stage":"verify","status":"success","version":"1.0.9","channel":"stable","id":5,"at":"2026-10-29T16:18:45.574+08:00"}
+[builder-ui][ota] {"stage":"activate","status":"success","version":"1.0.9","channel":"stable","durationMs":1714,"id":6,"at":"2026-10-29T16:18:45.959+08:00"}
+[[Facet.reload]], before lock, count: 1
+[[Facet.reload]], after lock, count: 1
+[[Facet.reload]], before unlock, count: 1
+[[Facet.reload]], after unlock, count: 1
+auto refresh because script compiled or scene changed
+trackTimeEnd failed! Can not find the track time asset-db:worker-startup-database[internal] start
+trackTimeEnd failed! Can not find the track time asset-db:worker-startup-database[assets] start
+asset-db is ready!
+Check and complete build options {
+  name: 'world-of-308-action-prototype',
+  server: '',
+  engineModulesConfigKey: 'defaultConfig',
+  platform: 'web-mobile',
+  buildPath: 'project://build',
+  debug: true,
+  buildMode: 'normal',
+  mangleProperties: false,
+  md5Cache: false,
+  skipCompressTexture: false,
+  sourceMaps: false,
+  overwriteProjectSettings: {
+    macroConfig: { cleanupImageCache: 'on' },
+    includeModules: {
+      physics: 'inherit-project-setting',
+      'physics-2d': 'inherit-project-setting',
+      'gfx-webgl2': 'off'
+    }
+  },
+  nativeCodeBundleMode: 'wasm',
+  polyfills: { asyncFunctions: false },
+  experimentalEraseModules: false,
+  startSceneAssetBundle: false,
+  bundleConfigs: [],
+  inlineEnum: true,
+  useBuiltinServer: false,
+  md5CacheOptions: {
+    excludes: [],
+    includes: [],
+    replaceOnly: [],
+    handleTemplateMd5Link: true
+  },
+  mainBundleIsRemote: false,
+  mainBundleCompressionType: 'merge_dep',
+  useSplashScreen: false,
+  bundleCommonChunk: false,
+  packAutoAtlas: true,
+  startScene: '8627f424-97ac-47b3-82fa-cd7a692188a3',
+  outputName: 'web-mobile-inventory',
+  taskName: 'web-mobile-inventory',
+  scenes: [
+    {
+      url: 'db://assets/scenes/Prototype.scene',
+      uuid: '8627f424-97ac-47b3-82fa-cd7a692188a3'
+    }
+  ],
+  wasmCompressionMode: false,
+  binGroupConfig: { threshold: 16, enable: false },
+  packages: {},
+  __version__: '1.3.9'
+}
+start preview settings manager
+2026-10-29 16:19:18 - debug: =================================== build Task (web-mobile-inventory) Start ================================
+
+2026-10-29 16:19:18 - debug: Start build task, options:
+{"name":"world-of-308-action-prototype","server":"","engineModulesConfigKey":"defaultConfig","platform":"web-mobile","buildPath":"project://build","debug":true,"buildMode":"normal","mangleProperties":false,"md5Cache":false,"skipCompressTexture":false,"sourceMaps":false,"overwriteProjectSettings":{"macroConfig":{"cleanupImageCache":"on"},"includeModules":{"physics":"inherit-project-setting","physics-2d":"inherit-project-setting","gfx-webgl2":"off"}},"nativeCodeBundleMode":"wasm","polyfills":{"asyncFunctions":false},"experimentalEraseModules":false,"startSceneAssetBundle":false,"bundleConfigs":[],"inlineEnum":true,"useBuiltinServer":false,"md5CacheOptions":{"excludes":[],"includes":[],"replaceOnly":[],"handleTemplateMd5Link":true},"mainBundleIsRemote":false,"mainBundleCompressionType":"merge_dep","useSplashScreen":false,"bundleCommonChunk":false,"packAutoAtlas":true,"startScene":"8627f424-97ac-47b3-82fa-cd7a692188a3","outputName":"web-mobile-inventory","taskName":"web-mobile-inventory","scenes":[{"url":"db://assets/scenes/Prototype.scene","uuid":"8627f424-97ac-47b3-82fa-cd7a692188a3"}],"wasmCompressionMode":false,"binGroupConfig":{"threshold":16,"enable":false},"packages":{"adsense-h5g-plugin":{"enableAdsense":false,"enableTestAd":false},"web-mobile":{"useWebGPU":false,"orientation":"auto","embedWebDebugger":false}},"__version__":"1.3.9","logDest":"project://temp/builder/log/web-mobile2026-10-29 16-18.log"}
+
+2026-10-29 16:19:18 - debug: Build with Cocos Creator 3.8.8
+
+[[Facet.reload]], before lock, count: 2
+[[Facet.reload]], after lock, count: 2
+[[Facet.reload]], before unlock, count: 2
+[[Facet.reload]], after unlock, count: 2
+2026-10-29 16:19:18 - debug: cocos-service:(onBeforeBuild) start..., progress: 0%
+
+2026-10-29 16:19:18 - debug: // ---- build task cocos-service：onBeforeBuild ----
+
+2026-10-29 16:19:18 - debug: // ---- build task cocos-service：onBeforeBuild ---- (8ms)
+
+2026-10-29 16:19:18 - debug: cocos-service:(onBeforeBuild) in 8 ms ✓, progress: 2%
+
+2026-10-29 16:19:18 - debug: scene:(onBeforeBuild) start..., progress: 2%
+
+2026-10-29 16:19:18 - debug: // ---- build task scene：onBeforeBuild ----
+
+2026-10-29 16:19:18 - debug: // ---- build task scene：onBeforeBuild ---- (2ms)
+
+2026-10-29 16:19:18 - debug: scene:(onBeforeBuild) in 2 ms ✓, progress: 4%
+
+2026-10-29 16:19:18 - debug: Start lock asset db..., progress: 4%
+
+2026-10-29 16:19:18 - log: Asset DB is paused with build!
+
+2026-10-29 16:19:18 - debug: Query all assets info in project
+
+2026-10-29 16:19:18 - debug: init custom config: keepNodeUuid: false, useCache: true
+
+2026-10-29 16:19:18 - debug: web-mobile:(onAfterInit) start..., progress: 4%
+
+2026-10-29 16:19:18 - debug: // ---- build task web-mobile：onAfterInit ----
+
+2026-10-29 16:19:18 - debug: // ---- build task web-mobile：onAfterInit ---- (2ms)
+
+2026-10-29 16:19:18 - debug: web-mobile:(onAfterInit) in 2 ms ✓, progress: 5%
+
+2026-10-29 16:19:18 - debug: cocos-service:(onAfterInit) start..., progress: 5%
+
+2026-10-29 16:19:18 - debug: // ---- build task cocos-service：onAfterInit ----
+
+2026-10-29 16:19:18 - debug: // ---- build task cocos-service：onAfterInit ---- (3ms)
+
+2026-10-29 16:19:18 - debug: cocos-service:(onAfterInit) in 3 ms ✓, progress: 7%
+
+2026-10-29 16:19:18 - debug: Skip compress image, progress: 0%
+
+2026-10-29 16:19:18 - debug: adsense-h5g-plugin:(onBeforeBundleInit) start..., progress: 7%
+
+2026-10-29 16:19:18 - debug: adsense-h5g-plugin:(onBeforeBundleInit) start..., progress: 0%
+
+2026-10-29 16:19:18 - debug: // ---- build task adsense-h5g-plugin：onBeforeBundleInit ----
+
+2026-10-29 16:19:18 - debug: [adsense-h5g-plugin] remove script success
+
+2026-10-29 16:19:18 - debug: // ---- build task adsense-h5g-plugin：onBeforeBundleInit ---- (2ms)
+
+2026-10-29 16:19:18 - debug(2): adsense-h5g-plugin:(onBeforeBundleInit) in 2 ms ✓, progress: 7%
+
+2026-10-29 16:19:18 - debug(2): Init all bundles start..., progress: 7%
+
+2026-10-29 16:19:18 - debug(2): Num of bundles: 3..., progress: 7%
+
+2026-10-29 16:19:18 - debug(2): web-mobile:(onAfterBundleInit) start..., progress: 7%
+
+2026-10-29 16:19:18 - debug: // ---- build task web-mobile：onAfterBundleInit ----
+
+2026-10-29 16:19:18 - debug: // ---- build task web-mobile：onAfterBundleInit ---- (2ms)
+
+2026-10-29 16:19:18 - debug: web-mobile:(onAfterBundleInit) in 2 ms ✓, progress: 7%
+
+2026-10-29 16:19:18 - debug: web-mobile:(onAfterBundleInit) in 2 ms ✓, progress: 13%
+
+2026-10-29 16:19:18 - debug: Query asset bundle start, progress: 7%
+
+2026-10-29 16:19:18 - debug: // ---- build task Query asset bundle ----
+
+2026-10-29 16:19:18 - debug: Init bundle root assets start..., progress: 7%
+
+2026-10-29 16:19:18 - debug: Init bundle root assets start..., progress: 13%
+
+2026-10-29 16:19:18 - debug: Query preload assets/scripts from cc.config.json: 60f7195c-ec2a-45eb-ba94-8955f60e81d0,1c02ae6f-4492-4915-b8f8-7492a3b1e4cd,810e96e4-e456-4468-9b59-f4e8f39732c0,efe8e2a3-eace-427b-b4f1-cb8a937ec77d,e9aa9a3e-5b2b-4ac7-a2c7-073de2b2b24f,8bbdbcdd-5cd4-4100-b6d5-b7c9625b6107,50f4348b-c883-4e2f-8f11-ce233b859fa1,fda095cb-831d-4601-ad94-846013963de8,f92806d7-1768-443f-afe8-12bcde84d0f0,dd3a144d-ab7f-41f0-82b8-2e43a090d496,f0416e68-0200-4b77-a926-4f9d16e494da,970b0598-bcb0-4714-91fb-2e81440dccd8,bcd64cc6-2dd9-43f6-abbe-66318d332032,d930590d-bb92-4cc8-8bd1-23cd027f9edf,a3cd009f-0ab0-420d-9278-b9fdab939bbc,6a2d0734-bd9e-4ddf-946e-caa52498cb75,871c3b6c-7379-419d-bda3-794b239ab90d,ff9b0199-ce04-4cfe-86cc-6c719f08d6e4,de1c2107-70c8-4021-8459-6399f24d01c6,cbf30902-517f-40dc-af90-a550bac27cf1,5c601d96-e4c7-4698-991b-7ee674b11079
+
+2026-10-29 16:19:18 - debug:   Number of all scenes: 1
+
+2026-10-29 16:19:18 - debug:   Number of all scripts: 43
+
+2026-10-29 16:19:18 - debug:   Number of other assets: 397
+
+2026-10-29 16:19:18 - debug: Init bundle root assets success..., progress: 7%
+
+2026-10-29 16:19:18 - debug: Init bundle root assets success..., progress: 13%
+
+2026-10-29 16:19:18 - debug: reload all scripts.
+
+2026-10-29 16:19:18 - log: creating executor ...
+
+2026-10-29 16:19:18 - debug: [[Executor]] reload before lock
+
+2026-10-29 16:19:18 - debug: Set detail map pack:///resolution-detail-map.json: {}
+
+2026-10-29 16:19:18 - groupCollapsed: Invalidate all modules
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\93\93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\93\93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/base" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/gfx-webgl" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/gfx-webgl2" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/gfx-empty" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/gfx-webgpu" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/3d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/animation" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/skeletal-animation" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/sorting" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/rich-text" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/mask" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/graphics" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/ui-skew" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/ui" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/affine-transform" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/sorting-2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/particle" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/particle-2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-framework" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-cannon" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-physx" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-ammo" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-builtin" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-framework" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-box2d-jsb" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-box2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-builtin" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-box2d-wasm" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/intersection-2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/primitive" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/profiler" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/geometry-renderer" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/audio" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/video" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/xr" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/light-probe" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/terrain" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/webview" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/tween" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/tiled-map" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/vendor-google" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/spine" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/dragon-bones" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/custom-pipeline" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/custom-pipeline-post-process" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/legacy-pipeline" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/base" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/gfx-webgl" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/gfx-webgl2" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/gfx-empty" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/gfx-webgpu" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/3d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/animation" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/skeletal-animation" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/sorting" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/rich-text" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/mask" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/graphics" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/ui-skew" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/ui" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/affine-transform" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/sorting-2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/particle" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/particle-2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-framework" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-cannon" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-physx" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-ammo" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-builtin" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-framework" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-box2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-builtin" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-box2d-wasm" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/intersection-2d" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/primitive" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/profiler" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/geometry-renderer" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/audio" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/video" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/xr" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/light-probe" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/terrain" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/webview" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/tween" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/tiled-map" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/spine" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/dragon-bones" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/custom-pipeline" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/custom-pipeline-post-process" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/legacy-pipeline" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/vendor-google" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/cc-fu/physics-2d-box2d-jsb" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/93/93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js" loaded.
+
+2026-10-29 16:19:18 - debug: Invalidating 'pack:///chunks/93/93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js'
+
+2026-10-29 16:19:18 - groupEnd: Invalidate all modules
+
+2026-10-29 16:19:18 - groupCollapsed: Imports all modules
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/93/93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\6d\6d8fd2b0177941b032ddc0733af48a561fb60657.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\6d\6d8fd2b0177941b032ddc0733af48a561fb60657.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/6d/6d8fd2b0177941b032ddc0733af48a561fb60657.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\50\50ec684ab28702df18cf262b25c26ec6d899c3a5.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\50\50ec684ab28702df18cf262b25c26ec6d899c3a5.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\6a\6a5019a719a9014c047e67aa1cf34453ab8392ce.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\6a\6a5019a719a9014c047e67aa1cf34453ab8392ce.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\b1\b18130d786bcadd1d0cb653401afdf2ede79b799.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\b1\b18130d786bcadd1d0cb653401afdf2ede79b799.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\e2\e2831fde95d58c09916d0f882742b7597544b8d1.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\e2\e2831fde95d58c09916d0f882742b7597544b8d1.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\fd\fd74c742a972dbbcd3691d204a338b19a4515b62.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\fd\fd74c742a972dbbcd3691d204a338b19a4515b62.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\7d\7dd5f1b51da4ae6cb44c6f9d41d8fc719b109223.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\7d\7dd5f1b51da4ae6cb44c6f9d41d8fc719b109223.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/6a/6a5019a719a9014c047e67aa1cf34453ab8392ce.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/engine-export-to-editor/cc/editor/populate-internal-constants" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/7d/7dd5f1b51da4ae6cb44c6f9d41d8fc719b109223.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "cce:/internal/x/engine-export-to-editor/cc/editor/populate-internal-constants" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Register BuiltinPipelineSettings
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/e2/e2831fde95d58c09916d0f882742b7597544b8d1.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/fd/fd74c742a972dbbcd3691d204a338b19a4515b62.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Register BuiltinPipelinePassBuilder
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/b1/b18130d786bcadd1d0cb653401afdf2ede79b799.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Register BuiltinDepthOfFieldPass
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/50/50ec684ab28702df18cf262b25c26ec6d899c3a5.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\62\621a159ce4a7bac550092546e00c97e12458f12b.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\62\621a159ce4a7bac550092546e00c97e12458f12b.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Register DebugViewRuntimeControl
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/62/621a159ce4a7bac550092546e00c97e12458f12b.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\51\51ca87fe577821ec1195702ef46ef8ece469920a.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\51\51ca87fe577821ec1195702ef46ef8ece469920a.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\c9\c9ff02d1cc2a28b50f8537683ab43dbfbfc4b4d2.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\c9\c9ff02d1cc2a28b50f8537683ab43dbfbfc4b4d2.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/c9/c9ff02d1cc2a28b50f8537683ab43dbfbfc4b4d2.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/51/51ca87fe577821ec1195702ef46ef8ece469920a.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\39\399c32d61dc868e7d1e8fddceb2cbeabfda564a6.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\39\399c32d61dc868e7d1e8fddceb2cbeabfda564a6.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/39/399c32d61dc868e7d1e8fddceb2cbeabfda564a6.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\99\99b1113a37584650e659a5fb1e91e80309f8e92d.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\99\99b1113a37584650e659a5fb1e91e80309f8e92d.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/99/99b1113a37584650e659a5fb1e91e80309f8e92d.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\2f\2f05802bad92368bca80496ff5220fb6c0665e51.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\2f\2f05802bad92368bca80496ff5220fb6c0665e51.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/2f/2f05802bad92368bca80496ff5220fb6c0665e51.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\9f\9f1291f3b44e8053e1143ccd297485a95f8924e6.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\9f\9f1291f3b44e8053e1143ccd297485a95f8924e6.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\c1\c1cf529cefd28509f3ab54559145c4d98aae1931.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\c1\c1cf529cefd28509f3ab54559145c4d98aae1931.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\1b\1bf4fdbcf39e05ad75761d676d2e4af61853fb78.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\1b\1bf4fdbcf39e05ad75761d676d2e4af61853fb78.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\ce\ce859dc4a88d6ece8c6030e3394d11a01d575a51.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\ce\ce859dc4a88d6ece8c6030e3394d11a01d575a51.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\8d\8d299ac3c7578d2170cc55a1fb16b21c56bbb522.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\8d\8d299ac3c7578d2170cc55a1fb16b21c56bbb522.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\40\40578fb05ec97646b34f3f1623173f2b5587e681.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\40\40578fb05ec97646b34f3f1623173f2b5587e681.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\39\398fcb172f5df8e4ee472460af6770bb05a31c85.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\39\398fcb172f5df8e4ee472460af6770bb05a31c85.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\90\9039e53eecae32114a027c0371f73f39e4703ec5.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\90\9039e53eecae32114a027c0371f73f39e4703ec5.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\92\92046a8f9200ea2f14955942739132c30e9e396d.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\92\92046a8f9200ea2f14955942739132c30e9e396d.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\a0\a05595466f5d2e3855403e84b8a1c3c217cb38c6.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\a0\a05595466f5d2e3855403e84b8a1c3c217cb38c6.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\9f\9f95ee09a67e033530fc4a5eafce343c4082f334.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\9f\9f95ee09a67e033530fc4a5eafce343c4082f334.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\73\736ea807967b5d036910d8536868c8d7a1675417.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\73\736ea807967b5d036910d8536868c8d7a1675417.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\23\236bb906f735b0b22c85ee73e9d07d5b8c803f45.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\23\236bb906f735b0b22c85ee73e9d07d5b8c803f45.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\5c\5c656a294eaf966ef371abeefc8e99f400895270.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\5c\5c656a294eaf966ef371abeefc8e99f400895270.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\f7\f787e318a04016a20269221daf36090fb4535ad7.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\f7\f787e318a04016a20269221daf36090fb4535ad7.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\26\26bde1090ba41e87af6854bc3a5f0e66008af666.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\26\26bde1090ba41e87af6854bc3a5f0e66008af666.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\4b\4bed20631b0cb42c69f466574db326e2af2aae39.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\4b\4bed20631b0cb42c69f466574db326e2af2aae39.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\f9\f91f35df03247ba45594138fdd77ed059ab81799.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\f9\f91f35df03247ba45594138fdd77ed059ab81799.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\91\9122794de1f88cd770f6ce387cd85e28ecf310d0.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\91\9122794de1f88cd770f6ce387cd85e28ecf310d0.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\74\74bd451035a570f7f535d82b2b6a2cb7a516dd97.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\74\74bd451035a570f7f535d82b2b6a2cb7a516dd97.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\75\75d52de9c3bf003d66f37e90843d9850ce9d367b.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\75\75d52de9c3bf003d66f37e90843d9850ce9d367b.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\2e\2eac2f84bd979969854b719dcf12145ea2716580.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\2e\2eac2f84bd979969854b719dcf12145ea2716580.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\74\742faa4ddb24e78c72445c433263328a22c6a6ca.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\74\742faa4ddb24e78c72445c433263328a22c6a6ca.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\f3\f3beb5651e210e915b115d6bbb5887fe7006f249.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\f3\f3beb5651e210e915b115d6bbb5887fe7006f249.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\0e\0ec280a1c564c7d1251e1b039524ac09ec2de5f7.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\0e\0ec280a1c564c7d1251e1b039524ac09ec2de5f7.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\6d\6dc30a24c0e5339ce9c61b6a2d1dfc997dbeb678.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\6d\6dc30a24c0e5339ce9c61b6a2d1dfc997dbeb678.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\ec\ec935b172639cfae47f8e7502dba5dabed184ac2.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\ec\ec935b172639cfae47f8e7502dba5dabed184ac2.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\46\46b222da7b6f5d28ef9e0eec45096148a7d58f3f.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\46\46b222da7b6f5d28ef9e0eec45096148a7d58f3f.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\79\7991c855bc4dfd3ad59a3b553041a3d19ae65b3a.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\79\7991c855bc4dfd3ad59a3b553041a3d19ae65b3a.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\48\48f09aff1f641d98a19b972c8b11e20284d6531a.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\48\48f09aff1f641d98a19b972c8b11e20284d6531a.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\55\5513a4ad89b16a3adb74b061cfbcd2bb0b9e73ac.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\55\5513a4ad89b16a3adb74b061cfbcd2bb0b9e73ac.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\e4\e4f92fb25c777a006c5523eccf22cf9afb4da0ad.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\e4\e4f92fb25c777a006c5523eccf22cf9afb4da0ad.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\ff\ff97e853d98fdd17ea2242af6c59aebde15e6c9a.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\ff\ff97e853d98fdd17ea2242af6c59aebde15e6c9a.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\e1\e1a8b5d65cca644dcccaf9e1c07eed71855f022b.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\e1\e1a8b5d65cca644dcccaf9e1c07eed71855f022b.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\4e\4e20f10587b7325c615e009192009a8da77ba580.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\4e\4e20f10587b7325c615e009192009a8da77ba580.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\a2\a2767f0ff26b5202299dea7f6b21c1c252900dae.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\a2\a2767f0ff26b5202299dea7f6b21c1c252900dae.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\91\914e27eccfa56b6ab0c18f7bea556b474ded051d.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\91\914e27eccfa56b6ab0c18f7bea556b474ded051d.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\df\dfd3d04aeec33a5602f8f7ac88d46fa2fb1b4d21.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\df\dfd3d04aeec33a5602f8f7ac88d46fa2fb1b4d21.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\c9\c9e12d1badc9b448275efb6c44e27e4b004dd44b.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\c9\c9e12d1badc9b448275efb6c44e27e4b004dd44b.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\43\431e0c3f1186ac96d24ce0970c1b637b98179914.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\43\431e0c3f1186ac96d24ce0970c1b637b98179914.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\47\47317db9b17e4e098e5bc7deb841caf15395ba64.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\47\47317db9b17e4e098e5bc7deb841caf15395ba64.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\9d\9d7e6915da1b15f909815bad22f16a16047aab91.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\9d\9d7e6915da1b15f909815bad22f16a16047aab91.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\b6\b6247654104a49d59c288dd45c780c88aeecf4c0.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\b6\b6247654104a49d59c288dd45c780c88aeecf4c0.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\d5\d5d06bb8efc40f0c37901b8c206765f6816dbaab.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\d5\d5d06bb8efc40f0c37901b8c206765f6816dbaab.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\dd\ddc646f26a1a46d2decb5453b144e26c53d057cb.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\dd\ddc646f26a1a46d2decb5453b144e26c53d057cb.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\ea\eae495f07b226ef8f5ed13dec42049d240b9e412.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\ea\eae495f07b226ef8f5ed13dec42049d240b9e412.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/8d/8d299ac3c7578d2170cc55a1fb16b21c56bbb522.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/ce/ce859dc4a88d6ece8c6030e3394d11a01d575a51.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/90/9039e53eecae32114a027c0371f73f39e4703ec5.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/1b/1bf4fdbcf39e05ad75761d676d2e4af61853fb78.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/c1/c1cf529cefd28509f3ab54559145c4d98aae1931.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/f7/f787e318a04016a20269221daf36090fb4535ad7.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/40/40578fb05ec97646b34f3f1623173f2b5587e681.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/47/47317db9b17e4e098e5bc7deb841caf15395ba64.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/9d/9d7e6915da1b15f909815bad22f16a16047aab91.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/b6/b6247654104a49d59c288dd45c780c88aeecf4c0.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/d5/d5d06bb8efc40f0c37901b8c206765f6816dbaab.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/ff/ff97e853d98fdd17ea2242af6c59aebde15e6c9a.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/f3/f3beb5651e210e915b115d6bbb5887fe7006f249.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/df/dfd3d04aeec33a5602f8f7ac88d46fa2fb1b4d21.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/55/5513a4ad89b16a3adb74b061cfbcd2bb0b9e73ac.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/6d/6dc30a24c0e5339ce9c61b6a2d1dfc997dbeb678.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/48/48f09aff1f641d98a19b972c8b11e20284d6531a.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/ea/eae495f07b226ef8f5ed13dec42049d240b9e412.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/74/742faa4ddb24e78c72445c433263328a22c6a6ca.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/dd/ddc646f26a1a46d2decb5453b144e26c53d057cb.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/2e/2eac2f84bd979969854b719dcf12145ea2716580.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/43/431e0c3f1186ac96d24ce0970c1b637b98179914.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/75/75d52de9c3bf003d66f37e90843d9850ce9d367b.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/26/26bde1090ba41e87af6854bc3a5f0e66008af666.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/39/398fcb172f5df8e4ee472460af6770bb05a31c85.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/23/236bb906f735b0b22c85ee73e9d07d5b8c803f45.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/4b/4bed20631b0cb42c69f466574db326e2af2aae39.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/92/92046a8f9200ea2f14955942739132c30e9e396d.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/5c/5c656a294eaf966ef371abeefc8e99f400895270.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/0e/0ec280a1c564c7d1251e1b039524ac09ec2de5f7.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/ec/ec935b172639cfae47f8e7502dba5dabed184ac2.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/e1/e1a8b5d65cca644dcccaf9e1c07eed71855f022b.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/e4/e4f92fb25c777a006c5523eccf22cf9afb4da0ad.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/46/46b222da7b6f5d28ef9e0eec45096148a7d58f3f.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/79/7991c855bc4dfd3ad59a3b553041a3d19ae65b3a.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/a2/a2767f0ff26b5202299dea7f6b21c1c252900dae.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/4e/4e20f10587b7325c615e009192009a8da77ba580.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/f9/f91f35df03247ba45594138fdd77ed059ab81799.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/91/914e27eccfa56b6ab0c18f7bea556b474ded051d.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/c9/c9e12d1badc9b448275efb6c44e27e4b004dd44b.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/74/74bd451035a570f7f535d82b2b6a2cb7a516dd97.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/91/9122794de1f88cd770f6ce387cd85e28ecf310d0.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/9f/9f95ee09a67e033530fc4a5eafce343c4082f334.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/a0/a05595466f5d2e3855403e84b8a1c3c217cb38c6.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/73/736ea807967b5d036910d8536868c8d7a1675417.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Register Prototype
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/9f/9f1291f3b44e8053e1143ccd297485a95f8924e6.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\30\302064fc0e72fd5c6a6f7634dcb6945e97dc3c4d.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\30\302064fc0e72fd5c6a6f7634dcb6945e97dc3c4d.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/30/302064fc0e72fd5c6a6f7634dcb6945e97dc3c4d.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\d4\d4200aeccc0299b8d655c7a7b1f044e5b43bebac.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\d4\d4200aeccc0299b8d655c7a7b1f044e5b43bebac.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\95\9519e086cf1bf0742d9baff714ea6368abc13b2c.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\95\9519e086cf1bf0742d9baff714ea6368abc13b2c.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/95/9519e086cf1bf0742d9baff714ea6368abc13b2c.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/d4/d4200aeccc0299b8d655c7a7b1f044e5b43bebac.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\a0\a04da46d77de1dc73e8b0cec4c270295f0091a5c.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\a0\a04da46d77de1dc73e8b0cec4c270295f0091a5c.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/a0/a04da46d77de1dc73e8b0cec4c270295f0091a5c.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\5a\5a468d471d4e33b2efd25c32e29e2e5b3eff75d1.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\5a\5a468d471d4e33b2efd25c32e29e2e5b3eff75d1.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/5a/5a468d471d4e33b2efd25c32e29e2e5b3eff75d1.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\d5\d5c1ac73de53c0a8a8484298b61da1fe62083bdd.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\d5\d5c1ac73de53c0a8a8484298b61da1fe62083bdd.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/d5/d5c1ac73de53c0a8a8484298b61da1fe62083bdd.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\03\035fa56b55668e6bc003e1d36a6695e4c5f8d209.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\03\035fa56b55668e6bc003e1d36a6695e4c5f8d209.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\a1\a15099b516426db3fc96fa8e706fa5a6d379b64c.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\a1\a15099b516426db3fc96fa8e706fa5a6d379b64c.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/a1/a15099b516426db3fc96fa8e706fa5a6d379b64c.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/03/035fa56b55668e6bc003e1d36a6695e4c5f8d209.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\51\5167da1c07758af9f3251b27c360a621ad6d12c9.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\51\5167da1c07758af9f3251b27c360a621ad6d12c9.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/51/5167da1c07758af9f3251b27c360a621ad6d12c9.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\59\59f921e51dcf238925977b6abc53addca2233f87.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\59\59f921e51dcf238925977b6abc53addca2233f87.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/59/59f921e51dcf238925977b6abc53addca2233f87.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\4a\4a3b530110c8197c2315abbabb9a38d9367c2c3d.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\4a\4a3b530110c8197c2315abbabb9a38d9367c2c3d.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/4a/4a3b530110c8197c2315abbabb9a38d9367c2c3d.js" loaded.
+
+2026-10-29 16:19:18 - debug: D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\0a\0a88588928cff8b825e311189c0b88c844d8caab.js resolved to D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\temp\programming\packer-driver\targets\editor\chunks\0a\0a88588928cff8b825e311189c0b88c844d8caab.js is not in module cache!
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/0a/0a88588928cff8b825e311189c0b88c844d8caab.js" loaded.
+
+2026-10-29 16:19:18 - debug: [[Executor]] Module "pack:///chunks/6d/6d8fd2b0177941b032ddc0733af48a561fb60657.js" loaded.
+
+2026-10-29 16:19:18 - groupEnd: Imports all modules
+
+2026-10-29 16:19:18 - debug: [[Executor]] after unlock
+
+2026-10-29 16:19:18 - debug: Incremental keys: regeneratorRuntime,b2jsb
+
+2026-10-29 16:19:18 - debug: Init bundle share assets start..., progress: 7%
+
+2026-10-29 16:19:18 - debug: Init bundle share assets start..., progress: 13%
+
+2026-10-29 16:19:18 - debug: Init bundle share assets success..., progress: 7%
+
+2026-10-29 16:19:18 - debug: Init bundle share assets success..., progress: 13%
+
+2026-10-29 16:19:18 - debug: handle json group in bundle internal
+
+2026-10-29 16:19:18 - debug: handle json group in bundle internal success
+
+2026-10-29 16:19:18 - debug: handle json group in bundle resources
+
+2026-10-29 16:19:18 - debug: handle json group in bundle main
+
+2026-10-29 16:19:18 - debug: init image compress task 0 in bundle internal
+
+2026-10-29 16:19:18 - debug: handle json group in bundle main success
+
+2026-10-29 16:19:18 - debug: init image compress task 0 in bundle main
+
+2026-10-29 16:19:18 - debug: handle json group in bundle resources success
+
+2026-10-29 16:19:18 - debug: init image compress task 0 in bundle resources
+
+2026-10-29 16:19:18 - debug: // ---- build task Query asset bundle ---- (280ms)
+
+2026-10-29 16:19:18 - log: run build task Query asset bundle success in 280 ms√, progress: 12%
+
+2026-10-29 16:19:18 - debug: [Build Memory track]: Query asset bundle start:243.49MB, end 248.33MB, increase: 4.84MB
+
+2026-10-29 16:19:18 - debug: Query asset bundle start, progress: 12%
+
+2026-10-29 16:19:18 - debug: // ---- build task Query asset bundle ----
+
+2026-10-29 16:19:18 - debug: // ---- build task Query asset bundle ---- (4ms)
+
+2026-10-29 16:19:18 - log: run build task Query asset bundle success in 4 ms√, progress: 17%
+
+2026-10-29 16:19:18 - debug: [Build Memory track]: Query asset bundle start:248.37MB, end 248.52MB, increase: 145.90KB
+
+2026-10-29 16:19:18 - debug: Build script start, progress: 17%
+
+2026-10-29 16:19:18 - debug: // ---- build task Build script ----
+
+auto refresh because script compiled or scene changed
+2026-10-29 16:19:19 - log: [buildPolyfillsCommand]enter sub process 15228, 9229, see: chrome://inspect/#devices
+
+
+
+2026-10-29 16:19:23 - debug: execute-script-end with buildPolyfillsCommand 4338ms
+
+2026-10-29 16:19:23 - debug: Generate systemJs..., progress: 17%
+
+2026-10-29 16:19:24 - debug: execute-script-end with buildSystemJsCommand 1584ms
+
+2026-10-29 16:19:24 - debug: Build project script start..., progress: 17%
+
+2026-10-29 16:19:24 - debug: Build project script start..., progress: 13%
+
+Warn: [Assets] [buildScriptCommand][[Build.Script.Rollup]] Circular dependency: file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/monster-simulation.ts -> file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/monster-tactics.ts -> file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/monster-simulation.ts
+[warning][[Build.Script.Rollup]] Circular dependency: file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/protocol/asset-v2.ts -> file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/protocol/scene-v2.ts -> file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/protocol/asset-v2.ts
+
+    at console.warn (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\node_modules\@sentry\core\src\utils-hoist\instrument\console.ts:40:14)
+    at NewConsole.warn (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\builtin\asset-db\dist\worker\console.ccc:1:1637)
+    at NewConsole.warn (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\builtin\builder\dist\worker\console.ccc:1:2358)
+    at Socket.<anonymous> (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\builtin\builder\dist\worker\worker-pools\sub-process-manager.ccc:1:2763)
+    at Socket.emit (node:events:519:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Socket.Readable.push (node:internal/streams/readable:390:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)
+2026-10-29 16:19:28 - warn: [buildScriptCommand][[Build.Script.Rollup]] Circular dependency: file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/monster-simulation.ts -> file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/monster-tactics.ts -> file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/monster-simulation.ts
+[warning][[Build.Script.Rollup]] Circular dependency: file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/protocol/asset-v2.ts -> file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/protocol/scene-v2.ts -> file:///D:/IdeaProjects/World-of-308/.worktrees/st15-04-cocos-loot-hud/shared/src/protocol/asset-v2.ts
+
+
+
+2026-10-29 16:19:30 - log: [buildScriptCommand]Number of non-entry chunks: 3
+
+
+
+2026-10-29 16:19:30 - debug: execute-script-end with buildScriptCommand 5497ms
+
+2026-10-29 16:19:30 - debug: Copy externalScripts success!
+
+2026-10-29 16:19:30 - debug: Build project script in (5513 ms) √, progress: 17%
+
+2026-10-29 16:19:30 - debug: Build project script in (5513 ms) √, progress: 13%
+
+2026-10-29 16:19:30 - debug: Build engine start..., progress: 17%
+
+2026-10-29 16:19:30 - debug: mangleProperties is enabled, found engine-mangle-config.json, use it
+
+2026-10-29 16:19:30 - debug: Error: Exit process with code:null, signal:SIGTERM in task build-script
+    at ChildProcess.<anonymous> (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\builtin\builder\dist\worker\worker-pools\sub-process-manager.ccc:1:2409)
+    at ChildProcess.emit (node:events:519:28)
+    at Process.ChildProcess._handle.onexit (node:internal/child_process:294:12)
+
+
+2026-10-29 16:19:30 - debug: Use cache engine: {link(C:\Users\BOHAN~1.ZHA\AppData\Local\Temp\CocosCreator\3.8.8\builder\engine\c752d914810447003c6d497a76c51a8a)}
+
+2026-10-29 16:19:30 - debug: Use cache, md5String: debug=true,
+sourceMaps=false,
+includeModules=["2d",
+"affine-transform",
+"base",
+"custom-pipeline",
+"gfx-webgl",
+"graphics",
+"mask",
+"profiler",
+"ui",
+"custom-pipeline-builtin-scripts"],
+engineVersion="3.8.8",
+platformType="HTML5",
+split=false,
+nativeCodeBundleMode="wasm",
+targets=undefined,
+entry="C:\\ProgramData\\cocos\\editors\\Creator\\3.8.8\\resources\\resources\\3d\\engine",
+noDeprecatedFeatures=undefined,
+loose=true,
+assetURLFormat="runtime-resolved",
+flags={"DEBUG":true,
+"LOAD_BULLET_MANUALLY":false,
+"LOAD_SPINE_MANUALLY":false,
+"WEBGPU":false},
+preserveType=undefined,
+wasmCompressionMode=false,
+enableNamedRegisterForSystemJSModuleFormat=undefined,
+mangleProperties=false,
+inlineEnum=true,
+
+
+
+2026-10-29 16:19:30 - debug: Use cache, options: {
+  "entry": "C:\\ProgramData\\cocos\\editors\\Creator\\3.8.8\\resources\\resources\\3d\\engine",
+  "debug": true,
+  "mangleProperties": false,
+  "inlineEnum": true,
+  "sourceMaps": false,
+  "includeModules": [
+    "2d",
+    "affine-transform",
+    "base",
+    "custom-pipeline",
+    "gfx-webgl",
+    "graphics",
+    "mask",
+    "profiler",
+    "ui",
+    "custom-pipeline-builtin-scripts"
+  ],
+  "engineVersion": "3.8.8",
+  "md5Map": [],
+  "engineName": "cocos-js",
+  "output": "D:\\IdeaProjects\\World-of-308\\.worktrees\\st15-04-cocos-loot-hud\\client\\build\\web-mobile-inventory\\cocos-js",
+  "platformType": "HTML5",
+  "useCache": true,
+  "nativeCodeBundleMode": "wasm",
+  "wasmCompressionMode": false,
+  "split": false,
+  "assetURLFormat": "runtime-resolved",
+  "flags": {
+    "DEBUG": true,
+    "LOAD_BULLET_MANUALLY": false,
+    "LOAD_SPINE_MANUALLY": false,
+    "WEBGPU": false
+  }
+}
+
+
+2026-10-29 16:19:30 - debug: Build engine in (140 ms) √, progress: 17%
+
+2026-10-29 16:19:30 - debug: Copy plugin script ..., progress: 17%
+
+2026-10-29 16:19:30 - debug: Generate import-map..., progress: 17%
+
+2026-10-29 16:19:30 - debug: // ---- build task Build script ---- (11606ms)
+
+2026-10-29 16:19:30 - log: run build task Build script success in 11 s√, progress: 22%
+
+2026-10-29 16:19:30 - debug: [Build Memory track]: Build script start:248.64MB, end 231.31MB, increase: -17745.32KB
+
+2026-10-29 16:19:30 - debug: Build Assets start, progress: 22%
+
+2026-10-29 16:19:30 - debug: // ---- build task Build Assets ----
+
+2026-10-29 16:19:30 - debug: Build bundles..., progress: 22%
+
+2026-10-29 16:19:30 - debug: Pack Images start, progress: 22%
+
+2026-10-29 16:19:30 - debug: Pack Images start, progress: 13%
+
+2026-10-29 16:19:30 - debug: Number of pac assets: 1
+
+2026-10-29 16:19:30 - debug: No pack results
+
+2026-10-29 16:19:30 - debug: Compress image start..., progress: 22%
+
+2026-10-29 16:19:30 - debug: Compress image start..., progress: 13%
+
+2026-10-29 16:19:30 - group: Compress image...
+
+2026-10-29 16:19:30 - debug: sort compress task {}
+
+2026-10-29 16:19:30 - debug: Num of all image compress task 0, really: 0, configTasks: 0
+
+2026-10-29 16:19:30 - debug: No image need to compress
+
+2026-10-29 16:19:30 - groupEnd: Compress image...
+
+2026-10-29 16:19:30 - debug: Compress image success..., progress: 22%
+
+2026-10-29 16:19:30 - debug: Compress image success..., progress: 13%
+
+2026-10-29 16:19:30 - debug: Output asset in bundles start, progress: 22%
+
+2026-10-29 16:19:30 - debug: Output asset in bundles start, progress: 13%
+
+2026-10-29 16:19:30 - debug: Handle all json groups in bundle internal
+
+2026-10-29 16:19:30 - debug: handle json group
+
+2026-10-29 16:19:30 - debug: Handle all json groups in bundle resources
+
+2026-10-29 16:19:30 - debug: handle json group
+
+2026-10-29 16:19:30 - debug: Handle all json groups in bundle main
+
+2026-10-29 16:19:30 - debug: handle json group
+
+2026-10-29 16:19:30 - debug(2): handle single json
+
+2026-10-29 16:19:30 - debug: Json group(0b0f7a282) compile success，json number: 6
+
+2026-10-29 16:19:30 - debug: handle single json
+
+2026-10-29 16:19:30 - debug: Output asset in bundles success, progress: 22%
+
+2026-10-29 16:19:30 - debug: Output asset in bundles success, progress: 13%
+
+2026-10-29 16:19:30 - debug: Output asset in bundles start, progress: 22%
+
+2026-10-29 16:19:30 - debug: Output asset in bundles start, progress: 13%
+
+2026-10-29 16:19:30 - debug: output config of bundle internal
+
+2026-10-29 16:19:30 - debug: output config of bundle internal success
+
+2026-10-29 16:19:30 - debug: output config of bundle resources
+
+2026-10-29 16:19:30 - debug: output config of bundle resources success
+
+2026-10-29 16:19:30 - debug: output config of bundle main
+
+2026-10-29 16:19:30 - debug: output config of bundle main success
+
+2026-10-29 16:19:30 - debug: Output asset in bundles success, progress: 22%
+
+2026-10-29 16:19:30 - debug: Output asset in bundles success, progress: 13%
+
+2026-10-29 16:19:30 - debug: // ---- build task Build Assets ---- (251ms)
+
+2026-10-29 16:19:30 - log: run build task Build Assets success in 251 ms√, progress: 27%
+
+2026-10-29 16:19:30 - debug: [Build Memory track]: Build Assets start:231.36MB, end 231.95MB, increase: 606.82KB
+
+2026-10-29 16:19:30 - debug: Sort some build options to settings.json start, progress: 27%
+
+2026-10-29 16:19:30 - debug: // ---- build task Sort some build options to settings.json ----
+
+2026-10-29 16:19:30 - debug: // ---- build task Sort some build options to settings.json ---- (1ms)
+
+2026-10-29 16:19:30 - log: run build task Sort some build options to settings.json success in 1 ms√, progress: 29%
+
+2026-10-29 16:19:30 - debug: [Build Memory track]: Sort some build options to settings.json start:232.03MB, end 232.07MB, increase: 36.66KB
+
+2026-10-29 16:19:30 - debug: Fill script data to settings start, progress: 29%
+
+2026-10-29 16:19:30 - debug: // ---- build task Fill script data to settings ----
+
+2026-10-29 16:19:30 - debug: // ---- build task Fill script data to settings ---- (2ms)
+
+2026-10-29 16:19:30 - log: run build task Fill script data to settings success in 2 ms√, progress: 31%
+
+2026-10-29 16:19:30 - debug: [Build Memory track]: Fill script data to settings start:232.10MB, end 232.14MB, increase: 32.77KB
+
+2026-10-29 16:19:30 - debug: Sort some build options to settings.json start, progress: 31%
+
+2026-10-29 16:19:30 - debug: // ---- build task Sort some build options to settings.json ----
+
+2026-10-29 16:19:30 - debug: // ---- build task Sort some build options to settings.json ---- (384ms)
+
+2026-10-29 16:19:30 - log: run build task Sort some build options to settings.json success in 384 ms√, progress: 32%
+
+2026-10-29 16:19:30 - debug: [Build Memory track]: Sort some build options to settings.json start:232.17MB, end 232.34MB, increase: 173.03KB
+
+2026-10-29 16:19:30 - debug: web-mobile:(onBeforeCompressSettings) start..., progress: 32%
+
+2026-10-29 16:19:30 - debug: // ---- build task web-mobile：onBeforeCompressSettings ----
+
+2026-10-29 16:19:30 - debug: // ---- build task web-mobile：onBeforeCompressSettings ---- (1ms)
+
+2026-10-29 16:19:30 - debug: web-mobile:(onBeforeCompressSettings) in 1 ms ✓, progress: 34%
+
+2026-10-29 16:19:30 - debug: cocos-service:(onBeforeCompressSettings) start..., progress: 34%
+
+2026-10-29 16:19:30 - debug: // ---- build task cocos-service：onBeforeCompressSettings ----
+
+2026-10-29 16:19:30 - debug: // ---- build task cocos-service：onBeforeCompressSettings ---- (4ms)
+
+2026-10-29 16:19:30 - debug: cocos-service:(onBeforeCompressSettings) in 4 ms ✓, progress: 36%
+
+2026-10-29 16:19:30 - debug: Sort build template start, progress: 36%
+
+2026-10-29 16:19:30 - debug: // ---- build task Sort build template ----
+
+2026-10-29 16:19:31 - debug: // ---- build task Sort build template ---- (106ms)
+
+2026-10-29 16:19:31 - log: run build task Sort build template success in 106 ms√, progress: 41%
+
+2026-10-29 16:19:31 - debug: [Build Memory track]: Sort build template start:232.52MB, end 236.29MB, increase: 3.77MB
+
+2026-10-29 16:19:31 - debug: cocos-service:(onAfterCompressSettings) start..., progress: 41%
+
+2026-10-29 16:19:31 - debug: // ---- build task cocos-service：onAfterCompressSettings ----
+
+2026-10-29 16:19:31 - debug: // ---- build task cocos-service：onAfterCompressSettings ---- (4ms)
+
+2026-10-29 16:19:31 - debug: cocos-service:(onAfterCompressSettings) in 4 ms ✓, progress: 43%
+
+2026-10-29 16:19:31 - debug: web-mobile:(onBeforeCopyBuildTemplate) start..., progress: 43%
+
+2026-10-29 16:19:31 - debug: // ---- build task web-mobile：onBeforeCopyBuildTemplate ----
+
+2026-10-29 16:19:31 - debug: // ---- build task web-mobile：onBeforeCopyBuildTemplate ---- (88ms)
+
+2026-10-29 16:19:31 - debug: web-mobile:(onBeforeCopyBuildTemplate) in 88 ms ✓, progress: 45%
+
+2026-10-29 16:19:31 - debug: Add md5 suffix to assets start, progress: 45%
+
+2026-10-29 16:19:31 - debug: // ---- build task Add md5 suffix to assets ----
+
+2026-10-29 16:19:31 - debug: // ---- build task Add md5 suffix to assets ---- (9ms)
+
+2026-10-29 16:19:31 - log: run build task Add md5 suffix to assets success in 9 ms√, progress: 55%
+
+2026-10-29 16:19:31 - debug: [Build Memory track]: Add md5 suffix to assets start:236.26MB, end 236.29MB, increase: 31.56KB
+
+2026-10-29 16:19:31 - debug: web-mobile:(onAfterBuild) start..., progress: 55%
+
+2026-10-29 16:19:31 - debug: // ---- build task web-mobile：onAfterBuild ----
+
+2026-10-29 16:19:31 - debug: // ---- build task web-mobile：onAfterBuild ---- (1ms)
+
+2026-10-29 16:19:31 - debug: web-mobile:(onAfterBuild) in 1 ms ✓, progress: 56%
+
+2026-10-29 16:19:31 - debug: cocos-service:(onAfterBuild) start..., progress: 56%
+
+2026-10-29 16:19:31 - debug: // ---- build task cocos-service：onAfterBuild ----
+
+2026-10-29 16:19:31 - debug: // ---- build task cocos-service：onAfterBuild ---- (3ms)
+
+2026-10-29 16:19:31 - debug: cocos-service:(onAfterBuild) in 3 ms ✓, progress: 58%
+
+2026-10-29 16:19:31 - debug: adsense-h5g-plugin:(onAfterBuild) start..., progress: 58%
+
+2026-10-29 16:19:31 - debug: // ---- build task adsense-h5g-plugin：onAfterBuild ----
+
+2026-10-29 16:19:31 - debug: // ---- build task adsense-h5g-plugin：onAfterBuild ---- (1ms)
+
+2026-10-29 16:19:31 - debug: adsense-h5g-plugin:(onAfterBuild) in 1 ms ✓, progress: 60%
+
+2026-10-29 16:19:31 - log: Asset DB is resume!
+
+2026-10-29 16:19:31 - debug: builder:build-project-total (12828ms)
+
+2026-10-29 16:19:31 - debug: build task(web-mobile-inventory) in 12828!
+
+2026-10-29 16:19:31 - debug: [Build Memory track]: builder:build-project-total start:246.60MB, end 237.64MB, increase: -9175.13KB
+
+2026-10-29 16:19:31 - debug: ================================ build Task (web-mobile-inventory) Finished in (12 s)ms ================================
+
+Recovery window failed.
+SyntaxError: C:\Users\bohan.zhan\.CocosCreator\editor\window.json: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at _readFile (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\node_modules\fs-extra\node_modules\jsonfile\index.js:25:16)
+    at Object.startup (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\node_modules\@editor\creator\dist\windows\protected\browser.ccc:1:3561)
+    at Object.window (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\node_modules\@editor\creator\dist\startup\protected\browser\index.ccc:1:1120)
+    at async Promise.all (index 1)
+    at launch (C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\launch\dist\launch.js:1:1276)
+    at C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar\launch\dist\index.js:1:1208
+[44444:1029/161932.192:ERROR:command_buffer_proxy_impl.cc(325)] GPU state invalid after WaitForGetOffsetInRange.
+PASS: Cocos H5 inventory build produced D:\IdeaProjects\World-of-308\.worktrees\st15-04-cocos-loot-hud\client\build\web-mobile-inventory. Runtime checks are separate.
