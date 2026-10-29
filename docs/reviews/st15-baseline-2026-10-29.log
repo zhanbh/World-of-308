@@ -1,0 +1,1201 @@
+Node 24.22.1; TypeScript 5.8.2; compiler C:\ProgramData\cocos\editors\Creator\3.8.8\resources\app.asar.unpacked\node_modules\typescript
+
+CHECK: tooling contracts
+✔ an explicit installed toolchain reports its versions without claiming checks ran (258.6389ms)
+✔ the check command reports a missing explicit compiler instead of downloading one (62.0669ms)
+✔ toolchain preflight cannot silently suppress a requested type check (55.6483ms)
+✔ the existing UI check fails locally when the compiler is missing (63.9884ms)
+✔ an unsupported compiler in a path containing spaces fails before running checks (63.0793ms)
+✔ the existing model check never falls back to a package-manager download (63.9709ms)
+✔ a project with a semantic type error fails the type gate instead of passing transpilation (1204.4099ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1871.829
+PASS: tooling contracts
+
+CHECK: shared/backend types
+PASS: shared/backend types
+
+CHECK: shared value contracts
+✔ scene.exitInn validates its own public intent and rejects missing/extra fields (17.0222ms)
+✔ service.open validates its own public intent and rejects missing/extra fields (0.5405ms)
+✔ service.close validates its own public intent and rejects missing/extra fields (0.3738ms)
+✔ inventory.transfer validates its own public intent and rejects missing/extra fields (0.5711ms)
+✔ inventory.expand validates its own public intent and rejects missing/extra fields (1.0184ms)
+✔ inventory.organize validates its own public intent and rejects missing/extra fields (0.3456ms)
+✔ equipment.equip validates its own public intent and rejects missing/extra fields (0.3133ms)
+✔ equipment.unequip validates its own public intent and rejects missing/extra fields (0.2999ms)
+✔ quickslot.assign validates its own public intent and rejects missing/extra fields (0.452ms)
+✔ shop.buy validates its own public intent and rejects missing/extra fields (0.6541ms)
+✔ shop.sell validates its own public intent and rejects missing/extra fields (0.3218ms)
+✔ wallet.exchange validates its own public intent and rejects missing/extra fields (0.2493ms)
+✔ equipment.repair validates its own public intent and rejects missing/extra fields (0.2454ms)
+✔ equipment.enhance validates its own public intent and rejects missing/extra fields (0.29ms)
+✔ mail.markRead validates its own public intent and rejects missing/extra fields (0.2093ms)
+✔ mail.claimAttachment validates its own public intent and rejects missing/extra fields (0.2696ms)
+✔ mail.claimAvailable validates its own public intent and rejects missing/extra fields (0.2554ms)
+✔ mail.delete validates its own public intent and rejects missing/extra fields (0.2125ms)
+✔ reward.claim validates its own public intent and rejects missing/extra fields (0.2127ms)
+✔ asset commands reject invalid quantities, duplicates and battle-consumption bypasses (1.1476ms)
+✔ account.get separates query envelope from write/identity fields (1.0306ms)
+✔ character.get separates query envelope from write/identity fields (0.3125ms)
+✔ inventory.get separates query envelope from write/identity fields (1.2127ms)
+✔ equipment.get separates query envelope from write/identity fields (0.3261ms)
+✔ dungeon.options separates query envelope from write/identity fields (0.2729ms)
+✔ service.get separates query envelope from write/identity fields (0.2443ms)
+✔ service.quote separates query envelope from write/identity fields (0.39ms)
+✔ mail.list separates query envelope from write/identity fields (0.2481ms)
+✔ reward.list separates query envelope from write/identity fields (0.2251ms)
+✔ delivery.summary separates query envelope from write/identity fields (0.2452ms)
+✔ ranking.list separates query envelope from write/identity fields (0.1961ms)
+✔ operation.get separates query envelope from write/identity fields (1.9115ms)
+✔ configuration.public separates query envelope from write/identity fields (0.2101ms)
+✔ query pages and bank context are bounded and required (0.5282ms)
+✔ equipment public views keep thirteen slots, required durability and exclusive source/location (1.1418ms)
+✔ containers validate capacity, stack bounds and explicit character/account ownership (0.8195ms)
+✔ holdings are an explicit scoped summary, never a claimable balance (0.5754ms)
+✔ original results are bounded versioned summaries, not current balance snapshots (1.7597ms)
+✔ empty lists stay distinct from query failures and pending never duplicates equipment payload (0.5406ms)
+✔ caller wire boundary binds original operation and request IDs before exposing views (0.9433ms)
+✔ operation.get recognizes the new verified-input receipt without accepting v1 event results (1.3238ms)
+✔ scene.exitInn result summary validates independently from current state (0.5154ms)
+✔ service.open result summary validates independently from current state (0.352ms)
+✔ service.close result summary validates independently from current state (0.46ms)
+✔ inventory.transfer result summary validates independently from current state (0.4177ms)
+✔ inventory.expand result summary validates independently from current state (0.3793ms)
+✔ inventory.organize result summary validates independently from current state (0.32ms)
+✔ equipment.equip result summary validates independently from current state (0.3187ms)
+✔ equipment.unequip result summary validates independently from current state (2.7928ms)
+✔ quickslot.assign result summary validates independently from current state (1.6368ms)
+✔ shop.buy result summary validates independently from current state (0.3801ms)
+✔ shop.sell result summary validates independently from current state (0.3832ms)
+✔ wallet.exchange result summary validates independently from current state (0.335ms)
+✔ equipment.repair result summary validates independently from current state (0.8821ms)
+✔ equipment.enhance result summary validates independently from current state (0.5357ms)
+✔ mail.markRead result summary validates independently from current state (0.6379ms)
+✔ mail.claimAttachment result summary validates independently from current state (0.3695ms)
+✔ mail.claimAvailable result summary validates independently from current state (0.3388ms)
+✔ mail.delete result summary validates independently from current state (0.3154ms)
+✔ reward.claim result summary validates independently from current state (0.3009ms)
+✔ mail progress and batch summaries cannot claim impossible partial results (1.1347ms)
+✔ quotes expose deterministic effects and failure consequences without enhancement probabilities (1.0832ms)
+✔ account.get public response validates its typed view and rejects private fields (0.5291ms)
+✔ character.get public response validates its typed view and rejects private fields (0.3991ms)
+✔ inventory.get public response validates its typed view and rejects private fields (0.3527ms)
+✔ equipment.get public response validates its typed view and rejects private fields (0.2997ms)
+✔ dungeon.options public response validates its typed view and rejects private fields (0.2204ms)
+✔ service.get public response validates its typed view and rejects private fields (0.2049ms)
+✔ service.quote public response validates its typed view and rejects private fields (0.231ms)
+✔ mail.list public response validates its typed view and rejects private fields (0.2392ms)
+✔ reward.list public response validates its typed view and rejects private fields (4.11ms)
+✔ delivery.summary public response validates its typed view and rejects private fields (0.2698ms)
+✔ ranking.list public response validates its typed view and rejects private fields (0.255ms)
+✔ operation.get public response validates its typed view and rejects private fields (0.2449ms)
+✔ configuration.public public response validates its typed view and rejects private fields (0.2158ms)
+✔ wide slash has exactly one independent hit per eligible near/far target and conserves the whole bleed budget (15.1829ms)
+✔ each eligible target draws independent hit then crit, misses attach nothing and never reroll a hit for bleed (3.5494ms)
+✔ unlocked level grows every two character levels; rejected MP/CD/control do not accept a cancel or spend mana (3.5028ms)
+✔ every partition preserves one-shot geometry, exact-origin haste schedules and independent stacked budgets (334.1931ms)
+✔ start snapshots freeze facing/position/haste/AP, defense remains live once and bleed does not add knockdown damage (2.1118ms)
+✔ haste caps at two; public recovery contains frozen geometry but excludes private stats/randomness and rejects malformed state (2.5694ms)
+✔ bleed immunity and direct damage immunity remain explicit, lethal direct slash produces no target tail or rise (1.4582ms)
+✔ a node exactly on the right boundary stays pending until the next logical fragment and never hits twice (1.4317ms)
+✔ bank query requires bank context and bank snapshot validates paired scopes and versions (28.0812ms)
+✔ expansion quote supports no bank context but requires coherent nonzero costs (0.8455ms)
+✔ available capacity hint is bounded and confined to transfer-full refusals (0.7408ms)
+✔ held combo exact schedule and random cursor survive every split (111.2021ms)
+✔ geometry before draws; snapshot damage, individual hit/crit and current defense (4.3838ms)
+✔ direct damage accumulates across casts, death has priority over control, rise resets tally (1.3006ms)
+✔ haste caps at two, zero damage has no floor, rejection preserves no implicit balance defaults (1.1818ms)
+✔ stable target order uses separate hit then own crit draws and immunity remains explicit (0.9734ms)
+✔ release on exact recovery boundary prevents a held autochain starting at that same instant (0.5188ms)
+✔ eligible failed hit returns an authoritative miss while geometry failures consume no draws (4.4798ms)
+✔ eight targets and nondivisible haste retain identical combat/movement at30/60/120 FPS and negative walls (237.739ms)
+✔ late buffered tap continues one beat after release; expired combo restarts first beat (4.9523ms)
+✔ three actual-position nodes conserve direct and bleed budgets and terminal alone applies special knockdown (9.6996ms)
+✔ control interrupts only ungenerated nodes and leaves emitted bleed running (2.6426ms)
+✔ forced displacement sweeps thin walls and footprint bounds before each actual-position hit (148.1167ms)
+✔ all fragment cuts preserve swept movement, nodes, exact resources and event identity at capped haste (3880.9616ms)
+✔ ordinary control never shortens existing knockdown, superarmor blocks control, and death has priority (3.6576ms)
+✔ released cast freezes attack and haste while live defense changes once per remaining node and jump (6.179ms)
+✔ player control interrupts remaining leap and rejects new basic without losing released bleed (16.4784ms)
+✔ cross has two independent direct nodes and exactly conserved per-cast bleed budget (12.7797ms)
+✔ every split preserves projectile sweep, stacked budget, random cursor and event identities (747.432ms)
+✔ rejected cast does not consume MP or return a cancellation and projectile continues after cast ends (2.1785ms)
+✔ attack snapshot retained, live defense applied once, bleed cannot knock down and has no hit reroll (3.4042ms)
+✔ public cross state omits authoritative randomness and attack snapshots and rejects unknown fields (3.0685ms)
+✔ bleed immunity skips attached budgets; failed direct node rolls hit only and each tick rolls own crit (8.3492ms)
+✔ haste cap retains projectile distance and exact-origin schedule with no tunnelling (1.9551ms)
+✔ public restoration freezes released geometry and timing despite current movement and haste (2.5498ms)
+✔ reachable two-haste eight-target stacked cross fixture sustains224 independent effects without losing budgets (931.2271ms)
+✔ ST14-01: lethal hit triggers player death, deathIndex, and 10s deadline anchor (476.6646ms)
+✔ ST14-01: dead player cannot move, press basic attacks, or use supply items (457.4898ms)
+✔ ST14-01: dead player pauses natural MP and HP resource recovery (245.7685ms)
+✔ ST14-01: lingering bleed DOT continues ticking and kills monster after player death (195.5963ms)
+✔ approved local plan retains its source hash, seven tickets and dependency edges (6.9972ms)
+✔ release, login, room intent and input share usable public references without running business services (33.3544ms)
+✔ asset consumer preserves versioned original results and distinguishes notFound from unknown (3.5307ms)
+✔ earth four nodes conserve 101 direct and 101 bleed and slam pins until this effect ends (22.4744ms)
+✔ control before landing cancels ungenerated ground, after landing retains ground and fixed attack snapshot (10.0286ms)
+✔ every cut preserves earth events budgets and random cursor at rational haste (473.0629ms)
+✔ earth landing sweeps whole thinwall path and freezes legal ground origin (44.7386ms)
+✔ mixed four skill sequence plus held basic yields exact same all-state across every cut and render pacing (11707.0063ms)
+✔ earth immunity retains all damage and bleed while death clears target bleed without rise (1.8157ms)
+✔ u64 resources round trip without losing precision (2.0158ms)
+✔ regeneration remainder reduces exactly and wire decoding requires canonical form (1.7682ms)
+✔ wire remainder rejects accessors and symbol fields without invoking code (1.4357ms)
+✔ time and logic ticks accept safe nonnegative integer boundaries (0.5575ms)
+✔ caller contract binds a parsed response to the original login intent without a fake server (5.3449ms)
+✔ prepare replies must match the launch and errors never serialize platform secrets (1.1991ms)
+✔ Test 1: cleave damage does not interrupt; legal control cancels future contact and retains CD (404.1981ms)
+✔ Test 2: sweep/smash super armor blocks control, not damage; recovery restores control (292.8325ms)
+✔ Test 3: half HP waits current full action including recovery; phase does not reset cooldown (233.7321ms)
+✔ Test 4: unarmored windup interrupt resolves pending phase without CD refund (91.8587ms)
+✔ Test 5: death supersedes pending phase; posthumous phase transition blocked (174.6369ms)
+✔ Test 6: phase transition preserves existing control state (stagger/knockdown) (37.0359ms)
+✔ Test 7: sliced checkpoint preserves exact elite & boss combat state, super armor, and pending phase (411.4214ms)
+✔ Test 8: boss stomp super armor 0..150 and recovery 150..230 with CD 500 (121.1658ms)
+✔ joint boundary: enemy hit changes HP and blocks later same-batch player input, split preserves state (435.4565ms)
+✔ enemy damage reads exact live defense at each node instead of raw fixed damage (96.0783ms)
+✔ illegal sub-500ms attack cadence and unknown template are rejected at publication boundary (135.5122ms)
+✔ same-boundary attacks released by both actors resolve even when both die (152.9537ms)
+✔ ordinary nonlethal damage does not cancel hostile windup; legal knockdown does and keeps cooldown (162.6585ms)
+✔ per-type defaults and individual overrides leave Boss identity independent of bleed/control (58.4006ms)
+✔ recovered control expiring inside a batch does not cancel a later legal skill (60.415ms)
+✔ stable actor ordering and arbitrary split points preserve the joined stream (202.7821ms)
+✔ chase moves only one tick and respects map collision rather than pre-spending the decision interval (31.6321ms)
+✔ same-node skill knockback cannot retroactively move an already due hostile hit out of range (38.6576ms)
+✔ fractional attack snapshot combines defense before the single final floor (42.2946ms)
+✔ a strictly earlier fractional skill control cancels a later integer hostile node (66.4268ms)
+✔ bengshan, badao and earth have super armor and are not cancelled by monster stagger (44.8106ms)
+✔ Test 1: P2 combo sequence (3 tramples -> lock -> charge -> wall crash -> 3s weakness) (1797.833ms)
+✔ Test 2: combo charge max distance without wall hit does NOT trigger weakness; recovery restores vulnerability (361.8532ms)
+✔ Test 3: weakness is not refreshed by player attacks and does not amplify damage (248.8376ms)
+✔ Test 4: roar sector geometry and escaping range (357.8993ms)
+✔ Test 5: roar cumulative 15% max HP knockdown once per roar; ongoing roar continues through down (499.6702ms)
+✔ Test 6: roar super armor 0..400 and recovery vulnerability 400..480 (233.5937ms)
+✔ Test 7: caster death cancels future roar soundwaves (298.1064ms)
+✔ Test 8: two-phase independent roar cooldowns (33.8241ms)
+✔ Test 9: sliced checkpoint test preserves roar and combo exact states across arbitrary slices (747.4092ms)
+✔ ranged releases a moving projectile; release and flight survive a sliced checkpoint (567.6681ms)
+✔ projectile interrupted before release is cancelled; caster interrupted after release preserves in-flight projectile (324.8654ms)
+✔ charge locks direction, sweeps across map, deals damage on contact, and respects boundary (296.4983ms)
+✔ four-tier difficulty role assignments match candidate bounds (115.3294ms)
+✔ difficulty retreat behavior: warrior ranged retreats when player < 95px; normal ranged does not retreat (76.3661ms)
+✔ special attack concurrency cap delays second special attack without consuming cooldown (41.5626ms)
+✔ mixed encounter: melee, ranged, and charge monsters fight simultaneously; sliced checkpoint preserves exact outcome (245.9042ms)
+✔ strict validation: rejects falsy non-null tactics and invalid effect kind (1.6112ms)
+✔ whole and every split preserve exact signed fractional movement and intent (69.2566ms)
+✔ deadzone, walking/running, fixed Y, facing and ordered explicit rejection (7.8704ms)
+✔ sweep stops thin walls and corners, expanded by footprint, without banking (8.7037ms)
+✔ config rejects malformed geometry and unsafe integers (1.732ms)
+✔ input changes at tick boundaries retain whole/split equality and no diagonal normalization (2.9476ms)
+✔ a boundary contact discards fractional credit and permits moving away (0.422ms)
+✔ 30/60/120 render schedules produce identical100 tick confirmed state (6.25ms)
+✔ POTION_CATALOG: contains all defined tiers and aliases (2.0112ms)
+✔ resolvePotionRestore: fixed amounts and 30% max calculations (1.5341ms)
+✔ consumePotionInventory: character -> account -> none binding priority (0.608ms)
+✔ consumePotionInventory: slot order tie-breaker within same binding (0.3077ms)
+✔ applyPotionInput: successful HP potion use, CD start, and HP recovery (2.0244ms)
+✔ applyPotionInput: HP full rejection does NOT consume item or start CD (0.3835ms)
+✔ applyPotionInput: MP full rejection does NOT consume item or start CD (0.3391ms)
+✔ applyPotionInput: cooldown rejection within 10s (0.3499ms)
+✔ applyPotionInput: HP and MP cooldowns are completely independent (0.614ms)
+✔ applyPotionInput: quickslot template mismatch and slot empty rejections (0.4612ms)
+✔ applyPotionInput: out of stock rejection when bag has 0 items (0.2924ms)
+✔ applyPotionInput: dead player rejection (0.2187ms)
+✔ applyPotionInput: capping and remainder reset on hitting max HP (1.8922ms)
+✔ schema-selected public fields have stable digest input and exact round trips (3.6854ms)
+✔ invalid public values, excessive payloads and malformed schemas fail closed (2.861ms)
+✔ wire resources require decimal strings and schema mutation cannot change an existing codec (0.5415ms)
+✔ full public proof rejects omitted, altered and reordered records with copied metadata (29.0809ms)
+✔ digest uses canonical keys, retains array order and accepts full state beyond one chunk (53.0034ms)
+✔ a test-authorized consumer loads the immutable minimal warrior release and public projection (33.2716ms)
+✔ dictionary room numbers are zero-based and purple candidates exclude the final room (45.2174ms)
+✔ missing, wrong-version, wrong-kind and recursive references fail before configuration is usable (4.8364ms)
+✔ test profiles enforce current warrior, equipment, visibility and encounter invariants (13.2678ms)
+✔ manifest verification detects tampering and independent illegal fixtures remain unusable (9.0707ms)
+✔ unsupported code and durability policy references fail closed instead of becoming defaults (1.9442ms)
+✔ wire fields, resource precision, quality, binding and declared collection bounds are strict (6.6325ms)
+✔ scene controls are distinct from business writes and bound to the full ready view (4.4822ms)
+✔ challenge and ground commands express intent and cannot supply drops or revive outcomes (4.4256ms)
+✔ room responses and recovery queries carry references and cannot be confused with control or input results (1.9636ms)
+✔ recovery pages are bounded public projections tied to one ticket and revision (2.7177ms)
+✔ room writes require challenge and character expected objects while a loading clock remains independent (2.3928ms)
+✔ unpaid loading query is explicit no-checkpoint state; combat epochs and pages remain positive (1.2998ms)
+✔ caller encodes each channel and correlates results without treating parsing as a server operation (4.3443ms)
+✔ challenge reads distinguish an authorized read failure from an empty successful view (0.9251ms)
+✔ ready responses cannot substitute another challenge or a different ticket view (1.056ms)
+✔ two-step login accepts pre-session requests but never body identity or v1 (3.6648ms)
+✔ character creation and selection results retain initialization references and role epochs (2.087ms)
+✔ login responses distinguish tickets, unknown outcomes and superseded historical sessions (1.0067ms)
+✔ character commands require current session envelope, bounded unique expected objects and legal names (2.676ms)
+✔ ordered input wire accepts a bounded one-second segment and rejects self-reported battle facts (7.9075ms)
+✔ input count, continuous sequence and UTF-8 request budget hold at boundaries (2.0767ms)
+✔ room numbering uses zero-based protocol values and rejects the eighth room (0.7002ms)
+✔ current movement proof request is strict and wire reply binds current context (86.4461ms)
+✔ TRINKET_CATALOG: contains defined templates and aliases (3.878ms)
+✔ applyTrinketInput: successful activation sets 120s CD and 15s buff (0.6215ms)
+✔ applyTrinketInput: item not equipped or id mismatch rejection (0.2799ms)
+✔ applyTrinketInput: equip waiting rejection (60s / 6000 ticks lock) (0.2932ms)
+✔ applyTrinketInput: cooldown active rejection (120s lock) (0.3539ms)
+✔ applyTrinketInput: dead player rejection (1.6821ms)
+✔ aggregateTrinketModifiers: aggregates active buffs and ignores expired ones (0.8564ms)
+✔ pruneExpiredBuffs: cleanly removes expired buffs (0.4315ms)
+✔ applyTrinketStats: applies dynamic AP, crit, and haste capping (0.8075ms)
+✔ applyTrinketInput: usable during controlled state without breaking control (0.5103ms)
+ℹ tests 227
+ℹ suites 0
+ℹ pass 227
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12815.1961
+PASS: shared value contracts
+
+CHECK: client pure-model types
+PASS: client pure-model types
+
+CHECK: backend regression (legacy and v2)
+(node:46796) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/ActivationCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reload replays original activation and ready and prediction waits for current resources and proof (118.2419ms)
+✔ local E01 prepare → verified resources → activate → proof → ready ends active after both replies are lost (634.5626ms)
+✔ restored committed ready still requires a current receipt and ignores an older in-flight reply (536.5832ms)
+✔ historical ready receipt cannot enable prediction for expired, revoked or changed current scene (1122.9715ms)
+✔ single slash CP roundtrip retains its one pending node and independent bleed with strict canonical rows (41.0955ms)
+(node:14276) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ badao durable client predicts single wide hit and recovers original results with current public proof (924.366ms)
+✔ explicit badao training capability enters real service and returns one direct node per eligible target (795.2623ms)
+✔ refused badao preserves running basic and ordered later movement; accepted badao cancels it (469.7783ms)
+✔ badao CP effects allocate on demand and every actual write rolls back with exact original recovery (3782.6988ms)
+✔ whole and split MP regeneration validates skill at the same input boundary and keeps exact fractions (1680.3064ms)
+✔ released badao effects survive recovery unchanged and old timeline cannot advance or resample (588.5597ms)
+✔ badao candidates with shared baseline commit exactly once and lost response retains original stream and results (744.5887ms)
+ST11-05 UTF8 {
+  header: 1480,
+  receipt: 952,
+  chunks: [ 2399, 4025, 856 ],
+  effects: 5,
+  snapshots: 1
+}
+✔ compact badao state round-trips with budgets, rejects tampering and keeps allocated empty block revision stable (849.4736ms)
+✔ unlock uses current legal character growth and cross skill effect lanes survive one CP proof (544.9961ms)
+✔ room transition clears released effects, retains cooldown/resources and rejects an old scene candidate (299.1954ms)
+✔ controlled player interrupts pending slash and ordinary movement but preserves already released bleed (407.1788ms)
+✔ same tick skill order prevents cross and bengshan from replacing accepted slash and preserves its original cooldown (617.7877ms)
+✔ maximum declared escaped IDs and bindings admit 100+100 slots through bank and inventory queries (292.6137ms)
+ℹ internal backpack=143065 personal=143073 bytes; fields are published ASCII128, not generated-key profile
+ℹ public bank=230917 bytes
+ℹ public inventory=114894 bytes
+✔ full 100-stack organize writes complete bounded lineage and bank transfer keeps its 128KiB journal (95.5569ms)
+ℹ organize journal=311437 bytes
+ℹ bank transfer journal=66677 bytes
+✔ actual ST05 unequip output moves into personal bank and back without changing initial weapon (121.9401ms)
+✔ actual ST06 potion and equipment purchases enter bank using published explicit test content (89.9289ms)
+✔ shared eligible set increments both account class keys and only the usable role key (32.546ms)
+(node:15296) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/BankCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ bank opens exact private/shared tab snapshot and sends selected quantity with both container preconditions (17.2071ms)
+✔ lost reply persists exact intent across close and explicit resend, never changes ID or quantity (8.6045ms)
+✔ tab switching is blocked for unknown intent (4.9419ms)
+✔ late snapshot after close is ignored and cannot reopen bank (0.9996ms)
+✔ capacity refusal shows available amount without applying any optimistic transfer (2.692ms)
+✔ operation not found remains unknown and does not manufacture another command (2.3421ms)
+✔ equipment transfer obtains version before whole-instance command and requires it in expected vector (2.1451ms)
+✔ quote confirmation uses explicitly chosen currency and bound wallet/container versions (2.0895ms)
+✔ durable pending write must succeed before any mutation transmission (4.5632ms)
+(node:4940) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/ui/InventoryGesture.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ actual BankPanel locked-slot tap requests quote while empty/locked cells never arm drag (10.8373ms)
+✔ actual BankPanel secondary pointer cannot steal, end or scroll owner source (1.1984ms)
+✔ ordinary InventoryPanel locked tap quotes gold expansion without a bank context (7.1366ms)
+✔ transfer fills compatible stack and records source remainder and destination ancestry (4.6758ms)
+✔ capacity shortage refuses entire transfer and reports compatible capacity (1.8128ms)
+✔ character binding permits personal storage but refuses account storage (0.6444ms)
+✔ equipment transfer preserves attributes and clears holder only in account storage (1.998ms)
+✔ explicit expansion prices debit only selected currency with uint64 exactness (1.2185ms)
+✔ account binding and template version remain distinct transfer pools (0.6937ms)
+✔ vault-to-vault and foreign role transfers are rejected (0.5895ms)
+✔ missing and illegal prices never fall back; stage jumps and shared vault expansion are refused (1.3386ms)
+✔ duplicate physical identifiers across containers fail closed (0.3829ms)
+✔ bank reads real account vault independently from personal vault and backpack (55.8573ms)
+✔ transfer conserves quantities and changes lineage of remainder and merged output (47.3074ms)
+✔ capacity refusal reports exact fitting quantity and never partially moves (21.862ms)
+✔ character binding may enter personal vault but never account vault (68.9ms)
+✔ bank refuses stale/foreign context sceneEpoch (31.0251ms)
+✔ bank refuses stale/foreign context locationRevision (80.2695ms)
+✔ bank refuses stale/foreign context rolePlayEpoch (56.3571ms)
+✔ bank refuses stale/foreign context accountId (28.3988ms)
+✔ bank refuses stale/foreign context status (103.5887ms)
+✔ bank requires real town location/range, selected role and trusted identity (147.8068ms)
+✔ expansion charges chosen currency once and quote cannot survive version changes (83.6008ms)
+✔ missing formal price configuration fails closed without asset writes (6.0057ms)
+✔ transfer atomic fault at write 1 (12.4284ms)
+✔ transfer atomic fault at write 2 (27.2257ms)
+✔ transfer atomic fault at write 3 (17.3835ms)
+✔ transfer atomic fault at write 4 (8.7356ms)
+✔ transfer atomic fault at write 5 (10.0566ms)
+✔ expansion atomic fault at write 1 (34.0751ms)
+✔ expansion atomic fault at write 2 (29.1177ms)
+✔ expansion atomic fault at write 3 (8.6979ms)
+✔ expansion atomic fault at write 4 (7.2349ms)
+✔ expansion atomic fault at write 5 (8.1205ms)
+✔ lost transfer response resolves original outcome and never duplicates (38.3758ms)
+✔ two currencies racing one personal stage only charge one (33.9543ms)
+✔ whole equipment crosses scope preserving stats, bound identity and zero durability (33.6827ms)
+✔ same-role personal storage keeps holdings unchanged; non-set account transfer requires no domain (49.5424ms)
+✔ set equipment and both holdings rollback at write 1 (8.2016ms)
+✔ set equipment and both holdings rollback at write 2 (10.6678ms)
+✔ set equipment and both holdings rollback at write 3 (30.7241ms)
+✔ set equipment and both holdings rollback at write 4 (40.2481ms)
+✔ set equipment and both holdings rollback at write 5 (49.2343ms)
+✔ set equipment and both holdings rollback at write 6 (50.6884ms)
+✔ set equipment and both holdings rollback at write 7 (118.3508ms)
+✔ set equipment and both holdings rollback at write 8 (9.8782ms)
+✔ missing role summary is integrity error, never reconstructed from guessed zero (6.4764ms)
+✔ other-class set storage updates shared eligibility without counting unusable private items (77.2447ms)
+✔ each stage adds exactly20, account vault never expands, and wallet balances stay exact (148.6662ms)
+✔ orphan journal, wrong expected objects and current session revocation fail closed (89.402ms)
+✔ second-role isolation fixture shares only account vault, never other role private containers (106.2342ms)
+✔ personal vault expands four stages with gold and never charges past 100 (98.3098ms)
+✔ personal vault expands four stages with points and never charges past 100 (105.2728ms)
+✔ opposite equipment transfers serialize deposit first and retry preserves both summaries (106.8763ms)
+✔ opposite equipment transfers serialize withdraw first and retry preserves both summaries (25.5961ms)
+(node:28780) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ basic prediction corrects from complete public proof and recovers the original damage results after lost response (416.074ms)
+✔ basic profile mismatch or incomplete target rules disables prediction (286.2368ms)
+✔ all strict action result pages are collected before restoring prediction (320.4795ms)
+✔ basic capability refuses formal rewarding combat and exposes complete typed result pages (373.1399ms)
+✔ real training basic hold executes three beats with complete typed outcomes and current public action proof (129.0658ms)
+✔ all combat writes roll back and lost response retains exact pages, RNG and historical original (2459.0116ms)
+✔ whole and split service fragments retain combo, snapshots, exact clocks and full state (713.3248ms)
+ST11-02 UTF8 {
+  request: 2485,
+  response: 510,
+  receipt: 952,
+  header: 1362,
+  role: 2317,
+  scene: 3304,
+  public: 3623,
+  events: 67,
+  targets: 5,
+  maxResultPage: 7903
+}
+✔ haste2 training plus32 inputs uses complete bounded pages and compact receipt (255.3385ms)
+✔ current C stats and equipped durability supersede entry audit; pending cast snapshot remains frozen (192.4636ms)
+✔ competing combat candidates and real OCC retries retain committed stream and recheck time frontier (1066.5313ms)
+✔ combat takeover both orders revokes writes; new valid session reads old compact original and complete pages (654.4575ms)
+✔ combat pause/resume retains schedules and current proof while timeline fences old fragments (252.86ms)
+✔ planBatchFromMails scans up to 100 mails and caps at 20 candidates (2.2509ms)
+✔ planBatchFromMails filters expired mails and fully claimed attachments (0.689ms)
+✔ sliceBatchStep slices candidate items by 4 with accurate nextCursor (0.6463ms)
+✔ battle-hybrid-supply: same-tick MP potion restore enables insufficient MP Cross Slash cast (403.6802ms)
+✔ battle-hybrid-supply: same-tick trinket activation boosts skill cast AP snapshot; expiry retains snapshot damage (5441.147ms)
+✔ battle-hybrid-supply: failed supply action (HP_FULL) does not swallow subsequent legal skill and movement (228.2298ms)
+✔ battle-hybrid-supply: supply is usable during knockdown control without clearing control state (371.0268ms)
+✔ battle-hybrid-supply: room transition preserves buffs & CDs and advances duration deterministically (389.8945ms)
+✔ battle-hybrid-supply: recoveryPage query exposes active buffs and cooldowns in public projection (321.59ms)
+✔ battle-hybrid-supply: death clears buffs and keeps CD; return to inn resets character cooldown (374.9391ms)
+✔ battle-hybrid-supply: idempotent replay does not double-deduct inventory or refresh cooldown (434.025ms)
+✔ battle-joint-acceptance: end-to-end full loop (town prep -> shop/expansion -> bank transfer -> equip trinket -> quickSlot binding -> entry challenge -> combat with monster -> knockdown & supply -> same-tick trinket & cross burst -> kill monster -> room transition -> death -> inn reset) (865.375ms)
+ST13-05 Budget Metrics (UTF-8 Bytes): {
+  cpHeaderSize: 1481,
+  chunk0Size: 2540,
+  chunk1Size: 3756,
+  actionResultsSize: 7709,
+  receiptSize: 1060,
+  challengeSize: 4982,
+  inputsCount: 32,
+  backpackCapacity: 100
+}
+✔ battle-joint-acceptance: hard budget and UTF-8 serialized size limits under 32-input batch & 100-slot backpack (360.3079ms)
+ST13-05 Transaction Key Metrics: {
+  phase1ReadsCount: 13,
+  phase2WritesCount: 11,
+  totalUniqueReadsCount: 13,
+  readsSample: [
+    'v2:identity:jh6g-ReA1Qrce4W5-nh6Ut8Sz6olVf0ubv5c9xuOV8c',
+    'v2:account:KZ97Aycb7ApdShMIjU-gSLNDx63e7E5ZMZPd4JCQAXw',
+    'v2:session:qdQj_djab7iUpDOlasjV4poFuEHpqoi6IZ1EUQxo4YY',
+    'v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA',
+    'v2:assetOp:wbc10sI_C0IRu4bIgUE4ylTxdFiLrsI3m4EYiC2cvq8'
+  ],
+  writesSample: [
+    'v2:cpChunk:oy-1YYODg79vEPluIt_U1oX-bz3c6xw6lxO5JX4_6l8',
+    'v2:cpChunk:QDEn2KwhW6KfyLSYBb2IEvRHlUj9mA886nggMUfS-vA',
+    'v2:cpChunk:coB01DCU0oEBVni8YRw44N99LpcbiVqh5xt1vmLcvgo',
+    'v2:container:MxgEcrt0R18-DmSvxHt5yHSaW3bWNc_9JEylEkDg0EI',
+    'v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA'
+  ]
+}
+✔ battle-joint-acceptance: transactional atomicity and unique key read/write count metrics (509.7146ms)
+✔ battle-joint-acceptance: rational bounds & cross-cut determinism (3-slice vs single-slice invariance) (581.9327ms)
+✔ battle-potion: simulation.submit with HP potion restores player HP, deducts inventory, starts 10s CD, and commits CP + container in single transaction (342.4566ms)
+✔ battle-potion: simulation.submit with MP potion restores MP, independent CD from HP, and enables same-tick skill (381.7904ms)
+✔ battle-potion: two HP potions within 10s rejects second with COOLDOWN_ACTIVE, no double inventory deduction (254.9121ms)
+✔ battle-potion: full HP rejection in live service does NOT deduct item, does NOT trigger CD, and does NOT update bag version (156.5755ms)
+✔ battle-potion: idempotent replay returns original committed outcome without re-deducting potion (196.9195ms)
+✔ battle-potion: different parameters with same operationId rejects with OPERATION_MISMATCH (255.4033ms)
+✔ battle-potion: inventory concurrency - order 1: potion submit commits first, concurrent operation expecting old bag version gets VERSION_CONFLICT (217.6209ms)
+✔ battle-potion: inventory concurrency - order 2: concurrent inventory operation commits first, potion submit detects version conflict and retries cleanly (285.6443ms)
+✔ battle-potion: inventory concurrency - order 2 OCC race: concurrent modification before commit transaction triggers VERSION_CONFLICT without dirty write (129.4877ms)
+✔ battle-trinket: successful trinket activation grants 15s buff, starts 120s CD, and preserves equipment (281.6818ms)
+✔ battle-trinket: dynamic AP buff reflects in checkpoint attackPower during buff and reverts after expiry (2269.5115ms)
+✔ battle-trinket: rejected with EQUIP_WAITING during 60s equip waiting window (347.6115ms)
+✔ battle-trinket: rejected with COOLDOWN_ACTIVE when used again during 120s CD (277.068ms)
+✔ battle-trinket: rejected with ITEM_NOT_EQUIPPED when itemId does not match equipped trinket (294.7685ms)
+✔ battle-trinket: equipment unequip rejected while trinket cooldown is active (289.3508ms)
+(node:7588) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ bengshan durable client predicts swept displacement and recovers original results with current public proof (860.7269ms)
+✔ explicit bengshan training capability enters real service and returns three skill nodes (711.7621ms)
+✔ refused bengshan preserves running basic and ordered later movement; accepted bengshan cancels it (503.512ms)
+✔ bengshan CP effects allocate on demand and every actual write rolls back with exact original recovery (4766.2884ms)
+✔ whole and split MP regeneration validates skill at the same input boundary and keeps exact fractions (1191.3521ms)
+✔ released bengshan effects survive recovery unchanged and old timeline cannot advance or resample (554.1592ms)
+✔ bengshan candidates with shared baseline commit exactly once and lost response retains original stream and results (557.4559ms)
+ST11-04 UTF8 {
+  header: 1480,
+  receipt: 952,
+  chunks: [ 2338, 3963, 925 ],
+  effects: 10,
+  snapshots: 1
+}
+✔ compact bengshan state round-trips with budgets, rejects tampering and keeps allocated empty block revision stable (809.3906ms)
+✔ real service displacement cannot tunnel through thin wall and publishes the legal footprint contact (357.6271ms)
+✔ unlock uses current legal character growth and both skill effect lanes survive one CP proof (637.752ms)
+✔ room transition clears released effects, retains cooldown/resources and rejects an old scene candidate (366.7825ms)
+✔ activate opens deterministic unpaid room once and waits without combat anchors (229.8789ms)
+✔ ready consumes only suffix, anchors once, and lost reply resolves original control receipt (58.3454ms)
+✔ public recovery is tied to issued baseline and excludes private checkpoint data (130.0518ms)
+✔ each activate and ready write failure rolls back whole commit; replay never charges twice (1057.0417ms)
+✔ activate validates epochs, versions, connection and original deadlines (733.1639ms)
+✔ subtick transition precision survives activate then ready without double counting (88.5413ms)
+✔ actual login takeover both orders closes compatible nonempty CP and settles fee once (210.1154ms)
+✔ different operation races initialize one room/fee and original operation remains exact after ready (269.529ms)
+✔ absolute cooldown at5s retains2s after2s prefix and1s suffix, without player reset (139.6129ms)
+ST10-03 actual UTF-8 {
+  H: 2876,
+  header: 1594,
+  chunks: [ 1830, 2305 ],
+  activateResponse: 1513,
+  activateO: 1783
+}
+✔ supported responses and original receipts include actual wrapper bytes within all budgets (61.4786ms)
+✔ historical ready receipt stays exact while current expired scene cannot authorize prediction (106.424ms)
+✔ reserved snapshot fee clips tozero without introducing midchallenge brokenweapon gate (21.224ms)
+✔ extreme concurrency 1: revive request crossing deadline by 1ms is rejected with DEADLINE_EXPIRED and zero emblem deduction (235.5918ms)
+✔ extreme concurrency 2: Boss defeated at 8s in death window makes challenge completed; concurrent/subsequent manual revive is rejected without emblem deduction (59.1555ms)
+✔ extreme concurrency 3: killing monster during death window triggers character level up while strictly maintaining dead lifeState and 0 HP (67.452ms)
+✔ extreme concurrency 4: special dungeon with 3-revive limit rejects 4th revive attempt with REVIVE_LIMIT_REACHED and zero deduction (114.4305ms)
+✔ extreme concurrency 5: revive with zero emblems in bag is rejected with EMBLEM_NOT_ENOUGH with no state corruption (65.2004ms)
+✔ extreme concurrency 6: disconnect and reconnect within death window synchronizes dead lifeState and recovers remaining countdown ms (69.9656ms)
+(node:38204) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/DeathReviveHUDModel.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real login, selected warrior and town position issue usable difficulty selection without creating a challenge (55.8853ms)
+✔ explicit confirmation atomically reserves one stamina without charging first room and replays original locked choice (30.2051ms)
+✔ entry rejects forged position/context, stale movement generation and foreign identity before replay (46.9747ms)
+✔ level1 starter10 permits entry but level15, broken and missing weapons do not (48.228ms)
+✔ 0 stamina rejected, refresh loads308, and high level first replay locks capped monster15 (8.1502ms)
+✔ same operation different intent and cross-service receipt fail closed; expected versions are checked (11.4953ms)
+✔ each of five write faults is atomic and a lost reply replays the original challenge (146.0545ms)
+✔ concurrent distinct starts create one challenge and transaction retries reread clock (25.2843ms)
+✔ missing or malformed content cannot turn level gates into defaults (45.1157ms)
+✔ start exposes locked monster, equipment provenance and computed equipment attributes to the client (16.9346ms)
+(node:43732) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/ChallengeEntryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real new login closes an unpaid challenge without checkpoint or extra stamina charge exactly once (17.9113ms)
+✔ durable client selection requires confirmation and reload retries the same start after response loss (67.7106ms)
+✔ real equipment unequip removes entry eligibility and re-equip restores level1 starter10 eligibility (134.2564ms)
+✔ a known rejected start keeps its original result after stamina changes (49.0841ms)
+✔ configured gates are first1/second15/special30, capped first15, and account difficulty unlock adds no score gate (69.8693ms)
+✔ verified E01 adapter exposes only its published level1 normal contract fixture (45.0736ms)
+✔ unregistered template classes and unsafe counters fail closed (106.4174ms)
+ST10-01 maximum fixture UTF-8 bytes {"H":81293,"O":6057,"J":1080}
+✔ maximum13 equipped instances and16 escaped affixes remain bounded in actual H/O/J encoding (113.9058ms)
+✔ cross-service, malformed receipt and orphan journal cannot be consumed by a new start (87.6771ms)
+✔ 1. explicit challenge.leave with reason abandon safely terminates challenge as failed, sets town portal location, and preserves loot/xp without refunding stamina (157.8159ms)
+✔ 2. explicit challenge.leave with reason deathTimeout safely transitions dead player to failed/closed and returns to town (62.3605ms)
+✔ 3. death countdown timeout: challenge.revive at or after deathDeadline returns DEADLINE_EXPIRED, transitions challenge to failed/closed, and zero emblems deducted (102.3415ms)
+✔ 4. idempotency: replaying challenge.leave or expired revive with same operationId returns original response with replayed: true (42.4993ms)
+✔ 5. terminal barrier: once challenge is closed, subsequent illegal actions are blocked (80.448ms)
+✔ 6. offline / re-login scenario hands off character to inn space, not town portal (257.3462ms)
+✔ 7. challenge.leave with reason finishLoot requires result completed, and preserves completed status (164.5056ms)
+✔ 8. stamina natural window rollover: if refill window passed during challenge, stamina refills to 308 on leave (35.3599ms)
+✔ unpaid first prepare returns immutable byte manifest and never creates combat/fee (150.1033ms)
+✔ all prepare write failures roll back; response loss and operation.get recover exact original references (201.3473ms)
+✔ stale/terminal/dead/recovery/jump and revoked identity cannot prepare a room (263.9071ms)
+✔ same intent racing distinct operations produces one manifest and original clock (121.2606ms)
+✔ original operation hydrates its immutable manifest even when H no longer references that attempt (114.1344ms)
+✔ actual login takeover before or after prepare closes unpaid room with no CP/fee and rejects old session (214.2021ms)
+✔ same room intent accepts original or current revision but rejects forged pending context (113.8933ms)
+ST10-02 maximum escaped expected receipt UTF-8 bytes 1104
+✔ maximum escaped expected context keeps original receipt bounded and resolves exact outcome (67.8959ms)
+✔ challenge preview server bootstraps and handles rpc queries correctly (358.2978ms)
+✔ successful revive within deadline deducts 1 emblem, restores full HP/MP, grants 2s protection, resets warrior CDs while preserving potion/trinket CD (226.2981ms)
+✔ priority deduction: consumes character-bound before account-bound and unbound emblems (156.5976ms)
+✔ no emblems in bag rejects with EMBLEM_NOT_ENOUGH and zero deduction (213.1468ms)
+✔ deadline expired: now > deathDeadline rejects with DEADLINE_EXPIRED and zero deduction (169.6651ms)
+✔ special dungeon: paidRevives >= 3 rejects with REVIVE_LIMIT_REACHED (87.9298ms)
+✔ not dead: living player calling revive rejects with NOT_DEAD (105.8921ms)
+✔ stale deathIndex: mismatched deathIndex rejects with NOT_DEAD (141.4628ms)
+✔ idempotent replay of same operationId returns original result with replayed true and single deduction (96.7307ms)
+✔ concurrent write conflict / double revive: second distinct operationId fails with NOT_DEAD (152.5935ms)
+(node:30076) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/CharacterCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ character coordinator successfully creates warrior and exposes created state (42.0128ms)
+✔ character coordinator validates invalid name locally and immediately rejects (3.6373ms)
+✔ character coordinator handles transport loss as unknown and retry uses original intent (15.0046ms)
+✔ late response from reset coordinator is ignored and does not overwrite idle state (29.5608ms)
+✔ character coordinator handles CLASS_EXISTS rejection correctly (40.3709ms)
+✔ character coordinator successfully selects character and updates state (8.7985ms)
+✔ character name validation enforces length and script exclusivity (2.2654ms)
+✔ character creation with invalid name is rejected (54.3556ms)
+✔ global atomic name occupancy prevents duplicate name across different accounts (12.9952ms)
+✔ account cannot create more than one character of the same class (9.1183ms)
+✔ hunter class creation is rejected in current release profile (4.8574ms)
+✔ character entity is initialized with level 1, 0 xp, 308 stamina, and inn location (24.4946ms)
+✔ containers are created with 20 capacity each and shared account assets remain intact (18.8431ms)
+✔ initial level 10 white weapon is equipped, character-bound and at max durability (32.2912ms)
+✔ novice mail contains 8 hp, 8 mp and 10 emblems and creates immutable source stub (21.9928ms)
+✔ character creation atomically initializes assets and personal holdings into store (20.4438ms)
+✔ failure injection at any write point rolls back all changes with zero residue (98.6609ms)
+✔ lost response restores exact character creation result with replayed true (44.64ms)
+✔ character select validates ownership, increments rolePlayEpoch, isolates in inn, and updates account (90.412ms)
+(node:24524) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/LoadingCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ next room inherits wounded role and all seven cooldowns with zero snapshot stamina (408.9922ms)
+✔ exact local-test regeneration splits at buff expiry and preserves fractional resource units (325.1597ms)
+✔ later prepare rejects uncleared, living purple, dead player, forged/outside exit and skipped room (1066.1078ms)
+✔ later prepare and activate roll back at every write point and original replay leaves newer room intact (1994.1771ms)
+✔ owned bounded pickup fixture contends with actual activate through A/H in both commit orders (271.2484ms)
+✔ exact resource fractions survive arbitrary prefix/suffix cuts, cap overflow and uint64 resources (382.3449ms)
+✔ unknown buff/rate refs and uint32 denominator nonclosure fail before any room or resource commit (329.9816ms)
+✔ ready writes only changed role chunk and every added role write fault rolls back (917.1526ms)
+✔ later prepared recovery excludes four seconds and does not initialize current character/equipment from entry audit (95.1429ms)
+ST10-05 actual UTF-8 {
+  maxRole: 15814,
+  header: 1594,
+  chunks: [ 14716, 1933 ],
+  page: 15074,
+  response: 1518,
+  O: 1788,
+  H: 4807
+}
+ST10 post-ready UTF-8 { page: 15081, ready: 746, H: 5164, lastReadyReceipt: 946 }
+✔ schema2 maximum supported role/public page and actual next activation/receipt stay bounded (382.084ms)
+✔ later activate authorization/version/terminal and real login takeover remain fenced in both orders (958.3027ms)
+✔ later exit is bound to locked previous manifest and full spawn set rather than a substitute map/enemy list (138.9061ms)
+✔ same regeneration reference cannot be rebound to different rates and prepared exit rule cannot change (253.5272ms)
+✔ crossing global stamina refill during later loading never refreshes reserved snapshot (203.9111ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; lost remains safe (261.4558ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; race remains safe (234.07ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; omitted remains safe (380.4579ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; binding remains safe (174.5295ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; digest remains safe (178.5091ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; lost remains safe (132.5574ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; race remains safe (102.7696ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; omitted remains safe (110.6109ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; binding remains safe (100.6261ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; digest remains safe (105.64ms)
+✔ active-room recovery ready reacquires current proof after committed reply loss (128.4579ms)
+✔ ready accepted one millisecond before ticket cutoff can reopen and prove its new connected phase (158.5963ms)
+✔ publication rejects four skill budgets beyond persisted resource domain before any cast (304.7514ms)
+✔ publication accepts exact last legal direct base and rejects its next integer for every lane (118.6073ms)
+✔ publication accepts the last legal integer bleed coefficient and rejects max plus one across all lanes (185.3338ms)
+✔ invalid arithmetic profile is rejected at service publication before prepare fee or CP mutation (178.2588ms)
+✔ lethal overkill clears control accumulation without wrapping or changing emitted damage (86.0087ms)
+✔ stable allocator fills 3648 slots, deletion preserves later chunks and reuse fills hole (118.0872ms)
+✔ full legal uint32 snapshot rational pairs are numeric and fit192 bytes (0.6465ms)
+✔ allocator rejects duplicate identity, overflow and malformed previous ownership (2.1679ms)
+✔ strict combined domain includes912 future monster effects and228 shared snapshots; ST12 AI not implemented (173.3465ms)
+actual maximum allocated warrior CP bytes {"header":2083,"chunks":[2288,46904,45255,45399,45255,45399,45255,45399],"total":321154}
+✔ actual scene6 core+six stable chunks roundtrip 3648 warrior effects /228 snapshots within all UTF8 budgets (2166.4701ms)
+✔ scene6 decoder fails closed on validly rehashed duplicate IDs, dangling snapshots, noncanonical fractions and shifted ordinals (1622.5084ms)
+✔ death + ordinary DOT kill can level up but cannot resurrect; monster level stays locked (16.0426ms)
+✔ dead player wins via lingering boss damage: free resurrection, all mob rewards exactly once (4.3553ms)
+✔ manual revive consumes one emblem, preserves cooldowns and provides protection plus non-damaging control (7.2708ms)
+✔ two different revive intents racing consume one emblem (7.4201ms)
+✔ no emblem: stable rejection cannot become a debit when replayed later (4.7397ms)
+✔ special dungeon cap is cumulative and free completion resurrection does not use it (11.7912ms)
+✔ death deadline boundary offset -1 (6.0178ms)
+✔ death deadline boundary offset 0 (3.3527ms)
+✔ death deadline boundary offset 1 (3.4725ms)
+✔ death clock expires during 6-second disconnection after 4 seconds dead (5.566ms)
+✔ repeated background notifications and heartbeat replay cannot extend recovery (3.6731ms)
+✔ heartbeat sequence replay does not renew lease; late new heartbeat cannot revive it (9.6691ms)
+✔ recovery pauses events, then resumes without resetting original death deadline (4.2605ms)
+✔ transaction conflict retry rechecks the death deadline and does not spend emblem (13.6128ms)
+✔ room payment is business-idempotent across distinct requests and stamina refresh (3.9475ms)
+✔ insufficient stamina does not create a paid room (2.2941ms)
+✔ same operation ID with different payload is rejected; caller cannot submit reward amounts (2.342ms)
+✔ event gap, stale room token, unknown monster and new direct attacks after death give no reward (4.0891ms)
+✔ invalid trailing event rolls back earlier kill and generated reward in the same batch (3.1526ms)
+✔ new event sequence cannot award the same spawn twice; latest identical batch can replay with a new ID (4.0693ms)
+✔ completion full bag becomes original-character pending reward; claim delivers once (5.8373ms)
+✔ ground full bag remains on ground and cannot be converted into pending reward (4.2146ms)
+✔ two different collection intents cannot duplicate a ground item; collected assets survive exit (5.6898ms)
+✔ online completed looting can continue indefinitely; disconnect only closes scene (18.4506ms)
+✔ new launch does not resume unfinished challenge or refund stamina; old session cannot write/replay (5.7684ms)
+✔ restart after completion preserves success and rewards but cannot resume ground pickup (2.4238ms)
+✔ concurrent first login creates one account and one effective session; same launch retries are idempotent (0.8049ms)
+✔ account fence resolves concurrent takeover vs old-session kill without losing committed assets (2.1077ms)
+✔ one active challenge per account; completed but open scene must be explicitly closed before new challenge (4.4194ms)
+✔ trusted principal and account/character ownership are checked independently of client IDs (1.4854ms)
+✔ committed response loss returns unknown; same operation can be queried and retried without reroll (4.2793ms)
+✔ every final-settlement write point rolls back fully on failure (35.244ms)
+✔ invalid special limits are rejected; external config mutation cannot change an active challenge (3.7419ms)
+✔ ordinary living completion does not heal unless it actually levels the character (3.6935ms)
+✔ delayed asynchronous repository reads crossing the deadline cannot charge for resurrection (6.6965ms)
+✔ stale death index cannot consume an emblem for a later death (3.757ms)
+✔ boss transaction retry reuses reward candidates and does not reroll on write conflict (2.7533ms)
+✔ room progression, fixed refill and payment replay preserve the correct total stamina (8.9455ms)
+✔ material pickup fills compatible stacks before allocating a slot and preserves overflow on ground (4.3723ms)
+✔ two concurrent challenge starts across two owned characters admit only one (11.887ms)
+✔ session open response loss can retry without a second takeover (0.581ms)
+✔ malformed auth, missing expected version and non-finite event numbers are rejected without effects (1.9436ms)
+✔ unknown random reward definition fails the entire boss settlement without consuming or partially rewarding (2.6556ms)
+✔ session.open operation ID cannot be reused to silently take over with different launch parameters (0.4513ms)
+(node:43584) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ cross durable client predicts skill, recovers complete results and corrects released effects from public proof (828.9644ms)
+✔ cross client rejects missing prediction level or omitted current effect page (133.7187ms)
+✔ explicit cross training capability enters real service and returns two skill nodes (851.443ms)
+✔ refused cross preserves running basic and ordered later movement; accepted cross cancels it (463.0353ms)
+✔ cross CP effects allocate on demand and every actual write rolls back with exact original recovery (2820.1579ms)
+✔ whole and split MP regeneration validates skill at the same input boundary and keeps exact fractions (1127.2307ms)
+✔ released cross effects survive recovery unchanged and old timeline cannot advance or resample (569.5642ms)
+✔ cross candidates with shared baseline commit exactly once and lost response retains original stream and results (548.8672ms)
+ST11-03 UTF8 {
+  header: 1480,
+  receipt: 952,
+  chunks: [ 2289, 3868, 737 ],
+  effects: 6,
+  snapshots: 1
+}
+✔ compact cross state round-trips with budgets, rejects tampering and keeps allocated empty block revision stable (721.2278ms)
+✔ cross-only profile controlled player cannot restart basic or normal movement (448.24ms)
+✔ three dungeons layout: 7 rooms each, counts, roles and spatial clearances (3.946ms)
+✔ category bleed and control resistance rules and validation (1.7047ms)
+✔ 8-enemy peak concurrency and 3648 combined effect budget signoff with MemoryStore (155.9397ms)
+✔ strict backward compatibility with first-dungeon-v1 and earthFixture (220.9017ms)
+(node:46088) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ earth durable client predicts four-node ground and recovers original results with current public proof (807.3325ms)
+✔ legal training entry and current level20 earth reaches four ground nodes through actual submission (1022.8426ms)
+✔ earth CP effects allocate on demand and every actual write rolls back with exact original recovery (3741.7654ms)
+✔ whole and split MP regeneration validates skill at the same input boundary and keeps exact fractions (1584.4438ms)
+✔ released earth effects survive recovery unchanged and old timeline cannot advance or resample (728.2792ms)
+✔ earth candidates with shared baseline commit exactly once and lost response retains original stream and results (494.6667ms)
+✔ unlock uses current legal character growth and cross skill effect lanes survive one CP proof (382.6525ms)
+✔ room transition clears released effects, retains cooldown/resources and rejects an old scene candidate (295.6967ms)
+✔ controlled player interrupts pending slash and ordinary movement but preserves already released bleed (281.9171ms)
+✔ same tick skill order prevents cross and bengshan from replacing accepted slash and preserves its original cooldown (406.4089ms)
+✔ mixed publication proves cancel graph tails and haste rather than independent cooldown counts (24.9742ms)
+max public proof {"pages":115,"bytes":1679956,"maxPage":14797}
+✔ all3648 allocated-domain effect records rebuild a bounded current public proof without private snapshots (30371.1919ms)
+maximum due-domain simulation {"events":11400,"resultPages":357,"elapsedMs":5446.750199999995}
+✔ allocated due-domain11400 damage outcomes retain every typed result page and bounded private RNG tape (6354.1359ms)
+✔ large original-result page transaction rolls back first middle and final page writes (34874.7058ms)
+✔ already released earth uses its old attack while a broken current weapon contributes zero on the next cast (419.2851ms)
+✔ 7-room encounter geometry has exactly 27 base monsters and purple is valid across rooms 0..5 (4.6055ms)
+✔ prepareRoom produces versioned 7-room manifests with 27 base monsters and single purple monster (385.8465ms)
+✔ room cannot open or advance while purple monster or any ordinary monster is still alive (285.2125ms)
+✔ simulation step marks room cleared and records confirmed kill facts with 2x xp for purple monster (114.744ms)
+✔ checkpoint recovery and reload preserve spawn identities and confirmed kills without re-roll (18.2327ms)
+(node:23104) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/EquipmentCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ EquipmentCoordinator loads character equipment, attributes and transitions to ready (8.4765ms)
+✔ EquipmentCoordinator equip & unequip mutations transition through submitting to ready (5.9855ms)
+✔ EquipmentCoordinator handles rejection with failed status and code (2.0395ms)
+✔ EquipmentCoordinator handles network loss with unknown status, retryOriginal resends pending command (2.1151ms)
+✔ EquipmentCoordinator recovers pending intent from operation.get (3.0528ms)
+✔ EquipmentCoordinator generation isolation drops late responses after reset (22.7425ms)
+✔ 13 slots configuration and categories (2.946ms)
+✔ validateEquipEligibility checks slot, level, class and binding (1.4124ms)
+✔ applyEquipBinding auto-binds purple and orange equipment to character (0.5234ms)
+✔ calculateSingleItemScore matches ranking-query-baseline-v1 exact checks (0.5098ms)
+✔ aggregateCombatAttributes excludes 0-durability items and counts set pieces correctly (21.1483ms)
+✔ ST05-01: empty slot equip, slot mismatch, level requirement, class & binding restrictions (63.1879ms)
+✔ ST05-01: purple equipment first equip triggers auto-binding to character (20.9824ms)
+✔ ST05-02: full bag (20/20) in-place same-slot swap succeeds without BAG_FULL (113.3238ms)
+✔ ST05-02: full bag (20/20) unequip is rejected with BAG_FULL (44.9968ms)
+✔ ST05-02: unequip with free slot succeeds and occupies first free slot (8.0503ms)
+✔ ST05-03: 0 durability excludes combat stats and set piece bonuses; non-wearable slots do not show 0/0 (89.8784ms)
+✔ ST05-03: trinket in cooldown is locked from unequip and swap (35.5143ms)
+✔ ST05-04: scoring calculation, P01 zero-durability retention, tie score time preservation and 500->600->500 refresh (31.3773ms)
+✔ ST05-02 / ST05-04: idempotent replay and atomic failure rollback (25.3455ms)
+(node:7804) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/InventoryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ loads explicit empty backpack and three authoritative template quickslots; receipt triggers refreshed views (14.7363ms)
+✔ lost response persists exact command across controller recreation; notFound never resends mutation (4.2872ms)
+✔ restored pending intent queries original operation and merges original outcome then authoritative views (2.3594ms)
+✔ malformed or mismatched mutation receipt remains unknown rather than clearing persisted intent (1.4958ms)
+✔ late view response cannot overwrite a switched character or closed page (1.4995ms)
+✔ persistence failure stops transmission; malformed quickslot and foreign backpack fail loading (1.6374ms)
+✔ older refresh never replaces newer accepted container or character view (1.1327ms)
+✔ known committed version prevents a stale read from enabling another command (1.6429ms)
+✔ quickslot quantity snapshot must match container version and cannot overwrite with stale bag vector (4.7076ms)
+✔ closing during mutation preserves unresolved intent and ignores late reply; reopening permits recovery (7.0416ms)
+✔ invalid slot is rejected locally before persistence or transport (2.0168ms)
+✔ packet lost before backend: notFound stays unknown until explicit retry resends exact original operation (1.8364ms)
+✔ explicit retry is guarded on closed or switched roles; late reply preserves pending storage (1.8852ms)
+✔ recovery serializes lookup and blocks concurrent recovery or resend while original lookup is pending (1.6347ms)
+✔ stale notFound lookup after closing and starting a new recovery cannot undo the completed recovery (2.2222ms)
+(node:45076) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/InventoryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ ordinary backpack expansion quotes and pays gold in town without any bank context (72.6024ms)
+✔ lost expansion reply persists exact original and recovery refreshes capacity without charging again (17.0056ms)
+✔ backpack expansion quote rejects inn and leaves assets untouched (15.22ms)
+(node:40508) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/ui/InventoryGesture.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ short touch selects; 250 ms hold arms drag without any movement (2.116ms)
+✔ early touch scroll locks and cannot turn into drag after long hold (3.3031ms)
+✔ cancel discards touch; secondary touch cannot end or overwrite owner (0.4697ms)
+✔ mouse requires movement threshold rather than hold and retains source snapshot (0.3516ms)
+✔ empty and locked sources never arm drag for touch or mouse (0.5665ms)
+✔ out of order and nonfinite samples cannot move or prematurely arm active gesture (0.3201ms)
+✔ sorts equipment by fixed slot, quality, level with stable ties and stacks by category (5.1487ms)
+✔ merges full participating quantities and traces every output including remainder; repeated organize no-op (1.0524ms)
+✔ redistribution with same number of stacks is traced, full and singleton stacks are untouched (0.5454ms)
+✔ does not merge different binding scopes or templates; preserves exact source references (0.4193ms)
+✔ rejects malformed trusted data instead of silently sorting or merging it (1.4611ms)
+✔ maximum capacity bounded merge conserves 100 independent input traces (3.5366ms)
+✔ repeated reverse sorting never retraces already compact groups (0.708ms)
+✔ rejects colliding equipment/stack identities and malformed container versions (0.5063ms)
+✔ isolated preview boots through real login/create/select and serves valid backpack and bindings (40.8621ms)
+✔ preview has distinct ephemeral storage namespaces and never exposes arbitrary asset commands (54.2081ms)
+(node:47680) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/InventoryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ organize conserves each binding pool, compacts stacks, records lineage, and reverses full ordering (76.4311ms)
+✔ merge reduces stack count and replay remains immutable after later version changes (40.2466ms)
+✔ exact expected set rejects missing/additional objects and persists refusal without journal (29.3432ms)
+✔ orphan journal fails closed and operation queries isolate stored outcomes (82.2615ms)
+✔ organize write failure 1 leaves no partial bag/account/journal/receipt (26.5203ms)
+✔ organize write failure 2 leaves no partial bag/account/journal/receipt (6.3962ms)
+✔ organize write failure 3 leaves no partial bag/account/journal/receipt (10.6396ms)
+✔ organize write failure 4 leaves no partial bag/account/journal/receipt (13.5698ms)
+✔ commit response loss is recovered by operation.get without applying intent twice (46.7334ms)
+✔ two concurrent intents with same bag version commit at most once (37.9367ms)
+✔ quickslots reference templates, aggregate all bindings, retain zero then restore, and never consume (77.3222ms)
+✔ identity, revoked session, and selected-character authorization fail closed (37.1595ms)
+✔ 100-slot public DTO stays bounded and redacts private account binding while preserving contracted trace pointers (69.2952ms)
+✔ real coordinator wire path opens, assigns, organizes, and recovers committed unknown outcome (25.4064ms)
+✔ quickslot accepts character-only expectation and rejects foreign container expectations or invalid indices before mutation (8.8955ms)
+✔ quickslot replay and concurrent organize leave template selection and total quantity consistent (10.2113ms)
+✔ quickslot write failure 1 leaves no partial selection/account/journal/receipt (10.7813ms)
+✔ quickslot write failure 2 leaves no partial selection/account/journal/receipt (20.7247ms)
+✔ quickslot write failure 3 leaves no partial selection/account/journal/receipt (5.8214ms)
+✔ quickslot write failure 4 leaves no partial selection/account/journal/receipt (6.0849ms)
+✔ strict public command boundaries reject forged authority and oversized or malformed envelopes before writes (5.6518ms)
+✔ single organize uses seven keyed reads and four atomic writes without equipment or ancestry scans (6.9014ms)
+✔ an original request still in flight and its exact retry share one receipt and one asset change (8.3614ms)
+(node:32556) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/LoadingCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ client verifies actual bytes, retry retains original prepare and same manifest after reload (145.4005ms)
+✔ late resource callback cannot mark a cancelled or newer workflow loaded (62.2958ms)
+✔ missing bytes are observable and transport response loss retains same durable operation (94.501ms)
+✔ forged manifest hash fails before resource readiness (19.4179ms)
+✔ unpaid loading suspend freezes same attempt and fixes deadline without creating CP or charging (131.3925ms)
+✔ unpaid recovery excludes paused time, persists original controls, and resumes same manifest without CP (42.1152ms)
+✔ unpaid deadline equality query atomically fails/closes, settles stamina and returns to inn (111.6159ms)
+✔ paid recovery reads frozen CP proof, resumes loading without enemy anchors, then consumes only eligible clock (92.4159ms)
+✔ new heartbeat renews lease once, duplicate cannot renew and old timeline/order cannot advance (74.4144ms)
+✔ silent recovery and death equality use original cutoff with no new grace or paid refund (207.728ms)
+✔ heartbeat sequence is independent of challenge business version (27.4774ms)
+✔ every loading-control and expiry write point rolls back atomically; lost responses resolve exact originals (2498.589ms)
+✔ expiry keeps current session usable in town, preserves completed success and truthful journal reason (107.7509ms)
+✔ actual login takeover wins before or after recovery without old-session replay permission (104.3823ms)
+ST10-04 actual UTF-8 {
+  unpaidH8Receipts: 10303,
+  unpaidResponse: 3570,
+  paidH: 3716,
+  paidHeader: 1594,
+  paidResponse: 985
+}
+✔ bounded original control window and actual encoded H/CP/response budgets include wrapper bytes (168.3564ms)
+✔ recovery-ready deadline−1/equality/+1 respects fixed pause deadline independently of old lease (403.9722ms)
+(node:35324) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/LoginCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ coordinator consumes real local prepare/commit responses and exposes an isolated current session (59.3568ms)
+✔ unknown commit retries the same original key and blocks starting a replacement intent (6.8812ms)
+✔ cancelled late prepare never sends commit or overwrites idle state (3.401ms)
+✔ replacing a still-preparing flow ignores its late ticket while the new flow logs in (3.5039ms)
+✔ cancel during a committed in-flight response preserves its unknown intent until explicit retry (4.1232ms)
+✔ a superseded original commit is never exposed as an authenticated session (22.6845ms)
+✔ unknown prepare retries its exact original intent without creating another ticket (4.3348ms)
+✔ invalid open intent is rejected before any prepare is sent (0.5168ms)
+✔ pending states are explicit and a trusted-adapter rejection is a terminal public error (3.4339ms)
+✔ malformed committed response is unknown and explicit retry restores the real original result (3.8172ms)
+✔ selected character returns to its isolated inn with a new role epoch and preserves current-window stamina (17.1705ms)
+✔ active handoff closes H and CP head, settles remaining once and never rewrites chunks or wallet (14.3031ms)
+✔ completed scenes keep success and a crossed refresh window loads 308 only at handoff (4.2365ms)
+✔ stale closed pointer never replays an old settlement over current character stamina (5.7512ms)
+✔ a stale settled pointer still applies a genuinely newer town refill window (3.7775ms)
+✔ an explicitly unactivated first room closes without inventing a checkpoint (3.908ms)
+✔ an unselected owned challenge character is still closed and reset without selecting it (6.3916ms)
+✔ corrupt handoff missingChunk rejects with no partially closed scene (3.1653ms)
+✔ corrupt handoff chunkHash rejects with no partially closed scene (3.0603ms)
+✔ corrupt handoff chunkRevision rejects with no partially closed scene (6.5201ms)
+✔ corrupt handoff chunkScene rejects with no partially closed scene (3.7092ms)
+✔ corrupt handoff bodyTamper rejects with no partially closed scene (2.9216ms)
+✔ corrupt handoff splitPointers rejects with no partially closed scene (1.6205ms)
+✔ corrupt handoff wrongOwner rejects with no partially closed scene (3.1547ms)
+✔ corrupt handoff missingReservation rejects with no partially closed scene (3.5373ms)
+✔ corrupt handoff missingHeadAccess rejects with no partially closed scene (4.0195ms)
+✔ handoff write 1 fails atomically across character, H, CP head, journal and account (2.8913ms)
+✔ handoff write 2 fails atomically across character, H, CP head, journal and account (1.6766ms)
+✔ handoff write 3 fails atomically across character, H, CP head, journal and account (5.6213ms)
+✔ handoff write 4 fails atomically across character, H, CP head, journal and account (6.7704ms)
+✔ handoff write 5 fails atomically across character, H, CP head, journal and account (3.0405ms)
+✔ account fence resolves competing terminal and handoff when handoff attempts first (5.3297ms)
+✔ account fence resolves competing terminal and handoff when terminal attempts first (2.1311ms)
+✔ trusted-context adapter verifies each invocation without accepting body identity (2.5746ms)
+✔ typed tuple keys are bounded, stable and unambiguous without disclosing subject (25.0829ms)
+✔ context identity rejects accessor fields without invoking them (1.2065ms)
+✔ prepare creates only one stable ticket and never initializes assets or extends its deadline (25.0683ms)
+✔ first commit atomically initializes one account and replays its original result (15.4469ms)
+✔ commit ticket deadline boundary -1 (2.367ms)
+✔ commit ticket deadline boundary 0 (2.724ms)
+✔ commit ticket deadline boundary 1 (2.4656ms)
+✔ two first-login tickets race to one account and cannot automatically steal back the session (8.5408ms)
+✔ new launch replaces an existing account session while historical receipt cannot reactivate it (8.2682ms)
+✔ initialization write 1 failure leaves only the original ticket (23.0608ms)
+✔ initialization write 2 failure leaves only the original ticket (14.9046ms)
+✔ initialization write 3 failure leaves only the original ticket (6.5855ms)
+✔ initialization write 4 failure leaves only the original ticket (8.338ms)
+✔ initialization write 5 failure leaves only the original ticket (22.1102ms)
+✔ initialization write 6 failure leaves only the original ticket (12.0145ms)
+✔ initialization write 7 failure leaves only the original ticket (4.3492ms)
+✔ initialization write 8 failure leaves only the original ticket (14.6601ms)
+✔ initialization write 9 failure leaves only the original ticket (14.3917ms)
+✔ commit response loss returns unknown and same intent restores the once-committed result (12.9598ms)
+✔ body identity cannot reach the identity port or store, and fabricated port identities are rejected (1.1986ms)
+✔ ticket cannot cross identities or launches, and double commit of one ticket cannot initialize twice (6.3277ms)
+✔ prepare response loss restores the same ticket, and a retry crossing deadline cannot commit (5.6021ms)
+✔ account fence overflow fails closed rather than persisting an unsafe integer (8.8283ms)
+✔ login commit uses real character handoff in the same transaction and returns its new role epoch (10.3938ms)
+✔ real login takeover atomically closes active challenge and CP access and settles stamina once (39.2843ms)
+✔ takeover that observes an already committed completion preserves its reward and completed result (17.0585ms)
+✔ any write failure during integrated takeover preserves the old session, character and challenge (105.5888ms)
+✔ a rejected open intent retains its original result and cannot be reused with a new ticket (4.3524ms)
+✔ ticket expiry during transaction reads is checked again before publishing any initialization (2.4723ms)
+✔ expiry while verifying old CP discards every planned handoff write and preserves the old session (5.6481ms)
+✔ batch execution limits each request to at most 4 items with cursor progression (72.5709ms)
+✔ full bag equipment is skipped while subsequent stack item merges successfully (AC8) (17.0733ms)
+✔ real-time expiry intercept skips expired mail item during step execution (7.6291ms)
+✔ location re-verification blocks batch advancement after service closed and resumes on reopen (11.485ms)
+✔ concurrent batches competing for same attachments preserve quantity conservation (16.653ms)
+✔ child operation receipts and recovery via operation.get (8.4924ms)
+✔ multi-step execution across 20 candidates continues to completion (15.4536ms)
+(node:28008) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MailCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ MailCoordinator.claimAvailable auto-loops across steps until completed and aggregates delivered & skipped (8.559ms)
+✔ MailCoordinator.claimAvailable halts immediately if panel is closed mid-loop (3.1288ms)
+✔ MailCoordinator.claimAvailable enters unknown on network drop and recovers via operation.get (9.3005ms)
+(node:21828) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MailCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ mail coordinator initializes and transitions from loading to ready (7.2734ms)
+✔ mail coordinator schedules markRead and updates mail state (4.1886ms)
+✔ mail coordinator schedules claimAttachment and updates attachment status (3.5161ms)
+✔ mail coordinator schedules claimReward and updates reward state (2.0034ms)
+✔ mail coordinator schedules deleteMail and removes mail (2.1836ms)
+✔ mail coordinator transitions to failed on rejected outcome (1.7522ms)
+✔ mail coordinator handles network drop to unknown and recovers via operation.get (2.8231ms)
+✔ mail coordinator generation isolation drops late responses after close (0.5377ms)
+✔ isMailExpired evaluates boundaries accurately (1.3964ms)
+✔ canDeleteMail enforces protection when unclaimed attachments exist (0.3757ms)
+✔ calculateStackClaimQuantity computes available capacity and partial delivery (0.7069ms)
+✔ canClaimEquipmentAttachment checks backpack slot availability (0.3242ms)
+✔ mail.markRead sets readAt and increments version without modifying createdAt (84.1917ms)
+✔ mail.delete rejects UNCLAIMED_ATTACHMENTS and succeeds only when all attachments are claimed (24.6303ms)
+✔ mail.claimAttachment supports partial delivery for stackables and full delivery for equipment (65.8675ms)
+✔ mail.claimAttachment rejects MAIL_EXPIRED when now >= expiresAt (5.8555ms)
+✔ reward.claim materializes pending equipment into backpack and never expires (10.4008ms)
+✔ mail.list, reward.list, and delivery.summary queries accurately report state (31.6104ms)
+✔ idempotency: replaying same operationId returns original outcome (16.9904ms)
+✔ snapshot conflict on missing document retries concurrent creation instead of overwriting it (3.8863ms)
+✔ transactions read their own staged writes without exposing uncommitted data (0.5212ms)
+✔ reads/inspection return detached values and thrown callbacks discard all staged writes (1.0064ms)
+✔ blind writes also conflict; retry budget cannot silently commit stale data (1.1802ms)
+✔ a lost response happens after commit and never rolls the data back (0.4999ms)
+(node:49004) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ durable caller restores hostile CP public runtime, HP and original events after a lost response (586.9796ms)
+✔ ranged and charge tactics execute via MovementCoordinator with ChallengeService CP roundtrip (397.8661ms)
+✔ elite and boss skills with super armor and phase transition execute via MovementCoordinator (467.1505ms)
+✔ boss combo trample-charge wall hit and roar soundwave propagate through MovementCoordinator CP state (547.5671ms)
+✔ live 8-enemy cluster concurrency (Rift R6) and live simulation runtime budget verification (283.8654ms)
+✔ real entry, submit, public proof contains hostile action and real HP loss (492.4168ms)
+✔ hostile submit original result and every real write remain atomic under faults and races (1953.3578ms)
+✔ caller cannot inject AI outcomes or rebind original operation to a new stream (188.2346ms)
+✔ strict runtime rejects false, zero and empty actions in real CP and public recovery (547.0954ms)
+(node:24444) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ initial coordinator has no proof and keeps prediction disabled (6.9156ms)
+✔ real public proof corrects prediction; lost original survives reopen without resubmitting different intent (323.7421ms)
+✔ client freezes at one second, cannot lose discrete queue overflow, and loading failures stay disabled (89.2396ms)
+✔ late old generation public replies cannot replace a new context (232.9039ms)
+✔ submitting is visible and stale public proof keeps prediction disabled (299.0847ms)
+✔ explicit fragment rejection can reconcile current proof before accepting a new intent (179.9563ms)
+✔ real ready movement commits compact receipt, precise clock and current public proof (207.6291ms)
+✔ future frontier cannot be gained per packet, empty inputs retain movement, discrete rejection is ordered (254.6775ms)
+✔ strict versions/digest/sequence/epochs reject whole fragment with no CP progress (721.3514ms)
+✔ all five movement writes roll back, original lost reply stays exact and replay cannot refresh gap (867.731ms)
+✔ two-second gap freezes at original lease deadline; heartbeat and historical input never renew it (89.8769ms)
+✔ actual login takeover both orders preserves confirmed movement and revokes stale original replay (183.7305ms)
+✔ competing valid fragments select one frontier and clock advance on transaction retry cannot bypass gap (322.6683ms)
+✔ heartbeat/status discovers exact silent gap and all recovery writes are atomic (563.9432ms)
+✔ original input query stays account-owned historical evidence; current public proof is revision and identity bound (71.4968ms)
+✔ commit retry rechecks wall clock and gap after a real A write conflict (45.6146ms)
+✔ corrupted matching receipts and orphan shared journals fail closed; cross-service operation cannot be reused (215.8276ms)
+ST11-01 max32 UTF-8 {
+  request: 2493,
+  response: 2681,
+  receipt: 3123,
+  header: 1362,
+  page: 2727
+}
+✔ maximum32 discrete inputs produce bounded actual request, response, receipt, CP and public page (45.6497ms)
+(node:7072) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/LoadingCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ continuous room loading retires prior durable intents and a restored client keeps the new room (512.2505ms)
+✔ next room inherits wounded role and all seven cooldowns with zero snapshot stamina (192.9611ms)
+✔ exact local-test regeneration splits at buff expiry and preserves fractional resource units (112.1059ms)
+✔ later prepare rejects uncleared, living purple, dead player, forged/outside exit and skipped room (461.6818ms)
+✔ later prepare and activate roll back at every write point and original replay leaves newer room intact (1586.2189ms)
+✔ owned bounded pickup fixture contends with actual activate through A/H in both commit orders (175.6368ms)
+✔ exact resource fractions survive arbitrary prefix/suffix cuts, cap overflow and uint64 resources (188.9516ms)
+✔ unknown buff/rate refs and uint32 denominator nonclosure fail before any room or resource commit (142.7642ms)
+✔ ready writes only changed role chunk and every added role write fault rolls back (247.7466ms)
+✔ later prepared recovery excludes four seconds and does not initialize current character/equipment from entry audit (73.49ms)
+ST10-05 actual UTF-8 {
+  maxRole: 15814,
+  header: 1594,
+  chunks: [ 14716, 1933 ],
+  page: 15074,
+  response: 1518,
+  O: 1788,
+  H: 4807
+}
+ST10 post-ready UTF-8 { page: 15081, ready: 746, H: 5164, lastReadyReceipt: 946 }
+✔ schema2 maximum supported role/public page and actual next activation/receipt stay bounded (217.8405ms)
+✔ later activate authorization/version/terminal and real login takeover remain fenced in both orders (377.5198ms)
+✔ later exit is bound to locked previous manifest and full spawn set rather than a substitute map/enemy list (65.7688ms)
+✔ same regeneration reference cannot be rebound to different rates and prepared exit rule cannot change (60.1657ms)
+✔ crossing global stamina refill during later loading never refreshes reserved snapshot (40.5604ms)
+✔ next room inherits wounded role and all seven cooldowns with zero snapshot stamina (196.9734ms)
+✔ exact local-test regeneration splits at buff expiry and preserves fractional resource units (63.4745ms)
+✔ later prepare rejects uncleared, living purple, dead player, forged/outside exit and skipped room (488.5261ms)
+✔ later prepare and activate roll back at every write point and original replay leaves newer room intact (1432.0836ms)
+✔ owned bounded pickup fixture contends with actual activate through A/H in both commit orders (96.4381ms)
+✔ exact resource fractions survive arbitrary prefix/suffix cuts, cap overflow and uint64 resources (201.1602ms)
+✔ unknown buff/rate refs and uint32 denominator nonclosure fail before any room or resource commit (136.3009ms)
+✔ ready writes only changed role chunk and every added role write fault rolls back (260.366ms)
+✔ later prepared recovery excludes four seconds and does not initialize current character/equipment from entry audit (160.7388ms)
+ST10-05 actual UTF-8 {
+  maxRole: 15814,
+  header: 1594,
+  chunks: [ 14716, 1933 ],
+  page: 15074,
+  response: 1518,
+  O: 1788,
+  H: 4807
+}
+ST10 post-ready UTF-8 { page: 15081, ready: 746, H: 5164, lastReadyReceipt: 946 }
+✔ schema2 maximum supported role/public page and actual next activation/receipt stay bounded (195.5078ms)
+✔ later activate authorization/version/terminal and real login takeover remain fenced in both orders (286.2077ms)
+✔ later exit is bound to locked previous manifest and full spawn set rather than a substitute map/enemy list (43.2982ms)
+✔ same regeneration reference cannot be rebound to different rates and prepared exit rule cannot change (63.7743ms)
+✔ crossing global stamina refill during later loading never refreshes reserved snapshot (28.2401ms)
+ST10 eight-receipt H UTF-8 10216
+✔ issued ready receipt proves current active public records without renewing lease or anchors (69.3867ms)
+✔ active recovery ready issues fresh bounded pages and cannot reuse previous timeline receipt (35.9839ms)
+(node:24676) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/RecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reopen queries exact durable original before same-request retry; notFound cannot clear intent (6.0462ms)
+✔ a pending original blocks a replacement sequence and old generation cannot change new context (2.0589ms)
+✔ actual service controls survive resume and both ready reply losses across reopen, preserving original paid attempt (294.2541ms)
+✔ next room inherits wounded role and all seven cooldowns with zero snapshot stamina (257.8055ms)
+✔ exact local-test regeneration splits at buff expiry and preserves fractional resource units (66.8199ms)
+✔ later prepare rejects uncleared, living purple, dead player, forged/outside exit and skipped room (609.741ms)
+✔ later prepare and activate roll back at every write point and original replay leaves newer room intact (772.0139ms)
+✔ owned bounded pickup fixture contends with actual activate through A/H in both commit orders (94.7414ms)
+✔ exact resource fractions survive arbitrary prefix/suffix cuts, cap overflow and uint64 resources (212.8215ms)
+✔ unknown buff/rate refs and uint32 denominator nonclosure fail before any room or resource commit (224.5937ms)
+✔ ready writes only changed role chunk and every added role write fault rolls back (329.8603ms)
+✔ later prepared recovery excludes four seconds and does not initialize current character/equipment from entry audit (56.6746ms)
+ST10-05 actual UTF-8 {
+  maxRole: 15814,
+  header: 1594,
+  chunks: [ 14716, 1933 ],
+  page: 15074,
+  response: 1518,
+  O: 1788,
+  H: 4807
+}
+ST10 post-ready UTF-8 { page: 15081, ready: 746, H: 5164, lastReadyReceipt: 946 }
+✔ schema2 maximum supported role/public page and actual next activation/receipt stay bounded (113.2794ms)
+✔ later activate authorization/version/terminal and real login takeover remain fenced in both orders (191.6596ms)
+✔ later exit is bound to locked previous manifest and full spawn set rather than a substitute map/enemy list (39.5318ms)
+✔ same regeneration reference cannot be rebound to different rates and prepared exit rule cannot change (83.5408ms)
+✔ crossing global stamina refill during later loading never refreshes reserved snapshot (97.9183ms)
+✔ inner checkpoint rejects unknown schema, unsupported effects and non-string resources (14.1748ms)
+ST10-03 max supported chunks UTF-8 [ 4451, 16032 ]
+✔ supported maximum nonempty CP encodes8enemies7cooldowns with max escaped IDs and uint64 resources (18.8885ms)
+✔ challenge read rejects malformed outer checkpoint metadata before login handoff (139.9537ms)
+✔ challenge read fails closed on outer header/ref domains and valid CP still hands off (838.3003ms)
+(node:22736) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/ShopCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ shop coordinator initializes and transitions from loading to ready (6.001ms)
+✔ shop coordinator schedules buy and updates wallet and version (5.8904ms)
+✔ shop coordinator schedules sell and updates wallet (3.4064ms)
+✔ shop coordinator schedules exchange and updates wallet (3.5157ms)
+✔ shop coordinator transitions to failed on rejected outcome (1.2632ms)
+✔ shop coordinator handles network drop to unknown and recovers via operation.get (4.7605ms)
+✔ shop coordinator generation isolation drops late responses after close (6.1074ms)
+✔ validateBuyEligibility verifies quote, quantity and wallet balance (2.8858ms)
+✔ validateSellEligibility blocks equipped, non-backpack and account-bound items (2.1385ms)
+✔ calculateSellPrice guarantees enhancement and affixes do not increase sell price (1.0173ms)
+✔ calculateExchange handles bidirectional 10000:1 conversion with net asset invariance (1.5789ms)
+✔ shop.buy purchases potions and white equipment, deducting currency and updating bag (107.8844ms)
+✔ shop.buy rejects BAG_FULL when bag has no slots for equipment, with zero currency deducted (44.5089ms)
+✔ shop.buy rejects QUOTE_CHANGED and CURRENCY_NOT_ENOUGH (37.2912ms)
+✔ shop.sell sells equipment and stacks from backpack, crediting gold and removing items (8.2725ms)
+✔ shop.sell rejects equipped items and account-bound items (7.2341ms)
+✔ wallet.exchange exchanges gold to points and points to gold with net asset invariance (21.2405ms)
+✔ idempotency and queries: replaying same operationId returns original result and operation.get works (10.8836ms)
+(node:3472) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ ST13-04: SupplyHUDModel triggers item action into MovementCoordinator queue and syncs authoritative status (268.5454ms)
+✔ ST13-04: Trinket activation enqueues trinket action, triggers active buff and cooldown in HUD (133.0595ms)
+✔ legacy inventory account vault reads shared vault and public stack shape (48.7654ms)
+✔ both vault kinds require bank context and reject mismatched context ownership or scene (45.2136ms)
+✔ legacy vault read fails closed when character leaves town or bank radius (10.7763ms)
+✔ legacy inventory rejects stale current-session pointer and unselected roles (12.3388ms)
+✔ backpack public projection strips internal account binding and template version object (17.216ms)
+(node:47292) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/TownCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ town coordinator manages inn exit and position synchronization (31.1514ms)
+✔ town coordinator closes active panel on movement and predicts position (18.4138ms)
+✔ town coordinator locally rejects service open when beyond 24px distance (14.544ms)
+✔ town coordinator generation isolation drops late responses after reset (0.6594ms)
+✔ scene.exitInn transitions character from inn to town anchor and initializes townState (35.1575ms)
+✔ town.move verifies ordered sequential steps, bounds and speed limits (12.4617ms)
+✔ service.open checks 24px radius, issues context, and service.close terminates it (13.5601ms)
+✔ private read models enforce context authorization and HUD summary does not leak bodies (10.7645ms)
+ℹ tests 639
+ℹ suites 0
+ℹ pass 639
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88444.2426
+PASS: backend regression (legacy and v2)
+
+CHECK: client model regression
+PASS: tap, timeout, buffer, hold loop, reset, axis speeds, diagonal and facing
+PASS: four warrior skills, shared mana, independent cooldowns, one impact, lunge/jump motion and reset
+PASS: skill frame/contact alignment, takeoff, pre-impact interruption and persistent effect cleanup
+PASS: skill-specific stun/knockdown, ultimate recovery, 5s refresh-only bleeding, heartbeat and death/miss cleanup
+PASS: per-cast/target/stage knockdown ledger, normal/elite boundaries, boss immunity and death fade
+PASS: 2/3/1/4 phases, preserved damage, independent ground origin, interruption, piercing projectile and reset
+PASS: moving/knockback targets at 30/60/120Hz and fractional lethal damage
+PASS: hit-stop coalescing, no idle retriggers, heavy/light timing, pixel sparks, cleanup and multi-hit integration
+PASS: independent feedback A/B controls, immediate release, no retroactive hits and reset retention
+PASS: per-hit damage popups, simultaneous events, overkill amount, formatting, bounded pools, independent toggle and cleanup
+PASS: retained preview targets do not replay old hit feedback after cast/reset
+PASS: ground-impact-only shake, bounded integer offsets, independent disable/reset and unchanged ground coordinates
+PASS: versioned fragment crop preserves source scale and shared foot anchor for both facings
+PASS: bounded charge/emission cues with unchanged 200ms charge and hit schedules
+PASS: eight-slot two-half stride playback, walk/run cadence, brake, hurt/action priorities and reset (art requires visual review)
+PASS: additive attack-speed sources, 1/1.25/1.5 timings, stage snapshot, scaled movement, fixed combo/buffer and atomic basic-to-skill cancellation
+PASS: immediate skill cancellation releases previous hit-stop only on success
+PASS: default/forward earth leaps, facing/deadzone/FPS/bounds, landing-origin damage, cancellation and held-basic microstep
+PASS: bleed cadence/expiry/refresh/FPS/periodic feedback/death and ready/fighting/result/retry rounds
+PASS: monster attack cadence, friendly telegraph, recovery pause, and warrior super armor state
+PASS: ST14-01 CombatModel death state, deathIndex tracking, input blocking, and reset
+PASS: client model regression
+
+CHECK: client UI-model regression
+PASS: 13 equipment slots verified without head slot
+PASS: 7 durability slots and 3-color status ladder verified
+PASS: dungeon entrance gatekeeper verified (no weapon, 0 durability, 0 stamina)
+PASS: full bag in-place swap and full bag unequip prevention verified (UI01)
+PASS: account vault soulbound rejection verified (UI04)
+PASS: repair batch failure and full deduction verified (UI08)
+PASS: stats computation and 0-durability attribute expiry verified
+PASS: SupplyHUDModel hotzones, lifecycle state machine, and trigger actions verified (ST13-04)
+PASS: DeathReviveHUDModel hotzones, 10s countdown, emblem/limit display, aura, and fadeout verified (ST14-04)
+
+ALL UI MODEL TESTS PASSED (100% SUCCESS)
+PASS: client UI-model regression
+
+SUMMARY: 7/7 checks passed.
+Partial local v2 coverage only: full gameplay, cloud SDK, Cocos scene build and device acceptance are not covered.

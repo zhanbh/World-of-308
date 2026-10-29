@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st15",
-  "status": "ready",
+  "status": "implementation-in-progress",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "4243635",
   "approved_spec_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
@@ -12,7 +12,7 @@
       "blocked_by": [],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/01-room-drop-collect.md",
-      "state": "planned",
+      "state": "in-progress",
       "worktree": ".worktrees/st15-01-room-drop",
       "branch": "feat/st15-01-room-drop",
       "evidence": [],
@@ -93,5 +93,21 @@
     "clean_git": true,
     "check_all_passed": true,
     "backend_test_count": 639
+  },
+  "resume": {
+    "date": "2026-10-29",
+    "integration_head": "d755df1",
+    "actual_source_validation": "docs/stories/warrior-loop/st15/plan-validation-2026-10-29.json",
+    "legacy_revision_mismatch": true,
+    "approved_prose_unchanged": true,
+    "evidence": "docs/reviews/st15-resume-check-2026-10-29.md",
+    "baseline_current_run": "7/7 passed",
+    "first_worktree_initially_clean": true,
+    "baseline_log": "docs/reviews/st15-baseline-2026-10-29.log",
+    "baseline_counts": [
+      7,
+      227,
+      639
+    ]
   }
 }

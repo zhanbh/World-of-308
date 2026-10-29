@@ -1,0 +1,82 @@
+{
+  "feature": "warrior-loop-st15",
+  "verified_on": "2026-10-29",
+  "baseline_head": "d755df1",
+  "kind": "repository-local-recheck-no-Jira",
+  "result": "dependency-and-coverage-passed-source-bytes-pinned-with-legacy-revision-mismatch",
+  "approved_body_unchanged": true,
+  "original_plan_check_retained": true,
+  "original_revision_mismatch": true,
+  "explanation": "Original frontmatter hashes do not match actual bodies; all five ticket revisions repeat spec revision. No source prose was changed. Actual byte/body hashes below pin current approved content for implementation and review; original plan-check source_hash_matches=true is not reproduced.",
+  "spec": {
+    "path": "docs/stories/warrior-loop/st15/spec.md",
+    "declared_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+    "actual_body_sha256": "e574471d617afba569e6d46612e0e03a435a1e26722cc70acaffbd618f137993",
+    "full_file_sha256": "ba94c5afa1c3735075c9622513ba589f7e5f55a1ebfeb451d974c0ece8151315"
+  },
+  "tickets": [
+    {
+      "id": "ticket:warrior-loop-st15-01",
+      "number": 1,
+      "blocked_by": [],
+      "path": "docs/stories/warrior-loop/st15/issues/01-room-drop-collect.md",
+      "declared_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "actual_body_sha256": "227b1bebd14690b3c714c7952f969562975d58a13511f4b703c78bde3e32b78b",
+      "full_file_sha256": "cf923bde9c477414dd74181051a12d454a4fe0b31f0d792d503085a4c204e407"
+    },
+    {
+      "id": "ticket:warrior-loop-st15-02",
+      "number": 2,
+      "blocked_by": [
+        1
+      ],
+      "path": "docs/stories/warrior-loop/st15/issues/02-boss-clear-and-free-revive.md",
+      "declared_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "actual_body_sha256": "352788851ef83d2b8b9f6a64f5f83f03a13600d9530b01a757ca30b1d5135788",
+      "full_file_sha256": "f67726d76410b8dcbd337f61adc7e16f6597fbdb69bcef205cf14eb1aedc5c65"
+    },
+    {
+      "id": "ticket:warrior-loop-st15-03",
+      "number": 3,
+      "blocked_by": [
+        2
+      ],
+      "path": "docs/stories/warrior-loop/st15/issues/03-terminal-settlement-and-routing.md",
+      "declared_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "actual_body_sha256": "0fc9d598c8e1054c9a5ecbb11f297d00d671ffaf095be47b6259ffe396bd92a2",
+      "full_file_sha256": "5855a794f7c417e6a014131fad92c41756585df9a203c0ffc706b2ed8b575d7a"
+    },
+    {
+      "id": "ticket:warrior-loop-st15-04",
+      "number": 4,
+      "blocked_by": [
+        3
+      ],
+      "path": "docs/stories/warrior-loop/st15/issues/04-cocos-loot-and-victory-hud.md",
+      "declared_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "actual_body_sha256": "0bd34fc44d9eeeddfe3280af4868fc0d46ce523b6a99479fcbe5566580491c70",
+      "full_file_sha256": "e872d1c59f5bf6ef3d9fdc329444e53127e65bc15b415f84161afa538a6c63ac"
+    },
+    {
+      "id": "ticket:warrior-loop-st15-05",
+      "number": 5,
+      "blocked_by": [
+        4
+      ],
+      "path": "docs/stories/warrior-loop/st15/issues/05-joint-acceptance-and-budget-review.md",
+      "declared_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
+      "actual_body_sha256": "499da95c7663da33ea8ece671c9ce79aec8ff8dc3134ee0810ae8fe79fd10297",
+      "full_file_sha256": "f5a9bee1a4e3cbbf743e58bfd956dfef1c082861253474d87bc5c7d834668ae5"
+    }
+  ],
+  "checks": {
+    "ticket_count": 5,
+    "ids_unique": true,
+    "story_coverage": [
+      "ST15"
+    ],
+    "dependencies_exist": true,
+    "acyclic": true
+  },
+  "jira_actions": false
+}
