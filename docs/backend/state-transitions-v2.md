@@ -181,3 +181,7 @@ ST11最终评审算术域修订：训练profile发布/入口须证明完整合�
 起手消耗CD→锁向命中→收招；合法控制/死亡只取消严格未来本体节点，同刻到期集合保留，中断不返还CD。玩家受控按节点判断，到期后新输入恢复；HP0仅本票role死亡事实，挑战复活生命周期仍由ST14承接。详见[合同](monster-melee-combat-contract-v1.md)。
 
 ST15-01（2026-10-29）：drop.collect在active或cleared、connected且alive的当前有效房间执行；preparing/awaitingReady、旧room/scene、已关闭场景不再交付。地面→已交付、背包/实例/持有/J/O为一笔提交；BAG_FULL不转移地面来源。原成功O重放不经过当前场景重新分配，离场不撤销已经入包。详细字段和恢复见[拾取合同](ground-drop-collect-contract-v1.md)。
+
+## ST15-02 实施证据边界（2026-10-29）
+
+本轮已接真实Boss死亡→completed/alive/looting，清active指针但保留openScene与位置供拾取，含余怪派生、同刻死亡免费复活及末房磨损至0不翻盘。最小金币XP与来源/CP同笔，完整升级邮件、专属装备路由、通关固定本局消耗、回城沉降/解锁仍由03接续；不得将当前受限实现等同上表完整终局事务已验收。细节见[实施合同](boss-clear-terminal-contract-v1.md)。

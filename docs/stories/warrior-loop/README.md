@@ -104,6 +104,6 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 ## ST15 本地实施准备
 
-2026-10-28～2026-10-29：用户已确认五项任务图并授权本地连续实施，integration为`feat-1.0.0`，基准为 `4243635`。已冻结只读[实施规格](st15/spec.md)、生成五项本地[实施票据](st15/issues/01-room-drop-collect.md)、通过源hash与依赖无环检查并记录于[计划检查](st15/plan-check.json)与[执行记录](st15/execution.json)（commit `fc7d9e6`）。首个工作区已就绪于 `.worktrees/st15-01-room-drop`（分支 `feat/st15-01-room-drop`），代码基线整洁无污染，待推进首项实施票据：**ST15-01 房间怪物掉落生成、拾取入包与满包留地**。见[ST15入口](st15/README.md)。
+2026-10-29：用户已确认五项任务图并授权本地连续实施，integration为`feat-1.0.0`。01地面拾取已完成；02真实Boss死亡通关、余怪结算、免费复活与末房磨损已实现，本地7/7检查通过，合入前仍需收尾后的独立复核。下一项为**ST15-03 终局原子事务与奖励路由**。只读[实施规格](st15/spec.md)及票据正文不改；原revision失配与实际文件hash见[旁置验证](st15/plan-validation-2026-10-29.json)，不重复旧plan-check的hash一致声明。实现证据见[02验证](../../reviews/st15-02-verification.md)，进度见[执行记录](st15/execution.json)与[ST15入口](st15/README.md)。
 
 

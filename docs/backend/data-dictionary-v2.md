@@ -478,3 +478,7 @@ ST11最终评审算术域修订：训练profile发布/入口须证明完整合�
 scene7.monsters保留actorId/index/templateRef、独立身份、AP、决策/冷却/动作节点、控制时钟、移动intent/余数；monsterControlUntilTick保存玩家当前控制。字段上界及schema版本见[合同](monster-melee-combat-contract-v1.md)，原role/scene/effect块物理位置不变。
 
 ST15-01实际room增量（2026-10-29）：drops为至多16条固定GroundDrop（dropId/sourceKey/sourceId/ordinal/模板/数量/品质/装等/绑定策略/装备描述/坐标/collected及可选collectedAt,itemId,deliveryRef）；room增加version及dropConfigRef/dropConfigHash。collected布尔是当前实现的ground/collected编码；expired通过H当前roomNo/sceneEpoch/sceneState逻辑派生，不删来源或给未拾取物创建pending。见[当前拾取合同](ground-drop-collect-contract-v1.md)。
+
+## ST15-02 实施字段增量（2026-10-29）
+
+挑战私有terminalFact保存bossActorId、精确有理微秒at、playerDied、playerDeathAtTick与derivedKills；rewardTotals保存已确认新增击杀累计gold/xp/kills，terminalRewardRef引用最小终局流水。配置rewards仅显式local-test授权。字段与限制见[boss-clear-terminal-contract-v1.md](boss-clear-terminal-contract-v1.md)；03完整奖励字段不在本增量中声明已实现。

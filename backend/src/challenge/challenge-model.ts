@@ -13,6 +13,7 @@ export interface ChallengeContent {
     movement?: import('../../../shared/src/movement-kernel.ts').MovementConfig;
     exitInteraction?: {profile:'local-test';rulesRef:string;radius:number};
     encounterLayout?: boolean;
+    rewards?: {profile:'local-test-kill-rewards';authorization:'isolated-local-assets-only';ref:string;goldPerKill:string;xpPerKill:number;roomWear:number};
     drops?: import('./ground-drops.ts').DropConfig;
     dungeons: {
         dungeonId: string;
@@ -68,6 +69,9 @@ export interface EntryChallenge extends HandoffChallenge {
     roomCost: number;
     purpleRoomNo: number | null;
     purpleEncounter: {roomNo:number;spawnId:string;templateRef:string} | null;
+    terminalFact?: {bossActorId:string;at:{n:string;d:string};playerDied:boolean;playerDeathAtTick:number|null;derivedKills:string[]};
+    rewardTotals?: {gold:string;xp:number;kills:number};
+    terminalRewardRef?:string;
     confirmedKills?: import('../../../shared/src/encounter-layout.ts').ConfirmedKillFact[];
     lifeState: 'alive' | 'dead';
     deathIndex?: number;

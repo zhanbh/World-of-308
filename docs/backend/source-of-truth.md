@@ -73,3 +73,7 @@ P2连续践踏（3段72px圆判）接锁向冲撞、碰墙即停解除霸体与3
 ## ST15-01 地面来源与拾取增量（2026-10-29）
 
 当前真实死亡生成固定room来源、已确认CP距离授权、材料整源合堆/装备延迟物化、角色持有/谱系与原结果原子交付，以及显式local-test奖励授权按[地面拾取合同](ground-drop-collect-contract-v1.md)执行。01不覆盖Boss终局、即时金币经验或通关奖励路由；实际命令与平台GAP见[01验证](../reviews/st15-01-verification.md)。
+
+## ST15-02 首领即刻通关增量（2026-10-29）
+
+真实Boss死亡精确节点、余怪派生击杀、completed+looting、死亡事实与免费复活、末房磨损及显式local-test最小金币XP同笔按[首领通关合同](boss-clear-terminal-contract-v1.md)执行。当前不包含03完整升级邮件、专属装备路由、通关固定本局消耗、回城沉降/解锁；实际本地证据见[02验证](../reviews/st15-02-verification.md)。

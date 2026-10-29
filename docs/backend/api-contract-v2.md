@@ -343,3 +343,7 @@ simulation.confirmed与recoveryPage允许有界monsterRuntime及playerControl记
 ## ST15-01 当前拾取读写视图（2026-10-29）
 
 新增 `drop.list` 读取当前challengeId/sceneEpoch的公开地面描述及H/C/B版本，roomToken复用attemptId。C28验证已确认CP距离<=32设计像素而不信positionHint；expected当前H/B。连接/场景代次与lease检查、固定source归属、原O与资产J语义、实际预算详见[地面拾取合同](ground-drop-collect-contract-v1.md)。未拾取不物化，成功后留原来源终态。此为01增量，不把终局结算或真实云端标为完成。
+
+## ST15-02 实施接线（2026-10-29）
+
+simulation.submit通过真实战斗节点在重验事务内产生终局，客户端不提交通关/奖励事实；提交后CP公开result=completed、roomPhase=cleared、lifeState=alive与hash一致。公开状态分页与移动接受有效completed+looting场景，MovementCoordinator能恢复该状态；drop.list/collect及finishLoot继续沿已有协议授权。详见[首领通关合同](boss-clear-terminal-contract-v1.md)。03邮件/专属装备交付不在本轮完成声明内。

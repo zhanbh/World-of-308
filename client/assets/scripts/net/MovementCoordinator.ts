@@ -59,7 +59,7 @@ export class MovementCoordinator {
   const c=this.context!,config=this.config!,query={protocolVersion:2,sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,query:'challenge.get',requestId:'movement-current',payload:{challengeId:c.challengeId}};
   const first=parseChallengeQueryResponse(await this.scene(query));if(generation!==this.generation)return;
   if('error' in first)throw Error(first.error.code);const s=first.data;
-  if('kind' in s||s.roomPhase!=='active'||s.connection!=='connected'||s.lifeState!=='alive'||s.result!=='active')throw Error('CURRENT_SCENE_NOT_ACTIVE');
+  if('kind' in s||!((s.roomPhase==='active'&&s.result==='active')||(s.roomPhase==='cleared'&&s.result==='completed'))||s.connection!=='connected'||s.lifeState!=='alive')throw Error('CURRENT_SCENE_NOT_ACTIVE');
   if(this.current.confirmed&&(s.sceneEpoch!==this.current.confirmed.sceneEpoch||s.timelineEpoch!==this.current.confirmed.timelineEpoch||s.checkpointRevision<this.current.confirmed.checkpointRevision))throw Error('STALE_STATE');
   const pages=[];let total=1;
   for(let pageIndex=0;pageIndex<total;pageIndex++){
@@ -69,7 +69,7 @@ export class MovementCoordinator {
   const proof=await verifyRecoveryPages(pages);if(generation!==this.generation)return;
   if(proof.checkpointRevision!==s.checkpointRevision||proof.publicStateHash!==s.publicStateHash||proof.sceneEpoch!==s.sceneEpoch||proof.timelineEpoch!==s.timelineEpoch||proof.manifestHash!==s.manifestHash)throw Error('PROOF_MISMATCH');
   const final=parseChallengeQueryResponse(await this.scene(query));if(generation!==this.generation)return;
-  if('error' in final||'kind' in final.data||final.data.checkpointRevision!==s.checkpointRevision||final.data.publicStateHash!==s.publicStateHash||final.data.connection!=='connected'||final.data.roomPhase!=='active')throw Error('STALE_STATE');
+  if('error' in final||'kind' in final.data||final.data.checkpointRevision!==s.checkpointRevision||final.data.publicStateHash!==s.publicStateHash||final.data.connection!=='connected'||final.data.roomPhase!==s.roomPhase||final.data.result!==s.result)throw Error('STALE_STATE');
   const actor=proof.records.find(r=>r.kind==='actor'&&r.actorId===c.characterId),movement=proof.records.find(r=>r.kind==='movement'&&r.actorId===c.characterId);
   if(!actor||actor.kind!=='actor')throw Error('INCOMPLETE_PUBLIC_STATE');
   if(movement&&movement.kind==='movement'&&movement.configHash!==await manifestDigest(config))throw Error('CONFIG_MISMATCH');if(generation!==this.generation)return;

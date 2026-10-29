@@ -452,6 +452,8 @@ export type MonsterSimulationInput = EarthSimulationInput & {
     defense?: (tick: number) => MonsterDefense;
     playerResources?: (player: MonsterPlayer) => MonsterPlayer;
     onPlayerChange?: (player: MonsterPlayer) => void;
+    /** Explicit final-room boss; absent keeps training/ordinary encounters unchanged. */
+    terminalBossId?: string;
     monsterConfig: MonsterConfig;
     monsters: MonsterRuntime[];
     player: MonsterPlayer;
@@ -487,6 +489,10 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
             : (deathTime + 10_000);
         emit(events, m, 'death', tick, null, `DEATH_INDEX_${player.deathIndex}`);
     };
+    let terminal: {bossActorId:string; at:Rational; derivedKills:string[]; playerDied:boolean; playerDeathAtTick:number|null} | null = null;
+    let terminalFinalized=false;
+    const finishTerminal=()=>{if(!terminal||terminalFinalized)return;terminal.playerDied=player.deathAtTick!==undefined;terminal.playerDeathAtTick=player.deathAtTick??null;if(player.lifeState==='dead'){player.lifeState='alive';player.hp=player.maxHp;player.controlledUntilTick=0;delete player.deathDeadline;}for(const m of monsters){m.action=null;m.pendingPhase=null;m.intentX=0;m.intentY=0;m.tactics.effects=[];}terminalFinalized=true;input.onPlayerChange?.(player);};
+    const detectTerminal=(at:Rational,targets:CombatTarget[])=>{if(terminal||!input.terminalBossId||input.targets.find(t=>t.actorId===input.terminalBossId)?.lifeState!=='alive')return;const boss=targets.find(t=>t.actorId===input.terminalBossId);if(!boss||boss.hp!=='0')return;terminal={bossActorId:boss.actorId,at:structuredClone(at),derivedKills:[],playerDied:false,playerDeathAtTick:null};for(const t of targets){if(t.actorId!==boss.actorId&&t.lifeState!=='dead'){terminal.derivedKills.push(t.actorId);t.hp='0';t.lifeState='dead';t.downUntilTick=null;}}if(BigInt(at.n)%(10000n*BigInt(at.d))!==0n)finishTerminal();};
     let due = new Set<string>(), eventOffset = 0, playerAliveAtBoundary = false;
     let duePositions = new Map<string, {
         x: number;
@@ -512,7 +518,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
             }
         }
     };
-    const result = advanceEarthSimulation({ ...input, context: { ...input.context, tagDamage: true, immuneToBleed: monsters.filter(m => cfg.templates[m.templateRef].resist.bleed).map(m => m.actorIndex) }, jointAfterNode: (at, movement, targets, events) => applyControls(Number((BigInt(at.n) + 10000n * BigInt(at.d) - 1n) / (10000n * BigInt(at.d))), movement, targets, events), jointDead: tick => player.lifeState === 'dead', jointControlled: tick => player.lifeState === 'dead' || tick < player.controlledUntilTick, jointPrepare: (tick, targets) => {
+    const result = advanceEarthSimulation({ ...input, context: { ...input.context, tagDamage: true, immuneToBleed: monsters.filter(m => cfg.templates[m.templateRef].resist.bleed).map(m => m.actorIndex) }, jointAfterNode: (at, movement, targets, events) => {applyControls(Number((BigInt(at.n) + 10000n * BigInt(at.d) - 1n) / (10000n * BigInt(at.d))), movement, targets, events);detectTerminal(at,targets);}, jointDead: tick => terminalFinalized || player.lifeState === 'dead', jointControlled: tick => terminalFinalized || player.lifeState === 'dead' || tick < player.controlledUntilTick, jointPrepare: (tick, targets) => {
             if (input.playerResources && player.lifeState === 'alive')
                 Object.assign(player, input.playerResources(player));
             playerAliveAtBoundary = player.lifeState === 'alive';
@@ -526,10 +532,11 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
             }).map(m => m.actorId));
             duePositions = new Map(targets.filter(t => due.has(t.actorId)).map(t => [t.actorId, { x: t.x, y: t.y }]));
         }, joint: (tick, movement, targets, events) => {
+            if(terminalFinalized)return true;
             // 1. Process in-flight tactical effects (projectiles)
             for (const m of monsters) {
                 const surviving: ProjectileEffect[] = [];
-                for (const eff of m.tactics.effects) {
+                for (const eff of terminal ? [] : m.tactics.effects) {
                     const dx = eff.targetX - eff.x, dy = eff.targetY - eff.y;
                     const dist = Math.hypot(dx, dy);
                     if (dist <= eff.speed) {
@@ -570,6 +577,7 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
 
             // 3. Process each monster runtime
             for (const m of monsters) {
+                if(terminal&&!due.has(m.actorId))continue;
                 const t = targets.find(t => t.actorId === m.actorId)!, template = cfg.templates[m.templateRef];
                 t.controlImmune = template.resist.knockdown;
 
@@ -1133,7 +1141,9 @@ export function advanceMonsterSimulation(input: MonsterSimulationInput) {
                 m.remainderX = step.remainderX;
                 m.remainderY = step.remainderY;
             }
-            return player.lifeState === 'dead' || tick < player.controlledUntilTick;
+            if(terminal)finishTerminal();
+            return terminalFinalized || player.lifeState === 'dead' || tick < player.controlledUntilTick;
         } });
-    return { ...result, monsters, player };
+    finishTerminal();
+    return { ...result, monsters, player, terminal };
 }
