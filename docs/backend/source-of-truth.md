@@ -81,3 +81,7 @@ P2连续践踏（3段72px圆判）接锁向冲撞、碰墙即停解除霸体与3
 ## ST15-02 首领即刻通关增量（2026-10-29）
 
 真实Boss死亡精确节点、余怪派生击杀、completed+looting、死亡事实与免费复活、末房磨损及显式local-test最小金币XP同笔按[首领通关合同](boss-clear-terminal-contract-v1.md)执行。当前不包含03完整升级邮件、专属装备路由、通关固定本局消耗、回城沉降/解锁；实际本地证据见[02验证](../reviews/st15-02-verification.md)。
+
+## ST15-05 联合预算安全门禁（2026-10-29）
+
+真实8块正常终局域R42/W33/78调用通过；3648到期效果结果分页最大域曾实测W525/570调用及3.76MB，当前原子拒绝并保持active。完整最大域发布仍blocked，后续映射整改前不可宣称ST15全Done。活跃保护及差异见[终局预算](enhancement-terminal-budget-v1.md)、[联合验证](../reviews/st15-05-verification.md)。

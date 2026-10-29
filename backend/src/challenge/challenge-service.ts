@@ -730,7 +730,15 @@ export class ChallengeService {
             if(scene.badao){const ready=scene.badao.readyAtUs;role.cooldowns.find(cd=>cd.cooldownId==='badao')!.readyAtTick=logicTick(Number((BigInt(ready.n)+BigInt(ready.d)*10000n-1n)/(BigInt(ready.d)*10000n)));if(c.level>=10){const skill={skillId:'badao' as const,level:1+Math.floor((c.level-10)/2),configRef:cp.role.unlockedSkills.find(x=>x.skillId==='badao')?.configRef??'badao@1'};role.unlockedSkills=[...role.unlockedSkills.filter(x=>x.skillId!=='badao'),skill];}if(scene.badao.cast){role.player.actionId='badao';role.player.phase=scene.badao.cast.node;}}
             if(scene.monsters)role.player.actionId=role.player.lifeState==='dead'?'dead':q.payload.toTick<scene.monsterControlUntilTick!?'stagger':role.player.actionId;
             const resultPages=await Promise.all(Array.from({length:combatEvents?Math.max(1,Math.ceil(combatEvents.length/32)):0},async(_,pageIndex)=>({id:await loginKey('combatResults',[a.id,q.operationId,pageIndex]),schemaVersion:1,accountId:a.id,operationId:q.operationId,actionResultsRef:id,pageIndex,totalPages:Math.max(1,Math.ceil(combatEvents!.length/32)),events:combatEvents!.slice(pageIndex*32,(pageIndex+1)*32)})));requireValue(resultPages.length<=1024,'CONFIG_NOT_READY');for(const page of resultPages)budget(page,32768);
-            return await this.options.store.run(async tx=>{
+            // Result pages are physical writes too. Refuse an impossible terminal before staging assets.
+            if(terminalFact)requireValue(resultPages.length<=33&&resultPages.reduce((n,p)=>n+encodedBytes(p),0)<=1572864,'CONFIG_NOT_READY');
+            return await this.options.store.run(async rawTx=>{
+                const reads=new Set<string>(),writes=new Map<string,number>();let calls=0;
+                const checkTerminalBudget=()=>{if(terminalFact)requireValue(reads.size<=44&&writes.size<=33&&calls<=80&&[...writes.values()].reduce((a,b)=>a+b,0)<=1572864,'CONFIG_NOT_READY');};
+                const tx:Transaction=terminalFact?{
+                    get:async <T>(key:string)=>{reads.add(key);calls++;checkTerminalBudget();return rawTx.get<T>(key);},
+                    set:(key,value)=>{writes.set(key,encodedBytes(value));calls++;checkTerminalBudget();rawTx.set(key,value);},
+                }:rawTx;
                 now=this.options.clock.now();const currentA=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),currentC=await this.character(tx,currentA,q.payload.characterId,q.payload.rolePlayEpoch),currentH=await tx.get<EntryChallenge>(h.id),old=await tx.get<{schemaVersion:number;id:string;tuple:string;command:string;accountId:string;result:unknown}>(id);
                 if(old)return reply(original(old,id,a.id).outcome,true);
                 requireValue(await tx.get(await loginKey('assetJournal',[a.id,q.operationId]))===undefined,'SERVICE_UNAVAILABLE');

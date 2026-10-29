@@ -3,8 +3,8 @@ import {readCheckpoint,writeChunk,stateHash} from '../../src/challenge/room-chec
 import {loginKey} from '../../src/identity/identity-v2.ts';
 import {manifestDigest} from '../../../shared/src/room-manifest.ts';
 import {ChallengeService} from '../../src/challenge/challenge-service.ts';
-export async function bossClearFixture({rewards=true,hostile=false,enemyCount=5}={}){
- const h=hostile?await (await import('./monster-fixture.mjs')).monsterFixture():await dropFixture();if(hostile)h.drops={profile:'local-test-drops',ref:'drops-test-v1',authorization:'isolated-local-assets-only',candidates:[{kind:'stack',templateRef:{id:'ore',version:1},quantity:3,quality:'white',itemLevel:10,binding:{kind:'none'}}]};
+export async function bossClearFixture({rewards=true,hostile=false,enemyCount=5,base}={}){
+ const h=base??(hostile?await (await import('./monster-fixture.mjs')).monsterFixture():await dropFixture());if(base)h.drops={profile:'local-test-drops',ref:'drops-test-v1',authorization:'isolated-local-assets-only',candidates:[{kind:'stack',templateRef:{id:'ore',version:1},quantity:3,quality:'white',itemLevel:10,binding:{kind:'none'}}]};if(hostile)h.drops={profile:'local-test-drops',ref:'drops-test-v1',authorization:'isolated-local-assets-only',candidates:[{kind:'stack',templateRef:{id:'ore',version:1},quantity:3,quality:'white',itemLevel:10,binding:{kind:'none'}}]};
  if(hostile){h.profile.config.stages[0].impactUs=20000;h.content.combat=h.profile;}
  // Trusted active-final-room fixture, never pre-completed and never fabricates a kill.
  await h.store.run(async tx=>{const old=await tx.get(h.challengeId),ch={...old,currentRoomNo:6},cp=await readCheckpoint(tx,old);if(hostile){cp.role.player.hp='1';cp.role.combat.configHash=await manifestDigest(h.profile);}cp.role.player.x=0;cp.role.player.y=0;cp.role.movement.state.x='0';cp.role.movement.state.y='0';

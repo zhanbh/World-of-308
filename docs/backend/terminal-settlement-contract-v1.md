@@ -11,3 +11,5 @@ ChallengeContent.terminal 为显式注入的有界配置：30个累计XP阈值�
 H.clearReceipt永久保存原通关装备公开快照及route/source/item/grant、累计金币/有效XP/击杀数、耗时、剩余体力和配置ref。challenge.get响应可选顶层clearReceipt；parseClearReceipt及parseChallengeQueryResponse严格解析并校验completed、looting/closed组合，<=8KiB，不包含私有账号/随机种子。装备快照是原交付事实，pending领走后凭证仍为pending。sceneState投影为当前looting/closed，原H凭证不改写。
 
 通关仍用原体力快照且unsettled；关闭/回城才settled。下一难度解锁与账号写栅栏在同一事务，no-rewards训练不启通关奖励或解锁。实际本地计量和边界见 [03验证](../reviews/st15-03-verification.md)，不能把唯一键设计预算当SDK实测。
+
+ST15-05增加终局物理预算拒绝保护：结果页自身超W33/1.5MiB在资产事务前CONFIG_NOT_READY；提交回调按实际R44/W33、get/set80及最终写集1.5MiB保护，越限整笔回滚。正常8块域通过，3648到期效果最大域仍发布blocked，详见[预算实测](enhancement-terminal-budget-v1.md)。CONFIG_NOT_READY不能被解释为可丢弃奖励或异步补交付。
