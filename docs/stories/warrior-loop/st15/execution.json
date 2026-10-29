@@ -51,7 +51,8 @@
       "platform_status": "gap",
       "base_commit": "1be9083",
       "code_head": "e369758ad042abd4b210e466b41c11fb6eed5551",
-      "independent_review": "original snapshot independently checked; root rechecked final cleanup and 12 tests; final two-axis in05"
+      "independent_review": "original snapshot independently checked; root rechecked final cleanup and 12 tests; final two-axis in05",
+      "worktree_cleanup": "removed-clean-merged"
     },
     {
       "id": "ST15-03",
@@ -61,13 +62,21 @@
       ],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/03-terminal-settlement-and-routing.md",
-      "state": "in-progress",
+      "state": "merged",
       "worktree": ".worktrees/st15-03-terminal-settlement",
       "branch": "feat/st15-03-terminal-settlement",
-      "evidence": [],
-      "local_checks": "pending",
+      "evidence": [
+        "docs/reviews/st15-03-verification.md",
+        "docs/reviews/st15-03-independent-review.md",
+        "docs/reviews/st15-03-check-all.log",
+        "docs/reviews/st15-03-source-validation.json"
+      ],
+      "local_checks": "7/7;root-targeted11/11;independent11/11",
       "platform_status": "gap",
-      "base_commit": "e369758ad042abd4b210e466b41c11fb6eed5551"
+      "base_commit": "e369758ad042abd4b210e466b41c11fb6eed5551",
+      "code_head": "a833234",
+      "independent_review": "passed:spec-and-standards;028a96f",
+      "budget": "100 slots;8 enemies;13 equipment;6 mails;pending;2 CP blocks;R36/W27;66 calls;42738 bytes;not SDK/max CP"
     },
     {
       "id": "ST15-04",
@@ -77,12 +86,13 @@
       ],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/04-cocos-loot-and-victory-hud.md",
-      "state": "planned",
+      "state": "in-progress",
       "worktree": ".worktrees/st15-04-cocos-loot-hud",
       "branch": "feat/st15-04-cocos-loot-hud",
       "evidence": [],
       "local_checks": "pending",
-      "platform_status": "gap"
+      "platform_status": "gap",
+      "base_commit": "028a96f"
     },
     {
       "id": "ST15-05",

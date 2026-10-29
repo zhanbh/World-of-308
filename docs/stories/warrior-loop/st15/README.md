@@ -11,3 +11,5 @@
 拾取与首领终局规则来自[主规格](../../../spec.md)；状态与恢复契约依据[状态转换](../../../backend/state-transitions-v2.md)、[物理资产映射](../../../backend/asset-physical-mapping-v1.md)与[强化与终局预算](../../../backend/enhancement-terminal-budget-v1.md)。实际构建、无头Node测试、离线Cocos各自取证，历史交付摘要不当作本轮已验证。
 
 安装依赖、SDK、云资源、外部浏览器和部署不在本轮范围。计划确认不等于验收完成。
+
+2026-10-29 最新集成：01～03已实现并分别复核，03代码a833234、独立评审028a96f。04 Cocos掉落/胜利HUD正在实施，05全链路与最大预算待验。体力以 decision-terminal-stamina-2026-10-29.md 为新决定：回城结算，通关仅固定消耗。当前完成证据沿 execution.json，历史段落不覆盖最新状态。
