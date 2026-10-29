@@ -1,0 +1,26 @@
+✔ real basic kill creates fixed room drops while training remains rewardless (97.0025ms)
+✔ collect consumes room source atomically and replays original receipt (44.2928ms)
+✔ same operation binds rejected intent and a forged hint never authorizes distance (45.5418ms)
+✔ full bag preserves ground source; a matching partial stack still accepts whole source (42.9076ms)
+✔ all material delivery write failures roll back and response loss recovers original receipt (246.511ms)
+✔ two independent collect intents race one source and cannot both mint (37.8968ms)
+✔ equipment materializes only on successful collect, holds one role scope and every write rolls back (310.5666ms)
+✔ unconfirmed or foreign kill sources cannot be minted from a room descriptor (32.7269ms)
+✔ client lost collect response survives reconstruction and recovers original intent (56.8866ms)
+✔ leaving invalidates uncollected sources and never removes committed items in either order (86.7841ms)
+✔ prepare next room prevents collecting prior-room ground before activation (44.2985ms)
+✔ scope, epoch, room token and revoked session do not authorize collectible source (168.3654ms)
+✔ no drop authorization keeps training rewardless even on real kills (35.7768ms)
+✔ source payload and fixed configuration cannot be changed into another prize (73.7449ms)
+✔ collect and leave racing from one snapshot serialize safely in both commit orders (74.4105ms)
+✔ lease expiration during CP reads rejects with no staged asset writes (35.8334ms)
+ST15-01 actual material collect budget { R: 12, W: 5, gets: 14, sets: 5, maxWrite: 3557 }
+✔ material collection has bounded physical key and byte budgets (33.6007ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1730.3354

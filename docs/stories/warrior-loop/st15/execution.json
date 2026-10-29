@@ -12,15 +12,22 @@
       "blocked_by": [],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/01-room-drop-collect.md",
-      "state": "implemented-awaiting-independent-review",
+      "state": "merged",
       "worktree": ".worktrees/st15-01-room-drop",
       "branch": "feat/st15-01-room-drop",
       "evidence": [
         "docs/reviews/st15-01-verification.md",
-        "docs/reviews/st15-01-check-all.log"
+        "docs/reviews/st15-01-check-all.log",
+        "docs/reviews/st15-01-merge-verification.md",
+        "docs/reviews/st15-01-merger-check-all.log",
+        "docs/reviews/st15-01-merged-specialized.log"
       ],
-      "local_checks": "passed:7/7;backend656;shared227;tooling7;drop17/17",
-      "platform_status": "gap"
+      "local_checks": "independent:7/7;backend656;shared227;tooling7;merged-drop17/17",
+      "platform_status": "gap",
+      "code_head": "b0a6046",
+      "merged_into": "feat-1.0.0",
+      "independent_review": "passed:spec-and-standards;no-blocker",
+      "budget": "material CP2 R12/W5, get14/set5; equipment+1/+1; applicable holdings+1/+1; global terminal pending05"
     },
     {
       "id": "ST15-02",
