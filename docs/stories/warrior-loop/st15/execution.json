@@ -38,13 +38,20 @@
       ],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/02-boss-clear-and-free-revive.md",
-      "state": "in-progress",
+      "state": "merged",
       "worktree": ".worktrees/st15-02-boss-clear",
       "branch": "feat/st15-02-boss-clear",
-      "evidence": [],
-      "local_checks": "pending",
+      "evidence": [
+        "docs/reviews/st15-02-verification.md",
+        "docs/reviews/st15-02-independent-recheck.md",
+        "docs/reviews/st15-02-closeout-check.log",
+        "docs/reviews/st15-02-merge-verification.md"
+      ],
+      "local_checks": "7/7;tooling7;shared230;backend665;root-merged-focused12/12",
       "platform_status": "gap",
-      "base_commit": "1be9083"
+      "base_commit": "1be9083",
+      "code_head": "e369758ad042abd4b210e466b41c11fb6eed5551",
+      "independent_review": "original snapshot independently checked; root rechecked final cleanup and 12 tests; final two-axis in05"
     },
     {
       "id": "ST15-03",
@@ -54,12 +61,13 @@
       ],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/03-terminal-settlement-and-routing.md",
-      "state": "planned",
+      "state": "in-progress",
       "worktree": ".worktrees/st15-03-terminal-settlement",
       "branch": "feat/st15-03-terminal-settlement",
       "evidence": [],
       "local_checks": "pending",
-      "platform_status": "gap"
+      "platform_status": "gap",
+      "base_commit": "e369758ad042abd4b210e466b41c11fb6eed5551"
     },
     {
       "id": "ST15-04",
