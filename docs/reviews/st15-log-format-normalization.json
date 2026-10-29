@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-29",
+  "files": [
+    {
+      "change": "CRLF to LF only; test output text unchanged",
+      "before_sha256": "00921c0bb6a3daa9aa07921534612649d62645c5cd4c59d854e00c8896116c50",
+      "path": "docs/reviews/st15-01-merged-specialized.log",
+      "after_sha256": "212fbd2217825528a87c49fb6082c27eced9300100f199f9edf78bc5a3b00e75"
+    },
+    {
+      "change": "CRLF to LF only; test output text unchanged",
+      "before_sha256": "644b47c26ec05edf74ac391923c562c7d4346c8963ec1bd37553ec9821e6dcc6",
+      "path": "docs/reviews/st15-01-merger-check-all.log",
+      "after_sha256": "d0dd498ad0356f4353c5ab25534374d49dd0f07e1639e1522cff03673ad15e6e"
+    },
+    {
+      "change": "CRLF to LF only; test output text unchanged",
+      "before_sha256": "fdd5586ba0252ddd4320cbfe0fd806ae9f30b6e467f70aac3739934f12d30d67",
+      "path": "docs/reviews/st15-baseline-2026-10-29.log",
+      "after_sha256": "4f30d6c604b3d1a1c05fb711936407e1b3fbea16120291828059ed607d6bd8b3"
+    }
+  ],
+  "kind": "log-line-ending-only"
+}
