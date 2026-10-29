@@ -1,5 +1,7 @@
 # 全量命令、查询与错误契约 v2
 
+ST15-03本地增量：challenge.get响应在data/versions之外可含严格<=8KiB的顶层clearReceipt，供真实终局HUD恢复。字段、direct/pending固定路由与sceneState校验见[终局合同](terminal-settlement-contract-v1.md)；无凭证旧场景响应保持原形。simulation.submit不复制装备/邮件全对象，仍返回原有有界游标及实际变更角色/背包版本，通关数据随后query。正式SDK/设备验证未覆盖。
+
 更新：2026-10-20。状态：E04设计提案，待方案收敛和eng-review，未写入shared协议代码或部署。依据：[核心契约](core-contract-v2.md)、[数据字典](data-dictionary-v2.md)、[访问/事务](access-and-transactions-v2.md)、[状态转换](state-transitions-v2.md)。
 
 本文覆盖已确认MVP的Interface目录，名字与DTO字段是候选。标为“待边界”的项目不能因列出名字就编码上线；用户已明确社交不在本期工作范围：他人检视/搜索、好友、私聊等仅保留规则，不作为本期接口交付或工程准入前置；手动局内暂停仍未确认。

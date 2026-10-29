@@ -105,6 +105,7 @@ erDiagram
 | --- | --- | --- |
 | accountId/classId | Id/warrior或hunter，必填 | 对应账号职业占位；未来法师只预留不自动开放 |
 | level/xp | Int，1/0 | level1–30；xp定义为按版本成长表累计的有效经验，满级不额外积累；具体阈值待数值设计 |
+| ST15 local terminal | 本地测试配置引用与H.terminalConfigHash | 完整terminal+kill rewards摘要在创建时固定；累计阈值/HPMP仅显式local-test，非正式发布表；角色progressionConfigRef同版本重验 |
 | progressionConfigRef | Ref，必填 | 成长/技能规则版本，升级迁移不得重复发节点邮件 |
 | statsVersion/equipmentVersion | Version，0 | 属性/装备相关变化推进，不把HP变化每帧写此处 |
 | equipped | BoundedMap<slotId,itemId>，初始白武器 | 13槽；同实例不穿戴两处，绑定/职业/等级/耐久效果一致 |

@@ -1,0 +1,20 @@
+✔ real submit grants clear equipment, cumulative levels and six node mails in same commit (111.2344ms)
+✔ full bag clear creates one pending item and real mailbox reward claim delivers it after leave (67.1866ms)
+✔ terminal every write failure rolls back active H CP wallet mail instance grant and original result (1067.9233ms)
+✔ lost successful response replays fixed route even when current bag and config change (49.9411ms)
+✔ changed config binding and unknown receipt fields fail closed (85.5095ms)
+✔ existing deleted node stub is not reissued and level 30 XP never grows beyond threshold (43.2807ms)
+✔ upgraded character and full resources are reflected in authoritative CP and public proof hash (42.429ms)
+ST15-03 terminal observed {"R":36,"W":27,"calls":66,"bytes":42738,"max":6456,"keys":["v2:room:dQVe1y2UDgMiXfc2D-QuAIa2TnmzBxhnUQjLw74hFHE","v2:wallet:qKySAQnKi-x9rO8Fuu8dnyJo09jroxfNs7_9SHIb4Yc","v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-5","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-10","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-15","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-20","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-25","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-30","v2:equipment:cszdGmk0avt37GofUEN9YmQQE0cOsBb5iEcgerGIxjw","v2:clearGrant:fdndKkvCFeOL4gfq2ctu0FTwdmTpr4p6uwrGkUreeA8","v2:holdings:KZi8VH3OW2CnQjybmeeo0ht28nhohlT_RLzsqULLC6o","v2:assetJournal:88tc1Xu8FGLnI3yj-jiMUtn4oDv4YTnJIvQqbteW5-o","v2:equipment:qnuqMK-tfLLy0jrcWTx-1R4jNC9gBgtdKVvvW0N52fU","terminal-wear-shoulder","terminal-wear-chest","terminal-wear-pants","terminal-wear-belt","terminal-wear-boots","terminal-wear-earring","v2:cpChunk:oy-1YYODg79vEPluIt_U1oX-bz3c6xw6lxO5JX4_6l8","v2:cpChunk:QDEn2KwhW6KfyLSYBb2IEvRHlUj9mA886nggMUfS-vA","v2:combatResults:m6ZU9cjVoDwaxRAhB0wNvCb7AIrVvf6E9qPzO1zFog4","v2:account:KZ97Aycb7ApdShMIjU-gSLNDx63e7E5ZMZPd4JCQAXw","v2:challenge:2qBwR5fFs1TDe77vb6HaAmZhvUXpu4l9NN0vkzRSvWM","v2:cpHeader:J2NHjVi3Yny5llEAl8FIBx5a2p1L9P4VXD-gtncYf7o","v2:assetOp:-tFbjkmeDdFFGXGgQnwT1LtsJ9Omgj1B-GeaEIox9jU"]}
+✔ max fullbag terminal records actual union and set holdings once (61.6096ms)
+✔ ordinary dungeon cannot issue selected set reward and invalid summary never becomes missing (46.3358ms)
+✔ ordinary lethal simultaneous hit awards XP and upgrades dead player without reviving (107.4032ms)
+✔ upgrade CP attack uses combat table and equipment after same-terminal weapon break (50.4227ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2015.0269

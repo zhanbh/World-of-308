@@ -1,5 +1,7 @@
 # 状态维度与转换表 v2
 
+ST15-03体力裁决：用户已选[保留回城结算](../stories/warrior-loop/st15/decision-terminal-stamina-2026-10-29.md)。通关固定本局消耗并保持completed/looting/unsettled，禁止后续房费；leave/过期/接管真正回城才settled。该决定覆盖冻结ST15-03中“通关settled”一行，不改变原Accepted字节。终局奖励/升级/CP同步与公开凭证按[当前合同](terminal-settlement-contract-v1.md)。
+
 更新：2026-10-20。状态：E04提案，非已实现状态机；与[API v2](api-contract-v2.md)、[挑战流程](../challenge-flow.md)、[数据字典](data-dictionary-v2.md)配套。保留产品规则未闭合处，不用工程状态默认值代替用户决定。
 
 ## 1. 状态分维度

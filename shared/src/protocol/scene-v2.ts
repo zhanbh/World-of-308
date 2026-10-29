@@ -7,6 +7,7 @@ import type {CrossPublicState} from '../cross-combat-kernel.ts';
 import type {Rational} from '../basic-combat-kernel.ts';
 import { time, logicTick, resource, encodeResource, decodeRemainder } from '../exact-values.ts';
 import { parseExpected } from './session-v2.ts';
+import {parseEquipmentView} from './asset-v2.ts';
 type Parser<T> = (value: unknown) => T;
 const integer = (min = 0, max = Number.MAX_SAFE_INTEGER): Parser<number> => value => {
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || Object.is(value, -0) || value < min || value > max) throw new TypeError('INVALID_INTEGER');
@@ -223,8 +224,14 @@ export function parseSceneQuery(value: unknown) {
 }
 export function parseChallengeQueryResponse(value: unknown) {
   if (value && typeof value === 'object' && Object.hasOwn(value, 'error')) return object({ requestId: operationId, serverTime: time, error: object({ code: sceneErrors }) })(value);
-  return object({ requestId: operationId, serverTime: time, data: parseChallengeState, versions: parseExpected })(value);
+  const base={ requestId: operationId, serverTime: time, data: parseChallengeState, versions: parseExpected };
+  if(value&&typeof value==='object'&&Object.hasOwn(value,'clearReceipt')){const r=object({...base,clearReceipt:parseClearReceipt})(value);if('kind' in r.data||r.data.result!=='completed'||(r.clearReceipt.sceneState==='closed')!==(r.data.connection==='closed'))throw new TypeError('INVALID_CLEAR_STATE');return r;}return object(base)(value);
 }
+export function parseClearReceipt(value:unknown){
+ const r=object({sourceKey:text(),itemId:text(),grantId:nullable(text()),route:enumOf('direct','pending'),equipment:parseEquipmentView,gold:resourceWire,xp:integer(),kills:integer(1,64),elapsedMs:integer(),sceneState:enumOf('looting','closed'),staminaRemaining:integer(0,308),configRef:text(64)})(value);
+ if((r.route==='pending')!==(r.grantId!==null)||r.equipment.itemId!==r.itemId||new TextEncoder().encode(JSON.stringify(r)).length>8192)throw new TypeError('INVALID_CLEAR_RECEIPT');return r;
+}
+export type ClearReceipt=ReturnType<typeof parseClearReceipt>;
 const resourceDescriptor = object({ ref: text(), sha256: hash, byteLength: integer(1, 81920), mediaType: enumOf('application/json'), purpose: enumOf('contract-fixture-only') });
 const spawnDescriptor = object({ spawnId: text(64), templateRef: text(64), role: enumOf('ordinary', 'elite', 'boss', 'purple'), x: integer(-2147483648,2147483647), y: integer(-2147483648,2147483647) });
 const manifestView = object({ roomAttemptId: text(), challengeId: text(), roomNo: integer(0,6), manifestHash: hash, releaseRef: text(64), releaseHash: hash, mapRef: text(64), resources: list(resourceDescriptor,128), spawns: list(spawnDescriptor,8), preparedRevision: integer() });

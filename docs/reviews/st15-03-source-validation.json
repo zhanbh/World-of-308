@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-29",
+  "baseline": "e369758",
+  "accepted_unchanged": true,
+  "files": [
+    {
+      "path": "docs/stories/warrior-loop/st15/spec.md",
+      "sha256": "ba94c5afa1c3735075c9622513ba589f7e5f55a1ebfeb451d974c0ece8151315"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st15/issues/03-terminal-settlement-and-routing.md",
+      "sha256": "5855a794f7c417e6a014131fad92c41756585df9a203c0ffc706b2ed8b575d7a"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st15/decision-terminal-stamina-2026-10-29.md",
+      "sha256": "c2ec9890cab4a4375d7b99140bab6783713993e94777ccd21ea7bbd6664d6f24"
+    }
+  ]
+}

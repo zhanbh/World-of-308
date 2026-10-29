@@ -1,0 +1,62 @@
+import {terminalFixture} from './fixtures/terminal-fixture.mjs';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {bossClearFixture} from './fixtures/boss-clear-fixture.mjs';
+import {ChallengeService} from '../src/challenge/challenge-service.ts';
+import {manifestDigest} from '../../shared/src/room-manifest.ts';
+import {stateHash,readCheckpoint,writeChunk} from '../src/challenge/room-checkpoint.ts';
+import {MailService} from '../src/mail/mail-service.ts';
+import {parseChallengeQueryResponse} from '../../shared/src/protocol/scene-v2.ts';
+import {loginKey} from '../src/identity/identity-v2.ts';
+async function reconfigure(h){await h.store.run(async tx=>{const ch=await tx.get(h.challengeId);tx.set(ch.id,{...ch,terminalConfigHash:await manifestDigest({terminal:h.content.terminal,rewards:h.content.rewards})});});h.service=new ChallengeService({store:h.store,clock:h.clock,identity:h.identity,content:h.content});}
+async function fullBag(h){await h.store.run(async tx=>{const b=await tx.get(h.character().backpackId);b.capacity=100;b.stage=4;b.slots=Object.fromEntries(Array.from({length:b.capacity},(_,i)=>[i,{kind:'stack',stackId:'junk-'+i,templateRef:{id:'ore',version:1},quantity:20,binding:{kind:'none'},traceRef:'junk-trace'}]));tx.set(b.id,b);});}
+test('real submit grants clear equipment, cumulative levels and six node mails in same commit',async()=>{
+ const h=await terminalFixture(),r=await h.service.execute(await h.command());assert.equal(r.outcome.status,'committed',JSON.stringify(r));
+ const state=await h.query();assert.equal(state.clearReceipt.route,'direct');assert.equal(state.clearReceipt.gold,'150');assert.equal(state.clearReceipt.xp,290);assert.equal(state.clearReceipt.kills,5);assert.equal(state.clearReceipt.sceneState,'looting');assert.equal(h.character().level,30);assert.equal(h.character().mailIds.length,7);
+ assert.equal(h.store.inspect(h.challengeId).staminaSettlement.state,'unsettled');
+ assert.ok(r.outcome.resultVersions.some(v=>v.kind==='container'&&v.id===h.character().backpackId&&v.version===h.store.inspect(v.id).version));
+});
+test('full bag clear creates one pending item and real mailbox reward claim delivers it after leave',async()=>{
+ const h=await terminalFixture();await fullBag(h);assert.equal((await h.service.execute(await h.command())).outcome.status,'committed');const view=await h.query(),receipt=view.clearReceipt;assert.equal(receipt.route,'pending');assert.equal(h.store.inspect(receipt.itemId).location.kind,'pending');
+ const leave=await h.service.execute({...h.auth,command:'challenge.leave',operationId:'leave',expected:[],payload:{challengeId:h.challengeId,reason:'finishLoot'}});assert.equal(leave.outcome.status,'committed',JSON.stringify(leave));
+ const ctx='terminal-mailbox';await h.store.run(async tx=>{const b=await tx.get(h.character().backpackId);delete b.slots[0];tx.set(b.id,b);tx.set(ctx,{schemaVersion:2,id:ctx,accountId:h.character().accountId,characterId:h.characterId,rolePlayEpoch:h.character().rolePlayEpoch,sceneEpoch:1,locationRevision:1,anchorId:'mailbox',serviceKind:'mailbox',issuedAt:1000,status:'open'});});
+ const mail=new MailService({store:h.store,clock:h.clock,identity:h.identity}),q={...h.auth,command:'reward.claim',operationId:'claim-clear',expected:[],payload:{characterId:h.characterId,contextId:ctx,grantId:receipt.grantId}};
+ const result=await mail.execute(q);assert.equal(result.outcome.status,'committed',JSON.stringify(result));assert.equal(h.store.inspect(receipt.itemId).location.kind,'container');assert.equal((await mail.execute(q)).replayed,true);assert.equal((await h.query()).clearReceipt.route,'pending');assert.equal(h.store.inspect(h.challengeId).staminaSettlement.state,'settled');
+ await h.store.run(async tx=>{const b=await tx.get(h.character().backpackId);delete b.slots[1];tx.set(b.id,b);});
+ const levelClaim=await mail.execute({...h.auth,command:'mail.claimAttachment',operationId:'level-claim',expected:[],payload:{characterId:h.characterId,contextId:ctx,mailId:`mail:${h.characterId}:level-5`,attachmentId:'weapon'}});assert.equal(levelClaim.outcome.status,'committed',JSON.stringify(levelClaim));
+});
+test('terminal every write failure rolls back active H CP wallet mail instance grant and original result',async()=>{
+ const sample=await terminalFixture();await fullBag(sample);const attempts=[];const service=new ChallengeService({store:{run:fn=>sample.store.run(async tx=>{const writes=[];const r=await fn({get:tx.get,set:(id,v)=>{writes.push(id);tx.set(id,v);}});attempts.push(writes);return r;})},clock:sample.clock,identity:sample.identity,content:sample.content});assert.equal((await service.execute(await sample.command())).outcome.status,'committed');const writes=attempts.find(x=>x.length>0).length;assert.ok(writes>15);
+ for(let n=1;n<=writes;n++){const h=await terminalFixture();await fullBag(h);const q=await h.command(),before=h.store.snapshot();h.store.injectWriteFailure(n);assert.equal((await h.service.execute(q)).outcome.code,'SERVICE_UNAVAILABLE',`write ${n}`);assert.deepEqual(h.store.snapshot(),before,`write ${n}`);}
+});
+test('lost successful response replays fixed route even when current bag and config change',async()=>{
+ const h=await terminalFixture(),q=await h.command();h.store.injectResponseLoss();assert.equal((await h.service.execute(q)).outcome.status,'unknown');const original=(await h.query()).clearReceipt;await fullBag(h);h.content.terminal.gold='999';h.service=new ChallengeService({store:h.store,clock:h.clock,identity:h.identity,content:h.content});const before=h.store.snapshot(),replay=await h.service.execute(q);assert.equal(replay.replayed,true);assert.deepEqual(h.store.snapshot(),before);assert.deepEqual((await h.query()).clearReceipt,original);
+});
+test('changed config binding and unknown receipt fields fail closed',async()=>{
+ const h=await terminalFixture();h.content.terminal.xp=301;h.service=new ChallengeService({store:h.store,clock:h.clock,identity:h.identity,content:h.content});const before=h.store.snapshot();assert.equal((await h.service.execute(await h.command())).outcome.code,'CONFIG_NOT_READY');assert.deepEqual(h.store.snapshot(),before);
+ const valid=await terminalFixture();await valid.service.execute(await valid.command());const view=await valid.query();assert.throws(()=>parseChallengeQueryResponse({...view,clearReceipt:{...view.clearReceipt,extra:true}}));assert.throws(()=>parseChallengeQueryResponse({...view,clearReceipt:{...view.clearReceipt,route:'direct',grantId:'forged'}}));
+});
+test('existing deleted node stub is not reissued and level 30 XP never grows beyond threshold',async()=>{
+ const h=await terminalFixture(),id=`mail:${h.characterId}:level-5`;await h.store.run(async tx=>tx.set(id,{schemaVersion:2,id,accountId:h.character().accountId,characterId:h.characterId,sourceKey:id,status:'deleted'}));assert.equal((await h.service.execute(await h.command())).outcome.status,'committed');assert.equal(h.store.inspect(id).status,'deleted');assert.equal(h.character().xp,290);assert.ok(!h.character().mailIds.includes(id));
+});
+test('upgraded character and full resources are reflected in authoritative CP and public proof hash',async()=>{
+ const h=await terminalFixture();assert.equal((await h.service.execute(await h.command())).outcome.status,'committed');const cp=await h.cp();assert.equal(cp.role.player.maxHp,'3900');assert.equal(cp.role.player.hp,'3900');assert.equal(cp.role.player.maxMp,'790');assert.equal(cp.role.combat.attributesRevision,h.character().statsVersion);assert.equal(await stateHash(cp.role,cp.scene),cp.header.state.publicStateHash);
+});
+test('max fullbag terminal records actual union and set holdings once',async()=>{
+ const h=await terminalFixture({enemyCount:8});await fullBag(h);const config=h.content.terminal;config.equipment[0].equipment.setRef={id:'test-set',version:1};config.equipment[0].itemLevel=30;config.holdingsDomain={ref:'bank-test-domain',keys:[{collectionKey:'set-weapon',setId:'test-set',setVersion:1,itemLevel:30,slotId:'weapon',classId:'warrior'}]};config.missingPolicy='missing-first';Object.assign(h.content.dungeons.find(d=>d.dungeonId===h.store.inspect(h.challengeId).dungeonId),{kind:'special',minLevel:30,maxMonsterLevel:30,difficulties:[{difficultyId:'normal',roomCost:3,levels:{30:{monsterStatsRef:'terminal-monsters',equipmentSourceRef:'terminal-equipment'}}}]});
+ await h.store.run(async tx=>{const ch=await tx.get(h.challengeId);tx.set(ch.id,{...ch,monsterLevel:30});const c=await tx.get(h.characterId),w=await tx.get(c.equipped.weapon);for(const slot of ['shoulder','chest','pants','belt','boots','bracelet','necklace','ring','subEquip','magicStone','earring','trinket']){const id='terminal-wear-'+slot;c.equipped[slot]=id;tx.set(id,{...structuredClone(w),id,slotKind:slot,location:{kind:'equipped',characterId:c.id,slotId:slot},durability:['shoulder','chest','pants','belt','boots','earring'].includes(slot)?{...w.durability,current:1}:{wearEnabled:false,current:null,max:null,policyRef:'no-wear'}});}tx.set(c.id,c);});await reconfigure(h);
+ const attempts=[];const service=new ChallengeService({store:{run:fn=>h.store.run(async tx=>{const reads=new Set(),writes=new Map();let calls=0;const result=await fn({get:async id=>{reads.add(id);calls++;return tx.get(id);},set:(id,v)=>{writes.set(id,new TextEncoder().encode(JSON.stringify(v)).length);calls++;tx.set(id,v);}});attempts.push({R:reads.size,W:writes.size,calls,bytes:[...writes.values()].reduce((n,v)=>n+v,0),max:Math.max(0,...writes.values()),keys:[...writes.keys()]});return result;})},clock:h.clock,identity:h.identity,content:h.content});
+ const terminalResult=await service.execute(await h.command());assert.equal(terminalResult.outcome.status,'committed',JSON.stringify(terminalResult));const metric=attempts.find(a=>a.W>0);console.log('ST15-03 terminal observed '+JSON.stringify(metric));assert.ok(metric.R<=44);assert.ok(metric.W<=33);assert.ok(metric.max<=131072);assert.ok(metric.bytes<=1572864);
+ const receipt=(await h.query()).clearReceipt,id=await loginKey('holdings',[h.character().accountId,'character',h.characterId]);assert.equal(h.store.inspect(id).entries[0].permanentCount,1);assert.equal(h.store.inspect(receipt.itemId).setRef.id,'test-set');assert.equal(receipt.route,'pending');
+});
+test('ordinary dungeon cannot issue selected set reward',async()=>{
+ const h=await terminalFixture();h.content.terminal.equipment[0].equipment.setRef={id:'test-set',version:1};h.content.terminal.equipment[0].itemLevel=30;h.content.terminal.holdingsDomain={ref:'bank-test-domain',keys:[{collectionKey:'set-weapon',setId:'test-set',setVersion:1,itemLevel:30,slotId:'weapon',classId:'warrior'}]};await reconfigure(h);const before=h.store.snapshot();assert.equal((await h.service.execute(await h.command())).outcome.code,'CONFIG_NOT_READY');assert.deepEqual(h.store.snapshot(),before);
+});
+test('ordinary lethal simultaneous hit awards XP and upgrades dead player without reviving',async()=>{
+ const h=await terminalFixture({hostile:true});h.content.terminal.thresholds=Array.from({length:30},(_,i)=>i);
+ await h.store.run(async tx=>{const ch=await tx.get(h.challengeId),cp=await readCheckpoint(tx,ch);cp.scene.enemies[0].role='ordinary';cp.scene.monsters[0].identity='ordinary';const chunk=await writeChunk(ch,1,cp.header.activeChunks[1].chunkRevision+1,cp.scene);tx.set(chunk.id,chunk);tx.set(cp.header.id,{...cp.header,activeChunks:cp.header.activeChunks.map(r=>r.ordinal===1?{...r,hash:chunk.hash,chunkRevision:chunk.chunkRevision}:r),state:{...cp.header.state,publicStateHash:await stateHash(cp.role,cp.scene)}});});await reconfigure(h);
+ const r=await h.service.execute(await h.command());assert.equal(r.outcome.status,'committed',JSON.stringify(r));assert.equal(h.store.inspect(h.challengeId).result,'active');assert.ok(h.character().level>1);const cp=await h.cp();assert.equal(cp.role.player.lifeState,'dead');assert.equal(cp.role.player.hp,'0');assert.equal(await stateHash(cp.role,cp.scene),cp.header.state.publicStateHash);
+});
+test('upgrade CP attack uses combat table and equipment after same-terminal weapon break',async()=>{
+ const h=await terminalFixture();await h.store.run(async tx=>{const w=await tx.get(h.character().equipped.weapon);tx.set(w.id,{...w,rolledAffixes:[{stat:'attackPower',value:50}]});});assert.equal((await h.service.execute(await h.command())).outcome.status,'committed');assert.equal((await h.cp()).role.attackPower,'1000000');
+});

@@ -15,6 +15,7 @@ export interface ChallengeContent {
     encounterLayout?: boolean;
     rewards?: {profile:'local-test-kill-rewards';authorization:'isolated-local-assets-only';ref:string;goldPerKill:string;xpPerKill:number;roomWear:number};
     drops?: import('./ground-drops.ts').DropConfig;
+    terminal?: import('./terminal-settlement.ts').TerminalConfig;
     dungeons: {
         dungeonId: string;
         kind: 'first' | 'second' | 'special';
@@ -72,6 +73,8 @@ export interface EntryChallenge extends HandoffChallenge {
     terminalFact?: {bossActorId:string;at:{n:string;d:string};playerDied:boolean;playerDeathAtTick:number|null;derivedKills:string[]};
     rewardTotals?: {gold:string;xp:number;kills:number};
     terminalRewardRef?:string;
+    terminalConfigHash?:string;
+    clearReceipt?: import('../../../shared/src/protocol/scene-v2.ts').ClearReceipt;
     confirmedKills?: import('../../../shared/src/encounter-layout.ts').ConfirmedKillFact[];
     lifeState: 'alive' | 'dead';
     deathIndex?: number;
