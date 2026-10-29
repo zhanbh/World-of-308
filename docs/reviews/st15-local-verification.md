@@ -1,0 +1,35 @@
+# ST15 本地联合验收与剩余阻断
+
+2026-10-29。当前分支`feat-1.0.0`；本轮通过Clash代理从`fc7d9e6`快进到`b064c8d3f2f8f97945174db0225bd000ecafce89`，随后完成ST15-05与评审修复。最终代码`bb916d809f8d9dcd04b8f2bc2477fa66fbb7dcb3`，证据整理提交不再改变该代码。未推送、未操作Jira、未安装依赖或操作云环境。
+
+**结论：正常域本地验收与评审修复通过；完整最大终局预算仍BLOCKED，ST15不标整体Done或可发布。**
+
+## 实际交付
+
+既有01～04提供真实地面掉落/拾取、Boss清场与免费复活、原子成长与direct/pending路由、掉落及胜利HUD。本轮05补真实公开Boss submit的8敌/13槽/7磨损/100格/6邮件/双持有/8块CP联合夹具；未预置completed。覆盖34个实际set故障整笔回滚、提交丢回复原O恢复、真实Drop/Terminal/Mail消费者、六节点来源stub及submit/leave两种竞争顺序。
+
+评审发现的跨片段死亡尾伤已修复：死亡后只允许已有尾效果的空输入片，保留身份/时间/恢复/原10秒截止；真实流血与地面残留跨两次submit杀Boss可免费恢复血蓝和职业CD，死亡扣损恰一次。客户端继续空片但禁止新动作；没有离线补算或后台补奖。共享扣损后装备快照同时用于写入与CP属性，消除重复计算。
+
+## 验证与预算
+
+- root修复后标准`node tools/check-all.cjs --typescript /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/Resources/app.asar.unpacked/node_modules/typescript`：**7/7**，tooling7/shared230/backend692；[最终完整日志](st15-review-check-all.log)。Node24.9.0、既有TypeScript5.8.2。
+- 沙箱首跑6/7，唯一HTTP loopback `listen EPERM`；获准沙箱外同命令通过，未跳过/改写HTTP测试。原始失败与成功日志分别保留。
+- 独立merger联合5/5；Spec修复复核39/39，Standards修复复核5/5。独立定向复核与完整门禁分别记录，不把重复执行计作新增覆盖。
+- 正常八块终局：唯一R42/W33，实际get44/set34，提交事务**78调用/327198B**；只读基线另31get，整个请求共109调用。不是SDK提交/重试/计费实测。
+- 最大到期域原始红灯：R42/W525，实际get44/set526，**570调用/3763879B**，含499个独立结果页；超过80调用与1.5MiB目标。当前预检及真实提交预算保护原子拒绝，H/CP/钱包/邮件/实例/grant/O/J不发生部分变化；没有截断事件或拆成异步补奖。
+
+## Standards
+
+[原始独立评审](st15-build-standards-review.md)：0硬性违规、1项低优先级重复磨损计算建议。[独立复核](st15-build-standards-recheck.md)固定`bb916d809`，该建议已关闭，无新增问题。原报告保留，未用修复结果改写历史发现。
+
+## Spec
+
+[原始独立评审](st15-build-spec-review.md)：1项P1，前片死亡阻断后续尾伤，且死亡来源未进入终局重置。[独立复核](st15-build-spec-recheck.md)固定`bb916d809`，原P1关闭；原最大预算缺口仍BLOCKED，未被定向复核或预期拒绝测试掩盖。
+
+## 后续必做与GAP
+
+继续整改ST15-05结果存储物理映射：保留全部事件、稳定身份、既有公开分页与原O恢复语义，减少每页独立文档写入；重新测同一最大到期域、最坏字段、所有实际写点/OCC/重放，并同步物理映射与预算合同。未完成前不据此启动依赖ST15完成的发布验收。
+
+正式可执行发布器、微信SDK/数据库事务/费用、真实设备/触屏、本机Cocos视觉及完整城镇七房体验仍GAP。04的Windows离线构建是历史实测，不替代本机Mac/真机。冻结正文及历史错误声明摘要保留；实际源字节以[既有核验](../stories/warrior-loop/st15/plan-validation-2026-10-29.json)为准，体力沿用户“通关固定本局消耗，回城才settled”决定。
+
+Standards初始1项、Spec初始1项均关闭；独立于这两轴，最大终局预算验收仍未通过。

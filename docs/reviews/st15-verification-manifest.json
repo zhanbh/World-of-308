@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "code_head": "bb916d809f8d9dcd04b8f2bc2477fa66fbb7dcb3",
+  "full_check": "7/7",
+  "maximum_budget": "BLOCKED",
+  "files": {
+    "docs/reviews/st15-05-check-all.log": "449a9f5ab1c52a49ac421635af836dd90ae4b4ecda1ab1cb901741db55b5818c",
+    "docs/reviews/st15-review-check-all.log": "7e9146f8f3ed9eac0b452dca79fc9209b8e6c5fc581590d491e7ceb04d066d2f",
+    "docs/reviews/st15-05-budget.json": "5c43e77c35b8ef0ed01cf5a999b703489e0efa236fead19e83ec68f3b7efa078",
+    "docs/reviews/st15-build-standards-review.md": "d03ef2a7980349cd6b8d2a707bf29d4a88fcf1729aa05cd119154d41bb8b1fda",
+    "docs/reviews/st15-build-spec-review.md": "0640a36dec9cc2680652a8260f2b1b52c11813602c4c75238761811898258843",
+    "docs/reviews/st15-build-standards-recheck.md": "e103f10adaf93fd907e1886d95701eecaab87582fb36e966d75418ceb820ea12",
+    "docs/reviews/st15-build-spec-recheck.md": "30b9b0aa976377fc54b07a27457d0535bc6f00a1a3c607b17dd6032964706559",
+    "docs/reviews/st15-local-verification.md": "fe88c5c5e36c023dfc5f8cf761a65062a809cde396405f4a74308b5b90f5a470",
+    "backend/src/challenge/challenge-service.ts": "b5a9d612d9d4ed9f2fc1ce57a51aea26a163f654d977c2b06d09afd02d5d1109",
+    "backend/src/challenge/challenge-model.ts": "ab37f6c8c1ab7052d642fa12592a5ba6eff87bfa0a2f7d3aaa9e3b401d020e1e",
+    "backend/test/boss-death-tail.test.mjs": "74d420917f42c2d40b3d4c0c3d9352d284e645c5b7ee45af928d6c69b63c683c",
+    "backend/test/joint-terminal-acceptance.test.mjs": "d01517c3f9486da451f9b31b4b21f21339e2fbf8f1c84ac40917c7d013af3fc5",
+    "client/assets/scripts/net/MovementCoordinator.ts": "b54821ea5bf9a7f473b6af30b84faf14d0596bbabdaf7eb5613aafa7dfd7093c",
+    "client/assets/scripts/net/LootSceneCoordinator.ts": "c05057f04348d84cdf11dc477c00e048570ec69b94a0b5528b1c9f25844c7788"
+  }
+}

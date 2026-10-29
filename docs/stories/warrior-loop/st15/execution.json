@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st15",
-  "status": "implementation-in-progress",
+  "status": "budget-blocked",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "4243635",
   "approved_spec_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
@@ -110,12 +110,30 @@
       ],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/05-joint-acceptance-and-budget-review.md",
-      "state": "planned",
+      "state": "merged-budget-blocked",
       "worktree": ".worktrees/st15-05-joint-acceptance",
       "branch": "feat/st15-05-joint-acceptance",
-      "evidence": [],
-      "local_checks": "pending",
-      "platform_status": "gap"
+      "evidence": [
+        "docs/reviews/st15-05-verification.md",
+        "docs/reviews/st15-05-budget.json",
+        "docs/reviews/st15-05-check-all.log",
+        "docs/reviews/st15-05-merge-verification.md",
+        "docs/reviews/st15-review-fixes.md",
+        "docs/reviews/st15-review-check-all.log",
+        "docs/reviews/st15-build-standards-recheck.md",
+        "docs/reviews/st15-build-spec-recheck.md",
+        "docs/reviews/st15-local-verification.md"
+      ],
+      "local_checks": "root:7/7;tooling7;shared230;backend692;independent-joint5/5;review-rechecks-passed",
+      "platform_status": "gap",
+      "base_commit": "b064c8d",
+      "source_validation": "docs/stories/warrior-loop/st15/plan-validation-2026-10-29.json",
+      "code_head": "bb916d809f8d9dcd04b8f2bc2477fa66fbb7dcb3",
+      "merged_into": "feat-1.0.0",
+      "budget_status": "blocked-maximum-domain",
+      "independent_review": "standards-and-spec:original-findings-closed;maximum-budget-gap-remains",
+      "worktree_cleanup": "removed-after-clean-merged-verification",
+      "remaining": "Lossless terminal result storage mapping remediation; repeat full maximum-domain budget and fault acceptance"
     }
   ],
   "testing_seams": [
@@ -124,7 +142,7 @@
     "LootModel and Cocos victory clear HUD"
   ],
   "jira_actions": false,
-  "platform_device_status": "pending",
+  "platform_device_status": "gap",
   "plan_commit": "4243635",
   "baseline_checks": {
     "head": "4243635",
@@ -146,6 +164,23 @@
       7,
       227,
       639
-    ]
-  }
+    ],
+    "latest_pull_head": "b064c8d",
+    "source_files_rechecked": true
+  },
+  "final_review": {
+    "base": "4243635433b5e4cacc1bd4840bde17ed4ec169de",
+    "head": "0639c097fd8f2da0465ace41e16a06ee127d1dd7",
+    "standards_report": "docs/reviews/st15-build-standards-review.md",
+    "spec_report": "docs/reviews/st15-build-spec-review.md",
+    "fix_branch": "fix/st15-review",
+    "fix_worktree": ".worktrees/st15-review-fixes",
+    "fix_head": "bb916d809f8d9dcd04b8f2bc2477fa66fbb7dcb3",
+    "standards_recheck": "passed:docs/reviews/st15-build-standards-recheck.md",
+    "spec_recheck": "passed:docs/reviews/st15-build-spec-recheck.md",
+    "review_scope": "new findings closed; original maximum budget acceptance remains BLOCKED",
+    "fix_worktree_cleanup": "removed-after-clean-merged-verification"
+  },
+  "published": false,
+  "pushed_by_this_run": false
 }

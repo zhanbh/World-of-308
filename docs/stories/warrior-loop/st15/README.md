@@ -1,16 +1,18 @@
-# ST15 拾取、首领结算与奖励来源实施准备
+# ST15 拾取、首领结算与奖励来源
 
-接续状态（2026-10-29）：用户授权核实并继续，01复用既有干净工作树按TDD实施。实际摘要核验发现旧声明revision与正文不符；不改冻结正文，当前源字节以[接续核验](plan-validation-2026-10-29.json)固定，旧plan-check的hash声明不得冒充本次通过。详见[接续记录](../../../reviews/st15-resume-check-2026-10-29.md)，实际进度沿execution。
+2026-10-29，集成分支 `feat-1.0.0`。用户已确认五项任务图并授权连续实施；不创建 Jira，不安装依赖或操作云资源。
 
-当前状态（2026-10-29）：01已完成，02已实现并通过本地7/7；收尾后独立复核及集成状态以execution.json为准。
-集成分支 `feat-1.0.0`，基准为 **`4243635`**。已冻结只读 [实施spec](spec.md)、生成五项本地 [issues](issues/01-room-drop-collect.md)，完成源hash/覆盖/依赖无环检查并记录于 [计划检查](plan-check.json) 与 [执行记录](execution.json)。
-下一项实施票据：**ST15-03 终局原子事务：金币/经验/跨级礼包/通关装备路由**。02最小收益不代表03完整奖励已完成；见[02验证](../../../reviews/st15-02-verification.md)。
+## 当前状态
 
-[来源故事](../st15.md) · [任务图与测试边界](task-plan.md) · [当前权威合同](../../../backend/source-of-truth.md)。确认后冻结实施spec、发布五项本地issues并执行源hash/覆盖/依赖无环检查；不调用Jira建单、同步或外部状态流程，不编造key/SP。
+01～04 已实现并合入；05 联合验收、预算保护和评审修复已合入，最终代码为 `bb916d809f8d9dcd04b8f2bc2477fa66fbb7dcb3`。原跨片段死亡尾伤 P1 及磨损计算重复问题均已修复，两轴独立复核通过。最终全量 7/7（shared230、backend692）。详见 [本地交付与限制](../../../reviews/st15-local-verification.md)及[执行记录](execution.json)。
 
-拾取与首领终局规则来自[主规格](../../../spec.md)；状态与恢复契约依据[状态转换](../../../backend/state-transitions-v2.md)、[物理资产映射](../../../backend/asset-physical-mapping-v1.md)与[强化与终局预算](../../../backend/enhancement-terminal-budget-v1.md)。实际构建、无头Node测试、离线Cocos各自取证，历史交付摘要不当作本轮已验证。
+**最大终局预算门禁仍为 BLOCKED，ST15 不标整体 Done 或可发布。** 正常八块检查点终局为 R42/W33、78 次提交事务数据调用；最大到期效果域实测超过预算，现有服务原子拒绝且不留下半通关/部分奖励。完整证据见 [05验证](../../../reviews/st15-05-verification.md) 和 [预算JSON](../../../reviews/st15-05-budget.json)。最大域的结果物理映射需要后续整改。
 
-安装依赖、SDK、云资源、外部浏览器和部署不在本轮范围。计划确认不等于验收完成。
+## 规格、审批与边界
 
-2026-10-29 最新集成：01～04 已实现并分别复核合入。01 地面掉落与拾取合堆（b0a6046）、02 Boss即刻通关与清场免死复活（0982421/e369758）、03 终局原子结算与奖励分流（a833234/028a96f）、04 Cocos掉落物展示/拾取与通关胜利结算HUD（07d9fe5）。离线 Cocos H5 构建通过，专项及全量 7/7 门禁（682项后端测试）全绿。当前待推进最终片：**ST15-05 全链路终局最坏事务预算、每写点故障与两轴独立评审**。当前完成证据沿 execution.json，历史段落不覆盖最新状态。
+- [冻结规格](spec.md)、[任务图](task-plan.md)、[五项任务入口](issues/01-room-drop-collect.md)。
+- 历史 frontmatter 的声明摘要有误；保留原字节，不伪造修订。当前批准正文以 [实际源摘要核验](plan-validation-2026-10-29.json) 固定，[接续记录](../../../reviews/st15-resume-check-2026-10-29.md)说明差异。
+- [体力裁决](decision-terminal-stamina-2026-10-29.md)：通关固定本局消耗，looting 仍 unsettled，实际回城才 settled；覆盖冻结正文中相反的一行。
+- [权威合同入口](../../../backend/source-of-truth.md)、[地面拾取](../../../backend/ground-drop-collect-contract-v1.md)、[首领通关](../../../backend/boss-clear-terminal-contract-v1.md)、[终局结算](../../../backend/terminal-settlement-contract-v1.md)。
 
+04 的 Windows 离线 Cocos 构建及无头客户端测试是历史实测，不代替本机视觉、触屏、微信真机、正式配置或云 SDK 验收。所有平台缺口和最大预算阻断单独保留，测试中的预期拒绝通过不等于发布预算通过。

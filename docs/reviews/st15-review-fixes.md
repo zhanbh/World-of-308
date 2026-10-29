@@ -21,6 +21,6 @@ MovementCoordinator接受dead公开证明但拒绝任何新动作入队；LootSc
 - 合法协议动作五类拒绝；旧身份、未来时间、2秒断流、原死亡截止拒绝；无尾效果不推进；死片与尾片原operation重放无重复磨损/发奖。
 - `node --test backend/test/boss-death-tail.test.mjs shared/test/boss-terminal.test.mjs backend/test/loot-victory-client.test.mjs backend/test/monster-client.test.mjs`：19/19通过（新增5项，最终全量门禁另记）。
 - 后端共享类型、客户端纯模型类型分别通过，使用既有 Node24.9.0 / Cocos TypeScript5.8.2；不安装依赖、不构建、不操作云端。
-- 最终一次完整7阶段门禁由根会话以所需本地HTTP权限执行，结果待回填。
+- 最终一次完整7阶段门禁由根会话以所需本地HTTP权限执行，7/7通过（tooling7、shared230、backend692），日志为 `st15-review-check-all.log`；固定代码为 `bb916d809f8d9dcd04b8f2bc2477fa66fbb7dcb3`。
 
 最大到期域仍FAIL/BLOCKED：已知570调用超过预算，保留当前原子拒绝和active状态。正常78调用域及最大结果存储映射不在本修复中重新设计；不宣称ST15全部完成。SDK、设备和生产配置仍是原GAP。

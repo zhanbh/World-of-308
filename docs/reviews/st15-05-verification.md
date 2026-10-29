@@ -30,6 +30,6 @@ node --test backend/test/joint-terminal-acceptance.test.mjs
 WORLD308_TYPESCRIPT=/Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/Resources/app.asar.unpacked/node_modules/typescript node tools/check-all.cjs
 ```
 
-沙箱全量见[七阶段日志](st15-05-check-all-sandbox.log)：6/7，backend687项中686通过，唯一失败是既有HTTP loopback测试listen EPERM 127.0.0.1。其余六阶段通过。root正在相同稳定源码上执行获批的全量命令，最终结果与[获批七阶段日志](st15-05-check-all.log)另行归档；本实现记录不提前宣称7/7。定向原始逐写点日志归档[逐写点日志](st15-05-rollback.log)，流程定向见[消费者/OCC日志](st15-05-flow.log)。预算负测预期CONFIG_NOT_READY通过，不能据此称最大域预算验收通过。
+沙箱全量见[七阶段日志](st15-05-check-all-sandbox.log)：6/7，backend687项中686通过，唯一失败是既有HTTP loopback测试listen EPERM 127.0.0.1。其余六阶段通过。root在相同代码快照 `0639c097` 上完成获批全量7/7，见[获批七阶段日志](st15-05-check-all.log)。后续评审修复后的最终门禁另见[最终日志](st15-review-check-all.log)，两次结果不得互相替代。定向原始逐写点日志归档[逐写点日志](st15-05-rollback.log)，流程定向见[消费者/OCC日志](st15-05-flow.log)。预算负测预期CONFIG_NOT_READY通过，不能据此称最大域预算验收通过。
 
 未操作Jira、外部发布、安装、云资源或GUI构建。微信SDK、真实数据库事务/费用、移动设备/触屏与完整城镇七房体验仍GAP。04的Windows历史离线构建不证明本机Mac或真机视觉验收。可信邮箱context仅用于真实MailService接口消费，不证明Cocos邮箱交互。
