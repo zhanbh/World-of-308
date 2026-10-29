@@ -339,3 +339,7 @@ ST11最终评审算术域修订：训练profile发布/入口须证明完整合�
 ## ST12-01 公开战斗增量
 
 simulation.confirmed与recoveryPage允许有界monsterRuntime及playerControl记录，字段、同刻集合、身份引用和公开proof见[近战组合合同](monster-melee-combat-contract-v1.md)。simulation.submit仍只接收原始玩家输入；不增加客户端上报怪物状态或伤害的入口。
+
+## ST15-01 当前拾取读写视图（2026-10-29）
+
+新增 `drop.list` 读取当前challengeId/sceneEpoch的公开地面描述及H/C/B版本，roomToken复用attemptId。C28验证已确认CP距离<=32设计像素而不信positionHint；expected当前H/B。连接/场景代次与lease检查、固定source归属、原O与资产J语义、实际预算详见[地面拾取合同](ground-drop-collect-contract-v1.md)。未拾取不物化，成功后留原来源终态。此为01增量，不把终局结算或真实云端标为完成。

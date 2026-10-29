@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-29",
+  "branch": "feat/st15-01-room-drop",
+  "base": "dbb2839",
+  "scope": "ST15-01",
+  "status": "implemented-awaiting-independent-review",
+  "spec_body_sha256": "e574471d617afba569e6d46612e0e03a435a1e26722cc70acaffbd618f137993",
+  "ticket_body_sha256": "227b1bebd14690b3c714c7952f969562975d58a13511f4b703c78bde3e32b78b",
+  "checks": {
+    "tooling": 7,
+    "groups": "7/7",
+    "shared": 227,
+    "backend": 656,
+    "specialized": 17
+  },
+  "files": [
+    {
+      "path": "backend/src/challenge/challenge-model.ts",
+      "sha256": "6c112aa66325813f5b23b35dec82e748346480001c33fb373f1d26fb9f3feb91"
+    },
+    {
+      "path": "backend/src/challenge/challenge-service.ts",
+      "sha256": "1363e471ba73a39bce3d834d5c1f75b8eafddd1ccf3e37e1368cb7b1853eff92"
+    },
+    {
+      "path": "backend/src/challenge/ground-drops.ts",
+      "sha256": "8d5aeb339860d3832e42dcad665756a77eb417ea6b5844b616e5e232b56fd8df"
+    },
+    {
+      "path": "backend/test/drop-collect.test.mjs",
+      "sha256": "c4026f25e4c92a13a6a269d507de90ea6107e79ed44ee797569442d43b20f6eb"
+    },
+    {
+      "path": "backend/test/fixtures/drop-fixture.mjs",
+      "sha256": "78075368548de07bbcc2c112f032bac691586a9fd05c8b93dd7fbb7b1eeafe99"
+    },
+    {
+      "path": "backend/test/fixtures/basic-fixture.mjs",
+      "sha256": "7703651fde4f258a06a844384da2db4650b2f78c446091c95bea9474aa67085a"
+    },
+    {
+      "path": "backend/tools/demo-drop-collect.mjs",
+      "sha256": "04af5e477209e7fe7e5d2cda6e87b7e23152cb6ca77b2dce57302485b4a30bbb"
+    },
+    {
+      "path": "client/assets/scripts/net/DropCoordinator.ts",
+      "sha256": "25c07e864cf8d4cc48d91eb517e28e82185af788f5487554b65a49f2f4899451"
+    },
+    {
+      "path": "shared/src/protocol/scene-v2.ts",
+      "sha256": "5dd1cb8827c1d1a582209246468c9f51d02f552fe57916a27b8e17893dc4036f"
+    },
+    {
+      "path": "tools/tsconfig.models.json",
+      "sha256": "d839fbfd0061d7eff233a17c77ed91cd88b2a56f29a4bd8f1a930849fb47b237"
+    }
+  ]
+}

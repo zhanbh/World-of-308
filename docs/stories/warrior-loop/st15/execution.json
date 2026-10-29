@@ -12,11 +12,14 @@
       "blocked_by": [],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/01-room-drop-collect.md",
-      "state": "in-progress",
+      "state": "implemented-awaiting-independent-review",
       "worktree": ".worktrees/st15-01-room-drop",
       "branch": "feat/st15-01-room-drop",
-      "evidence": [],
-      "local_checks": "pending",
+      "evidence": [
+        "docs/reviews/st15-01-verification.md",
+        "docs/reviews/st15-01-check-all.log"
+      ],
+      "local_checks": "passed:7/7;backend656;shared227;tooling7;drop17/17",
       "platform_status": "gap"
     },
     {

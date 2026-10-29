@@ -1,3 +1,6 @@
+import {verifyFixedDrop,groundHoldings,planGroundDelivery,validateDropConfig,generateGroundDrops} from './ground-drops.ts';
+import type {DropRoom} from './ground-drops.ts';
+import {parseDropQuery,parseDropList} from '../../../shared/src/protocol/scene-v2.ts';
 import {currentMonsterDefense} from './basic-training.ts';
 import {advanceMonsterSimulation} from '../../../shared/src/monster-simulation.ts';
 import {advanceEarthSimulation} from '../../../shared/src/earth-simulation.ts';
@@ -67,7 +70,55 @@ export class ChallengeService {
             nextRoom(): number;
         };
     }) { this.options = { ...options, content: options.content ? structuredClone(options.content) : undefined, catalog: options.catalog ? structuredClone(options.catalog) : undefined, setConfigs: options.setConfigs ? structuredClone(options.setConfigs) : undefined }; }
-    private async caller() { let i; try {
+    private async collectDrop(raw:unknown){
+        const q=parseChallengeRequest(raw);if(q.command!=='drop.collect')throw new TypeError('UNSUPPORTED_COMMAND');
+        let now=this.options.clock.now();const reply=(outcome:unknown,replayed=false)=>parseChallengeResponse({protocolVersion:2,command:q.command,operationId:q.operationId,serverTime:now,replayed,outcome});
+        try{const caller=await this.caller();return await this.options.store.run(async tx=>{
+            now=this.options.clock.now();const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),opId=await loginKey('assetOp',[a.id,q.operationId]),journalId=await loginKey('assetJournal',[a.id,q.operationId]),tuple=canonical(q);
+            const old=await tx.get<{schemaVersion:number;id:string;accountId:string;tuple:string;command:string;result:unknown}>(opId);
+            if(old){requireValue(old.schemaVersion===2&&old.id===opId&&old.accountId===a.id,'SERVICE_UNAVAILABLE');requireValue(old.command===q.command&&old.tuple===tuple,'OPERATION_MISMATCH');return {...parseChallengeResponse(old.result),replayed:true};}
+            requireValue(await tx.get(journalId)===undefined,'SERVICE_UNAVAILABLE');
+            let outcome:unknown,writes:Array<[string,unknown]>=[];
+            try{
+                const h=await tx.get<EntryChallenge>(q.payload.challengeId);requireValue(h?.accountId===a.id&&a.openSceneChallengeId===h.id&&h.sceneState!=='closed'&&(h.result==='active'||h.result==='completed'),'NOT_FOUND_OR_FORBIDDEN');
+                const c=await this.character(tx,a,h.characterId,h.rolePlayEpoch);
+                requireValue(h.sessionId===q.sessionId&&h.sceneEpoch===q.payload.sceneEpoch&&h.currentRoomNo===q.payload.roomNo&&c.location.kind==='challenge'&&c.location.challengeId===h.id,'VERSION_CONFLICT');
+                requireValue(h.connection==='connected','RECOVERY_REQUIRED');requireValue(h.lifeState==='alive'&&(h.roomPhase==='active'||h.roomPhase==='cleared'),'ROOM_NOT_AVAILABLE');
+                requireValue(h.lease&&now<h.lease.leaseUntil,'DEADLINE_EXPIRED');
+                const room=await tx.get<DropRoom>(await loginKey('room',[h.id,h.currentRoomNo]));
+                requireValue(room?.schemaVersion===2&&room.accountId===a.id&&room.challengeId===h.id&&room.roomNo===h.currentRoomNo&&room.sceneEpoch===h.sceneEpoch&&room.attemptId===q.payload.roomToken,'NOT_FOUND_OR_FORBIDDEN');
+                const d=room.drops?.find(d=>d.dropId===q.payload.dropId);requireValue(d&&!d.collected,'NOT_FOUND_OR_FORBIDDEN');
+                requireValue((h.confirmedKills??[]).some(k=>k.roomNo===h.currentRoomNo&&k.spawnId===d.sourceId)&&d.ordinal===0&&d.sourceKey===await loginKey('dropSource',[h.id,h.currentRoomNo,d.sourceId])&&d.dropId===await loginKey('drop',[d.sourceKey,0]),'CONFIG_NOT_READY');
+                const config=this.options.content?.drops;requireValue(config&&config.ref===room.dropConfigRef,'CONFIG_NOT_READY');validateDropConfig(config);await verifyFixedDrop(d,room,config);
+                const cp=await readCheckpoint(tx,h),bag=await tx.get<ContainerEntity>(c.backpackId);
+                requireValue(bag?.schemaVersion===2&&bag.id===c.backpackId&&bag.accountId===a.id&&bag.characterId===c.id&&bag.kind==='backpack','CONFIG_NOT_READY');
+                requireValue(q.expected.some(e=>e.kind==='challenge'&&e.id===h.id&&e.version===h.version)&&q.expected.some(e=>e.kind==='container'&&e.id===bag.id&&e.version===bag.version),'VERSION_CONFLICT');
+                // milli-design-pixel authoritative position; never use positionHint for permission.
+                const dx=BigInt(cp.role.player.x)-BigInt(d.x),dy=BigInt(cp.role.player.y)-BigInt(d.y);requireValue(dx*dx+dy*dy<=32000n*32000n,'NOT_FOUND_OR_FORBIDDEN');
+                const delivery=await planGroundDelivery(bag,d,a.id,c.id,journalId,now,room.id);
+                requireValue(Number.isSafeInteger(delivery.bag.version),'CONFIG_NOT_READY');budget(delivery.bag,262144);
+                if(delivery.item){requireValue(await tx.get(delivery.item.id)===undefined,'SERVICE_UNAVAILABLE');toEquipmentView(delivery.item);budget(delivery.item,16384);writes.push([delivery.item.id,delivery.item]);
+                    if(delivery.item.setRef)writes.push(...await groundHoldings(tx,a,c,delivery.item,config));
+                }
+                const nextRoom={...room,version:increment(room.version??0),drops:room.drops!.map(x=>x.dropId===d.dropId?{...x,collected:true,collectedAt:now,deliveryRef:journalId,...delivery.item?{itemId:delivery.item.id}:{}}:x)};
+                budget(nextRoom,131072);const journal={schemaVersion:2,id:journalId,accountId:a.id,command:q.command,source:{kind:'roomDrop',roomId:room.id,dropId:d.dropId,sourceKey:d.sourceKey,sourceOrdinal:d.ordinal},changes:delivery.lineage,createdAt:now};budget(journal,131072);
+                writes.push([bag.id,delivery.bag],[room.id,nextRoom],[journalId,journal],[a.id,{...a,writeRevision:increment(a.writeRevision)}]);
+                outcome={status:'committed',data:{dropId:d.dropId,deliveryRef:journalId,itemIds:delivery.item?[delivery.item.id]:[],quantity:d.quantity},resultVersions:[{kind:'container',id:bag.id,version:delivery.bag.version},{kind:'challenge',id:h.id,version:h.version}]};
+            }catch(e){if(e instanceof Refusal)outcome={status:'rejected',code:e.message};else if(e instanceof Error&&e.message==='BAG_FULL')outcome={status:'rejected',code:'BAG_FULL'};else if(e instanceof TypeError)outcome={status:'rejected',code:'CONFIG_NOT_READY'};else throw e;writes=[];}
+            if(writes.length){const h=await tx.get<EntryChallenge>(q.payload.challengeId);if(!h?.lease||this.options.clock.now()>=h.lease.leaseUntil){writes=[];outcome={status:'rejected',code:'DEADLINE_EXPIRED'};}}
+            const result=reply(outcome),receipt={schemaVersion:2,id:opId,accountId:a.id,command:q.command,tuple,result};budget(receipt,16384);for(const [key,value]of writes)tx.set(key,value);tx.set(opId,receipt);return result;
+        });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});throw e;}
+    }    private async dropList(raw:unknown){
+        const q=parseDropQuery(raw),now=this.options.clock.now();
+        try{const caller=await this.caller();return await this.options.store.run(async tx=>{
+            const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),h=await tx.get<EntryChallenge>(q.payload.challengeId);
+            requireValue(h?.accountId===a.id&&a.openSceneChallengeId===h.id&&h.sceneState!=='closed','NOT_FOUND_OR_FORBIDDEN');
+            const c=await this.character(tx,a,h.characterId,h.rolePlayEpoch);requireValue(h.sessionId===q.sessionId&&h.sceneEpoch===q.payload.sceneEpoch,'VERSION_CONFLICT');requireValue(h.roomPhase==='active'||h.roomPhase==='cleared','ROOM_NOT_AVAILABLE');
+            const bag=await tx.get<ContainerEntity>(c.backpackId);requireValue(bag?.accountId===a.id&&bag.characterId===c.id,'CONFIG_NOT_READY');
+            const room=await tx.get<DropRoom>(await loginKey('room',[h.id,h.currentRoomNo]));requireValue(room?.accountId===a.id&&room.challengeId===h.id&&room.sceneEpoch===h.sceneEpoch,'NOT_FOUND_OR_FORBIDDEN');
+            return parseDropList({requestId:q.requestId,serverTime:now,data:{challengeId:h.id,roomNo:h.currentRoomNo,sceneEpoch:h.sceneEpoch,roomToken:room.attemptId,drops:(room.drops??[]).map(d=>({dropId:d.dropId,kind:d.kind,templateId:d.templateRef.id,quantity:d.quantity,quality:d.quality,itemLevel:d.itemLevel,x:d.x,y:d.y,collected:d.collected}))},versions:[{kind:'challenge',id:h.id,version:h.version},{kind:'character',id:c.id,version:c.version},{kind:'container',id:bag.id,version:bag.version}]});
+        });}catch(e){if(e instanceof Refusal||e instanceof StoreUnavailable)return parseDropList({requestId:q.requestId,serverTime:now,error:{code:e instanceof Refusal?e.message:'SERVICE_UNAVAILABLE'}});throw e;}
+    }    private async caller() { let i; try {
         i = await this.options.identity.verify();
     }
     catch {
@@ -141,6 +192,7 @@ export class ChallengeService {
     }
     async query(raw: unknown) {
         const name=raw && typeof raw==='object' ? Object.getOwnPropertyDescriptor(raw,'query')?.value : undefined;
+        if(name==='drop.list')return this.dropList(raw);
         if(name==='simulation.actionResults')return this.actionResults(raw);
         if(name==='simulation.confirmed')return this.confirmedMovement(raw);
         if(name==='scene.recoveryPage') return this.recoveryPage(raw);
@@ -174,6 +226,7 @@ export class ChallengeService {
         if(raw&&typeof raw==='object'){const command=Object.getOwnPropertyDescriptor(raw,'command')?.value;if(['heartbeat','scene.suspend','scene.resumePrepare'].includes(command))return this.sceneControl(raw);if(command==='scene.status')return Object.getOwnPropertyDescriptor(raw,'payload')?.value?.readyTicketId!==null?this.queryOriginalReady(raw):this.sceneControl(raw);if(command==='scene.ready'){const q=parseSceneRequest(raw);if(q.command!=='scene.ready')throw new TypeError('UNSUPPORTED_COMMAND');const h=await this.options.store.run(tx=>tx.get<EntryChallenge>(q.payload.challengeId));return h?.connection==='recovery'||h?.controlReceipts?.some(r=>r.command==='scene.ready'&&r.sequence===q.controlSeq)||q.payload.sceneEpoch===0?this.sceneControl(raw):this.ready(raw);}}
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.activateRoom') return this.activate(raw);
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.prepareRoom') return this.prepare(raw);
+        if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='drop.collect') return this.collectDrop(raw);
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.revive') return this.revive(raw);
         if(raw && typeof raw==='object' && Object.getOwnPropertyDescriptor(raw,'command')?.value==='challenge.leave') return this.leave(raw);
         const command = parseChallengeRequest(raw);
@@ -691,8 +744,9 @@ export class ChallengeService {
                 const nextRoomPhase=(allEnemiesDead||latest.header.state.roomPhase==='cleared')?'cleared' as const:'active' as const;
                 const newlyDead=scene.enemies.filter(e=>e.actor.lifeState==='dead'&&e.actor.hp==='0');
                 const existingKills=currentH.confirmedKills??[];
-                const existingIds=new Set(existingKills.map(k=>`${currentH.currentRoomNo}:${k.spawnId}`));
+                const existingIds=new Set(existingKills.map(k=>`${k.roomNo}:${k.spawnId}`));
                 const newKillFacts=newlyDead.filter(e=>!existingIds.has(`${currentH.currentRoomNo}:${e.actor.actorId}`)).map(e=>({spawnId:e.actor.actorId,role:e.role,templateRef:e.templateRef,roomNo:currentH.currentRoomNo,xpMultiplier:e.role==='purple'?2:1}));
+                if(this.options.content?.drops&&newKillFacts.length){const roomId=await loginKey('room',[h.id,h.currentRoomNo]),room=await tx.get<DropRoom>(roomId);requireValue(room?.accountId===a.id&&room.challengeId===h.id&&room.sceneEpoch===h.sceneEpoch,'CONFIG_NOT_READY');const nextRoom=await generateGroundDrops(room,currentH,newKillFacts,scene.enemies,this.options.content.drops);budget(nextRoom,131072);tx.set(roomId,nextRoom);}
                 const confirmedKills=newKillFacts.length>0?[...existingKills,...newKillFacts]:existingKills;
                 const revision=increment(latest.header.revision),state={...latest.header.state,checkpointRevision:revision,publicStateHash:hash,acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,roomPhase:nextRoomPhase,lifeState:playerLifeState,deathDeadline:playerDeathDeadline,inputGapBaseAt:now,lastAcceptedInputAt:now};
                 const activeChunks=[...latest.header.activeChunks.slice(0,2)];if(chunk.hash!==activeChunks[0].hash){tx.set(chunk.id,chunk);activeChunks[0]={...activeChunks[0],chunkRevision:chunk.chunkRevision,hash:chunk.hash};}

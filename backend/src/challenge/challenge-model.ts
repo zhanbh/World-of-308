@@ -13,6 +13,7 @@ export interface ChallengeContent {
     movement?: import('../../../shared/src/movement-kernel.ts').MovementConfig;
     exitInteraction?: {profile:'local-test';rulesRef:string;radius:number};
     encounterLayout?: boolean;
+    drops?: import('./ground-drops.ts').DropConfig;
     dungeons: {
         dungeonId: string;
         kind: 'first' | 'second' | 'special';

@@ -476,3 +476,5 @@ ST11最终评审算术域修订：训练profile发布/入口须证明完整合�
 ## ST12-01 怪物runtime
 
 scene7.monsters保留actorId/index/templateRef、独立身份、AP、决策/冷却/动作节点、控制时钟、移动intent/余数；monsterControlUntilTick保存玩家当前控制。字段上界及schema版本见[合同](monster-melee-combat-contract-v1.md)，原role/scene/effect块物理位置不变。
+
+ST15-01实际room增量（2026-10-29）：drops为至多16条固定GroundDrop（dropId/sourceKey/sourceId/ordinal/模板/数量/品质/装等/绑定策略/装备描述/坐标/collected及可选collectedAt,itemId,deliveryRef）；room增加version及dropConfigRef/dropConfigHash。collected布尔是当前实现的ground/collected编码；expired通过H当前roomNo/sceneEpoch/sceneState逻辑派生，不删来源或给未拾取物创建pending。见[当前拾取合同](ground-drop-collect-contract-v1.md)。

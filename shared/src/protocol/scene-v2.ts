@@ -307,3 +307,11 @@ export function parseDungeonEntryResponse(value: unknown) {
   if (value && typeof value === 'object' && Object.hasOwn(value, 'error')) return object({ requestId: operationId, serverTime: time, error: object({ code: sceneErrors }) })(value);
   return object({ requestId: operationId, serverTime: time, data: object({ dungeonId: text(64), entryContext: text(), locationRevision: integer(), options: list(entryOption, 4) }), versions: parseExpected })(value);
 }
+
+// Ground sources are read separately from battle CP; fixed descriptors never expose private source keys.
+export function parseDropQuery(v:unknown){return object({...query,query:enumOf('drop.list'),payload:object({challengeId:text(),sceneEpoch:integer(1)})})(v);}
+const groundDropView=object({dropId:text(),kind:enumOf('stack','equipment'),templateId:text(),quantity:integer(1,20),quality:enumOf('white','green','blue','purple','orange'),itemLevel:integer(1,30),x:position,y:position,collected:bool});
+export function parseDropList(v:unknown){
+ if(v&&typeof v==='object'&&Object.hasOwn(v,'error'))return object({requestId:operationId,serverTime:time,error:object({code:sceneErrors})})(v);
+ return object({requestId:operationId,serverTime:time,data:object({challengeId:text(),roomNo:integer(0,6),sceneEpoch:integer(1),roomToken:text(),drops:list(groundDropView,16)}),versions:parseExpected})(v);
+}

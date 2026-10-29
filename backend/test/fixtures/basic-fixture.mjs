@@ -3,8 +3,8 @@ import {ChallengeService} from '../../src/challenge/challenge-service.ts';
 import {TRAINING_BASIC_CONFIG} from '../../../shared/src/basic-combat-kernel.ts';
 import {manifestDigest} from '../../../shared/src/room-manifest.ts';
 import {loginKey} from '../../src/identity/identity-v2.ts';
-export async function basicFixture(profilePatch={}){
- const h=await prepareFixture(),config={schemaVersion:1,profile:'local-test-movement',units:'milli-design-pixel',ruleRef:'movement-test@1',mapRef:'first-room-1@1',walkSpeed:1001,runSpeed:3001,ySpeed:701,deadzone:100,runThreshold:600,footprint:10,bounds:{minX:-1000000,maxX:1000000,minY:-1000000,maxY:1000000},walls:[]};
+export async function basicFixture(profilePatch={},movementPatch={}){
+ const h=await prepareFixture(),config={schemaVersion:1,profile:'local-test-movement',units:'milli-design-pixel',ruleRef:'movement-test@1',mapRef:'first-room-1@1',walkSpeed:1001,runSpeed:3001,ySpeed:701,deadzone:100,runThreshold:600,footprint:10,bounds:{minX:-1000000,maxX:1000000,minY:-1000000,maxY:1000000},walls:[],...movementPatch};
  const profile={schemaVersion:1,profile:'local-test-basic',capabilities:['basic','no-rewards'],config:{...structuredClone(TRAINING_BASIC_CONFIG),rangeX:500000,rangeY:500000},attributes:{attackPowerByLevel:Array(30).fill('1000'),haste:{n:'1',d:'1'},damageBonus:{n:'0',d:'1'},hit:{n:'1',d:'1'},crit:{n:'0',d:'1'},critMultiplier:{n:'2',d:'1'}},targets:Object.fromEntries(h.content.release.nodes.filter(n=>n.kind==='monster').map(n=>[`${n.id}@${n.version}`,{mitigation:{n:'0',d:'1'},evasion:{n:'0',d:'1'},damageImmune:false}])),...profilePatch};
  const content={...h.content,movement:config,combat:profile},service=new ChallengeService({store:h.store,clock:h.clock,identity:h.identity,content});
  const prepared=await service.execute(h.command);if(prepared.outcome.status!=='committed')throw Error(JSON.stringify(prepared));const manifest=prepared.outcome.data;config.mapRef=manifest.mapRef;

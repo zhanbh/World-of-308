@@ -1,0 +1,30 @@
+✔ real basic kill creates fixed room drops while training remains rewardless (103.7727ms)
+✔ collect consumes room source atomically and replays original receipt (47.7946ms)
+✔ same operation binds rejected intent and a forged hint never authorizes distance (47.736ms)
+✔ full bag preserves ground source; a matching partial stack still accepts whole source (47.4484ms)
+✔ all material delivery write failures roll back and response loss recovers original receipt (253.5785ms)
+✔ two independent collect intents race one source and cannot both mint (38.2744ms)
+✔ equipment materializes only on successful collect, holds one role scope and every write rolls back (346.6249ms)
+✔ unconfirmed or foreign kill sources cannot be minted from a room descriptor (53.8646ms)
+(node:19784) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st15-01-room-drop/client/assets/scripts/net/DropCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st15-01-room-drop\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ client lost collect response survives reconstruction and recovers original intent (53.0461ms)
+✔ leaving invalidates uncollected sources and never removes committed items in either order (75.1284ms)
+✔ prepare next room prevents collecting prior-room ground before activation (42.5755ms)
+✔ scope, epoch, room token and revoked session do not authorize collectible source (185.6037ms)
+✔ no drop authorization keeps training rewardless even on real kills (33.5539ms)
+✔ source payload and fixed configuration cannot be changed into another prize (66.6476ms)
+✔ collect and leave racing from one snapshot serialize safely in both commit orders (84.2965ms)
+✔ lease expiration during CP reads rejects with no staged asset writes (37.299ms)
+ST15-01 actual material collect budget { R: 12, W: 5, gets: 14, sets: 5, maxWrite: 3557 }
+✔ material collection has bounded physical key and byte budgets (36.769ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1755.2105
