@@ -1,0 +1,46 @@
+(node:34264) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-03-dead-looting-recovery/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st16-03-dead-looting-recovery\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ active combat recovery: first fragment after 100ms (580.7018ms)
+✔ active combat recovery: first fragment after 1900ms (385.2008ms)
+✔ active combat recovery: first fragment after 2000ms (326.5447ms)
+✔ a lost suspend response can resolve the original before any checkpoint ticket exists (66.9468ms)
+✔ late movement proof from an old recovery cannot freeze a newly initialized scene owner (117.7921ms)
+✔ two public submits preserve death provenance and released cross terminal exactly as an unsplit slice (265.0851ms)
+✔ two public submits preserve death provenance and released earth terminal exactly as an unsplit slice (252.6347ms)
+✔ dead coordinator keeps only empty authoritative tail fragments available (173.7685ms)
+✔ dead tail retains original deadline and refuses new actions, old identity, future time, recovery and expiry (309.0926ms)
+✔ dead scene without released effects cannot advance and committed death and tail replay once (218.3165ms)
+✔ confirmed death restores complete proof without reviving or extending the deadline (241.5031ms)
+✔ real Boss completion restores looting and the fixed receipt; lease expiry preserves success (151.2061ms)
+✔ unpaid loading suspend freezes same attempt and fixes deadline without creating CP or charging (11.3589ms)
+✔ unpaid recovery excludes paused time, persists original controls, and resumes same manifest without CP (12.9179ms)
+✔ unpaid deadline equality query atomically fails/closes, settles stamina and returns to inn (27.996ms)
+✔ paid recovery reads frozen CP proof, resumes loading without enemy anchors, then consumes only eligible clock (28.7484ms)
+✔ new heartbeat renews lease once, duplicate cannot renew and old timeline/order cannot advance (13.8089ms)
+✔ silent recovery and death equality use original cutoff with no new grace or paid refund (62.1068ms)
+✔ heartbeat sequence is independent of challenge business version (20.823ms)
+✔ every loading-control and expiry write point rolls back atomically; lost responses resolve exact originals (554.3976ms)
+✔ expiry keeps current session usable in town, preserves completed success and truthful journal reason (43.4534ms)
+✔ actual login takeover wins before or after recovery without old-session replay permission (38.1556ms)
+ST10-04 actual UTF-8 {
+  unpaidH8Receipts: 10303,
+  unpaidResponse: 3570,
+  paidH: 3716,
+  paidHeader: 1594,
+  paidResponse: 985
+}
+✔ bounded original control window and actual encoded H/CP/response budgets include wrapper bytes (40.2866ms)
+✔ recovery-ready deadline−1/equality/+1 respects fixed pause deadline independently of old lease (106.6854ms)
+✔ reopen queries exact durable original before same-request retry; notFound cannot clear intent (0.8956ms)
+✔ a pending original blocks a replacement sequence and old generation cannot change new context (0.4853ms)
+✔ actual service controls survive resume and both ready reply losses across reopen, preserving original paid attempt (58.4258ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4406.9389

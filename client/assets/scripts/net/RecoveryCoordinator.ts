@@ -68,7 +68,7 @@ export class RecoveryCoordinator {
     const latestText=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;decodeSceneReply(q,latestText);const latest=parseSceneResponse(JSON.parse(latestText));if(latest.outcome.status!=='committed')throw Error('CURRENT_SCENE_NOT_VERIFIED');data=latest.outcome.data;
     if(data.state.sceneEpoch!==original.state.sceneEpoch||data.state.timelineEpoch!==original.state.timelineEpoch||data.state.connection!=='connected')throw Error('CURRENT_SCENE_NOT_VERIFIED');
     if(!('kind' in data.state)&&!('kind' in original.state)&&(data.state.manifestHash!==original.state.manifestHash||data.state.checkpointRevision<original.state.checkpointRevision))throw Error('CURRENT_SCENE_NOT_VERIFIED');
-    if(!('kind' in original.state)&&data.state.roomPhase==='active'){
+    if(!('kind' in original.state)&&(data.state.roomPhase==='active'||data.state.roomPhase==='cleared'&&data.state.result==='completed')){
      const live=data.state,t=this.journal.data?.readyTicket;
      if('kind' in live||!t||'kind' in t||!sameProofState(live,live))throw Error('CURRENT_SCENE_NOT_VERIFIED');
      const pages=await fetchRecoveryProof(this.transport,{...c,...c.payload},{readyTicketId:c.payload.readyTicketId!,sceneEpoch:live.sceneEpoch,timelineEpoch:live.timelineEpoch,checkpointRevision:live.checkpointRevision,publicStateHash:live.publicStateHash,manifestHash:live.manifestHash},`active-${c.controlSeq}`,()=>generation===this.generation);
@@ -80,7 +80,7 @@ export class RecoveryCoordinator {
    }
    const previousTicket=this.journal.data?.readyTicket;this.journal={pending:null,data,pages:null};this.save();this.current.data=data;
    if(previousTicket?.readyTicketId!==data.readyTicket?.readyTicketId)this.verifiedTicket=null;
-   const s=data.state;this.current.predictionEnabled=!!(c.command==='scene.ready'&&this.loaded&&this.current.publicRecords&&previousTicket&&!('kind' in previousTicket)&&!('kind' in s)&&s.roomPhase==='active'&&s.connection==='connected'&&s.lifeState==='alive'&&s.result==='active');
+   const s=data.state;this.current.predictionEnabled=!!(c.command==='scene.ready'&&this.loaded&&this.current.publicRecords&&previousTicket&&!('kind' in previousTicket)&&!('kind' in s)&&sameProofState(s,s));
    this.current.status=this.current.predictionEnabled?'active':s.connection==='recovery'?'recovering':'loading';
   }catch{if(generation!==this.generation)return;this.current.status='unknown';this.current.code='RESULT_UNKNOWN';}
  }

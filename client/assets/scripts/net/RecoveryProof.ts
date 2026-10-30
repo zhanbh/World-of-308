@@ -5,7 +5,7 @@ import {verifyRecoveryPages} from '../../../../shared/src/public-state-proof.ts'
 import type {EntryTransport,EntryIdentity} from './ChallengeEntryCoordinator.ts';
 export type ProofBinding=Pick<SceneState,'sceneEpoch'|'timelineEpoch'|'checkpointRevision'|'publicStateHash'|'manifestHash'>&{readyTicketId:string;deadline?:number};
 export function sameProofState(a:SceneState,b:SceneState):boolean{
- return a.challengeId===b.challengeId&&a.sceneEpoch===b.sceneEpoch&&a.timelineEpoch===b.timelineEpoch&&a.checkpointRevision===b.checkpointRevision&&a.publicStateHash===b.publicStateHash&&a.manifestHash===b.manifestHash&&b.roomPhase==='active'&&b.connection==='connected'&&b.lifeState==='alive'&&b.result==='active';
+ return a.challengeId===b.challengeId&&a.sceneEpoch===b.sceneEpoch&&a.timelineEpoch===b.timelineEpoch&&a.checkpointRevision===b.checkpointRevision&&a.publicStateHash===b.publicStateHash&&a.manifestHash===b.manifestHash&&b.connection==='connected'&&((b.roomPhase==='active'&&b.result==='active')||(b.roomPhase==='cleared'&&b.result==='completed'&&b.lifeState==='alive'));
 }
 /** Every response must match the requested bounded snapshot before another page is requested. */
 export async function fetchRecoveryProof(transport:EntryTransport,identity:EntryIdentity&{challengeId:string},ticket:ProofBinding,prefix:string,current:()=>boolean):Promise<unknown[]|null>{

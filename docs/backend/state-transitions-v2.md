@@ -201,3 +201,4 @@ CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢
 ## ST16-02 未知业务与恢复栅栏（2026-10-30）
 
 客户端 unknown 与服务 connection/recovery 为不同状态。未决业务先保留原意图、禁新写、查询原结果；查询失败维持 unknown，不发送恢复控制。notFound 可进入原恢复控制竞争，但不清原意图；服务栅栏后原操作确认方可清除。原操作可能已提交，必须保留其资产；原操作未提交则由既有 OCC/时间段栅栏拒绝。旧回调不得改变 init/close 后的新视图。无服务状态/截止或 DTO 改动，详见[02验证](../reviews/st16-02-verification.md)。
+ST16-03：dead/active的suspend→resumePrepare→ready仍dead且原deathDeadline不延；completed/looting同链恢复移动锚点与拾取，2秒战斗缺口仅active/result=active，超时只关闭拾取并保成功/已入包收益。详见[恢复时序](recovery-timeline-proposal-v1.md)。

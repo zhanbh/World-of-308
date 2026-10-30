@@ -97,3 +97,6 @@ P2连续践踏（3段72px圆判）接锁向冲撞、碰墙即停解除霸体与3
 ## ST16-02 未知请求与迟包增量（2026-10-30）
 
 统一冻结、同授权传输原结果查询、notFound前后恢复栅栏与真实装备OCC两序、跨代次迟包退役已在本地模型/服务边界实现，见[02验证](../reviews/st16-02-verification.md)与[恢复时序](recovery-timeline-proposal-v1.md)。零新后端协议或资产写；Cocos注册与全7阶段仍沿04/05门禁。
+## ST16-03 死亡与通关拾取恢复（2026-10-30）
+
+已确认dead/active与completed/looting的完整恢复证明、原死亡截止/体力/来源/固定通关回执保留、死亡动作限制与looting移动拾取，按[恢复时序](recovery-timeline-proposal-v1.md)与[03验证](../reviews/st16-03-verification.md)。不包含02在途竞争、04设备接线或05联合发布验收。

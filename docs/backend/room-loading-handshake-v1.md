@@ -96,7 +96,7 @@ activate 创建 awaitingReady，CP.acceptingInputs=false、anchorWallAt/anchorTi
 
 本节收敛 ready 后缀改变 HP/CD/buff 时的公开证明，替代前文“重验持久化原基础页即可恢复预测”的过渡表述。ready 前仍须已验证资源和完整基础分页；ready 必须在原票据及原恢复/死亡截止之前成功。普通 ready 或恢复 ready 成功进入 active 时，同笔保存 `H.lastReadyReceipt.proofDeadline=min(本次成功建立的 connected lease.leaseUntil, deathDeadline或最大安全整数)`。这是新连接阶段已提交的固定证明截止，不沿用已消费票据的旧加载截止，也不增加宽限或第二份计时权威。
 
-ready 后 `scene.recoveryPage` DTO不变：当前身份、原成功 readyTicketId、相同 sceneEpoch/timelineEpoch/manifestHash及**当前** CP revision/publicStateHash精确匹配，且当前 active/connected/alive、acceptingInputs及适用租约/终态检查通过，才返回当前完整有界 actor/CD/buff 页。第一页携带服务端已签发的 proofDeadline；后续所有页及完整摘要必须绑定同一截止和当前快照。分页不得返回私有CP字段。客户端在原资源/完整基础证明/ready成功之外，还须验证这些新完整记录并在其后再次查询当前状态，精确核对场景/时间代次、修订/hash、manifest和可预测状态，才允许预测；不能仅删除旧hash比较或沿用旧HP/buff。
+ready 后 `scene.recoveryPage` DTO不变：当前身份、原成功 readyTicketId、相同 sceneEpoch/timelineEpoch/manifestHash及**当前** CP revision/publicStateHash精确匹配，且当前 connected、acceptingInputs，且 active/result=active（含dead）或 cleared/result=completed/sceneState=looting 及适用租约/终态检查通过，才返回当前完整有界 actor/CD/buff 页。第一页携带服务端已签发的 proofDeadline；后续所有页及完整摘要必须绑定同一截止和当前快照。分页不得返回私有CP字段。客户端在原资源/完整基础证明/ready成功之外，还须验证这些新完整记录并在其后再次查询当前状态，精确核对场景/时间代次、修订/hash、manifest和可预测状态，才允许预测；不能仅删除旧hash比较或沿用旧HP/buff。
 
 回执仅保存小型原响应及固定 proofDeadline，不嵌CP。读取、原ready回放、心跳都不移动该证明截止或重启锚点；新的时间代次不能使用旧回执。旧记录缺proofDeadline时，active分页证明拒绝；这不宣称已提供旧数据迁移或更长时间后的完整恢复能力。原结果仍仅作历史证据。H.transitionClock唯一权威及ready后缀只消费一次的规则保持。
 

@@ -131,3 +131,6 @@ CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢
 ## ST16-02 未知意图栅栏实现（2026-10-30）
 
 CombatRecoveryCoordinator 在 suspend/resumePrepare 前冻结 Movement 与注册的 Drop/Terminal。原请求先经同一授权传输 operation.get；notFound 保留持久意图且不重发，unknown 阻控制并显示可显式重试的未知状态。恢复控制提交后再确认原结果；仍 notFound 时只重送原 DTO，旧场景/时间段及版本栅栏保证不能越过恢复发放资产。原回执仅确认原意图，不覆盖当前证明或读模型。ready 前全部参与者必须完成确认；恢复完成后刷新当前掉落与终局视图。尚未发送的恢复控制也保留本地 journal，重开不换控制 tuple。新绑定/关闭使所有旧回调退役。零新协议/服务写事务；查询开销与实际装备 OCC 两序证据见[02验证](../reviews/st16-02-verification.md)。生命周期接线与全阶段发布仍在04/05边界。
+## ST16-03 死亡与通关拾取恢复（2026-10-30）
+
+完整证明资格包含active/dead及completed/looting，不等于新攻击授权。dead保留deathIndex与原deathDeadline、HP/MP和CD，仅已有授权尾效允许空片；sceneEpoch及确认前沿不重置。looting恢复ready重建移动时间锚点并开启CP输入，不建立战斗inputGapBaseAt；2秒战斗缺口只在active/result=active检查。固定proofDeadline仍为新连接原lease与deathDeadline最小值，读取及重放不续期；clearReceipt、地面来源/dropId/roomToken、体力与既有资产不重发或回滚，completed超时只关闭场景并保成功。既有DTO/记录与字节上界不变。实际证据见[03验证](../reviews/st16-03-verification.md)。

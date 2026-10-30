@@ -1,16 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {bossClearFixture} from './fixtures/boss-clear-fixture.mjs';
-import {readCheckpoint,writeChunk,stateHash} from '../src/challenge/room-checkpoint.ts';
+import {tailFixture} from './fixtures/death-tail-fixture.mjs';
+import {stateHash} from '../src/challenge/room-checkpoint.ts';
 import {ChallengeService} from '../src/challenge/challenge-service.ts';
 import {manifestDigest} from '../../shared/src/room-manifest.ts';
 
-async function tailFixture(skill='cross'){
- const h=await bossClearFixture({hostile:true});if(skill==='earth')await h.grow(20);h.profile.monsters.skills.slash.windupTicks=12;h.profile.monsters.skills.slash.staggerTicks=0;if(skill==='earth')Object.values(h.profile.monsters.templates).forEach(t=>t.resist={...t.resist,stagger:true,knockback:true,knockdown:true});h.content.combat=h.profile;h.service=new ChallengeService({store:h.store,clock:h.clock,identity:h.identity,content:h.content});
- await h.store.run(async tx=>{const ch=await tx.get(h.challengeId),cp=await readCheckpoint(tx,ch),bag=await tx.get(h.character().backpackId);bag.slots[0]={kind:'stack',stackId:'tail-emblems',templateRef:{id:'resurrection-emblem',version:1},quantity:3,binding:{kind:'character'},traceRef:'tail-test'};tx.set(bag.id,bag);cp.role.combat.configHash=await manifestDigest(h.profile);if(skill==='earth')cp.scene.enemies.forEach(e=>e.immuneToControl=true);cp.role.player.mp='50';cp.role.hpRegenRemainder={numerator:1,denominator:3};cp.role.mpRegenRemainder={numerator:1,denominator:3};cp.role.movement.state.remainderX='1';cp.role.movement.state.remainderY='2';cp.scene.enemies[0].actor.hp='360';cp.scene.enemies[0].actor.maxHp='360';cp.scene.combat.targets[0].hp='360';cp.scene.combat.targets[0].maxHp='360';const refs=[];for(const [i,data]of [[0,cp.role],[1,cp.scene]]){const chunk=await writeChunk(ch,i,cp.header.activeChunks[i].chunkRevision+1,data);tx.set(chunk.id,chunk);refs.push({...cp.header.activeChunks[i],chunkRevision:chunk.chunkRevision,hash:chunk.hash});}tx.set(cp.header.id,{...cp.header,activeChunks:[...refs,...cp.header.activeChunks.slice(2)],state:{...cp.header.state,publicStateHash:await stateHash(cp.role,cp.scene)}});const w=await tx.get(h.character().equipped.weapon);tx.set(w.id,{...w,durability:{...w.durability,current:50}});});
- async function command(inputs=[],ticks=15,id='tail'){const q=await h.command(id),cp=await h.cp();Object.assign(q.payload,{inputs:inputs.map((x,i)=>({...x,seq:cp.header.state.acceptedSeq+i+1,tick:cp.header.state.acceptedTick})),firstSeq:cp.header.state.acceptedSeq+1,lastSeq:cp.header.state.acceptedSeq+inputs.length,fromTick:cp.header.state.acceptedTick,toTick:cp.header.state.acceptedTick+ticks});q.payload.digest=await manifestDigest({payload:Object.fromEntries(Object.entries(q.payload).filter(([k])=>k!=='digest')),config:h.config,combat:h.profile});return q;}
- return {...h,command};
-}
 for(const skill of ['cross','earth'])test('two public submits preserve death provenance and released '+skill+' terminal exactly as an unsplit slice',async()=>{
  const split=await tailFixture(skill),whole=await tailFixture(skill),bagBefore=split.store.inspect(split.character().backpackId);
  const first=await split.service.execute(await split.command([{kind:'skill',skillId:skill}],15,'death'));assert.equal(first.outcome.status,'committed',JSON.stringify(first));const dead=split.store.inspect(split.challengeId),deadCp=await split.cp();assert.equal(dead.lifeState,'dead');assert.equal(dead.result,'active');assert.ok(deadCp.scene[skill].effects.some(e=>e.kind===(skill==='earth'?'ground':'bleed')));assert.equal(split.store.inspect(split.character().equipped.weapon).durability.current,45);

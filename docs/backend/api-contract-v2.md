@@ -363,3 +363,4 @@ CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢
 ## ST16-02 客户端未知意图编排（2026-10-30）
 
 无 DTO/schema 变更。simulation.submit、drop.collect、challenge.leave 的原 operation.get 与控制原回执都走既有授权传输；notFound 不证明旧写不能提交。客户端先冻结全部已注册业务协调器并查原结果，再提交恢复控制栅栏，栅栏后确认原意图最终结果。旧结果不得恢复预测或覆盖新代次视图；重建仍要求当前完整证明。新增查询及本地 journal 边界见[02验证](../reviews/st16-02-verification.md)，服务读写/结果包络不变。
+ST16-03：scene.recoveryPage与simulation.confirmed沿既有DTO恢复active/dead或completed/looting完整证明；scene.ready后looting可移动拾取，拒绝新攻击；原死亡尾效仍仅空inputs。完整证明不等于攻击授权，固定proofDeadline与原结果语义不变。详见[恢复时序](recovery-timeline-proposal-v1.md)。
