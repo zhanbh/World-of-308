@@ -1,22 +1,24 @@
-(node:48476) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-02-unknown-barrier/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+(node:12964) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-02-unknown-barrier/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st16-02-unknown-barrier\client\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ active combat recovery: first fragment after 100ms (671.8697ms)
-✔ active combat recovery: first fragment after 1900ms (425.1701ms)
-✔ active combat recovery: first fragment after 2000ms (518.4389ms)
-✔ a lost suspend response can resolve the original before any checkpoint ticket exists (78.6038ms)
-✔ late movement proof from an old recovery cannot freeze a newly initialized scene owner (156.8198ms)
-✔ unpaid loading suspend freezes same attempt and fixes deadline without creating CP or charging (23.6775ms)
-✔ unpaid recovery excludes paused time, persists original controls, and resumes same manifest without CP (30.145ms)
-✔ unpaid deadline equality query atomically fails/closes, settles stamina and returns to inn (109.3971ms)
-✔ paid recovery reads frozen CP proof, resumes loading without enemy anchors, then consumes only eligible clock (62.8123ms)
-✔ new heartbeat renews lease once, duplicate cannot renew and old timeline/order cannot advance (20.7186ms)
-✔ silent recovery and death equality use original cutoff with no new grace or paid refund (78.3521ms)
-✔ heartbeat sequence is independent of challenge business version (11.6332ms)
-✔ every loading-control and expiry write point rolls back atomically; lost responses resolve exact originals (589.6853ms)
-✔ expiry keeps current session usable in town, preserves completed success and truthful journal reason (36.0511ms)
-✔ actual login takeover wins before or after recovery without old-session replay permission (33.8107ms)
+✔ active combat recovery: first fragment after 100ms (572.0284ms)
+✔ active combat recovery: first fragment after 1900ms (403.3157ms)
+✔ active combat recovery: first fragment after 2000ms (352.0074ms)
+✔ a lost suspend response can resolve the original before any checkpoint ticket exists (59.5413ms)
+✔ late movement proof from an old recovery cannot freeze a newly initialized scene owner (119.2797ms)
+✔ confirmed death restores complete proof without reviving or extending the deadline (222.9293ms)
+✔ real Boss completion restores looting and the fixed receipt; lease expiry preserves success (159.0204ms)
+✔ unpaid loading suspend freezes same attempt and fixes deadline without creating CP or charging (12.0621ms)
+✔ unpaid recovery excludes paused time, persists original controls, and resumes same manifest without CP (13.9956ms)
+✔ unpaid deadline equality query atomically fails/closes, settles stamina and returns to inn (27.3044ms)
+✔ paid recovery reads frozen CP proof, resumes loading without enemy anchors, then consumes only eligible clock (28.0195ms)
+✔ new heartbeat renews lease once, duplicate cannot renew and old timeline/order cannot advance (14.6881ms)
+✔ silent recovery and death equality use original cutoff with no new grace or paid refund (61.3451ms)
+✔ heartbeat sequence is independent of challenge business version (14.3042ms)
+✔ every loading-control and expiry write point rolls back atomically; lost responses resolve exact originals (550.6485ms)
+✔ expiry keeps current session usable in town, preserves completed success and truthful journal reason (38.0659ms)
+✔ actual login takeover wins before or after recovery without old-session replay permission (43.1835ms)
 ST10-04 actual UTF-8 {
   unpaidH8Receipts: 10303,
   unpaidResponse: 3570,
@@ -24,40 +26,44 @@ ST10-04 actual UTF-8 {
   paidHeader: 1594,
   paidResponse: 985
 }
-✔ bounded original control window and actual encoded H/CP/response budgets include wrapper bytes (44.0114ms)
-✔ recovery-ready deadline−1/equality/+1 respects fixed pause deadline independently of old lease (115.797ms)
-✔ terminal coordinator reads strict receipt from real Boss commit and resolves lost finishLoot before fade (96.9846ms)
-✔ loot model uses confirmed 32px radius, preserves full-bag drops and flips original receipt (82.4608ms)
-✔ completed coordinator rejects combat intents but commits actual CP movement and leave waits for in-flight pickup (120.9027ms)
-✔ scene binding serializes pickup versus leave and preserves pending delivery message (95.4656ms)
-✔ pickup click queued behind frame movement flushes CP without requiring an empty-queue timing window (147.9246ms)
-✔ explicit isolated reward preview drives real Boss input, receipt and pickup without shortcut endpoints (143.6615ms)
-✔ initial coordinator has no proof and keeps prediction disabled (0.2706ms)
-✔ real public proof corrects prediction; lost original survives reopen without resubmitting different intent (61.527ms)
-✔ client freezes at one second, cannot lose discrete queue overflow, and loading failures stay disabled (39.0249ms)
-✔ late old generation public replies cannot replace a new context (36.7498ms)
-✔ submitting is visible and stale public proof keeps prediction disabled (76.3559ms)
-✔ explicit fragment rejection can reconcile current proof before accepting a new intent (86.5742ms)
-✔ reopen queries exact durable original before same-request retry; notFound cannot clear intent (0.7736ms)
-✔ a pending original blocks a replacement sequence and old generation cannot change new context (0.3457ms)
-✔ actual service controls survive resume and both ready reply losses across reopen, preserving original paid attempt (58.737ms)
-✔ unknown collect resolves original equipment delivery without replay or optimistic state (63.1601ms)
-✔ owner resolves unknown simulation before suspend without requiring connected movement refresh (94.2591ms)
-✔ unknown leave resolves its receipt behind the barrier and preserves one terminal equipment delivery (88.3394ms)
-✔ notFound then old equipment write wins OCC without duplicate assets (136.6511ms)
-✔ notFound then recovery fence wins OCC without duplicate assets (105.7912ms)
-✔ failed original query leaves a visible bounded barrier and retry retains the exact control (113.9568ms)
-✔ movement original result arriving after close cannot change retired view (120.4448ms)
-✔ movement original result arriving after rebind cannot change retired view (102.9331ms)
-✔ drop original result arriving after close cannot change retired view (61.0348ms)
-✔ drop original result arriving after rebind cannot change retired view (97.0772ms)
-✔ leave original result arriving after close cannot change retired view (86.8941ms)
-✔ leave original result arriving after rebind cannot change retired view (113.7046ms)
-ℹ tests 44
+✔ bounded original control window and actual encoded H/CP/response budgets include wrapper bytes (39.8712ms)
+✔ recovery-ready deadline−1/equality/+1 respects fixed pause deadline independently of old lease (116.1502ms)
+✔ terminal coordinator reads strict receipt from real Boss commit and resolves lost finishLoot before fade (86.0799ms)
+✔ loot model uses confirmed 32px radius, preserves full-bag drops and flips original receipt (64.8796ms)
+✔ completed coordinator rejects combat intents but commits actual CP movement and leave waits for in-flight pickup (98.3955ms)
+✔ scene binding serializes pickup versus leave and preserves pending delivery message (95.5647ms)
+✔ pickup click queued behind frame movement flushes CP without requiring an empty-queue timing window (151.8216ms)
+✔ explicit isolated reward preview drives real Boss input, receipt and pickup without shortcut endpoints (98.7448ms)
+✔ initial coordinator has no proof and keeps prediction disabled (0.838ms)
+✔ real public proof corrects prediction; lost original survives reopen without resubmitting different intent (51.6054ms)
+✔ client freezes at one second, cannot lose discrete queue overflow, and loading failures stay disabled (29.0716ms)
+✔ late old generation public replies cannot replace a new context (40.9944ms)
+✔ submitting is visible and stale public proof keeps prediction disabled (67.5778ms)
+✔ explicit fragment rejection can reconcile current proof before accepting a new intent (65.3584ms)
+✔ reopen queries exact durable original before same-request retry; notFound cannot clear intent (0.725ms)
+✔ a pending original blocks a replacement sequence and old generation cannot change new context (0.3877ms)
+✔ actual service controls survive resume and both ready reply losses across reopen, preserving original paid attempt (61.3574ms)
+✔ unknown collect resolves original equipment delivery without replay or optimistic state (63.6653ms)
+✔ owner resolves unknown simulation before suspend without requiring connected movement refresh (77.6662ms)
+✔ unknown leave resolves its receipt behind the barrier and preserves one terminal equipment delivery (69.2905ms)
+✔ notFound then old equipment write wins OCC without duplicate assets (75.3733ms)
+✔ notFound then recovery fence wins OCC without duplicate assets (62.5393ms)
+✔ failed original query leaves a visible bounded barrier and retry retains the exact control (106.5765ms)
+✔ movement original result arriving after close cannot change retired view (91.804ms)
+✔ movement original result arriving after rebind cannot change retired view (86.571ms)
+✔ drop original result arriving after close cannot change retired view (52.9316ms)
+✔ drop original result arriving after rebind cannot change retired view (53.1903ms)
+✔ leave original result arriving after close cannot change retired view (71.2116ms)
+✔ leave original result arriving after rebind cannot change retired view (65.7343ms)
+✔ owner freezes real drop participant and queries equipment original before its recovery control (75.6268ms)
+✔ a definitive rejected control reconciles current authority before a corrected control is accepted (119.0744ms)
+✔ original-control notFound placeholder never permits retirement before the actual old control is rejected (72.409ms)
+✔ reopen between barrier journal and control completion recovers one original control tuple (57.9428ms)
+ℹ tests 50
 ℹ suites 0
-ℹ pass 44
+ℹ pass 50
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 5718.7878
+ℹ duration_ms 5281.4907

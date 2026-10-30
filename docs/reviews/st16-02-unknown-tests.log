@@ -1,25 +1,26 @@
-(node:4892) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-02-unknown-barrier/client/assets/scripts/net/DropCoordinator.ts is not specified and it doesn't parse as CommonJS.
+(node:47840) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-02-unknown-barrier/client/assets/scripts/net/DropCoordinator.ts is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st16-02-unknown-barrier\client\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ unknown collect resolves original equipment delivery without replay or optimistic state (196.3066ms)
-✔ owner resolves unknown simulation before suspend without requiring connected movement refresh (159.0425ms)
-✔ unknown leave resolves its receipt behind the barrier and preserves one terminal equipment delivery (101.4928ms)
-✔ notFound then old equipment write wins OCC without duplicate assets (86.0945ms)
-✔ notFound then recovery fence wins OCC without duplicate assets (97.818ms)
-✔ failed original query leaves a visible bounded barrier and retry retains the exact control (136.2171ms)
-✔ movement original result arriving after close cannot change retired view (105.9186ms)
-✔ movement original result arriving after rebind cannot change retired view (115.6768ms)
-✔ drop original result arriving after close cannot change retired view (71.8366ms)
-✔ drop original result arriving after rebind cannot change retired view (70.5166ms)
-✔ leave original result arriving after close cannot change retired view (77.7973ms)
-✔ leave original result arriving after rebind cannot change retired view (79.0754ms)
-✔ owner freezes real drop participant and queries equipment original before its recovery control (70.4128ms)
-ℹ tests 13
+✔ unknown collect resolves original equipment delivery without replay or optimistic state (183.3733ms)
+✔ owner resolves unknown simulation before suspend without requiring connected movement refresh (121.2269ms)
+✔ unknown leave resolves its receipt behind the barrier and preserves one terminal equipment delivery (80.3555ms)
+✔ notFound then old equipment write wins OCC without duplicate assets (74.4378ms)
+✔ notFound then recovery fence wins OCC without duplicate assets (87.9997ms)
+✔ failed original query leaves a visible bounded barrier and retry retains the exact control (116.6347ms)
+✔ movement original result arriving after close cannot change retired view (102.8768ms)
+✔ movement original result arriving after rebind cannot change retired view (100.8162ms)
+✔ drop original result arriving after close cannot change retired view (58.8918ms)
+✔ drop original result arriving after rebind cannot change retired view (60.6874ms)
+✔ leave original result arriving after close cannot change retired view (73.6066ms)
+✔ leave original result arriving after rebind cannot change retired view (72.3644ms)
+✔ owner freezes real drop participant and queries equipment original before its recovery control (69.692ms)
+✔ a definitive rejected control reconciles current authority before a corrected control is accepted (115.4903ms)
+ℹ tests 14
 ℹ suites 0
-ℹ pass 13
+ℹ pass 14
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 1691.8478
+ℹ duration_ms 1617.1748

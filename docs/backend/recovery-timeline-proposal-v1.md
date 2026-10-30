@@ -1,6 +1,6 @@
 # 暂停、恢复及迟到请求时序提案 v1
 
-当前实施状态（2026-10-30）：下文早期未实现描述保留为历史；既有控制/证明与ST16-01存活战斗恢复到Movement真实纵切已在本地实现，详见[01验证](../reviews/st16-01-verification.md)。unknown资产、dead/looting、Cocos及联合发布门禁仍由后续任务交付。
+当前实施状态（2026-10-30）：下文早期未实现描述保留为历史；既有控制/证明与ST16-01存活战斗恢复到Movement真实纵切已在本地实现，详见[01验证](../reviews/st16-01-verification.md)。未知资产意图栅栏及死亡/通关拾取恢复也已在本地模型/服务边界实现，见[02验证](../reviews/st16-02-verification.md)、[03验证](../reviews/st16-03-verification.md)。Cocos及联合发布门禁仍由04/05交付。
 
 日期：2026-10-21。状态：工程提案，未实现；已定10秒规则保留，用户已确认允许秒级回溯，历史替代方案仅供审计。依据[生命周期](../challenge-flow.md)、[输入协议](verified-action-protocol-v1.md)。
 
@@ -134,3 +134,5 @@ CombatRecoveryCoordinator 在 suspend/resumePrepare 前冻结 Movement 与注册
 ## ST16-03 死亡与通关拾取恢复（2026-10-30）
 
 完整证明资格包含active/dead及completed/looting，不等于新攻击授权。dead保留deathIndex与原deathDeadline、HP/MP和CD，仅已有授权尾效允许空片；sceneEpoch及确认前沿不重置。looting恢复ready重建移动时间锚点并开启CP输入，不建立战斗inputGapBaseAt；2秒战斗缺口只在active/result=active检查。固定proofDeadline仍为新连接原lease与deathDeadline最小值，读取及重放不续期；clearReceipt、地面来源/dropId/roomToken、体力与既有资产不重发或回滚，completed超时只关闭场景并保成功。既有DTO/记录与字节上界不变。实际证据见[03验证](../reviews/st16-03-verification.md)。
+
+ST16-02控制明确拒绝：仅实际原命令已明确rejected后，客户端才可通过授权scene.status复核当前状态并清该pending；queryOriginalControl的notFound占位VERSION_CONFLICT不得直接清意图，先重试原tuple取得实际结果。reconcile保持预测关闭，不改截止/代次。

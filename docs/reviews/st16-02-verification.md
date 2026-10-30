@@ -16,8 +16,16 @@ CombatRecoveryCoordinator 在 suspend/resumePrepare 前统一 freeze Movement �
 - Movement/Drop/Terminal 的原结果查询挂起后 close 或重新绑定角色代次/场景代次/挑战，再释放旧回调：旧结果返回 unknown，视图完全不变；关闭保留旧持久 pending。
 - owner 注册真实 Drop：事件顺序严格 operation.get → scene.suspend，未知装备只物化一次，统一冻结阻新 collect。
 
-专项 13/13，见 st16-02-unknown-tests.log。此前六文件相关回归44/44（其中当时新增12项），见 st16-02-related-tests.log；models/backend 两 tsc exit0，见 st16-02-types.log。合流后另录最终数量与类型复验。本片未跑全7阶段/62写点；按用户边界留05，不实现04生命周期，也不宣称设备、云SDK或独立评审通过。
+最终02新增16项；与03合流后七文件相关回归50/50，见 st16-02-related-tests.log；models/backend 两 tsc exit0，见 st16-02-types.log。st16-02-unknown-tests.log保留中途14项通过记录，最终以合流50项日志为准。本片未跑全7阶段/62写点；按用户边界留05，不实现04生命周期，也不宣称设备、云SDK或独立评审通过。
+
+## 合流与控制明确拒绝补修
+
+与根已核验03的84d9274合流，保留其canMove/canAttack/canAdvanceDeathTail、clearReceipt和死亡/looting当前证明资格。只读合同冲突按UTF-8清理，tracked源文件保持LF，cached diff --check通过。
+
+TDD新增明确拒绝控制测试：先以不存在reconcileRejectedControl失败，再通过RecoveryCoordinator.reconcileRejected取得同身份/角色的授权scene.status当前状态，清除已知明确拒绝的pending，保持预测关闭，允许修正lease/checkpoint后的新控制。原queryOriginalControl返回VERSION_CONFLICT仅代表notFound；unknown时reconcile必须拒绝，retry继续原tuple并由真实服务明确拒绝后才允许reconcile。两项反例通过；不改server控制序号、时间代次或截止。
+
+另覆盖本地barrier journal已保存且Recovery journal正在提交的崩溃窗口：重开优先恢复已持久原控制，只有一次实际suspend，旧完成回调不改新owner。此次只补02边界，不改已接受任务内容。执行记录由根在最终核验后统一维护。
 
 ## 接口、预算与边界
 
-零新后端 DTO、物理键、事务写或资产逻辑；公开 CP/结果分页字节上界不变。新增本地有界控制 journal；每个 pending 参与者栅栏前后各最多一轮 operation.get，fenced+notFound 最多重送一次原 DTO，由既有版本/场景栅栏决定结果。未发现 pending 时零额外 operation.get。Drop/Terminal 必须作为 constructor 第五参数注册；Cocos接线属于04，02不声称现有 UI 已统一注册。
+明确拒绝reconcile额外读取一次scene.status；失败不清原意图，也不延截止。零新后端 DTO、物理键、事务写或资产逻辑；公开 CP/结果分页字节上界不变。新增本地有界控制 journal；每个 pending 参与者栅栏前后各最多一轮 operation.get，fenced+notFound 最多重送一次原 DTO，由既有版本/场景栅栏决定结果。未发现 pending 时零额外 operation.get。Drop/Terminal 必须作为 constructor 第五参数注册；Cocos接线属于04，02不声称现有 UI 已统一注册。

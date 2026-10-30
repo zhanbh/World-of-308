@@ -1,0 +1,9 @@
+TDD red for definitive-control rejection reconciliation:
+✖ failing tests:
+
+test at backend\test\unknown-recovery-barrier.test.mjs:74:1
+✖ a definitive rejected control reconciles current authority before a corrected control is accepted (96.0449ms)
+  TypeError: owner.reconcileRejectedControl is not a function
+      at TestContext.<anonymous> (file:///D:/IdeaProjects/World-of-308/.worktrees/st16-02-unknown-barrier/backend/test/unknown-recovery-barrier.test.mjs:78:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

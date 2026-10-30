@@ -11,7 +11,7 @@ export interface RecoveryState {status:'idle'|'submitting'|'unknown'|'failed'|'r
 type Journal={pending:Control|null;data:Data|null;pages:unknown[]|null};
 /** Exact control intents survive reopen. Receipts are evidence of the past, never authority to predict the current scene. */
 export class RecoveryCoordinator {
- private identity:(EntryIdentity&{challengeId:string})|null=null;private journal:Journal={pending:null,data:null,pages:null};private generation=0;private loaded=false;private verifiedTicket:string|null=null;
+ private identity:(EntryIdentity&{challengeId:string})|null=null;private journal:Journal={pending:null,data:null,pages:null};private generation=0;private knownRejected=false;private loaded=false;private verifiedTicket:string|null=null;
  private current:RecoveryState={status:'idle',code:null,predictionEnabled:false,publicRecords:null,data:null};
  private transport:RecoveryTransport;private persistence:EntryPendingStore;
  constructor(transport:RecoveryTransport,persistence:EntryPendingStore){this.transport=transport;this.persistence=persistence;}
@@ -21,7 +21,7 @@ export class RecoveryCoordinator {
  private matches(c:Control){const i=this.identity!;return c.sessionId===i.sessionId&&c.sessionEpoch===i.sessionEpoch&&c.payload.characterId===i.characterId&&c.payload.rolePlayEpoch===i.rolePlayEpoch&&c.payload.challengeId===i.challengeId;}
  private save(){this.persistence.save(this.key(),JSON.stringify(this.journal));}
  init(identity:EntryIdentity&{challengeId:string}):void {
-  ++this.generation;this.identity={...identity};this.loaded=false;this.verifiedTicket=null;this.journal={pending:null,data:null,pages:null};this.current={status:'idle',code:null,predictionEnabled:false,publicRecords:null,data:null};
+  ++this.generation;this.knownRejected=false;this.identity={...identity};this.loaded=false;this.verifiedTicket=null;this.journal={pending:null,data:null,pages:null};this.current={status:'idle',code:null,predictionEnabled:false,publicRecords:null,data:null};
   const saved=this.persistence.load(this.key());if(saved===null)return;const j=JSON.parse(saved);
   if(j.pending){j.pending=parseSceneRequest(j.pending);if(!this.matches(j.pending))throw Error('RECOVERY_CONTEXT_MISMATCH');}
   // Read models and proofs must be acquired afresh after reopening.
@@ -36,9 +36,16 @@ export class RecoveryCoordinator {
    const t=this.journal.data?.readyTicket;if(!t||!this.loaded||(!('kind' in t)&&this.verifiedTicket!==t.readyTicketId))throw Error('SCENE_NOT_VERIFIED');
    for(const [k,v] of Object.entries(t))if(k!=='deadline'&&c.payload[k as keyof typeof c.payload]!==v)throw Error('READY_CONTEXT_MISMATCH');
   }
-  this.journal.pending=c;this.save();await this.submit(false);
+  this.knownRejected=false;this.journal.pending=c;this.save();await this.submit(false);
  }
  async retry():Promise<void>{if(!this.journal.pending||this.current.status==='submitting')throw Error('NO_PENDING_RECOVERY_CONTROL');await this.submit(true);}
+ /** Only an actual original command rejection permits retirement; a query notFound placeholder does not. */
+ async reconcileRejected():Promise<void>{
+  const c=this.journal.pending;if(!c||!this.knownRejected||this.current.status!=='failed')throw Error('ORIGINAL_RESULT_REQUIRED');const generation=this.generation;
+  const q={protocolVersion:2,command:'scene.status',sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,controlSeq:c.command==='heartbeat'?1:c.controlSeq,leaseRevision:c.leaseRevision,payload:{characterId:c.payload.characterId,rolePlayEpoch:c.payload.rolePlayEpoch,challengeId:c.payload.challengeId,readyTicketId:null}};
+  const text=await this.transport.send(encodeSceneMessage(q));if(generation!==this.generation)return;decodeSceneReply(q,text);const r=parseSceneResponse(JSON.parse(text));if(r.outcome.status!=='committed')throw Error(r.outcome.code);
+  this.journal={pending:null,data:r.outcome.data,pages:null};this.knownRejected=false;this.loaded=false;this.verifiedTicket=null;this.save();this.current={status:r.outcome.data.state.connection==='recovery'?'recovering':'loading',code:null,predictionEnabled:false,publicRecords:null,data:r.outcome.data};
+ }
  useLoadedResources(loading:LoadingCoordinator):void{
   const manifest=loading.state.manifest,t=this.journal.data?.readyTicket;
   if(loading.state.status!=='loaded'||!manifest||!t||manifest.challengeId!==this.identity?.challengeId||manifest.manifestHash!==t.manifestHash||('kind' in t&&manifest.roomAttemptId!==t.roomAttemptId))throw Error('RESOURCES_NOT_LOADED');this.loaded=true;
@@ -60,7 +67,7 @@ export class RecoveryCoordinator {
    }
    if(text===undefined&&c.command==='scene.ready'){const t=this.journal.data?.readyTicket;if(!t||!this.loaded||(!('kind' in t)&&this.verifiedTicket!==t.readyTicketId))throw Error('SCENE_NOT_VERIFIED');}
    text??=await this.transport.send(encodeSceneMessage(c));if(generation!==this.generation)return;decodeSceneReply(c,text);const r=parseSceneResponse(JSON.parse(text));
-   if(r.outcome.status!=='committed'){this.current.status=r.outcome.status==='unknown'?'unknown':'failed';this.current.code=r.outcome.code;return;}
+   if(r.outcome.status!=='committed'){this.knownRejected=r.outcome.status==='rejected';this.current.status=r.outcome.status==='unknown'?'unknown':'failed';this.current.code=r.outcome.code;return;}
    const original=r.outcome.data;let data=original;
    // A successful original ready can predate another disconnect, takeover, or newer timeline.
    if(c.command==='scene.ready'){
