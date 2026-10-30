@@ -1,0 +1,10 @@
+✔ physical codec retains all nested fields and escaped maximal identities without numeric coercion (833.7798ms)
+✔ public action results preserve legacy pages and reject corrupt packed identities and compressed data (101.7789ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1247.5201

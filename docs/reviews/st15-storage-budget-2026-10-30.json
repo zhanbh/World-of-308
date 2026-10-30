@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-30",
+  "code": "bf6c5cc",
+  "node": "24.22.1",
+  "typescript": "5.8.2",
+  "measurement": "actual public submit, MemoryStore callback, no SDK assertion",
+  "limits": {
+    "decodedBytes": 33554432,
+    "W": 33,
+    "R": 44,
+    "calls": 80,
+    "bytes": 1572864,
+    "resultDocumentBytes": 1048576
+  },
+  "workloads": [
+    {
+      "due": false,
+      "R": 42,
+      "W": 33,
+      "getCalls": 44,
+      "setCalls": 34,
+      "calls": 78,
+      "bytes": 326808,
+      "maxWrite": 48658,
+      "changedCP": 8,
+      "readOnlyBaselineGetCalls": 31
+    },
+    {
+      "due": true,
+      "R": 42,
+      "W": 27,
+      "getCalls": 44,
+      "setCalls": 28,
+      "calls": 72,
+      "bytes": 494256,
+      "maxWrite": 452338,
+      "changedCP": 2,
+      "readOnlyBaselineGetCalls": 31
+    },
+    {
+      "due": "mixed",
+      "R": 42,
+      "W": 33,
+      "getCalls": 44,
+      "setCalls": 34,
+      "calls": 78,
+      "bytes": 458997,
+      "maxWrite": 273225,
+      "changedCP": 8,
+      "readOnlyBaselineGetCalls": 31
+    }
+  ],
+  "scope": "Synthetic allocated CP capacity; natural reachability and arbitrary high-entropy 1024-page compression bound not established"
+}

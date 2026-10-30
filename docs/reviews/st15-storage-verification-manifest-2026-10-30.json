@@ -1,0 +1,26 @@
+{
+  "code_head": "bf6c5ccf94088187085872fce5e4a87e9d39d83b",
+  "actual_fault_points": 62,
+  "full_release_envelope": "gap",
+  "full_check": "7/7",
+  "date": "2026-10-30",
+  "counts": {
+    "backend": 694,
+    "tooling": 7,
+    "shared": 230
+  },
+  "files": {
+    "backend/test/combat-result-storage.test.mjs": "dd281465e81bad6e7da7a916828b1e3000792fe0a8e91919e789fc647273ed5b",
+    "docs/reviews/st15-storage-budget-2026-10-30.json": "6f08a6eb62c4a770c0997f98671c9bfccd7dd0ae5b76c71665792fbf07269666",
+    "docs/reviews/st15-storage-standards-review-2026-10-30.md": "3dd735954521c895eb3aef3cde22a4f5f2948dcb55cd438477c1a49d5ef35e6a",
+    "docs/reviews/st15-storage-spec-review-2026-10-30.md": "7e8d2bc6b966883612e64a9cc0e33dc7267c76c95b206b25195cb0ce683ea94c",
+    "docs/reviews/st15-storage-check-all-2026-10-30.log": "9efabe76164de6145d1c5ec630b41b3b52e776f59234b917467e6a55ba5a2bfe",
+    "backend/src/challenge/combat-result-pack.ts": "537e7d8d9a40e00f427b28e295f917933c75daf9fbca0b2e8e6220d8935d9943",
+    "backend/src/challenge/challenge-service.ts": "eee382aa4236a6fb0a43d0ff07280abb66b8ceff9495811a5942a3d6d23e0355",
+    "docs/reviews/st15-storage-gzip-oracle-2026-10-30.log": "3d11202b909db10065e7bf2ca39962dfa6007955ff90270b56815c9ce92c7967",
+    "backend/test/joint-terminal-acceptance.test.mjs": "39995f4d92629eb5981e8ed89474ce6a6b62e4c9355e531ca87256b4a9180a01"
+  },
+  "accepted_spec_and_all_tickets_unchanged": true,
+  "base": "8cbbda3",
+  "known_pressure": "future/due/mixed passed"
+}

@@ -1,0 +1,40 @@
+(node:35572) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st15-terminal-result-storage/client/assets/scripts/net/DropCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st15-terminal-result-storage\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ST15-05 measured {"due":false,"attempts":[{"R":30,"W":0,"getCalls":31,"setCalls":0,"calls":31,"bytes":0,"maxWrite":0,"readKeys":["v2:identity:jh6g-ReA1Qrce4W5-nh6Ut8Sz6olVf0ubv5c9xuOV8c","v2:account:KZ97Aycb7ApdShMIjU-gSLNDx63e7E5ZMZPd4JCQAXw","v2:session:qdQj_djab7iUpDOlasjV4poFuEHpqoi6IZ1EUQxo4YY","v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA","v2:assetOp:-tFbjkmeDdFFGXGgQnwT1LtsJ9Omgj1B-GeaEIox9jU","v2:assetJournal:88tc1Xu8FGLnI3yj-jiMUtn4oDv4YTnJIvQqbteW5-o","v2:challenge:2qBwR5fFs1TDe77vb6HaAmZhvUXpu4l9NN0vkzRSvWM","v2:cpHeader:J2NHjVi3Yny5llEAl8FIBx5a2p1L9P4VXD-gtncYf7o","v2:cpChunk:oy-1YYODg79vEPluIt_U1oX-bz3c6xw6lxO5JX4_6l8","v2:cpChunk:QDEn2KwhW6KfyLSYBb2IEvRHlUj9mA886nggMUfS-vA","v2:cpChunk:coB01DCU0oEBVni8YRw44N99LpcbiVqh5xt1vmLcvgo","v2:cpChunk:bON2NJlJFvb00wrdqBune-7rdiZmL-TAEWNjikKQVsI","v2:cpChunk:FB4gbXVTu2mFoLUBGQwvLopzCcRdDyr9_kNp4vSTvSY","v2:cpChunk:GNvHLFkeYKYMcNWvMhy9Cn-SdwrJm6lZ54iak8YZnKM","v2:cpChunk:AHVAz7bhVWr7JzR5D5boA-cAWpsQgJIP6FH6vnvHEpM","v2:cpChunk:x-6mWmxcEqYuYx_V3MVKFO79pjZorLrPEKI09NBAEVY","v2:equipment:qnuqMK-tfLLy0jrcWTx-1R4jNC9gBgtdKVvvW0N52fU","joint-wear-shoulder","joint-wear-chest","joint-wear-pants","joint-wear-belt","joint-wear-boots","joint-wear-bracelet","joint-wear-necklace","joint-wear-ring","joint-wear-subEquip","joint-wear-magicStone","joint-wear-earring","joint-wear-trinket","v2:container:MxgEcrt0R18-DmSvxHt5yHSaW3bWNc_9JEylEkDg0EI"],"writeKeys":[]},{"R":42,"W":33,"getCalls":44,"setCalls":34,"calls":78,"bytes":327198,"maxWrite":48658,"readKeys":["v2:identity:jh6g-ReA1Qrce4W5-nh6Ut8Sz6olVf0ubv5c9xuOV8c","v2:account:KZ97Aycb7ApdShMIjU-gSLNDx63e7E5ZMZPd4JCQAXw","v2:session:qdQj_djab7iUpDOlasjV4poFuEHpqoi6IZ1EUQxo4YY","v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA","v2:challenge:2qBwR5fFs1TDe77vb6HaAmZhvUXpu4l9NN0vkzRSvWM","v2:assetOp:-tFbjkmeDdFFGXGgQnwT1LtsJ9Omgj1B-GeaEIox9jU","v2:assetJournal:88tc1Xu8FGLnI3yj-jiMUtn4oDv4YTnJIvQqbteW5-o","v2:cpHeader:J2NHjVi3Yny5llEAl8FIBx5a2p1L9P4VXD-gtncYf7o","v2:cpChunk:oy-1YYODg79vEPluIt_U1oX-bz3c6xw6lxO5JX4_6l8","v2:cpChunk:QDEn2KwhW6KfyLSYBb2IEvRHlUj9mA886nggMUfS-vA","v2:cpChunk:coB01DCU0oEBVni8YRw44N99LpcbiVqh5xt1vmLcvgo","v2:cpChunk:bON2NJlJFvb00wrdqBune-7rdiZmL-TAEWNjikKQVsI","v2:cpChunk:FB4gbXVTu2mFoLUBGQwvLopzCcRdDyr9_kNp4vSTvSY","v2:cpChunk:GNvHLFkeYKYMcNWvMhy9Cn-SdwrJm6lZ54iak8YZnKM","v2:cpChunk:AHVAz7bhVWr7JzR5D5boA-cAWpsQgJIP6FH6vnvHEpM","v2:cpChunk:x-6mWmxcEqYuYx_V3MVKFO79pjZorLrPEKI09NBAEVY","v2:container:MxgEcrt0R18-DmSvxHt5yHSaW3bWNc_9JEylEkDg0EI","v2:equipment:qnuqMK-tfLLy0jrcWTx-1R4jNC9gBgtdKVvvW0N52fU","joint-wear-shoulder","joint-wear-chest","joint-wear-pants","joint-wear-belt","joint-wear-boots","joint-wear-bracelet","joint-wear-necklace","joint-wear-ring","joint-wear-subEquip","joint-wear-magicStone","joint-wear-earring","joint-wear-trinket","v2:room:dQVe1y2UDgMiXfc2D-QuAIa2TnmzBxhnUQjLw74hFHE","v2:wallet:qKySAQnKi-x9rO8Fuu8dnyJo09jroxfNs7_9SHIb4Yc","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-5","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-10","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-15","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-20","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-25","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-30","v2:equipment:cszdGmk0avt37GofUEN9YmQQE0cOsBb5iEcgerGIxjw","v2:holdings:KZi8VH3OW2CnQjybmeeo0ht28nhohlT_RLzsqULLC6o","v2:holdings:Ps1vreRrv0veDIVht1B-RPia09ynENiTx3G_G7bDCoI","v2:clearGrant:fdndKkvCFeOL4gfq2ctu0FTwdmTpr4p6uwrGkUreeA8"],"writeKeys":["v2:room:dQVe1y2UDgMiXfc2D-QuAIa2TnmzBxhnUQjLw74hFHE","v2:equipment:qnuqMK-tfLLy0jrcWTx-1R4jNC9gBgtdKVvvW0N52fU","joint-wear-shoulder","joint-wear-chest","joint-wear-pants","joint-wear-belt","joint-wear-boots","joint-wear-earring","v2:wallet:qKySAQnKi-x9rO8Fuu8dnyJo09jroxfNs7_9SHIb4Yc","v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-5","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-10","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-15","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-20","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-25","mail:v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA:level-30","v2:equipment:cszdGmk0avt37GofUEN9YmQQE0cOsBb5iEcgerGIxjw","v2:clearGrant:fdndKkvCFeOL4gfq2ctu0FTwdmTpr4p6uwrGkUreeA8","v2:holdings:KZi8VH3OW2CnQjybmeeo0ht28nhohlT_RLzsqULLC6o","v2:assetJournal:88tc1Xu8FGLnI3yj-jiMUtn4oDv4YTnJIvQqbteW5-o","v2:cpChunk:oy-1YYODg79vEPluIt_U1oX-bz3c6xw6lxO5JX4_6l8","v2:cpChunk:QDEn2KwhW6KfyLSYBb2IEvRHlUj9mA886nggMUfS-vA","v2:cpChunk:coB01DCU0oEBVni8YRw44N99LpcbiVqh5xt1vmLcvgo","v2:cpChunk:bON2NJlJFvb00wrdqBune-7rdiZmL-TAEWNjikKQVsI","v2:cpChunk:FB4gbXVTu2mFoLUBGQwvLopzCcRdDyr9_kNp4vSTvSY","v2:cpChunk:GNvHLFkeYKYMcNWvMhy9Cn-SdwrJm6lZ54iak8YZnKM","v2:cpChunk:AHVAz7bhVWr7JzR5D5boA-cAWpsQgJIP6FH6vnvHEpM","v2:cpChunk:x-6mWmxcEqYuYx_V3MVKFO79pjZorLrPEKI09NBAEVY","v2:combatResults:m6ZU9cjVoDwaxRAhB0wNvCb7AIrVvf6E9qPzO1zFog4","v2:account:KZ97Aycb7ApdShMIjU-gSLNDx63e7E5ZMZPd4JCQAXw","v2:challenge:2qBwR5fFs1TDe77vb6HaAmZhvUXpu4l9NN0vkzRSvWM","v2:cpHeader:J2NHjVi3Yny5llEAl8FIBx5a2p1L9P4VXD-gtncYf7o","v2:assetOp:-tFbjkmeDdFFGXGgQnwT1LtsJ9Omgj1B-GeaEIox9jU"]}]}
+✖ joint real active Boss submit bounds eight changed CP blocks and retains maximum due results within budget (19183.7313ms)
+ST15-05 rollback set points 34
+✔ joint bounded terminal rolls back at every actual set including repeated character writes (382681.7301ms)
+✔ real pending full bag pickup leave and all six mailbox consumers preserve original route and holdings (12850.0039ms)
+✔ all six retained mail source stubs prevent reissuance (49.899ms)
+✔ terminal submit versus leave uses real OCC in both commit orders without half rewards (99.2549ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 415697.7652
+
+✖ failing tests:
+
+test at backend\test\joint-terminal-acceptance.test.mjs:4:1
+✖ joint real active Boss submit bounds eight changed CP blocks and retains maximum due results within budget (19183.7313ms)
+  AssertionError [ERR_ASSERTION]: {"protocolVersion":2,"operationId":"boss-kill","serverTime":1513,"replayed":false,"command":"simulation.submit","outcome":{"status":"rejected","code":"CONFIG_NOT_READY"}}
+  + actual - expected
+
+  + 'rejected'
+  - 'committed'
+
+      at TestContext.<anonymous> (file:///D:/IdeaProjects/World-of-308/.worktrees/st15-terminal-result-storage/backend/test/joint-terminal-acceptance.test.mjs:7:125)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'rejected',
+    expected: 'committed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

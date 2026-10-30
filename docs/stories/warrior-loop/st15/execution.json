@@ -1,6 +1,6 @@
 {
   "feature": "warrior-loop-st15",
-  "status": "budget-blocked",
+  "status": "known-pressure-remediated-release-envelope-gap",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "4243635",
   "approved_spec_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
@@ -110,7 +110,7 @@
       ],
       "accepted_revision": "3be6725f53814b036db495f823cf6680a3e29ea0ee8085998db07675819df6c2",
       "path": "docs/stories/warrior-loop/st15/issues/05-joint-acceptance-and-budget-review.md",
-      "state": "merged-budget-blocked",
+      "state": "storage-remediation-verified",
       "worktree": ".worktrees/st15-05-joint-acceptance",
       "branch": "feat/st15-05-joint-acceptance",
       "evidence": [
@@ -122,18 +122,23 @@
         "docs/reviews/st15-review-check-all.log",
         "docs/reviews/st15-build-standards-recheck.md",
         "docs/reviews/st15-build-spec-recheck.md",
-        "docs/reviews/st15-local-verification.md"
+        "docs/reviews/st15-local-verification.md",
+        "docs/reviews/st15-storage-verification-2026-10-30.md",
+        "docs/reviews/st15-storage-budget-2026-10-30.json",
+        "docs/reviews/st15-storage-check-all-2026-10-30.log",
+        "docs/reviews/st15-storage-standards-review-2026-10-30.md",
+        "docs/reviews/st15-storage-spec-review-2026-10-30.md"
       ],
-      "local_checks": "root:7/7;tooling7;shared230;backend692;independent-joint5/5;review-rechecks-passed",
+      "local_checks": "7/7;tooling7;shared230;backend694;actual-fault62;independent-codec2/2-each",
       "platform_status": "gap",
       "base_commit": "b064c8d",
       "source_validation": "docs/stories/warrior-loop/st15/plan-validation-2026-10-29.json",
       "code_head": "bb916d809f8d9dcd04b8f2bc2477fa66fbb7dcb3",
       "merged_into": "feat-1.0.0",
-      "budget_status": "blocked-maximum-domain",
+      "budget_status": "known-future-due-mixed-passed;full-release-envelope-gap",
       "independent_review": "standards-and-spec:original-findings-closed;maximum-budget-gap-remains",
       "worktree_cleanup": "removed-after-clean-merged-verification",
-      "remaining": "Lossless terminal result storage mapping remediation; repeat full maximum-domain budget and fault acceptance"
+      "remaining": "Formal executable content envelope / arbitrary high-entropy maximum; compression runtime and query cost; SDK/device acceptance"
     }
   ],
   "testing_seams": [
@@ -182,5 +187,17 @@
     "fix_worktree_cleanup": "removed-after-clean-merged-verification"
   },
   "published": false,
-  "pushed_by_this_run": false
+  "pushed_by_this_run": false,
+  "storage_remediation": {
+    "base": "8cbbda3",
+    "standards": "passed-after-P3-document-recheck",
+    "known_pressure": "future/due/mixed passed",
+    "date": "2026-10-30",
+    "code_head": "bf6c5ccf94088187085872fce5e4a87e9d39d83b",
+    "actual_fault_points": 62,
+    "pushed": false,
+    "spec": "passed",
+    "full_check": "7/7",
+    "release_envelope": "gap"
+  }
 }
