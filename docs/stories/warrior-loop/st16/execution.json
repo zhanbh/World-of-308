@@ -45,11 +45,16 @@
       "revision": "b6eb5308c07136625d9ac7ca61fbdab52411b8687062bbf694473c281c6f24b9"
     },
     {
-      "state": "ready",
+      "state": "merged",
       "blocked_by": [
         1
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/reviews/st16-03-verification.md",
+        "docs/reviews/st16-03-related-tests.log",
+        "docs/reviews/st16-03-merge-verification.md"
+      ],
+      "code_commit": "76a8ac2e3fc5f7dc68d7d935e9b1e76a9fb0c6b2",
       "id": "ST16-03",
       "path": "docs/stories/warrior-loop/st16/issues/03-dead-and-looting-recovery.md",
       "number": 3,
