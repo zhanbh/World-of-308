@@ -359,3 +359,7 @@ ST15跨片死亡修复（2026-10-29）：simulation.confirmed允许当前connect
 ## ST16-01 客户端活动恢复编排（2026-10-30）
 
 CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢复证明与Movement当前证明重建；仅两者均通过才恢复活动预测。冻结不删除原控制意图；未知suspend先查原控制回执，ready重试前重验资源与基础证明。无新增字段/物理键/服务写事务，既有32KiB公开页、CP及结果存储上界不变；Movement重建额外读取两次challenge.get和当前simulation.confirmed全页。确认游标/sceneEpoch保留、timeline换代、暂停不补战斗，1秒预测上界及2秒输入缺口不变。实际46项相关测试与类型验证、后继unknown/dead/looting/Cocos边界见[01验证](../reviews/st16-01-verification.md)。
+
+## ST16-02 客户端未知意图编排（2026-10-30）
+
+无 DTO/schema 变更。simulation.submit、drop.collect、challenge.leave 的原 operation.get 与控制原回执都走既有授权传输；notFound 不证明旧写不能提交。客户端先冻结全部已注册业务协调器并查原结果，再提交恢复控制栅栏，栅栏后确认原意图最终结果。旧结果不得恢复预测或覆盖新代次视图；重建仍要求当前完整证明。新增查询及本地 journal 边界见[02验证](../reviews/st16-02-verification.md)，服务读写/结果包络不变。

@@ -1,0 +1,25 @@
+(node:4892) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-02-unknown-barrier/client/assets/scripts/net/DropCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st16-02-unknown-barrier\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ unknown collect resolves original equipment delivery without replay or optimistic state (196.3066ms)
+✔ owner resolves unknown simulation before suspend without requiring connected movement refresh (159.0425ms)
+✔ unknown leave resolves its receipt behind the barrier and preserves one terminal equipment delivery (101.4928ms)
+✔ notFound then old equipment write wins OCC without duplicate assets (86.0945ms)
+✔ notFound then recovery fence wins OCC without duplicate assets (97.818ms)
+✔ failed original query leaves a visible bounded barrier and retry retains the exact control (136.2171ms)
+✔ movement original result arriving after close cannot change retired view (105.9186ms)
+✔ movement original result arriving after rebind cannot change retired view (115.6768ms)
+✔ drop original result arriving after close cannot change retired view (71.8366ms)
+✔ drop original result arriving after rebind cannot change retired view (70.5166ms)
+✔ leave original result arriving after close cannot change retired view (77.7973ms)
+✔ leave original result arriving after rebind cannot change retired view (79.0754ms)
+✔ owner freezes real drop participant and queries equipment original before its recovery control (70.4128ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1691.8478

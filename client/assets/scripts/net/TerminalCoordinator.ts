@@ -7,7 +7,7 @@ export type TerminalIdentity={protocolVersion:2;sessionId:string;sessionEpoch:nu
 export interface TerminalClientState {status:'loading'|'ready'|'submitting'|'unknown'|'closed'|'failed';receipt:ClearReceipt|null;code:string|null;fadeReady:boolean;}
 /** A receipt is a service fact. Fade starts only after the original leave result is known. */
 export class TerminalCoordinator {
- private identity:TerminalIdentity|null=null;
+ private frozen=false;private identity:TerminalIdentity|null=null;
  private pending:Leave|null=null;
  private generation=0;
  private sequence=0;
@@ -17,7 +17,7 @@ export class TerminalCoordinator {
  constructor(transport:EntryTransport,persistence:EntryPendingStore){this.transport=transport;this.persistence=persistence;}
  get state():TerminalClientState{return structuredClone(this.current);}
  private key(){const i=this.identity!;return JSON.stringify(['terminal-leave',i.sessionId,i.sessionEpoch,i.challengeId]);}
- async open(identity:TerminalIdentity){
+ async open(identity:TerminalIdentity){this.frozen=false;
   this.identity={...identity};const generation=++this.generation;this.pending=null;this.current={status:'loading',receipt:null,code:null,fadeReady:false};
   const saved=this.persistence.load(this.key());
   if(saved!==null){const q=parseChallengeRequest(JSON.parse(saved));if(q.command!=='challenge.leave'||q.payload.reason!=='finishLoot'||q.sessionId!==identity.sessionId||q.sessionEpoch!==identity.sessionEpoch||q.payload.challengeId!==identity.challengeId)throw Error('INVALID_PENDING_LEAVE');this.pending=q;}
@@ -39,7 +39,7 @@ export class TerminalCoordinator {
  close(){++this.generation;this.current.status='closed';this.current.fadeReady=false;}
  async refresh(){if(!this.identity||this.pending||this.current.status==='submitting')return;await this.read(this.generation);}
  async leave(operationId:string,busy:{movement:boolean;drop:boolean}){
-  if(!this.identity||this.pending||this.current.status!=='ready'||!this.current.receipt||this.current.receipt.sceneState!=='looting'||busy.movement||busy.drop)throw Error('LEAVE_NOT_READY');
+  if(this.frozen||!this.identity||this.pending||this.current.status!=='ready'||!this.current.receipt||this.current.receipt.sceneState!=='looting'||busy.movement||busy.drop)throw Error('LEAVE_NOT_READY');
   const generation=this.generation;this.current.status='submitting';
   const r=await this.read(generation);if(!r||generation!==this.generation)return;
   if(!('clearReceipt'in r)||parseClearReceipt(r.clearReceipt).sceneState!=='looting'||r.data.connection==='closed'){this.current.status='failed';this.current.code='SCENE_NOT_LOOTING';return;}
@@ -56,7 +56,18 @@ export class TerminalCoordinator {
   else {await this.read(generation);if(generation===this.generation){this.current.code=r.outcome.code;this.current.fadeReady=false;}}
  }
  private async send(generation:number){this.current.status='submitting';try{await this.finish(JSON.parse(await this.transport.send(JSON.stringify(this.pending))),generation);}catch{if(generation===this.generation)this.current.status='unknown';}}
- async retry(){
+ get hasPending(){return this.pending!==null;}
+ freeze(){this.frozen=true;++this.generation;this.current.fadeReady=false;if(this.pending)this.current.status='unknown';}
+ async refreshAfterRecovery(){this.frozen=false;await this.read(this.generation);}
+ async resolvePendingOriginal(fenced=false):Promise<'settled'|'notFound'|'unknown'>{
+  if(!this.pending)return 'settled';const generation=this.generation,q=this.pending,i=this.identity!;
+  try{const r=parseAssetQueryResponse('operation.get',JSON.parse(await this.transport.send(JSON.stringify({protocolVersion:2,sessionId:i.sessionId,sessionEpoch:i.sessionEpoch,query:'operation.get',requestId:`leave-barrier-${++this.sequence}`,payload:{operationId:q.operationId}}))));if(generation!==this.generation)return 'unknown';if('error'in r)throw Error(r.error.code);
+   if(r.data.status==='notFound'&&!fenced){this.current.status='unknown';return 'notFound';}
+   const result=parseChallengeResponse(r.data.status==='found'?r.data.result:JSON.parse(await this.transport.send(JSON.stringify(q))));if(generation!==this.generation)return 'unknown';if(result.command!==q.command||result.operationId!==q.operationId)throw Error('RESULT_MISMATCH');if(result.outcome.status==='unknown')return 'unknown';
+   this.persistence.save(this.key(),null);this.pending=null;this.current.code=result.outcome.status==='rejected'?result.outcome.code:null;if(result.outcome.status==='committed'){this.current.status='closed';this.current.fadeReady=true;if(this.current.receipt)this.current.receipt.sceneState='closed';}return 'settled';
+  }catch{if(generation===this.generation)this.current.status='unknown';return 'unknown';}
+ }
+ async retry(){if(this.frozen)throw Error('RECOVERY_BARRIER');
   if(!this.identity||!this.pending||this.current.status!=='unknown')throw Error('NO_UNKNOWN_LEAVE');const i=this.identity,generation=this.generation;this.current.status='submitting';
   try{const r=parseAssetQueryResponse('operation.get',JSON.parse(await this.transport.send(JSON.stringify({protocolVersion:2,sessionId:i.sessionId,sessionEpoch:i.sessionEpoch,query:'operation.get',requestId:`leave-original-${++this.sequence}`,payload:{operationId:this.pending.operationId}}))));if(generation!==this.generation)return;
    if('error'in r)throw Error(r.error.code);if(r.data.status==='notFound')await this.send(generation);else await this.finish(r.data.result,generation);

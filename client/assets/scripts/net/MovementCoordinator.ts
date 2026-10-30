@@ -21,8 +21,8 @@ import {advanceMovement} from '../../../../shared/src/movement-kernel.ts';
 import type {MovementConfig,MovementState} from '../../../../shared/src/movement-kernel.ts';
 import {decodeSimulationSubmit} from '../../../../shared/src/protocol/simulation-v2.ts';
 import type {ActionInput,SimulationSubmit} from '../../../../shared/src/protocol/simulation-v2.ts';
-import {parseSimulationResponse,parseChallengeQueryResponse,parseRecoveryPage,parseActionResultsPage} from '../../../../shared/src/protocol/scene-v2.ts';
-import type {SceneState} from '../../../../shared/src/protocol/scene-v2.ts';
+import {parseSimulationResponse,parseChallengeQueryResponse,parseRecoveryPage,parseActionResultsPage,parseClearReceipt} from '../../../../shared/src/protocol/scene-v2.ts';
+import type {SceneState,ClearReceipt} from '../../../../shared/src/protocol/scene-v2.ts';
 import {parseAssetQueryResponse} from '../../../../shared/src/protocol/asset-v2.ts';
 import {verifyRecoveryPages} from '../../../../shared/src/public-state-proof.ts';
 import {manifestDigest} from '../../../../shared/src/room-manifest.ts';
@@ -31,10 +31,10 @@ import type {LoadingCoordinator} from './LoadingCoordinator.ts';
 type Context={protocolVersion:2;sessionId:string;sessionEpoch:number;characterId:string;rolePlayEpoch:number;challengeId:string};
 type Queued=ActionInput;
 export type BasicPrediction={profile:BasicTrainingProfile;stats:CombatStats;cross?:{level:number;controlled:boolean};targetRules:Record<string,{mitigation:CombatTarget['mitigation'];evasion:CombatTarget['evasion'];damageImmune:boolean;controlImmune:boolean}>};
-export interface MovementClientState {monsters?:MonsterRuntime[];player?:MonsterPlayer;status:'loading'|'empty'|'error'|'submitting'|'unknown'|'stale'|'active'|'frozen';code:string|null;predictionEnabled:boolean;confirmed:SceneState|null;position:MovementState|null;queued:number;combat:CombatState|null;targets:CombatTarget[];actionResults:CombatEvent[];cross?:CrossState|null;bengshan?:BengshanState|null;badao?:BadaoState|null;earth?:EarthState|null;}
+export interface MovementClientState {clearReceipt?:ClearReceipt;monsters?:MonsterRuntime[];player?:MonsterPlayer;status:'loading'|'empty'|'error'|'submitting'|'unknown'|'stale'|'active'|'frozen';code:string|null;predictionEnabled:boolean;confirmed:SceneState|null;position:MovementState|null;queued:number;combat:CombatState|null;targets:CombatTarget[];actionResults:CombatEvent[];cross?:CrossState|null;bengshan?:BengshanState|null;badao?:BadaoState|null;earth?:EarthState|null;}
 /** Durable original intent, current public proof, and a bounded prediction clock. */
 export class MovementCoordinator {
- private transport:EntryTransport;private persistence:EntryPendingStore;private clock:{now():number};
+ private frozen=false;private transport:EntryTransport;private persistence:EntryPendingStore;private clock:{now():number};
  private context:Context|null=null;private config:MovementConfig|null=null;private generation=0;private pending:SimulationSubmit|null=null;private knownRejected=false;private queue:Queued[]=[];
  private basic:BasicPrediction|null=null;private confirmedCombat:CombatState|null=null;private confirmedTargets:CombatTarget[]=[];
  private confirmedEarth:EarthState|null=null;private confirmedMonsters:MonsterRuntime[]=[];private confirmedPlayer:MonsterPlayer|null=null;
@@ -48,7 +48,7 @@ export class MovementCoordinator {
  private save(){this.persistence.save(this.key(),this.pending?JSON.stringify(this.pending):null);}
  private guardClock(){if(this.current.predictionEnabled&&this.clock.now()-this.confirmedAt>=1000){this.current.predictionEnabled=false;this.current.status='frozen';}}
  async load(context:Context,config:MovementConfig,loading:LoadingCoordinator,basic?:BasicPrediction){
-  const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.basic=basic?structuredClone(basic):null;this.confirmedCombat=null;this.confirmedCross=null;this.confirmedBengshan=null;this.confirmedBadao=null;this.confirmedEarth=null;this.confirmedMonsters=[];this.confirmedPlayer=null;this.confirmedTargets=[];this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
+  this.frozen=false;const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.basic=basic?structuredClone(basic):null;this.confirmedCombat=null;this.confirmedCross=null;this.confirmedBengshan=null;this.confirmedBadao=null;this.confirmedEarth=null;this.confirmedMonsters=[];this.confirmedPlayer=null;this.confirmedTargets=[];this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
   this.current={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0,combat:null,targets:[],actionResults:[]};
   if(loading.state.status!=='loaded'||loading.state.manifest?.challengeId!==context.challengeId||loading.state.manifest.mapRef!==config.mapRef){this.current.status='empty';this.current.code='RESOURCES_NOT_LOADED';return;}
   this.roomNo=loading.state.manifest.roomNo;
@@ -58,7 +58,7 @@ export class MovementCoordinator {
  /** Reconnect an already active scene; configuration is checked against the recovered public proof. */
  async resumeActive(context:Context,config:MovementConfig,roomNo:number,basic?:BasicPrediction){
   if(!Number.isInteger(roomNo)||roomNo<0||roomNo>6)throw Error('INVALID_ROOM');
-  const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.basic=basic?structuredClone(basic):null;this.roomNo=roomNo;this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
+  this.frozen=false;const generation=++this.generation;this.context=structuredClone(context);this.config=structuredClone(config);this.basic=basic?structuredClone(basic):null;this.roomNo=roomNo;this.queue=[];this.pending=null;this.knownRejected=false;this.confirmedPosition=null;
   this.current={status:'loading',code:null,predictionEnabled:false,confirmed:null,position:null,queued:0,combat:null,targets:[],actionResults:[]};
   const saved=this.persistence.load(this.key());if(saved!==null){this.pending=decodeSimulationSubmit(saved);if(this.pending.sessionId!==context.sessionId||this.pending.sessionEpoch!==context.sessionEpoch||this.pending.payload.characterId!==context.characterId||this.pending.payload.rolePlayEpoch!==context.rolePlayEpoch||this.pending.payload.challengeId!==context.challengeId)throw Error('PENDING_CONTEXT_MISMATCH');this.current.status='unknown';await this.retry();return;}
   try{await this.refresh(generation);}catch(e){if(generation===this.generation){this.current.status='error';this.current.code=e instanceof Error?e.message:'LOAD_FAILED';}}
@@ -67,7 +67,8 @@ export class MovementCoordinator {
  get confirmedPickupPosition(){return this.confirmedPosition?structuredClone(this.confirmedPosition):null;}
  async flushQueued(operationId:string){if(this.pending)throw Error('PENDING_INPUT');if(this.queue.length)await this.submit(operationId,Math.max(this.current.confirmed!.acceptedTick,...this.queue.map(i=>i.tick))+1);}
  async refreshConfirmed(){if(this.pending)throw Error('PENDING_INPUT');await this.refresh();}
- close(){++this.generation;this.queue=[];this.current.predictionEnabled=false;this.current.status='frozen';}
+ freeze(){this.frozen=true;this.close();}
+ close(){this.frozen=true;++this.generation;this.queue=[];this.current.predictionEnabled=false;this.current.status='frozen';}
  get hasPending(){return this.pending!==null||this.current.status==='submitting';}
  private async refresh(generation=this.generation){
   const c=this.context!,config=this.config!,query={protocolVersion:2,sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,query:'challenge.get',requestId:'movement-current',payload:{challengeId:c.challengeId}};
@@ -104,7 +105,7 @@ export class MovementCoordinator {
   if(this.basic?.profile.earth){const action=proof.records.find(r=>r.kind==='earthAction'&&r.actorId===c.characterId);if(!action||action.kind!=='earthAction'||!this.basic.cross)throw Error('EARTH_STATE_MISSING');const effects=proof.records.filter(r=>r.kind==='earthEffect'&&r.actorId===c.characterId).map((r,index)=>{if(r.kind!=='earthEffect'||r.index!==index||r.state.castSequence!==action.state.castSequence||JSON.stringify(r.state.readyAtUs)!==JSON.stringify(action.state.readyAtUs))throw Error('EARTH_EFFECT_MISMATCH');return r.state.effects[0];});this.confirmedEarth=restoreEarthPublic({...action.state,effects},{...this.basic.stats,...this.basic.cross,mastery:this.basic.profile.mastery!,mp:actor.mp});}
   if(this.basic?.profile.badao){const action=proof.records.find(r=>r.kind==='badaoAction'&&r.actorId===c.characterId);if(!action||action.kind!=='badaoAction'||!this.basic.cross)throw Error('BADAO_STATE_MISSING');const effects=proof.records.filter(r=>r.kind==='badaoEffect'&&r.actorId===c.characterId).map((r,index)=>{if(r.kind!=='badaoEffect'||r.index!==index||r.state.castSequence!==action.state.castSequence||JSON.stringify(r.state.readyAtUs)!==JSON.stringify(action.state.readyAtUs))throw Error('BADAO_EFFECT_MISMATCH');return r.state.effects[0];});this.confirmedBadao=restoreBadaoPublic({...action.state,effects},{...this.basic.stats,...this.basic.cross,mastery:this.basic.profile.mastery!,mp:actor.mp});}
   if(this.basic?.profile.monsters){const records=proof.records.filter(r=>r.kind==='monsterRuntime'),control=proof.records.find(r=>r.kind==='playerControl'&&r.actorId===c.characterId);if(records.length!==this.confirmedTargets.length||!control||control.kind!=='playerControl')throw Error('MONSTER_STATE_MISSING');this.confirmedMonsters=records.map(r=>{if(r.kind!=='monsterRuntime'||!this.confirmedTargets.some(t=>t.actorId===r.actorId&&t.actorIndex===r.state.actorIndex)||!this.basic!.profile.monsters!.templates[r.state.templateRef])throw Error('MONSTER_STATE_MISMATCH');return r.state;});this.confirmedPlayer={hp:actor.hp,maxHp:actor.maxHp,lifeState:actor.lifeState==='alive'?'alive':'dead',controlledUntilTick:control.untilTick};}
-  this.versions=final.versions;this.confirmedAt=this.clock.now();this.current={status:'active',code:null,predictionEnabled:true,confirmed:s,position:structuredClone(this.confirmedPosition),queued:0,combat:structuredClone(this.confirmedCombat),targets:structuredClone(this.confirmedTargets),actionResults:this.current.actionResults,cross:structuredClone(this.confirmedCross),bengshan:structuredClone(this.confirmedBengshan),badao:structuredClone(this.confirmedBadao),earth:structuredClone(this.confirmedEarth),monsters:structuredClone(this.confirmedMonsters),player:structuredClone(this.confirmedPlayer)??undefined};
+  this.versions=final.versions;this.confirmedAt=this.clock.now();this.current={clearReceipt:'clearReceipt'in final?parseClearReceipt(final.clearReceipt):undefined,status:'active',code:null,predictionEnabled:true,confirmed:s,position:structuredClone(this.confirmedPosition),queued:0,combat:structuredClone(this.confirmedCombat),targets:structuredClone(this.confirmedTargets),actionResults:this.current.actionResults,cross:structuredClone(this.confirmedCross),bengshan:structuredClone(this.confirmedBengshan),badao:structuredClone(this.confirmedBadao),earth:structuredClone(this.confirmedEarth),monsters:structuredClone(this.confirmedMonsters),player:structuredClone(this.confirmedPlayer)??undefined};
  }
  get hasReleasedDeathTail(){return this.current.confirmed?.lifeState==='dead'&&[this.confirmedCross,this.confirmedBengshan,this.confirmedBadao,this.confirmedEarth].some(lane=>lane&&lane.effects.length>0);}
  enqueue(input:ActionInput){
@@ -127,7 +128,7 @@ export class MovementCoordinator {
   this.current.position=advanceMovement(this.confirmedPosition,this.queue.filter(i=>i.tick<toTick),from,toTick,this.config!).state;
  }
  async submit(operationId:string,toTick:number){
-  this.guardClock();if(!this.current.confirmed||!this.config||!this.context||this.pending)throw Error('PENDING_INPUT');
+  this.guardClock();if(this.frozen)throw Error('RECOVERY_BARRIER');if(!this.current.confirmed||!this.config||!this.context||this.pending)throw Error('PENDING_INPUT');
   const generation=this.generation,s=this.current.confirmed,c=this.context,inputs=this.queue.map((v,i)=>({...v,seq:s.acceptedSeq+i+1}));
   if(inputs.some(i=>i.tick>=toTick))throw Error('INPUT_TIME_BOUND');
   const payload={characterId:c.characterId,rolePlayEpoch:c.rolePlayEpoch,challengeId:c.challengeId,roomNo:0,sceneEpoch:s.sceneEpoch,timelineEpoch:s.timelineEpoch,baseCheckpointVersion:s.checkpointRevision,firstSeq:s.acceptedSeq+1,lastSeq:s.acceptedSeq+inputs.length,fromTick:s.acceptedTick,toTick,ruleRef:this.config.ruleRef,mapRef:this.config.mapRef,inputs,digest:''};
@@ -138,7 +139,16 @@ export class MovementCoordinator {
   this.pending=decodeSimulationSubmit(JSON.stringify({protocolVersion:2,sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,command:'simulation.submit',operationId,expected:this.versions,payload}));this.save();this.queue=[];await this.retry(false);
  }
  private roomNo=0;
- async retry(recover=true){
+ async resolvePendingOriginal(fenced=false):Promise<'settled'|'notFound'|'unknown'>{
+  if(!this.pending)return 'settled';const q=this.pending,generation=this.generation;
+  try{const r=parseAssetQueryResponse('operation.get',JSON.parse(await this.transport.send(JSON.stringify({protocolVersion:2,sessionId:q.sessionId,sessionEpoch:q.sessionEpoch,query:'operation.get',requestId:`barrier-${q.operationId}`.slice(0,64),payload:{operationId:q.operationId}}))));if(generation!==this.generation)return 'unknown';if('error'in r)throw Error(r.error.code);
+   if(r.data.status==='notFound'&&!fenced){this.current.status='unknown';return 'notFound';}
+   if(r.data.status==='found'&&r.data.command!=='simulation.submit')throw Error('OPERATION_MISMATCH');
+   const result=parseSimulationResponse(r.data.status==='found'?r.data.result:await this.scene(q));if(generation!==this.generation)return 'unknown';if(result.operationId!==q.operationId)throw Error('OPERATION_MISMATCH');if(result.outcome.status==='unknown')return 'unknown';
+   this.pending=null;this.knownRejected=false;this.save();this.current.predictionEnabled=false;this.current.status='frozen';this.current.code=result.outcome.status==='rejected'?result.outcome.code:null;return 'settled';
+  }catch(e){if(generation===this.generation){this.current.status='unknown';this.current.code=e instanceof Error?e.message:'NETWORK_ERROR';}return 'unknown';}
+ }
+ async retry(recover=true){if(this.frozen)throw Error('RECOVERY_BARRIER');
   if(!this.pending||!this.context)throw Error('NO_PENDING_INPUT');const generation=this.generation,q=this.pending;
   this.current.status='submitting';this.current.predictionEnabled=false;
   try{
