@@ -1,0 +1,83 @@
+(node:44772) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-01-active-recovery/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st16-01-active-recovery\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ active combat recovery: first fragment after 100ms (411.6757ms)
+✔ active combat recovery: first fragment after 1900ms (288.5878ms)
+✔ active combat recovery: first fragment after 2000ms (216.9032ms)
+✔ a lost suspend response can resolve the original before any checkpoint ticket exists (39.9447ms)
+✔ late movement proof from an old recovery cannot freeze a newly initialized scene owner (74.398ms)
+(node:45408) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-01-active-recovery/client/assets/scripts/net/LoadingCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st16-01-active-recovery\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ next room inherits wounded role and all seven cooldowns with zero snapshot stamina (79.4343ms)
+✔ exact local-test regeneration splits at buff expiry and preserves fractional resource units (33.5773ms)
+✔ later prepare rejects uncleared, living purple, dead player, forged/outside exit and skipped room (130.7641ms)
+✔ later prepare and activate roll back at every write point and original replay leaves newer room intact (300.1683ms)
+✔ owned bounded pickup fixture contends with actual activate through A/H in both commit orders (50.4314ms)
+✔ exact resource fractions survive arbitrary prefix/suffix cuts, cap overflow and uint64 resources (107.3029ms)
+✔ unknown buff/rate refs and uint32 denominator nonclosure fail before any room or resource commit (77.1891ms)
+✔ ready writes only changed role chunk and every added role write fault rolls back (116.0013ms)
+✔ later prepared recovery excludes four seconds and does not initialize current character/equipment from entry audit (32.4412ms)
+ST10-05 actual UTF-8 {
+  maxRole: 15814,
+  header: 1594,
+  chunks: [ 14716, 1933 ],
+  page: 15074,
+  response: 1518,
+  O: 1788,
+  H: 4807
+}
+ST10 post-ready UTF-8 { page: 15081, ready: 746, H: 5164, lastReadyReceipt: 946 }
+✔ schema2 maximum supported role/public page and actual next activation/receipt stay bounded (67.777ms)
+✔ later activate authorization/version/terminal and real login takeover remain fenced in both orders (128.0459ms)
+✔ later exit is bound to locked previous manifest and full spawn set rather than a substitute map/enemy list (28.8044ms)
+✔ same regeneration reference cannot be rebound to different rates and prepared exit rule cannot change (36.5203ms)
+✔ crossing global stamina refill during later loading never refreshes reserved snapshot (19.7592ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; lost remains safe (43.8133ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; race remains safe (39.598ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; omitted remains safe (33.9553ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; binding remains safe (35.9211ms)
+✔ activation refreshes regenerated HP and expired buffs after ready; digest remains safe (34.4594ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; lost remains safe (51.4294ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; race remains safe (54.6913ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; omitted remains safe (49.4047ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; binding remains safe (48.3357ms)
+✔ recovery refreshes regenerated HP and expired buffs after ready; digest remains safe (47.6719ms)
+✔ active-room recovery ready reacquires current proof after committed reply loss (63.0138ms)
+✔ ready accepted one millisecond before ticket cutoff can reopen and prove its new connected phase (51.7835ms)
+✔ unpaid loading suspend freezes same attempt and fixes deadline without creating CP or charging (50.8978ms)
+✔ unpaid recovery excludes paused time, persists original controls, and resumes same manifest without CP (16.624ms)
+✔ unpaid deadline equality query atomically fails/closes, settles stamina and returns to inn (30.9531ms)
+✔ paid recovery reads frozen CP proof, resumes loading without enemy anchors, then consumes only eligible clock (37.5108ms)
+✔ new heartbeat renews lease once, duplicate cannot renew and old timeline/order cannot advance (13.3952ms)
+✔ silent recovery and death equality use original cutoff with no new grace or paid refund (50.5379ms)
+✔ heartbeat sequence is independent of challenge business version (8.2941ms)
+✔ every loading-control and expiry write point rolls back atomically; lost responses resolve exact originals (403.8486ms)
+✔ expiry keeps current session usable in town, preserves completed success and truthful journal reason (24.5636ms)
+✔ actual login takeover wins before or after recovery without old-session replay permission (26.236ms)
+ST10-04 actual UTF-8 {
+  unpaidH8Receipts: 10303,
+  unpaidResponse: 3570,
+  paidH: 3716,
+  paidHeader: 1594,
+  paidResponse: 985
+}
+✔ bounded original control window and actual encoded H/CP/response budgets include wrapper bytes (30.1103ms)
+✔ recovery-ready deadline−1/equality/+1 respects fixed pause deadline independently of old lease (78.6539ms)
+(node:17608) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/.worktrees/st16-01-active-recovery/client/assets/scripts/net/RecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\.worktrees\st16-01-active-recovery\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ reopen queries exact durable original before same-request retry; notFound cannot clear intent (2.8892ms)
+✔ a pending original blocks a replacement sequence and old generation cannot change new context (0.6621ms)
+✔ actual service controls survive resume and both ready reply losses across reopen, preserving original paid attempt (101.6331ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 46
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2100.7235

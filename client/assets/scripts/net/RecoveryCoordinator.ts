@@ -15,6 +15,7 @@ export class RecoveryCoordinator {
  private current:RecoveryState={status:'idle',code:null,predictionEnabled:false,publicRecords:null,data:null};
  private transport:RecoveryTransport;private persistence:EntryPendingStore;
  constructor(transport:RecoveryTransport,persistence:EntryPendingStore){this.transport=transport;this.persistence=persistence;}
+ get pendingCommand(){return this.journal.pending?.command??null;}
  get state():RecoveryState{return structuredClone(this.current);}
  private key(){const i=this.identity!;return JSON.stringify(['scene-recovery',i.sessionId,i.sessionEpoch,i.characterId,i.rolePlayEpoch,i.challengeId]);}
  private matches(c:Control){const i=this.identity!;return c.sessionId===i.sessionId&&c.sessionEpoch===i.sessionEpoch&&c.payload.characterId===i.characterId&&c.payload.rolePlayEpoch===i.rolePlayEpoch&&c.payload.challengeId===i.challengeId;}

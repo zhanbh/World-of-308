@@ -83,3 +83,7 @@ ST11最终评审算术域修订：训练profile发布/入口须证明完整合�
 ## ST12-01 局部候选包络
 
 profile6/scene7仅增加8个以内有界怪物runtime及玩家控制时钟；近战节点最短起手500ms，详情见[合同](monster-melee-combat-contract-v1.md)。实际5怪读写/字节例不替代ST12-06的8怪与912效果共存最大域/SDK实测。
+
+## ST16-01 客户端活动恢复编排（2026-10-30）
+
+CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢复证明与Movement当前证明重建；仅两者均通过才恢复活动预测。冻结不删除原控制意图；未知suspend先查原控制回执，ready重试前重验资源与基础证明。无新增字段/物理键/服务写事务，既有32KiB公开页、CP及结果存储上界不变；Movement重建额外读取两次challenge.get和当前simulation.confirmed全页。确认游标/sceneEpoch保留、timeline换代、暂停不补战斗，1秒预测上界及2秒输入缺口不变。实际46项相关测试与类型验证、后继unknown/dead/looting/Cocos边界见[01验证](../reviews/st16-01-verification.md)。

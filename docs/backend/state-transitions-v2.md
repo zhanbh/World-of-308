@@ -193,3 +193,7 @@ ST15跨片死亡修复（2026-10-29）：active/dead/connected若CP存在已释�
 ## ST15-05 原结果存储增量（2026-10-30）
 
 当前原结果物理映射按[结果存储v2](combat-result-storage-v2.md)：schema2每操作一个有界gzip JSON包；schema1旧页保留读取。公开32事件/页、1024页、稳定ref、授权及CP/资产/O/J原子提交不变。同499页及8改块混合合成压力夹具验收见证据；任意高熵1024页及正式发布包络仍待验证，见[验证](../reviews/st15-storage-verification-2026-10-30.md)。
+
+## ST16-01 客户端活动恢复编排（2026-10-30）
+
+CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢复证明与Movement当前证明重建；仅两者均通过才恢复活动预测。冻结不删除原控制意图；未知suspend先查原控制回执，ready重试前重验资源与基础证明。无新增字段/物理键/服务写事务，既有32KiB公开页、CP及结果存储上界不变；Movement重建额外读取两次challenge.get和当前simulation.confirmed全页。确认游标/sceneEpoch保留、timeline换代、暂停不补战斗，1秒预测上界及2秒输入缺口不变。实际46项相关测试与类型验证、后继unknown/dead/looting/Cocos边界见[01验证](../reviews/st16-01-verification.md)。

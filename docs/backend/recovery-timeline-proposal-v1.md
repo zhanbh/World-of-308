@@ -1,5 +1,7 @@
 # 暂停、恢复及迟到请求时序提案 v1
 
+当前实施状态（2026-10-30）：下文早期未实现描述保留为历史；既有控制/证明与ST16-01存活战斗恢复到Movement真实纵切已在本地实现，详见[01验证](../reviews/st16-01-verification.md)。unknown资产、dead/looting、Cocos及联合发布门禁仍由后续任务交付。
+
 日期：2026-10-21。状态：工程提案，未实现；已定10秒规则保留，用户已确认允许秒级回溯，历史替代方案仅供审计。依据[生命周期](../challenge-flow.md)、[输入协议](verified-action-protocol-v1.md)。
 
 ## 1. 分开三种结果
@@ -121,3 +123,7 @@ scene.resumePrepare固定确认前沿与公开摘要，分页/资源准备期间
 scene.ready首次成功且进入active/combat时，同笔设置inputGapBaseAt=serverNow；保留历史lastAcceptedInputAt、acceptedSeq/Tick，不伪造输入。新片段先验代次及serverNow−inputGapBaseAt；差值≥2000ms进入recovery并拒绝新执行，差值<2000ms才继续验证；成功接受新输入后同时更新inputGapBaseAt与lastAcceptedInputAt。心跳、旧operation和ready重放都不更新inputGapBaseAt。awaitingReady/转场加载与completed/looting不适用该缺口判断。每个活动时间段ready只初始化一次，重放不得换锚点续命。
 
 例：0秒最后旧输入，3秒ready，新输入4.9秒可进入校验，5秒/5.1秒按缺口到期恢复；服务器不因旧lastAcceptedInputAt=0立即判超时。原死亡/恢复墙钟截止优先检查，ready不能越过截止；新恢复的固定租约仍沿既有规则。
+
+## ST16-01 客户端活动恢复编排（2026-10-30）
+
+CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢复证明与Movement当前证明重建；仅两者均通过才恢复活动预测。冻结不删除原控制意图；未知suspend先查原控制回执，ready重试前重验资源与基础证明。无新增字段/物理键/服务写事务，既有32KiB公开页、CP及结果存储上界不变；Movement重建额外读取两次challenge.get和当前simulation.confirmed全页。确认游标/sceneEpoch保留、timeline换代、暂停不补战斗，1秒预测上界及2秒输入缺口不变。实际46项相关测试与类型验证、后继unknown/dead/looting/Cocos边界见[01验证](../reviews/st16-01-verification.md)。
