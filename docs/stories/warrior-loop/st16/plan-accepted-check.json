@@ -1,0 +1,73 @@
+{
+  "tickets": [
+    {
+      "path": "docs/stories/warrior-loop/st16/issues/01-active-combat-recovery.md",
+      "number": 1,
+      "body_sha256": "db7180199e22331356655cb553b8d2f4a1e7ecb815aac536a1b66f89df050ef3",
+      "id": "ST16-01",
+      "full_file_sha256": "330092e70be96870165a0b4323bacc542f61772e1f43e043b1173f7ebc75b156",
+      "blocked_by": []
+    },
+    {
+      "path": "docs/stories/warrior-loop/st16/issues/02-unknown-requests-and-late-replies.md",
+      "number": 2,
+      "body_sha256": "b6eb5308c07136625d9ac7ca61fbdab52411b8687062bbf694473c281c6f24b9",
+      "id": "ST16-02",
+      "full_file_sha256": "d476a1ea950e271277cdccf2de385395cc3d15d07486efd055568007dc145dd4",
+      "blocked_by": [
+        1
+      ]
+    },
+    {
+      "path": "docs/stories/warrior-loop/st16/issues/03-dead-and-looting-recovery.md",
+      "number": 3,
+      "body_sha256": "95f1a79948de49276eea69318f014f1176635c98a2f7608bda9e3b46a20c1ae9",
+      "id": "ST16-03",
+      "full_file_sha256": "6c32f373032cda54f48927a904735c584cab256dc9dc6f37e93fcdf6211c0422",
+      "blocked_by": [
+        1
+      ]
+    },
+    {
+      "path": "docs/stories/warrior-loop/st16/issues/04-cocos-lifecycle-recovery.md",
+      "number": 4,
+      "body_sha256": "ceabcc15796ad318bdc0b4babf4844de91335741de376a38ec864c6539fa9e22",
+      "id": "ST16-04",
+      "full_file_sha256": "e76876b20c16b41db80f7dc314b7d617d50fc498a361346bdee867632e36f175",
+      "blocked_by": [
+        2,
+        3
+      ]
+    },
+    {
+      "path": "docs/stories/warrior-loop/st16/issues/05-joint-acceptance-and-review.md",
+      "number": 5,
+      "body_sha256": "893a5a02f3c624022fd6c3a251527e9847de10d03c0e2884a15b3f78f29ae1c2",
+      "id": "ST16-05",
+      "full_file_sha256": "01eda110601c90ff8e3bd7f28f4fe7f2d78b797e5f55853cb51accb258a331a1",
+      "blocked_by": [
+        4
+      ]
+    }
+  ],
+  "spec": {
+    "path": "docs/stories/warrior-loop/st16/spec.md",
+    "full_file_sha256": "f48a32f3988cbe3b623ba8f308fc1d25286309d2313eec27114048158cd36105",
+    "body_sha256": "d428cb55274071ed2d64c91e1ac1b11412130ba7b0d88e5f4c6164d5a3869780"
+  },
+  "approved": true,
+  "human_approval": "整体确认，连续实施ST16",
+  "external_gate_run": false,
+  "jira_actions": false,
+  "date": "2026-10-30",
+  "checks": {
+    "acyclic": true,
+    "dependencies_exist": true,
+    "coverage_8_acceptance_items": "task-plan coverage matrix reviewed; fifth joint task covers all",
+    "implements_ST16": true,
+    "id_unique": true,
+    "source_and_own_revisions_match": true
+  },
+  "status": "passed",
+  "kind": "repository-local-plan-validation-no-Jira"
+}

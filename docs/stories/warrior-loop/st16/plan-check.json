@@ -1,0 +1,102 @@
+{
+  "files": {
+    "docs/stories/warrior-loop/st16/task-plan.md": "01847ae8bf8414902cdf98bf5ffbc09316f6744753770349e9a6fbed41f4a252",
+    "docs/backend/source-of-truth.md": "f2bd608840b619ce6df3a8820f14d474e172486b9949782124320c390a4b1083",
+    "docs/stories/warrior-loop/st16/spec.md": "44fea470c1ff4aa518281febf35eceeee3fad238fe8baa3f414c8105cffe779c",
+    "docs/stories/warrior-loop/st16.md": "3b8bad5df3f9c07efc4b0d6e7bcbeed62267350cd7b8e6de59d6a3cee27a945a"
+  },
+  "date": "2026-10-30",
+  "status": "draft-awaiting-human-graph-and-test-seams-approval",
+  "checks": {
+    "dependencies_exist": true,
+    "spec_hash_matches_body": true,
+    "source_files_exist": true,
+    "coverage_8_acceptance_items": true,
+    "acyclic": true,
+    "unique_ids": true
+  },
+  "test_seams_approved": false,
+  "external_gate_run": false,
+  "graph_approved": false,
+  "baseline": "361ea7b",
+  "accepted_tickets_published": false,
+  "spec_body_sha256": "06eeb2c9a352dc7ad56a2d432cd8445818750aed7f31c8d83e2b202767b74fd6",
+  "jira_actions": false,
+  "nodes": [
+    {
+      "blocked_by": [],
+      "name": "ST16-01",
+      "covers": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "id": 1
+    },
+    {
+      "blocked_by": [
+        1
+      ],
+      "name": "ST16-02",
+      "covers": [
+        1,
+        2,
+        7
+      ],
+      "id": 2
+    },
+    {
+      "blocked_by": [
+        1
+      ],
+      "name": "ST16-03",
+      "covers": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "id": 3
+    },
+    {
+      "blocked_by": [
+        2,
+        3
+      ],
+      "name": "ST16-04",
+      "covers": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "id": 4
+    },
+    {
+      "blocked_by": [
+        4
+      ],
+      "name": "ST16-05",
+      "covers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "id": 5
+    }
+  ],
+  "feature": "warrior-loop-st16",
+  "topological_order": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ]
+}

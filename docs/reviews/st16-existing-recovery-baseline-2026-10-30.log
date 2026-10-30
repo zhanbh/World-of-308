@@ -1,0 +1,34 @@
+(node:9388) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/IdeaProjects/World-of-308/client/assets/scripts/net/RecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\D:\IdeaProjects\World-of-308\client\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ unpaid loading suspend freezes same attempt and fixes deadline without creating CP or charging (50.4683ms)
+✔ unpaid recovery excludes paused time, persists original controls, and resumes same manifest without CP (21.291ms)
+✔ unpaid deadline equality query atomically fails/closes, settles stamina and returns to inn (34.1617ms)
+✔ paid recovery reads frozen CP proof, resumes loading without enemy anchors, then consumes only eligible clock (32.2437ms)
+✔ new heartbeat renews lease once, duplicate cannot renew and old timeline/order cannot advance (11.9243ms)
+✔ silent recovery and death equality use original cutoff with no new grace or paid refund (52.7213ms)
+✔ heartbeat sequence is independent of challenge business version (7.836ms)
+✔ every loading-control and expiry write point rolls back atomically; lost responses resolve exact originals (427.1865ms)
+✔ expiry keeps current session usable in town, preserves completed success and truthful journal reason (24.802ms)
+✔ actual login takeover wins before or after recovery without old-session replay permission (27.6984ms)
+ST10-04 actual UTF-8 {
+  unpaidH8Receipts: 10303,
+  unpaidResponse: 3570,
+  paidH: 3716,
+  paidHeader: 1594,
+  paidResponse: 985
+}
+✔ bounded original control window and actual encoded H/CP/response budgets include wrapper bytes (31.3598ms)
+✔ recovery-ready deadline−1/equality/+1 respects fixed pause deadline independently of old lease (90.3817ms)
+✔ reopen queries exact durable original before same-request retry; notFound cannot clear intent (2.085ms)
+✔ a pending original blocks a replacement sequence and old generation cannot change new context (0.9592ms)
+✔ actual service controls survive resume and both ready reply losses across reopen, preserving original paid attempt (45.9302ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1084.6909

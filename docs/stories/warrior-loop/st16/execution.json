@@ -1,0 +1,83 @@
+{
+  "testing_seams": [
+    "public protocol/proof and pure models",
+    "real service/MemoryStore and transport coordinators",
+    "Cocos lifecycle and offline build"
+  ],
+  "platform_device_status": "gap",
+  "status": "implementation-authorized",
+  "approval": {
+    "approved_draft_body_sha256": "06eeb2c9a352dc7ad56a2d432cd8445818750aed7f31c8d83e2b202767b74fd6",
+    "evidence": "整体确认，连续实施ST16",
+    "kind": "human",
+    "editorial_freeze_changes_only": true,
+    "date": "2026-10-30",
+    "test_seams_approved": true,
+    "scope_and_graph_unchanged": true,
+    "graph_approved": true,
+    "accepted_body_sha256": "d428cb55274071ed2d64c91e1ac1b11412130ba7b0d88e5f4c6164d5a3869780",
+    "jira_actions": false
+  },
+  "tickets": [
+    {
+      "state": "planned",
+      "blocked_by": [],
+      "evidence": [],
+      "id": "ST16-01",
+      "path": "docs/stories/warrior-loop/st16/issues/01-active-combat-recovery.md",
+      "number": 1,
+      "revision": "db7180199e22331356655cb553b8d2f4a1e7ecb815aac536a1b66f89df050ef3"
+    },
+    {
+      "state": "planned",
+      "blocked_by": [
+        1
+      ],
+      "evidence": [],
+      "id": "ST16-02",
+      "path": "docs/stories/warrior-loop/st16/issues/02-unknown-requests-and-late-replies.md",
+      "number": 2,
+      "revision": "b6eb5308c07136625d9ac7ca61fbdab52411b8687062bbf694473c281c6f24b9"
+    },
+    {
+      "state": "planned",
+      "blocked_by": [
+        1
+      ],
+      "evidence": [],
+      "id": "ST16-03",
+      "path": "docs/stories/warrior-loop/st16/issues/03-dead-and-looting-recovery.md",
+      "number": 3,
+      "revision": "95f1a79948de49276eea69318f014f1176635c98a2f7608bda9e3b46a20c1ae9"
+    },
+    {
+      "state": "planned",
+      "blocked_by": [
+        2,
+        3
+      ],
+      "evidence": [],
+      "id": "ST16-04",
+      "path": "docs/stories/warrior-loop/st16/issues/04-cocos-lifecycle-recovery.md",
+      "number": 4,
+      "revision": "ceabcc15796ad318bdc0b4babf4844de91335741de376a38ec864c6539fa9e22"
+    },
+    {
+      "state": "planned",
+      "blocked_by": [
+        4
+      ],
+      "evidence": [],
+      "id": "ST16-05",
+      "path": "docs/stories/warrior-loop/st16/issues/05-joint-acceptance-and-review.md",
+      "number": 5,
+      "revision": "893a5a02f3c624022fd6c3a251527e9847de10d03c0e2884a15b3f78f29ae1c2"
+    }
+  ],
+  "integration_branch": "feat-1.0.0",
+  "spec_body_sha256": "d428cb55274071ed2d64c91e1ac1b11412130ba7b0d88e5f4c6164d5a3869780",
+  "feature": "warrior-loop-st16",
+  "published": false,
+  "jira_actions": false,
+  "baseline_head": "361ea7b"
+}
