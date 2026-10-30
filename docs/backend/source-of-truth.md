@@ -93,3 +93,7 @@ P2连续践踏（3段72px圆判）接锁向冲撞、碰墙即停解除霸体与3
 ## ST16-01 活动战斗恢复编排（2026-10-30）
 
 真实ready存活战斗的已确认移动/技能/受击→suspend→resumePrepare→资源/完整证明→ready最终复核→Movement重建并提交新片已交付；sceneEpoch/确认前沿与活尾效保留，timeline换代、不补暂停战斗。接口与46项本地相关验收见[01验证](../reviews/st16-01-verification.md)，恢复正文见[恢复时序](recovery-timeline-proposal-v1.md)。本片不代表未知资产栅栏、死亡/通关拾取、Cocos设备或全7阶段发布通过；这些沿后续票及联合门禁。
+
+## ST16-03 死亡与通关拾取恢复（2026-10-30）
+
+已确认dead/active与completed/looting的完整恢复证明、原死亡截止/体力/来源/固定通关回执保留、死亡动作限制与looting移动拾取，按[恢复时序](recovery-timeline-proposal-v1.md)与[03验证](../reviews/st16-03-verification.md)。不包含02在途竞争、04设备接线或05联合发布验收。

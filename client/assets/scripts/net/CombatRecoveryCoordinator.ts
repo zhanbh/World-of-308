@@ -1,5 +1,5 @@
 import {RecoveryCoordinator} from './RecoveryCoordinator.ts';
-import type {RecoveryTransport,RecoveryState} from './RecoveryCoordinator.ts';
+import type {RecoveryTransport} from './RecoveryCoordinator.ts';
 import type {EntryPendingStore,EntryIdentity} from './ChallengeEntryCoordinator.ts';
 import type {LoadingCoordinator} from './LoadingCoordinator.ts';
 import type {MovementCoordinator,BasicPrediction} from './MovementCoordinator.ts';
@@ -13,7 +13,7 @@ export class CombatRecoveryCoordinator {
  private context:Context|null=null;private config:MovementConfig|null=null;private roomNo=0;private basic:BasicPrediction|undefined;private generation=0;
  private handoff=false;
  constructor(transport:RecoveryTransport,persistence:EntryPendingStore,movement:MovementCoordinator,loading:LoadingCoordinator){this.recovery=new RecoveryCoordinator(transport,persistence);this.movement=movement;this.loading=loading;}
- get state():RecoveryState {const s=this.recovery.state;return {...s,predictionEnabled:s.predictionEnabled&&this.handoff&&this.movement.state.predictionEnabled,status:s.status==='active'&&!this.handoff?'recovering':s.status};}
+ get state(){const s=this.recovery.state,m=this.movement.state,ready=s.predictionEnabled&&this.handoff&&m.predictionEnabled,alive=m.confirmed?.lifeState==='alive';return {...s,predictionEnabled:ready,status:s.status==='active'&&!this.handoff?'recovering' as const:s.status,clearReceipt:this.handoff?m.clearReceipt:undefined,canMove:ready&&alive,canAttack:ready&&alive&&m.confirmed?.result==='active',canAdvanceDeathTail:ready&&this.movement.hasReleasedDeathTail};}
  init(context:Context,config:MovementConfig,roomNo:number,basic?:BasicPrediction){this.freeze();this.context=structuredClone(context);this.config=structuredClone(config);this.roomNo=roomNo;this.basic=basic;this.recovery.init(context);}
  freeze(){++this.generation;this.handoff=false;this.movement.close();}
  async suspend(command:unknown){this.freeze();await this.recovery.control(command);}

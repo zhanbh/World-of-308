@@ -497,9 +497,9 @@ export class ChallengeService {
             // Original ready receipts authorize only a bounded read of this same live timeline.
             // They do not renew the lease, consume loading time, or restart an anchor.
             if(!t){
-                const receipt=h.lastReadyReceipt;requireValue(receipt&&receipt.readyTicketId===q.payload.readyTicketId&&Number.isSafeInteger(receipt.proofDeadline)&&now<receipt.proofDeadline&&h.roomPhase==='active'&&h.connection==='connected'&&h.lifeState==='alive'&&h.result==='active','VERSION_CONFLICT');
+                const receipt=h.lastReadyReceipt;requireValue(receipt&&receipt.readyTicketId===q.payload.readyTicketId&&Number.isSafeInteger(receipt.proofDeadline)&&now<receipt.proofDeadline&&h.connection==='connected'&&((h.roomPhase==='active'&&h.result==='active')||(h.roomPhase==='cleared'&&h.result==='completed'&&h.sceneState==='looting')),'VERSION_CONFLICT');
                 const original=parseSceneResponse(receipt.result);requireValue(original.outcome.status==='committed'&&!('kind' in original.outcome.data.state),'VERSION_CONFLICT');
-                const state=header.state,issued=original.outcome.data.state;requireValue(!('kind' in state)&&state.sceneEpoch===issued.sceneEpoch&&state.timelineEpoch===issued.timelineEpoch&&state.manifestHash===issued.manifestHash&&header.revision>=issued.checkpointRevision&&state.roomPhase==='active'&&state.connection==='connected'&&header.acceptingInputs,'VERSION_CONFLICT');
+                const state=header.state,issued=original.outcome.data.state;requireValue(!('kind' in state)&&state.sceneEpoch===issued.sceneEpoch&&state.timelineEpoch===issued.timelineEpoch&&state.manifestHash===issued.manifestHash&&header.revision>=issued.checkpointRevision&&state.connection==='connected'&&header.acceptingInputs&&((state.roomPhase==='active'&&state.result==='active')||(state.roomPhase==='cleared'&&state.result==='completed')),'VERSION_CONFLICT');
                 t={readyTicketId:receipt.readyTicketId,sceneEpoch:state.sceneEpoch,timelineEpoch:state.timelineEpoch,checkpointRevision:header.revision,publicStateHash:state.publicStateHash,manifestHash:state.manifestHash,deadline:receipt.proofDeadline};
             }
             requireValue(t&&now<t.deadline&&Object.entries(t).filter(([k])=>k!=='deadline').every(([k,v])=>q.payload[k as keyof typeof q.payload]===v),'VERSION_CONFLICT');
@@ -583,14 +583,14 @@ export class ChallengeService {
                 next.controlSeq=seq;next.connection='connected';delete next.recoveryUntil;delete next.recoveryTicket;
                 next.lease={...h.lease!,mode:'connected',lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(h.lease!.revision)};delete next.lease.recoveryUntil;
                 if(next.transitionClock)next.transitionClock={...next.transitionClock,settledAt:now,transitionRevision:increment(next.transitionClock.transitionRevision)};
-                if(h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);const revision=increment(header.revision),state={...header.state,roomPhase:h.roomPhase,checkpointRevision:revision,connection:'connected' as const,recoveryUntil:null,transitionClock:next.transitionClock??null,...h.roomPhase==='active'?{anchorWallAt:now,anchorTick:header.state.acceptedTick,inputGapBaseAt:now}:{}};
-                    tx.set(header.id,{...header,revision,acceptingInputs:h.roomPhase==='active',state});
+                if(h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);const revision=increment(header.revision),state={...header.state,roomPhase:h.roomPhase,checkpointRevision:revision,connection:'connected' as const,recoveryUntil:null,transitionClock:next.transitionClock??null,...(h.roomPhase==='active'||h.roomPhase==='cleared'&&h.result==='completed'&&h.sceneState==='looting')?{anchorWallAt:now,anchorTick:header.state.acceptedTick,inputGapBaseAt:h.roomPhase==='active'?now:null}:{}};
+                    tx.set(header.id,{...header,revision,acceptingInputs:h.roomPhase==='active'||h.roomPhase==='cleared'&&h.result==='completed'&&h.sceneState==='looting',state});
                     if(h.roomPhase==='awaitingReady')next.readyTicket={readyTicketId:await loginKey('readyTicket',[h.id,h.sceneEpoch,h.timelineEpoch!,revision]),sceneEpoch:h.sceneEpoch,timelineEpoch:h.timelineEpoch!,checkpointRevision:revision,publicStateHash:state.publicStateHash,manifestHash:state.manifestHash,deadline:Math.min(next.lease.leaseUntil,h.deathDeadline??Number.MAX_SAFE_INTEGER)};
                 }
             }
             const result=reply({status:'committed',data:{state:await this.controlState(tx,next),readyTicket:next.recoveryTicket??next.readyTicket??null}},next.lease!.revision);
             const stored=structuredClone(result);let manifestRef:string|undefined;if(stored.outcome.status==='committed'&&'kind' in stored.outcome.data.state&&stored.outcome.data.state.pendingManifest){manifestRef=next.pendingRoomAttempt!.manifestRef;(stored.outcome.data.state as {pendingManifest:unknown}).pendingManifest=null;}
-            if(q.command==='scene.ready'&&next.roomPhase==='active')next.lastReadyReceipt={tuple,controlSeq:seq,readyTicketId:q.payload.readyTicketId,proofDeadline:Math.min(next.lease!.leaseUntil,next.deathDeadline??Number.MAX_SAFE_INTEGER),result};
+            if(q.command==='scene.ready'&&(next.roomPhase==='active'||next.roomPhase==='cleared'&&next.result==='completed'&&next.sceneState==='looting'))next.lastReadyReceipt={tuple,controlSeq:seq,readyTicketId:q.payload.readyTicketId,proofDeadline:Math.min(next.lease!.leaseUntil,next.deathDeadline??Number.MAX_SAFE_INTEGER),result};
             next.controlReceipts=[...(h.controlReceipts??[]),{tuple,command:q.command,sequence:seq,result:stored,manifestRef,...q.command==='scene.ready'?{readyTicketId:q.payload.readyTicketId}:{}}].slice(-8);budget(next,131072);budget(result,32768);
             tx.set(a.id,{...a,writeRevision:increment(a.writeRevision)});tx.set(h.id,next);return result;
         });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}
@@ -619,6 +619,7 @@ export class ChallengeService {
         });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}
     }
     private async movementGap(tx:Transaction,h:EntryChallenge,header:RoomCheckpointHeader,now:number){
+        if(h.roomPhase!=='active'||h.result!=='active')return false;
         const base=header.state.inputGapBaseAt;
         requireValue(base!==null&&now>=base,'CONFIG_NOT_READY');
         if(now-base<2000)return false;
