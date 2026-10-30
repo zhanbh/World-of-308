@@ -13,3 +13,5 @@ H.clearReceipt永久保存原通关装备公开快照及route/source/item/grant�
 通关仍用原体力快照且unsettled；关闭/回城才settled。下一难度解锁与账号写栅栏在同一事务，no-rewards训练不启通关奖励或解锁。实际本地计量和边界见 [03验证](../reviews/st15-03-verification.md)，不能把唯一键设计预算当SDK实测。
 
 ST15-05增加终局物理预算拒绝保护：结果页自身超W33/1.5MiB在资产事务前CONFIG_NOT_READY；提交回调按实际R44/W33、get/set80及最终写集1.5MiB保护，越限整笔回滚。正常8块域通过，3648到期效果最大域仍发布blocked，详见[预算实测](enhancement-terminal-budget-v1.md)。CONFIG_NOT_READY不能被解释为可丢弃奖励或异步补交付。
+
+2026-10-30结果存储修订：上述2026-10-29独立页保护保留为历史状态；当前按[结果存储v2](combat-result-storage-v2.md)计量单gzip物理结果包。提交预算强制保护不变；同499页及8改块混合压力样本通过。任意高熵1024页压缩界、正式发布内容包络及SDK仍待验证。

@@ -486,3 +486,7 @@ ST15-01实际room增量（2026-10-29）：drops为至多16条固定GroundDrop（
 挑战私有terminalFact保存bossActorId、精确有理微秒at、playerDied、playerDeathAtTick与derivedKills；rewardTotals保存已确认新增击杀累计gold/xp/kills，terminalRewardRef引用最小终局流水。配置rewards仅显式local-test授权。字段与限制见[boss-clear-terminal-contract-v1.md](boss-clear-terminal-contract-v1.md)；03完整奖励字段不在本增量中声明已实现。
 
 ST15评审修复：死亡首片按新增deathIndex扣死亡磨损，尾片通关仅扣房间磨损；H.playerDeathAtTick/deathDeadline跨片保留，装备写入和CP战力统一使用同一扣损后快照。尾片不改变原staminaSnapshot或unsettled语义。证据见[修复验证](../reviews/st15-review-fixes.md)。
+
+## ST15-05 原结果存储增量（2026-10-30）
+
+当前原结果物理映射按[结果存储v2](combat-result-storage-v2.md)：schema2每操作一个有界gzip JSON包；schema1旧页保留读取。公开32事件/页、1024页、稳定ref、授权及CP/资产/O/J原子提交不变。同499页及8改块混合合成压力夹具验收见证据；任意高熵1024页及正式发布包络仍待验证，见[验证](../reviews/st15-storage-verification-2026-10-30.md)。

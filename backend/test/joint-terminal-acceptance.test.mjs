@@ -1,25 +1,31 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {jointTerminalFixture,meteredService} from './fixtures/joint-terminal-fixture.mjs';
-test('joint real active Boss submit bounds eight changed CP blocks and atomically refuses maximum due result pages',async()=>{
- for(const due of [false,true]){
+test('joint real active Boss submit bounds eight changed CP blocks and retains maximum due results within budget',async()=>{
+ for(const due of [false,true,'mixed']){
  const h=await jointTerminalFixture({due});assert.equal(h.store.inspect(h.challengeId).result,'active');assert.equal((await h.cp()).header.activeChunks.length,8);
- const q=await h.command(),before=h.store.snapshot(),{service,attempts}=meteredService(h),r=await service.execute(q);if(!due)assert.equal(r.outcome.status,'committed',JSON.stringify(r));
- if(due){assert.equal(r.outcome.code,'CONFIG_NOT_READY');assert.deepEqual(h.store.snapshot(),before);assert.equal(attempts.filter(a=>a.W>0).length,0);}else{
- const m=attempts.find(a=>a.W>0);console.log('ST15-05 measured '+JSON.stringify({due,attempts}));assert.ok(m.R<=44);assert.ok(m.W<=33);assert.ok(m.calls<=80);assert.equal(h.character().level,30);assert.equal(h.character().mailIds.length,7);assert.equal(h.store.inspect(h.challengeId).clearReceipt.route,'pending');}
+ const q=await h.command(),before=h.store.snapshot(),{service,attempts}=meteredService(h),r=await service.execute(q);assert.equal(r.outcome.status,'committed',JSON.stringify(r));
+ {
+ const m=attempts.find(a=>a.W>0);console.log('ST15-05 measured '+JSON.stringify({due,attempts}));assert.ok(m.R<=44);assert.ok(m.W<=33);assert.ok(m.calls<=80);assert.ok(m.bytes<=1572864);assert.equal(h.character().level,30);assert.equal(h.character().mailIds.length,7);assert.equal(h.store.inspect(h.challengeId).clearReceipt.route,'pending');
+ if(due===true){const events=await h.results(q.operationId);assert.equal(events.length,15964);assert.equal(createHash('sha256').update(JSON.stringify(events)).digest('hex'),'77db52dae3ba239c23019c65ffcb80a06d905b748c4d5668844bfbd6cdd2e6a6');}
+ if(due==='mixed'){assert.equal(m.writeKeys.filter(k=>k.includes(':cpChunk:')).length,8);assert.ok((await h.results(q.operationId)).length>8192);}
+ }
 
  }
 });
 
 test('joint bounded terminal rolls back at every actual set including repeated character writes',async()=>{
- const sample=await jointTerminalFixture(),measured=meteredService(sample);
+ for(const due of [true,'mixed']){
+ const sample=await jointTerminalFixture({due}),measured=meteredService(sample);
  assert.equal((await measured.service.execute(await sample.command())).outcome.status,'committed');
  const count=measured.attempts.find(a=>a.W>0).setCalls;
  for(let n=1;n<=count;n++){
-  const h=await jointTerminalFixture(),q=await h.command(),before=h.store.snapshot();h.store.injectWriteFailure(n);
+  const h=await jointTerminalFixture({due}),q=await h.command(),before=h.store.snapshot();h.store.injectWriteFailure(n);
   assert.equal((await h.service.execute(q)).outcome.code,'SERVICE_UNAVAILABLE',`set ${n}`);assert.deepEqual(h.store.snapshot(),before,`set ${n}`);assert.equal(h.store.inspect(h.challengeId).result,'active');
  }
- console.log('ST15-05 rollback set points '+count);
+ console.log('ST15-05 rollback set points '+JSON.stringify({due,count}));
+ }
 });
 
 import {terminalFixture} from './fixtures/terminal-fixture.mjs';
@@ -48,10 +54,10 @@ test('all six retained mail source stubs prevent reissuance',async()=>{
 });
 test('terminal submit versus leave uses real OCC in both commit orders without half rewards',async()=>{
  for(const winner of ['simulation.submit','challenge.leave']){
- const h=await terminalFixture(),submit=await h.command(),leave={...h.auth,command:'challenge.leave',operationId:'joint-race-leave',expected:[],payload:{challengeId:h.challengeId,reason:'abandon'}};
+ const h=await jointTerminalFixture({due:'mixed'}),submit=await h.command(),leave={...h.auth,command:'challenge.leave',operationId:'joint-race-leave',expected:[],payload:{challengeId:h.challengeId,reason:'abandon'}};
  let release,entered;const gate=new Promise(r=>release=r),started=new Promise(r=>entered=r);
  const svc=new ChallengeService({store:{run:work=>h.store.run(async tx=>{let command;const result=await work({get:tx.get,set:(id,v)=>{if(v.command==='simulation.submit'||v.command==='challenge.leave')command=v.command;tx.set(id,v);}});if(command&&command!==winner){entered();await gate;}return result;})},clock:h.clock,identity:h.identity,content:h.content});
  const losing=svc.execute(winner==='simulation.submit'?leave:submit);await started;const first=await svc.execute(winner==='simulation.submit'?submit:leave);release();const second=await losing;
- assert.equal(first.outcome.status,'committed');assert.ok(h.store.conflicts>0);const ch=h.store.inspect(h.challengeId);if(winner==='simulation.submit'){assert.equal(ch.result,'completed');assert.equal(ch.clearReceipt.gold,'150');}else{assert.equal(second.outcome.status,'rejected');assert.equal(ch.clearReceipt,undefined);assert.equal(h.character().xp,0);}
+ assert.equal(first.outcome.status,'committed');assert.ok(h.store.conflicts>0);const ch=h.store.inspect(h.challengeId);if(winner==='simulation.submit'){assert.equal(ch.result,'completed');assert.equal(ch.clearReceipt.gold,'180');}else{assert.equal(second.outcome.status,'rejected');assert.equal(ch.clearReceipt,undefined);assert.equal(h.character().xp,0);}
  }
 });

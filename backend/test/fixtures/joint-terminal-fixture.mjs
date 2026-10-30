@@ -23,7 +23,7 @@ export async function jointTerminalFixture({due=false}={}) {
   await h.store.run(async tx=>{
    const ch=await tx.get(h.challengeId),cp=await readCheckpoint(tx,ch);
    // All six in-use effect blocks change through real simulation, rather than equal-hash sets.
-   for(const name of ['cross','bengshan','earth'])for(const e of cp.scene[name].effects){e.originUs={n:'0',d:'1'};e.nextJump=0;e.budget='5';e.snapshot.haste={n:'1',d:'1'};e.snapshot.crit={n:'0',d:'1'};}
+   for(const name of ['cross','bengshan','earth'])for(const [index,e] of cp.scene[name].effects.entries()){if(due==='mixed'&&index%5>=3)continue;e.originUs={n:'0',d:'1'};e.nextJump=0;e.budget='5';e.snapshot.haste={n:'1',d:'1'};e.snapshot.crit={n:'0',d:'1'};}
    const chunks=[await writeChunk(ch,0,2,cp.role),await writeChunk(ch,1,2,cp.scene),...await writeCrossChunks(ch,cp.scene.cross,cp.header.activeChunks,cp.scene.bengshan,cp.scene.badao,cp.scene.earth,cp.effectChunks)];
    for(const c of chunks)tx.set(c.id,c);tx.set(cp.header.id,{...cp.header,activeChunks:chunks.map(c=>({ordinal:c.ordinal,chunkRevision:c.chunkRevision,hash:c.hash,sceneEpoch:c.sceneEpoch})),state:{...cp.header.state,publicStateHash:await stateHash(cp.role,cp.scene)}});
   });

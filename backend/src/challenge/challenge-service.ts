@@ -1,3 +1,5 @@
+import {packEvents,unpackEvents,RESULT_PACK_PAGES,RESULT_PACK_BYTES} from './combat-result-pack.ts';
+import type {PackedEvents} from './combat-result-pack.ts';
 import type {WalletEntity} from '../shop/shop-model.ts';
 import {validateTerminal,advanceProgression,planClear} from './terminal-settlement.ts';
 import {verifyFixedDrop,groundHoldings,planGroundDelivery,validateDropConfig,generateGroundDrops} from './ground-drops.ts';
@@ -631,8 +633,24 @@ export class ChallengeService {
             const a=await this.authorize(tx,caller,q.sessionId,q.sessionEpoch),id=await loginKey('assetOp',[a.id,q.payload.operationId]),receipt=await tx.get<{schemaVersion:number;id:string;accountId:string;command:string;result:unknown}>(id);
             requireValue(receipt?.schemaVersion===2&&receipt.id===id&&receipt.accountId===a.id&&receipt.command==='simulation.submit','NOT_FOUND_OR_FORBIDDEN');
             const original=parseSimulationResponse(receipt.result);requireValue(original.operationId===q.payload.operationId&&original.outcome.status==='committed','SERVICE_UNAVAILABLE');
-            const pageId=await loginKey('combatResults',[a.id,q.payload.operationId,q.payload.pageIndex]),stored=await tx.get<{schemaVersion:number;accountId:string;operationId:string;actionResultsRef:string;pageIndex:number;totalPages:number;events:unknown[]}>(pageId);
-            requireValue(stored?.schemaVersion===1&&stored.accountId===a.id&&stored.operationId===q.payload.operationId&&stored.actionResultsRef===id&&stored.pageIndex===q.payload.pageIndex,'NOT_FOUND_OR_FORBIDDEN');
+            const packStart=Math.floor(q.payload.pageIndex/RESULT_PACK_PAGES)*RESULT_PACK_PAGES;
+            type Stored={schemaVersion:number;id:string;accountId:string;operationId:string;actionResultsRef:string;pageIndex:number;totalPages:number;events:unknown[];packed:PackedEvents};
+            const packId=await loginKey('combatResults',[a.id,q.payload.operationId,packStart]),candidate=await tx.get<Stored>(packId);
+            let stored:Stored;
+            if(candidate?.schemaVersion===2){
+                requireValue(Object.keys(candidate).sort().join(',')==='accountId,actionResultsRef,id,operationId,packed,pageIndex,schemaVersion,totalPages'&&candidate.packed&&Object.keys(candidate.packed).sort().join(',')==='data,decodedBytes,encoding,eventCount'&&typeof candidate.packed.data==='string'&&candidate.packed.data.length<=RESULT_PACK_BYTES,'CONFIG_NOT_READY');
+                requireValue(candidate.id===packId&&candidate.accountId===a.id&&candidate.operationId===q.payload.operationId&&candidate.actionResultsRef===id&&candidate.pageIndex===packStart,'NOT_FOUND_OR_FORBIDDEN');
+                requireValue(Number.isInteger(candidate.totalPages)&&candidate.totalPages>=1&&candidate.totalPages<=1024&&q.payload.pageIndex<candidate.totalPages,'CONFIG_NOT_READY');
+                const offset=(q.payload.pageIndex-packStart)*32;
+                const events=await unpackEvents(candidate.packed,offset,32),rows=candidate.packed.eventCount,pages=Math.min(RESULT_PACK_PAGES,candidate.totalPages-packStart);
+                requireValue(encodedBytes(candidate)<=RESULT_PACK_BYTES,'CONFIG_NOT_READY');
+                requireValue(packStart+pages<candidate.totalPages?rows===pages*32:(rows<=pages*32&&rows>(pages-1)*32||candidate.totalPages===1&&rows===0),'CONFIG_NOT_READY');
+                stored={...candidate,pageIndex:q.payload.pageIndex,events};
+            }else{
+                const pageId=await loginKey('combatResults',[a.id,q.payload.operationId,q.payload.pageIndex]);
+                const legacy=q.payload.pageIndex===packStart?candidate:await tx.get<Stored>(pageId);
+                requireValue(legacy?.schemaVersion===1&&legacy.accountId===a.id&&legacy.operationId===q.payload.operationId&&legacy.actionResultsRef===id&&legacy.pageIndex===q.payload.pageIndex,'NOT_FOUND_OR_FORBIDDEN');stored=legacy;
+            }
             return parseActionResultsPage({protocolVersion:2,query:q.query,requestId:q.requestId,operationId:stored.operationId,actionResultsRef:stored.actionResultsRef,pageIndex:stored.pageIndex,totalPages:stored.totalPages,events:stored.events});
         });
     }
@@ -729,7 +747,13 @@ export class ChallengeService {
             if(scene.earth){const ready=scene.earth.readyAtUs;role.cooldowns.find(cd=>cd.cooldownId==='earth')!.readyAtTick=logicTick(Number((BigInt(ready.n)+BigInt(ready.d)*10000n-1n)/(BigInt(ready.d)*10000n)));if(c.level>=20){const skill={skillId:'earth' as const,level:1+Math.floor((c.level-20)/2),configRef:cp.role.unlockedSkills.find(x=>x.skillId==='earth')?.configRef??'earth@1'};role.unlockedSkills=[...role.unlockedSkills.filter(x=>x.skillId!=='earth'),skill];}if(scene.earth.cast){role.player.actionId='earth';role.player.phase=scene.earth.cast.node;}}
             if(scene.badao){const ready=scene.badao.readyAtUs;role.cooldowns.find(cd=>cd.cooldownId==='badao')!.readyAtTick=logicTick(Number((BigInt(ready.n)+BigInt(ready.d)*10000n-1n)/(BigInt(ready.d)*10000n)));if(c.level>=10){const skill={skillId:'badao' as const,level:1+Math.floor((c.level-10)/2),configRef:cp.role.unlockedSkills.find(x=>x.skillId==='badao')?.configRef??'badao@1'};role.unlockedSkills=[...role.unlockedSkills.filter(x=>x.skillId!=='badao'),skill];}if(scene.badao.cast){role.player.actionId='badao';role.player.phase=scene.badao.cast.node;}}
             if(scene.monsters)role.player.actionId=role.player.lifeState==='dead'?'dead':q.payload.toTick<scene.monsterControlUntilTick!?'stagger':role.player.actionId;
-            const resultPages=await Promise.all(Array.from({length:combatEvents?Math.max(1,Math.ceil(combatEvents.length/32)):0},async(_,pageIndex)=>({id:await loginKey('combatResults',[a.id,q.operationId,pageIndex]),schemaVersion:1,accountId:a.id,operationId:q.operationId,actionResultsRef:id,pageIndex,totalPages:Math.max(1,Math.ceil(combatEvents!.length/32)),events:combatEvents!.slice(pageIndex*32,(pageIndex+1)*32)})));requireValue(resultPages.length<=1024,'CONFIG_NOT_READY');for(const page of resultPages)budget(page,32768);
+            const totalPages=combatEvents?Math.max(1,Math.ceil(combatEvents.length/32)):0;
+            requireValue(totalPages<=1024,'CONFIG_NOT_READY');
+            for(let pageIndex=0;pageIndex<totalPages;pageIndex++)budget({protocolVersion:2,query:'simulation.actionResults',requestId:'x'.repeat(128),operationId:q.operationId,actionResultsRef:id,pageIndex,totalPages,events:combatEvents!.slice(pageIndex*32,(pageIndex+1)*32)},32768);
+            const resultPages=await Promise.all(Array.from({length:Math.ceil(totalPages/RESULT_PACK_PAGES)},async(_,packIndex)=>{
+                const pageIndex=packIndex*RESULT_PACK_PAGES;
+                return {id:await loginKey('combatResults',[a.id,q.operationId,pageIndex]),schemaVersion:2,accountId:a.id,operationId:q.operationId,actionResultsRef:id,pageIndex,totalPages,packed:await packEvents(combatEvents!.slice(pageIndex*32,(pageIndex+RESULT_PACK_PAGES)*32))};
+            }));for(const page of resultPages)budget(page,RESULT_PACK_BYTES);
             // Result pages are physical writes too. Refuse an impossible terminal before staging assets.
             if(terminalFact)requireValue(resultPages.length<=33&&resultPages.reduce((n,p)=>n+encodedBytes(p),0)<=1572864,'CONFIG_NOT_READY');
             return await this.options.store.run(async rawTx=>{

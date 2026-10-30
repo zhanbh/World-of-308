@@ -189,3 +189,7 @@ ST15-01（2026-10-29）：drop.collect在active或cleared、connected且alive的
 本轮已接真实Boss死亡→completed/alive/looting，清active指针但保留openScene与位置供拾取，含余怪派生、同刻死亡免费复活及末房磨损至0不翻盘。最小金币XP与来源/CP同笔，完整升级邮件、专属装备路由、通关固定本局消耗、回城沉降/解锁仍由03接续；不得将当前受限实现等同上表完整终局事务已验收。细节见[实施合同](boss-clear-terminal-contract-v1.md)。
 
 ST15跨片死亡修复（2026-10-29）：active/dead/connected若CP存在已释放尾效果，可在原deadline及原在线时间前沿内提交空inputs推进；没有尾效果或新增动作均拒绝，不变为alive。首片新增deathIndex同笔记录playerDeathAtTick与死亡磨损−5，后片沿用原deathDeadline；尾伤Boss死亡仍先保留死亡事实，再免费满HP/MP复活，清职业CD/动作/移动和回复余数，且只追加末房磨损，不重复死亡扣损。completed/looting保持原staminaSnapshot与unsettled。断线/输入间断进入recovery时不推进模拟，过期按原规则失败关闭。
+
+## ST15-05 原结果存储增量（2026-10-30）
+
+当前原结果物理映射按[结果存储v2](combat-result-storage-v2.md)：schema2每操作一个有界gzip JSON包；schema1旧页保留读取。公开32事件/页、1024页、稳定ref、授权及CP/资产/O/J原子提交不变。同499页及8改块混合合成压力夹具验收见证据；任意高熵1024页及正式发布包络仍待验证，见[验证](../reviews/st15-storage-verification-2026-10-30.md)。

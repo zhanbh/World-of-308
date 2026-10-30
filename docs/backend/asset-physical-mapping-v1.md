@@ -154,3 +154,7 @@ operations保存稳定摘要、成功/明确拒绝、实际数量/固定随机�
 ### ST10-02 prepare物理补充（2026-10-24）
 
 独立键`loginKey('roomManifest',[challengeId,attemptId])`保存不可变manifest；`loginKey('roomAttempt',[challengeId,roomNo])`为确定attempt标识。成功prepare只写H/manifest/O三键，原H读取参与事务栅栏，读取A/C当前身份/场景；不增加CP或收费J。manifest记录<=32KiB，正文<=24KiB，H<=128KiB，O<=16KiB（均实际JSON UTF-8）。O仅保存原ref/attempt/hash和原结果元数据，命令绑定值为规范命令SHA-256而非可膨胀escaped请求正文。原引用和发布资源至少与O保留期共同保留，不对权威manifest自动TTL，也不以当前pending覆盖原结果。资源文件保持发布resolver归属，不塞入O/H。
+
+## ST15-05 原结果存储增量（2026-10-30）
+
+当前原结果物理映射按[结果存储v2](combat-result-storage-v2.md)：schema2每操作一个有界gzip JSON包；schema1旧页保留读取。公开32事件/页、1024页、稳定ref、授权及CP/资产/O/J原子提交不变。同499页及8改块混合合成压力夹具验收见证据；任意高熵1024页及正式发布包络仍待验证，见[验证](../reviews/st15-storage-verification-2026-10-30.md)。
