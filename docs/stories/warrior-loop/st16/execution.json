@@ -34,11 +34,16 @@
       "code_commit": "2b82f2b46bf4f7ffcf6bcc2c833c15bcbfbf34d2"
     },
     {
-      "state": "ready",
+      "state": "merged",
       "blocked_by": [
         1
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/reviews/st16-02-verification.md",
+        "docs/reviews/st16-02-related-tests.log",
+        "docs/reviews/st16-02-merge-verification.md"
+      ],
+      "code_commit": "55c1c05bf93bc411f6cf494dd95810e3b224259a",
       "id": "ST16-02",
       "path": "docs/stories/warrior-loop/st16/issues/02-unknown-requests-and-late-replies.md",
       "number": 2,
@@ -85,6 +90,7 @@
     }
   ],
   "integration_branch": "feat-1.0.0",
+  "current_scope": "User requested completion of ST16-02 and ST16-03 only, then stop; ST16-04 and ST16-05 remain unimplemented and are not started. Final seven-stage and independent Standards/Spec review remain ST16-05.",
   "spec_body_sha256": "d428cb55274071ed2d64c91e1ac1b11412130ba7b0d88e5f4c6164d5a3869780",
   "feature": "warrior-loop-st16",
   "published": false,
