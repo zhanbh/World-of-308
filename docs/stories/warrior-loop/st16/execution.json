@@ -20,16 +20,21 @@
   },
   "tickets": [
     {
-      "state": "planned",
+      "state": "merged",
       "blocked_by": [],
-      "evidence": [],
+      "evidence": [
+        "docs/reviews/st16-01-verification.md",
+        "docs/reviews/st16-01-related-tests.log",
+        "docs/reviews/st16-01-merge-verification.md"
+      ],
       "id": "ST16-01",
       "path": "docs/stories/warrior-loop/st16/issues/01-active-combat-recovery.md",
       "number": 1,
-      "revision": "db7180199e22331356655cb553b8d2f4a1e7ecb815aac536a1b66f89df050ef3"
+      "revision": "db7180199e22331356655cb553b8d2f4a1e7ecb815aac536a1b66f89df050ef3",
+      "code_commit": "2b82f2b46bf4f7ffcf6bcc2c833c15bcbfbf34d2"
     },
     {
-      "state": "planned",
+      "state": "ready",
       "blocked_by": [
         1
       ],
@@ -40,7 +45,7 @@
       "revision": "b6eb5308c07136625d9ac7ca61fbdab52411b8687062bbf694473c281c6f24b9"
     },
     {
-      "state": "planned",
+      "state": "ready",
       "blocked_by": [
         1
       ],
