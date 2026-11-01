@@ -2,8 +2,8 @@
   "feature": "warrior-loop-st17",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "131edef",
-  "status": "ST17-01-complete-stopped-at-user-scope",
-  "current_scope": "User approved five-task graph and testing seams, requested ST17-01 only; do not start02-05.",
+  "status": "ST17-02-complete-stopped-at-user-scope",
+  "current_scope": "User requested 继续02吧 and 继续吧; completed02 only, do not start03-05.",
   "approval_evidence": "可以，确认；开始01吧先",
   "spec_body_sha256": "d91949b4ddf0ba08bc39d5fed24f2b26ac3dbbc1cbdb4120fa5aa36293ccc8aa",
   "tickets": [
@@ -33,8 +33,19 @@
       "revision": "48a326b23317326a3030fc9569a95324f7ecd9f7433c9b8edfffe6e9a7e17759",
       "full_file_sha256": "55c98e93d4a814b66356778cbd89a488ef45c90fd15705dab0ab0bf42a320330",
       "blocked_by": [],
-      "state": "planned",
-      "evidence": []
+      "state": "merged",
+      "evidence": [
+        "docs/reviews/st17-02-verification.md",
+        "docs/reviews/st17-02-merge-verification.md",
+        "docs/reviews/st17-02-merge-recheck.md"
+      ],
+      "worktree": ".worktrees/st17-02-single-repair",
+      "branch": "feat/st17-02-single-repair",
+      "base_commit": "4bbe1840cae9e221d90feceeca8a2aa7f2e9d527",
+      "initial_code_commit": "e21afe0da12f3d8d4375de51818b72a1712707dd",
+      "fix_commit": "0ea7f0fafda90cee844d9e69bb94d90b6f5806f6",
+      "code_commit": "0ea7f0fafda90cee844d9e69bb94d90b6f5806f6",
+      "worktree_cleaned": true
     },
     {
       "id": "ST17-03",
@@ -83,19 +94,48 @@
   "published": false,
   "jira_actions": false,
   "verification": {
-    "scope": "ST17-01 only",
-    "source_head": "13a8b6bf4935ce93ec4341b04d8f12d6630c479d",
-    "initial_related_tests": 75,
-    "final_recovery_related_tests": 33,
-    "independent_final_new_tests": 12,
+    "scope": "ST17-02 only",
+    "completed_at": "2026-11-02",
+    "source_head": "0ea7f0fafda90cee844d9e69bb94d90b6f5806f6",
+    "initial_related_tests": 168,
+    "final_expected_related_tests": 106,
+    "independent_final_new_tests": 21,
     "backend_types_exit": 0,
     "client_model_types_exit": 0,
-    "independent_merger": "READY",
-    "initial_merger": "NOT READY; ordinary cleared recovery fixed, original report retained",
+    "initial_independent_merger": "NOT READY: missing expected guard; original message archived",
+    "final_independent_merger": "READY: fresh agent verified exact fixed source",
     "accepted_source_files_match": 6,
     "full_seven_stage": "not run; ST17-05",
     "creator_build": "not run; ST17-04/05",
     "remaining_tickets_started": false,
     "platform_device_status": "gap"
+  },
+  "scope_history": [
+    {
+      "scope": "User approved five-task graph and testing seams, requested ST17-01 only; do not start02-05.",
+      "status": "ST17-01-complete-stopped-at-user-scope",
+      "verification": {
+        "scope": "ST17-01 only",
+        "source_head": "13a8b6bf4935ce93ec4341b04d8f12d6630c479d",
+        "initial_related_tests": 75,
+        "final_recovery_related_tests": 33,
+        "independent_final_new_tests": 12,
+        "backend_types_exit": 0,
+        "client_model_types_exit": 0,
+        "independent_merger": "READY",
+        "initial_merger": "NOT READY; ordinary cleared recovery fixed, original report retained",
+        "accepted_source_files_match": 6,
+        "full_seven_stage": "not run; ST17-05",
+        "creator_build": "not run; ST17-04/05",
+        "remaining_tickets_started": false,
+        "platform_device_status": "gap"
+      }
+    }
+  ],
+  "resume": {
+    "date": "2026-11-02",
+    "evidence": "继续02吧",
+    "head": "4bbe1840cae9e221d90feceeca8a2aa7f2e9d527",
+    "accepted_source_files_match": 6
   }
 }

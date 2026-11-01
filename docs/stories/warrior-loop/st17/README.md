@@ -18,3 +18,9 @@
 01已实现并合入，最终源码 `13a8b6bf4935ce93ec4341b04d8f12d6630c479d`。普通清房/死亡磨损与归零继续本局、清房后完整恢复/换房已覆盖；实现相关75/75、恢复修复33/33，最终独立新增12/12及后端/客户端模型类型通过。初次merger发现普通cleared恢复门禁缺陷，修复后READY，原报告保留。见[实现证据](../../../reviews/st17-01-verification.md)、[初次核验](../../../reviews/st17-01-merge-verification.md)、[独立复核](../../../reviews/st17-01-merge-recheck.md)。
 
 本轮独立工作树已清理；未执行全7阶段或Creator，不冒称全ST17或平台通过。按用户“开始01吧先”停在01，02～05尚未启动；没有push。
+
+## ST17-02 本地交付（2026-11-02）
+
+用户“继续02吧”授权02，覆盖历史01-only范围。02已实现并独立核验合入，固定源码 `0ea7f0fafda90cee844d9e69bb94d90b6f5806f6`：可信林纳克斯上下文、只读版本化报价、穿戴/背包单件修满、原O/J恢复及真实传输RepairCoordinator。初版168/168相关，版本修复后106/106定向及两types通过，最终独立21/21和两types通过；初次NOT READY的旧expected问题已修复，完整记录见[02证据](../../../reviews/st17-02-verification.md)、[初次核验](../../../reviews/st17-02-merge-verification.md)、[独立复核](../../../reviews/st17-02-merge-recheck.md)。
+
+实现子任务及旧merger在交付后遇执行额度限制，根会话接手修expected并记录真实RED/GREEN，最终由新的独立复核者验证READY，未将自验冒充独立通过。本轮工作树已清理；未push。03一键全修、04面板、05全故事门禁尚未启动，正式价格/SDK/设备GAP保留。
