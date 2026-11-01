@@ -202,3 +202,8 @@ CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢
 
 客户端 unknown 与服务 connection/recovery 为不同状态。未决业务先保留原意图、禁新写、查询原结果；查询失败维持 unknown，不发送恢复控制。notFound 可进入原恢复控制竞争，但不清原意图；服务栅栏后原操作确认方可清除。原操作可能已提交，必须保留其资产；原操作未提交则由既有 OCC/时间段栅栏拒绝。旧回调不得改变 init/close 后的新视图。无服务状态/截止或 DTO 改动，详见[02验证](../reviews/st16-02-verification.md)。
 ST16-03：dead/active的suspend→resumePrepare→ready仍dead且原deathDeadline不延；completed/looting同链恢复移动锚点与拾取，2秒战斗缺口仅active/result=active，超时只关闭拾取并保成功/已入包收益。详见[恢复时序](recovery-timeline-proposal-v1.md)。
+
+
+## ST16-04 生命周期适配（2026-11-01）
+
+Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapter接既有CombatRecovery/Movement/Drop/Terminal；清持有输入、冻结预测与新资产操作，完整资源/恢复证明/ready及当前证明后按alive/dead/looting分别开放动作。首次冻结本地UI最多10秒且不滚动延长，终止只转宿主既有登录入口，不使用旧票据续关；该UI判断不代替服务端原截止和资产结算。没有生产DTO、状态字段、CP/结果格式或服务写事务变更；本机预览额外scene.status读取当前lease，独立隔离奖励授权不变。实际模型/传输证据及离线构建、设备/登录GAP见[04验证](../reviews/st16-04-verification.md)。

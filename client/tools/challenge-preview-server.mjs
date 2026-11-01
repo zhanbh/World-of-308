@@ -11,6 +11,7 @@ import { localTacticsConfig } from '../../shared/src/monster-tactics.ts';
 export async function createChallengePreview(tacticsPatch = localTacticsConfig({ 'humanoid@1': 'boss' }, 'normal')) {
   const h = await monsterFixture(tacticsPatch);
   await h.grow(20);
+  const started=Date.now();h.clock.now=()=>1013+Date.now()-started;
 
   const context = {
     protocolVersion: 2,
@@ -53,13 +54,17 @@ export async function createChallengePreview(tacticsPatch = localTacticsConfig({
   return {
     bootstrap: {
       previewInstanceId: globalThis.crypto.randomUUID(),
+      serverTime:h.clock.now(),
+      controlSeq:h.store.inspect(h.challengeId).controlSeq,
       identity: { sessionId: h.auth.sessionId, sessionEpoch: h.auth.sessionEpoch, characterId: h.characterId },
       context,
       config: h.config,
       prepareCommand: h.prepareCommand,
       basic
     },
+    async originalControl(value){return h.service.queryOriginalControl(value);},
     async rpc(value) {
+      if(value?.query==='resource.resolve')return Array.from(await h.service.resolveResource(value.releaseRef,value.ref));
       if (value && Object.hasOwn(value, 'query')) return h.service.query(value);
       return h.service.execute(value);
     }
@@ -71,7 +76,7 @@ export async function createLootChallengePreview() {
  const h=await terminalFixture(),started=Date.now();h.clock.now=()=>1513+Date.now()-started;
  const cp=await h.cp(),{attackPowerByLevel,...rates}=h.profile.attributes;
  const context={...h.auth,characterId:h.characterId,rolePlayEpoch:h.character().rolePlayEpoch,challengeId:h.challengeId};
- return {bootstrap:{previewInstanceId:globalThis.crypto.randomUUID(),mode:'local-test-terminal',authorization:'isolated-local-assets-only',activeRoomNo:6,context,config:h.config,basic:{profile:h.profile,stats:{attackPower:attackPowerByLevel[0],...rates,x:0,y:0,facing:1},targetRules:Object.fromEntries(cp.scene.combat.targets.map(t=>[t.actorId,{mitigation:t.mitigation,evasion:t.evasion,damageImmune:t.damageImmune,controlImmune:t.controlImmune}]))}},async rpc(value){return value&&Object.hasOwn(value,'query')?h.service.query(value):h.service.execute(value);}};
+ return {bootstrap:{previewInstanceId:globalThis.crypto.randomUUID(),serverTime:h.clock.now(),mode:'local-test-terminal',authorization:'isolated-local-assets-only',activeRoomNo:6,recoveryResourceCommand:h.prepareCommand,controlSeq:h.store.inspect(h.challengeId).controlSeq,context,config:h.config,basic:{profile:h.profile,stats:{attackPower:attackPowerByLevel[0],...rates,x:0,y:0,facing:1},targetRules:Object.fromEntries(cp.scene.combat.targets.map(t=>[t.actorId,{mitigation:t.mitigation,evasion:t.evasion,damageImmune:t.damageImmune,controlImmune:t.controlImmune}]))}},async originalControl(value){return h.service.queryOriginalControl(value);},async rpc(value){if(value?.query==='resource.resolve')return Array.from(await h.service.resolveResource(value.releaseRef,value.ref));return value&&Object.hasOwn(value,'query')?h.service.query(value):h.service.execute(value);}};
 }
 export function createPreviewServer(preview) {
   return http.createServer(async (req, res) => {
@@ -97,7 +102,7 @@ export function createPreviewServer(preview) {
       res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
       res.writeHead(204); res.end(); return;
     }
-    if (req.method !== 'POST' || !['/bootstrap', '/rpc'].includes(req.url) || req.headers['content-type']?.split(';')[0] !== 'application/json') {
+    if (req.method !== 'POST' || !['/bootstrap', '/rpc', '/original-control'].includes(req.url) || req.headers['content-type']?.split(';')[0] !== 'application/json') {
       send(404, { error: 'NOT_FOUND' }); return;
     }
     let raw = '', bytes = 0;
@@ -108,7 +113,7 @@ export function createPreviewServer(preview) {
         raw += chunk.toString('utf8');
       }
       const value = JSON.parse(raw);
-      send(200, req.url === '/bootstrap' ? preview.bootstrap : await preview.rpc(value));
+      send(200, req.url === '/bootstrap' ? preview.bootstrap : req.url === '/original-control'?await preview.originalControl(value):await preview.rpc(value));
     } catch {
       if (!res.headersSent) send(400, { error: 'INVALID_REQUEST' });
     }

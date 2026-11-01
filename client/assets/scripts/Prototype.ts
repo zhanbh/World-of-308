@@ -14,6 +14,7 @@ import { InventoryPanel } from './ui/InventoryPanel';
 import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
+import type {CombatLifecycleAdapter} from './net/CombatLifecycleAdapter';
 import { MovementCoordinator } from './net/MovementCoordinator';
 import { connectChallengePreview } from './net/ChallengePreview';
 import type { LootSceneCoordinator } from './net/LootSceneCoordinator';
@@ -89,6 +90,7 @@ export class Prototype extends Component {
     private inventoryHadStats = false;
     private inventoryNotice!: Label;
     private operationSequence = 0;
+    private lifecycle: CombatLifecycleAdapter | null = null;
     private challengeCoordinator: MovementCoordinator | null = null;
     private challengeConnecting = false;
     private challengeGeneration = 0;
@@ -174,9 +176,11 @@ export class Prototype extends Component {
         input.on(Input.EventType.KEY_DOWN, this.keyDown, this);
         input.on(Input.EventType.KEY_UP, this.keyUp, this);
         game.on(Game.EVENT_HIDE, this.onHideInput, this);
+        game.on(Game.EVENT_SHOW, this.onShowAuthority, this);
     }
 
     onDestroy(): void {
+        ++this.challengeGeneration;this.lifecycle?.destroy();this.lifecycle=null;
         ++this.inventoryConnectGeneration;
         input.off(Input.EventType.TOUCH_START, this.touchStart, this);
         input.off(Input.EventType.TOUCH_MOVE, this.touchMove, this);
@@ -185,6 +189,7 @@ export class Prototype extends Component {
         input.off(Input.EventType.KEY_DOWN, this.keyDown, this);
         input.off(Input.EventType.KEY_UP, this.keyUp, this);
         game.off(Game.EVENT_HIDE, this.onHideInput, this);
+        game.off(Game.EVENT_SHOW, this.onShowAuthority, this);
         ++this.bankGeneration;
         this.bankPanel?.dispose();
         this.inventoryPanel?.dispose();
@@ -218,7 +223,9 @@ export class Prototype extends Component {
         });
     }
 
-    public attachChallenge(coordinator: MovementCoordinator, preview = false, loot?: LootSceneCoordinator): void {
+    public attachChallenge(coordinator: MovementCoordinator, preview = false, loot?: LootSceneCoordinator, lifecycle?: (clearInput:()=>void,reenter:()=>void)=>CombatLifecycleAdapter, reenter?:()=>void): void {
+        if(lifecycle&&!reenter)throw Error('LOGIN_ROUTE_REQUIRED');
+        ++this.challengeGeneration;this.lifecycle?.destroy();this.lifecycle=null;
         this.lootScene?.close();
         this.challengeCoordinator = coordinator;
         this.lootScene = loot ?? null;
@@ -227,12 +234,14 @@ export class Prototype extends Component {
         this.clearInput();
         this.authorityBasicHeld = false;
         this.authorityClockBase = Date.now();
+        this.lifecycle=lifecycle?.(()=>{this.clearInput();this.authorityBasicHeld=false;this.authorityClockBase=Date.now();},reenter!)??null;
         this.challengeNotice.string = preview ? '权威战斗已连接 · MovementCoordinator 服务端驱动' : '';
     }
 
     private async toggleChallenge(): Promise<void> {
         if (this.challengeCoordinator) {
             if(this.lootScene?.busy){void this.lootScene.retry();return;}
+            this.lifecycle?.destroy();this.lifecycle=null;
             this.challengeCoordinator = null;
             this.lootScene?.close();this.lootPanel?.dispose();this.lootPanel=null;this.lootScene=null;
             this.restartEncounter();
@@ -246,7 +255,7 @@ export class Prototype extends Component {
         try {
             const preview = await connectChallengePreview();
             if (!this.isValid || gen !== this.challengeGeneration) return;
-            this.attachChallenge(preview.coordinator, true, preview.loot);
+            this.challengeConnecting=false;this.attachChallenge(preview.coordinator, true, preview.loot,preview.lifecycle,()=>{this.challengeNotice.string='请通过登录入口重新进入游戏';});
             this.challengeNotice.string=preview.mode==='local-test-terminal'?'ST15 本机终局奖励测试 · 隔离临时资产':'ST12 无奖励训练 · 权威服务';
         } catch {
             if (this.isValid && gen === this.challengeGeneration) {
@@ -401,7 +410,10 @@ export class Prototype extends Component {
             if(e.keyCode===KeyCode.KEY_C){void this.toggleChallenge();return;}
             if(e.keyCode===KeyCode.KEY_P){this.authorityAction('collect');return;}
             if(e.keyCode===KeyCode.KEY_L){this.authorityAction('leave');return;}
-            if(e.keyCode===KeyCode.KEY_V){this.authorityAction('retry');return;}
+            if(e.keyCode===KeyCode.KEY_V){this.retryCombat();return;}
+            if(e.keyCode===KeyCode.ESCAPE){this.pauseCombat();return;}
+            if(e.keyCode===KeyCode.ENTER){if(this.lifecycle?.state.phase==='terminal')this.reenterGame();else this.resumeCombat();return;}
+            if(this.lifecycle&&!this.lifecycle.state.canMove)return;
             const combat=this.challengeCoordinator.state.confirmed?.result!=='completed';
             if(!this.keys.has(e.keyCode)&&combat){const skill=e.keyCode===KeyCode.KEY_E?'cross':e.keyCode===KeyCode.KEY_F?'bengshan':e.keyCode===KeyCode.KEY_Q?'badao':e.keyCode===KeyCode.KEY_G?'earth':null;if(skill)this.authoritySkill(skill);}
             this.keys.add(e.keyCode);return;
@@ -454,7 +466,12 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.SPACE && this.attackIds.size === 0) this.model.release();
     }
 
-    private onHideInput(): void { this.bankKeyHeld = false; if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; } this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.clearInput(); }
+    public pauseCombat():void {void this.lifecycle?.pause();}
+    public resumeCombat():void {void this.lifecycle?.resume();}
+    public retryCombat():void {void this.lifecycle?.retry();}
+    public reenterGame():void {this.lifecycle?.reenter();}
+    private onShowAuthority():void {void this.lifecycle?.show();}
+    private onHideInput(): void { void this.lifecycle?.hide(); this.bankKeyHeld = false; if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; } this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.clearInput(); }
 
     private clearInput(): void {
         this.keys.clear(); this.attackIds.clear(); this.stickId = null;
@@ -562,14 +579,17 @@ export class Prototype extends Component {
 
     private authorityAction(action:'collect'|'leave'|'retry'):void {
         const scene=this.lootScene;if(!scene)return;
+        const generation=this.challengeGeneration;
+        if(this.lifecycle&&this.lifecycle.state.phase!=='active'){if(action==='retry')this.retryCombat();return;}
         const task=action==='retry'?scene.retry():action==='leave'?scene.requestLeave(scene.nextOperation('leave')):scene.hud.nearest?scene.requestCollect(scene.nextOperation('collect'),scene.hud.nearest.dropId):Promise.resolve();
-        void task.catch(e=>{this.challengeNotice.string=e instanceof Error?e.message:'操作暂不可用';});
+        void task.catch(e=>{if(!this.isValid||generation!==this.challengeGeneration)return;this.challengeNotice.string=e instanceof Error?e.message:'操作暂不可用';});
     }
     private authoritySkill(skill:WarriorSkillId):void {
-        const c=this.challengeCoordinator;if(!c||!this.lootScene?.canMove)return;
+        const c=this.challengeCoordinator;if(!c||!this.lootScene?.canMove||this.lifecycle&&!this.lifecycle.state.canAttack)return;
         try{c.enqueue({seq:0,tick:c.state.confirmed!.acceptedTick,kind:'skill',skillId:skill});}catch{}
     }
     private authorityTouch(x:number,y:number,id:number,e:EventTouch):void {
+        if(this.lifecycle&&this.lifecycle.state.phase!=='active')return;
         const hit=this.lootPanel?.hitTest(x,y);if(hit){this.authorityAction(hit);return;}
         if(this.stickId===null&&Math.hypot(x+345,y+150)<95){this.stickId=id;this.touchMove(e);return;}
         if(this.challengeCoordinator?.state.confirmed?.result==='completed')return;
@@ -578,6 +598,8 @@ export class Prototype extends Component {
     }
     private updateAuthority(dt:number):void {
         const c=this.challengeCoordinator!,scene=this.lootScene,state=c.state,confirmed=state.confirmed;
+        if(this.lifecycle&&this.lifecycle.state.phase==='active'&&!state.predictionEnabled)void this.lifecycle.retry();
+        if(this.lifecycle?.state.message)this.challengeNotice.string=this.lifecycle.state.message;
         if(confirmed&&(scene?.canMove||scene?.canAdvanceDeathTail)&&state.status==='active'&&state.predictionEnabled){
             const x=this.horizontalInput(),y=this.stickId!==null?this.axis.y:Number(this.keys.has(KeyCode.KEY_W)||this.keys.has(KeyCode.ARROW_UP))-Number(this.keys.has(KeyCode.KEY_S)||this.keys.has(KeyCode.ARROW_DOWN));
             // Queue at the confirmed frontier and submit bounded 100Hz slices using wall time.

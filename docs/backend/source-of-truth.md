@@ -100,3 +100,8 @@ P2连续践踏（3段72px圆判）接锁向冲撞、碰墙即停解除霸体与3
 ## ST16-03 死亡与通关拾取恢复（2026-10-30）
 
 已确认dead/active与completed/looting的完整恢复证明、原死亡截止/体力/来源/固定通关回执保留、死亡动作限制与looting移动拾取，按[恢复时序](recovery-timeline-proposal-v1.md)与[03验证](../reviews/st16-03-verification.md)。不包含02在途竞争、04设备接线或05联合发布验收。
+
+
+## ST16-04 生命周期适配（2026-11-01）
+
+Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapter接既有CombatRecovery/Movement/Drop/Terminal；清持有输入、冻结预测与新资产操作，完整资源/恢复证明/ready及当前证明后按alive/dead/looting分别开放动作。首次冻结本地UI最多10秒且不滚动延长，终止只转宿主既有登录入口，不使用旧票据续关；该UI判断不代替服务端原截止和资产结算。没有生产DTO、状态字段、CP/结果格式或服务写事务变更；本机预览额外scene.status读取当前lease，独立隔离奖励授权不变。实际模型/传输证据及离线构建、设备/登录GAP见[04验证](../reviews/st16-04-verification.md)。

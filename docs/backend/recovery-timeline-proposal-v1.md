@@ -136,3 +136,8 @@ CombatRecoveryCoordinator 在 suspend/resumePrepare 前冻结 Movement 与注册
 完整证明资格包含active/dead及completed/looting，不等于新攻击授权。dead保留deathIndex与原deathDeadline、HP/MP和CD，仅已有授权尾效允许空片；sceneEpoch及确认前沿不重置。looting恢复ready重建移动时间锚点并开启CP输入，不建立战斗inputGapBaseAt；2秒战斗缺口只在active/result=active检查。固定proofDeadline仍为新连接原lease与deathDeadline最小值，读取及重放不续期；clearReceipt、地面来源/dropId/roomToken、体力与既有资产不重发或回滚，completed超时只关闭场景并保成功。既有DTO/记录与字节上界不变。实际证据见[03验证](../reviews/st16-03-verification.md)。
 
 ST16-02控制明确拒绝：仅实际原命令已明确rejected后，客户端才可通过授权scene.status复核当前状态并清该pending；queryOriginalControl的notFound占位VERSION_CONFLICT不得直接清意图，先重试原tuple取得实际结果。reconcile保持预测关闭，不改截止/代次。
+
+
+## ST16-04 生命周期适配（2026-11-01）
+
+Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapter接既有CombatRecovery/Movement/Drop/Terminal；清持有输入、冻结预测与新资产操作，完整资源/恢复证明/ready及当前证明后按alive/dead/looting分别开放动作。首次冻结本地UI最多10秒且不滚动延长，终止只转宿主既有登录入口，不使用旧票据续关；该UI判断不代替服务端原截止和资产结算。没有生产DTO、状态字段、CP/结果格式或服务写事务变更；本机预览额外scene.status读取当前lease，独立隔离奖励授权不变。实际模型/传输证据及离线构建、设备/登录GAP见[04验证](../reviews/st16-04-verification.md)。
