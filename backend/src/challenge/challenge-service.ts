@@ -499,9 +499,9 @@ export class ChallengeService {
             // Original ready receipts authorize only a bounded read of this same live timeline.
             // They do not renew the lease, consume loading time, or restart an anchor.
             if(!t){
-                const receipt=h.lastReadyReceipt;requireValue(receipt&&receipt.readyTicketId===q.payload.readyTicketId&&Number.isSafeInteger(receipt.proofDeadline)&&now<receipt.proofDeadline&&h.connection==='connected'&&((h.roomPhase==='active'&&h.result==='active')||(h.roomPhase==='cleared'&&h.result==='completed'&&h.sceneState==='looting')),'VERSION_CONFLICT');
+                const receipt=h.lastReadyReceipt;requireValue(receipt&&receipt.readyTicketId===q.payload.readyTicketId&&Number.isSafeInteger(receipt.proofDeadline)&&now<receipt.proofDeadline&&h.connection==='connected'&&this.inputPhase(h),'VERSION_CONFLICT');
                 const original=parseSceneResponse(receipt.result);requireValue(original.outcome.status==='committed'&&!('kind' in original.outcome.data.state),'VERSION_CONFLICT');
-                const state=header.state,issued=original.outcome.data.state;requireValue(!('kind' in state)&&state.sceneEpoch===issued.sceneEpoch&&state.timelineEpoch===issued.timelineEpoch&&state.manifestHash===issued.manifestHash&&header.revision>=issued.checkpointRevision&&state.connection==='connected'&&header.acceptingInputs&&((state.roomPhase==='active'&&state.result==='active')||(state.roomPhase==='cleared'&&state.result==='completed')),'VERSION_CONFLICT');
+                const state=header.state,issued=original.outcome.data.state;requireValue(!('kind' in state)&&state.sceneEpoch===issued.sceneEpoch&&state.timelineEpoch===issued.timelineEpoch&&state.manifestHash===issued.manifestHash&&header.revision>=issued.checkpointRevision&&state.connection==='connected'&&header.acceptingInputs&&((state.roomPhase==='active'&&state.result==='active')||(state.roomPhase==='cleared'&&(state.result==='active'||state.result==='completed'))),'VERSION_CONFLICT');
                 t={readyTicketId:receipt.readyTicketId,sceneEpoch:state.sceneEpoch,timelineEpoch:state.timelineEpoch,checkpointRevision:header.revision,publicStateHash:state.publicStateHash,manifestHash:state.manifestHash,deadline:receipt.proofDeadline};
             }
             requireValue(t&&now<t.deadline&&Object.entries(t).filter(([k])=>k!=='deadline').every(([k,v])=>q.payload[k as keyof typeof q.payload]===v),'VERSION_CONFLICT');
@@ -585,14 +585,14 @@ export class ChallengeService {
                 next.controlSeq=seq;next.connection='connected';delete next.recoveryUntil;delete next.recoveryTicket;
                 next.lease={...h.lease!,mode:'connected',lastEvidenceAt:now,leaseUntil:now+10000,revision:increment(h.lease!.revision)};delete next.lease.recoveryUntil;
                 if(next.transitionClock)next.transitionClock={...next.transitionClock,settledAt:now,transitionRevision:increment(next.transitionClock.transitionRevision)};
-                if(h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);const revision=increment(header.revision),state={...header.state,roomPhase:h.roomPhase,checkpointRevision:revision,connection:'connected' as const,recoveryUntil:null,transitionClock:next.transitionClock??null,...(h.roomPhase==='active'||h.roomPhase==='cleared'&&h.result==='completed'&&h.sceneState==='looting')?{anchorWallAt:now,anchorTick:header.state.acceptedTick,inputGapBaseAt:h.roomPhase==='active'?now:null}:{}};
-                    tx.set(header.id,{...header,revision,acceptingInputs:h.roomPhase==='active'||h.roomPhase==='cleared'&&h.result==='completed'&&h.sceneState==='looting',state});
+                if(h.sceneEpoch>0){const {header}=await readCheckpoint(tx,h);const revision=increment(header.revision),state={...header.state,roomPhase:h.roomPhase,checkpointRevision:revision,connection:'connected' as const,recoveryUntil:null,transitionClock:next.transitionClock??null,...this.inputPhase(h)?{anchorWallAt:now,anchorTick:header.state.acceptedTick,inputGapBaseAt:h.roomPhase==='active'?now:null}:{}};
+                    tx.set(header.id,{...header,revision,acceptingInputs:this.inputPhase(h),state});
                     if(h.roomPhase==='awaitingReady')next.readyTicket={readyTicketId:await loginKey('readyTicket',[h.id,h.sceneEpoch,h.timelineEpoch!,revision]),sceneEpoch:h.sceneEpoch,timelineEpoch:h.timelineEpoch!,checkpointRevision:revision,publicStateHash:state.publicStateHash,manifestHash:state.manifestHash,deadline:Math.min(next.lease.leaseUntil,h.deathDeadline??Number.MAX_SAFE_INTEGER)};
                 }
             }
             const result=reply({status:'committed',data:{state:await this.controlState(tx,next),readyTicket:next.recoveryTicket??next.readyTicket??null}},next.lease!.revision);
             const stored=structuredClone(result);let manifestRef:string|undefined;if(stored.outcome.status==='committed'&&'kind' in stored.outcome.data.state&&stored.outcome.data.state.pendingManifest){manifestRef=next.pendingRoomAttempt!.manifestRef;(stored.outcome.data.state as {pendingManifest:unknown}).pendingManifest=null;}
-            if(q.command==='scene.ready'&&(next.roomPhase==='active'||next.roomPhase==='cleared'&&next.result==='completed'&&next.sceneState==='looting'))next.lastReadyReceipt={tuple,controlSeq:seq,readyTicketId:q.payload.readyTicketId,proofDeadline:Math.min(next.lease!.leaseUntil,next.deathDeadline??Number.MAX_SAFE_INTEGER),result};
+            if(q.command==='scene.ready'&&this.inputPhase(next))next.lastReadyReceipt={tuple,controlSeq:seq,readyTicketId:q.payload.readyTicketId,proofDeadline:Math.min(next.lease!.leaseUntil,next.deathDeadline??Number.MAX_SAFE_INTEGER),result};
             next.controlReceipts=[...(h.controlReceipts??[]),{tuple,command:q.command,sequence:seq,result:stored,manifestRef,...q.command==='scene.ready'?{readyTicketId:q.payload.readyTicketId}:{}}].slice(-8);budget(next,131072);budget(result,32768);
             tx.set(a.id,{...a,writeRevision:increment(a.writeRevision)});tx.set(h.id,next);return result;
         });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}
@@ -620,6 +620,7 @@ export class ChallengeService {
             tx.set(a.id,{...a,writeRevision:increment(a.writeRevision)});tx.set(h.id,next);tx.set(header.id,nextHeader);return result;
         });}catch(e){if(e instanceof CommitUnknown)return reply({status:'unknown',code:'RESULT_UNKNOWN'});if(e instanceof StoreUnavailable)return reply({status:'rejected',code:'SERVICE_UNAVAILABLE'});if(e instanceof Refusal)return reply({status:'rejected',code:e.message});if(e instanceof TypeError)return reply({status:'rejected',code:'CONFIG_NOT_READY'});throw e;}
     }
+    private inputPhase(h:EntryChallenge){return h.roomPhase==='active'&&h.result==='active'||h.roomPhase==='cleared'&&(h.result==='active'&&h.sceneState==='combat'||h.result==='completed'&&h.sceneState==='looting');}
     private async movementGap(tx:Transaction,h:EntryChallenge,header:RoomCheckpointHeader,now:number){
         if(h.roomPhase!=='active'||h.result!=='active')return false;
         const base=header.state.inputGapBaseAt;
@@ -664,7 +665,7 @@ export class ChallengeService {
             requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
             if(await this.expire(tx,a,h,now))return null;
             this.live(h,a,c,q.sessionId,now,true);const {header,role,scene}=await readCheckpoint(tx,h);
-            requireValue((h.roomPhase==='active'||h.roomPhase==='cleared')&&header.acceptingInputs,'ROOM_NOT_AVAILABLE');
+            requireValue(this.inputPhase(h)&&header.acceptingInputs,'ROOM_NOT_AVAILABLE');
             if(await this.movementGap(tx,h,header,now))return null;
             requireValue(q.payload.sceneEpoch===h.sceneEpoch&&q.payload.timelineEpoch===h.timelineEpoch&&q.payload.checkpointRevision===header.revision,'VERSION_CONFLICT');
             const records=publicRecords(role,scene),pages=publicPages(records,scene.earth?32:64),totalPages=pages.length;requireValue(q.payload.pageIndex<totalPages,'INVALID_ARGUMENT');
@@ -683,7 +684,7 @@ export class ChallengeService {
                 requireValue(await tx.get(await loginKey('assetJournal',[a.id,q.operationId]))===undefined,'SERVICE_UNAVAILABLE');
                 const h=await tx.get<EntryChallenge>(q.payload.challengeId);requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
                 if(await this.expire(tx,a,h,now))return {rejected:'DEADLINE_EXPIRED'};
-                this.live(h,a,c,q.sessionId,now,true);const cp=await readCheckpoint(tx,h);this.deadTail(h,cp.scene,q);requireValue((h.roomPhase==='active'||h.roomPhase==='cleared')&&cp.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
+                this.live(h,a,c,q.sessionId,now,true);const cp=await readCheckpoint(tx,h);this.deadTail(h,cp.scene,q);requireValue(this.inputPhase(h)&&cp.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
                 if(await this.movementGap(tx,h,cp.header,now))return {rejected:'RECOVERY_REQUIRED'};
                 this.validateMovement(q,a,c,h,cp.header,now);
                 const equipment:EquipmentEntity[]=[];for(const [slot,itemId] of Object.entries(c.equipped)){const item=await tx.get<EquipmentEntity>(itemId!);requireValue(item?.schemaVersion===2&&item.id===itemId&&item.accountId===a.id&&item.lifecycle==='active'&&item.location.kind==='equipped'&&item.location.characterId===c.id&&item.location.slotId===slot,'CONFIG_NOT_READY');equipment.push(item);}
@@ -772,7 +773,7 @@ export class ChallengeService {
                 requireValue(currentH&&currentH.accountId===a.id,'NOT_FOUND_OR_FORBIDDEN');
                 if(await this.expire(tx,currentA,currentH,now))return reply({status:'rejected',code:'DEADLINE_EXPIRED'});
                 this.live(currentH,currentA,currentC,q.sessionId,now,true);const latest=await readCheckpoint(tx,currentH);this.deadTail(currentH,latest.scene,q);
-                requireValue((currentH.roomPhase==='active'||currentH.roomPhase==='cleared')&&latest.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
+                requireValue(this.inputPhase(currentH)&&latest.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
                 if(await this.movementGap(tx,currentH,latest.header,now))return reply({status:'rejected',code:'RECOVERY_REQUIRED'});
                 this.validateMovement(q,currentA,currentC,currentH,latest.header,now);
                 const currentBag=await tx.get<ContainerEntity>(c.backpackId);

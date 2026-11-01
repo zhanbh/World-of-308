@@ -123,3 +123,5 @@ role schema3持久移动意图与精确带符号/100000余数，兼容role1/2；
 ## ST17-01 扣损后CP一致性（2026-11-01）
 
 不新增CP schema/公开敏感装备字段。确认片中的清房/死亡磨损后，role.attackPower按扣损后当前装备及套装重算；实际汇总贡献改变时C.statsVersion推进并同步role.combat.attributesRevision，role.equipmentVersion不因耐久变动增加。下一片新动作/防御读取当前实例；已生成basic/技能/流血快照不追溯改写。当前本地profile的HP/MP最大值沿已有等级/资源配置，不新增尚未批准的装备最大HP/MP映射，亦不借磨损免费设满或复活。普通cleared完整公开证明可供Movement确认后走向出口，不能以预测替代CP。
+
+ST17-01恢复接缝补齐：普通cleared重连ready后CP.acceptingInputs=true，anchorTick保持acceptedTick、anchorWallAt从合法ready建立，inputGapBaseAt仍null；恢复期间不补模拟、不重新磨损。原ready证明授权及客户端完整证明同时识别合法active+cleared，避免connected但CP仍冻结的半恢复状态。

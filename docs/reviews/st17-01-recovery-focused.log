@@ -1,0 +1,71 @@
+(node:45878) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ active combat recovery: first fragment after 100ms (427.817292ms)
+✔ active combat recovery: first fragment after 1900ms (225.734375ms)
+✔ active combat recovery: first fragment after 2000ms (192.217833ms)
+✔ a lost suspend response can resolve the original before any checkpoint ticket exists (46.442ms)
+✔ late movement proof from an old recovery cannot freeze a newly initialized scene owner (84.839208ms)
+(node:45879) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ confirmed death restores complete proof without reviving or extending the deadline (323.134667ms)
+✔ real Boss completion restores looting and the fixed receipt; lease expiry preserves success (139.112333ms)
+✔ next room inherits wounded role and all seven cooldowns with zero snapshot stamina (102.32625ms)
+✔ exact local-test regeneration splits at buff expiry and preserves fractional resource units (36.712958ms)
+✔ later prepare rejects uncleared, living purple, dead player, forged/outside exit and skipped room (199.069959ms)
+✔ later prepare and activate roll back at every write point and original replay leaves newer room intact (330.770917ms)
+✔ owned bounded pickup fixture contends with actual activate through A/H in both commit orders (45.10975ms)
+✔ exact resource fractions survive arbitrary prefix/suffix cuts, cap overflow and uint64 resources (87.426584ms)
+✔ unknown buff/rate refs and uint32 denominator nonclosure fail before any room or resource commit (62.004709ms)
+✔ ready writes only changed role chunk and every added role write fault rolls back (118.3435ms)
+✔ later prepared recovery excludes four seconds and does not initialize current character/equipment from entry audit (27.23375ms)
+ST10-05 actual UTF-8 {
+  maxRole: 15814,
+  header: 1594,
+  chunks: [ 14716, 1933 ],
+  page: 15074,
+  response: 1518,
+  O: 1788,
+  H: 4807
+}
+ST10 post-ready UTF-8 { page: 15081, ready: 746, H: 5164, lastReadyReceipt: 946 }
+✔ schema2 maximum supported role/public page and actual next activation/receipt stay bounded (47.368875ms)
+✔ later activate authorization/version/terminal and real login takeover remain fenced in both orders (113.713083ms)
+✔ later exit is bound to locked previous manifest and full spawn set rather than a substitute map/enemy list (22.2385ms)
+✔ same regeneration reference cannot be rebound to different rates and prepared exit rule cannot change (38.832208ms)
+✔ crossing global stamina refill during later loading never refreshes reserved snapshot (18.143667ms)
+✔ ordinary room clear atomically wears seven slots without enabling kill rewards; replay and another empty fragment do not wear twice (183.547542ms)
+✔ death without gold/XP rewards wears once, preserves deadline, and clamps all seven slots at zero (118.724209ms)
+✔ unconfigured no-rewards training stays isolated and invalid/mid-challenge wear configuration is refused atomically (354.964167ms)
+(node:45881) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real transport confirms broken weapon public state then next room stays playable without resetting clocks or resources (165.450792ms)
+✔ ordinary cleared room fully recovers through existing owner before walking out and does not wear twice (184.490042ms)
+ST17-01 ordinary wear actual transaction {
+  reads: 24,
+  writes: 16,
+  calls: 41,
+  writeCalls: 16,
+  writeBytes: 24831,
+  maxDocumentBytes: 4797
+}
+✔ each actual wear write rolls back, successful lost response resolves original and same fragment under another ID cannot double wear (599.232667ms)
+✔ two concurrent real submissions publish only one room wear and preserve intrinsic score inputs (22.878708ms)
+✔ version overflow refuses a real wear before any asset or checkpoint commit (15.080833ms)
+✔ broken items stop set counting and new stats while a released basic cast keeps its attack snapshot (16.52575ms)
+✔ death to zero preserves released cross tail, original deadline and terminal reward receipt (38.462084ms)
+✔ real challenge start binds wear policy before assets are touched; zero weapon still cannot enter a new challenge (2.488791ms)
+✔ cleared permission does not admit preparing, awaitingReady, recovery or closed inputs (34.972791ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1964.326875

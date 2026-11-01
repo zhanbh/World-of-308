@@ -211,3 +211,5 @@ Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapte
 ## ST17-01 普通房扣损事实（2026-11-01）
 
 首次权威`active→cleared`扣当前合法7磨损槽各1，新增deathIndex额外各5；同刻两事实可叠加6，最低0。原O重放或不同operationId旧片不二扣；cleared中继续走路/空片不再产生清房事实。无收益但显式授权wear的本地挑战可扣损，无显式授权的no-rewards训练不改变资产。磨损、必要statsVersion/CP、流水/O与确认前沿原子提交，不写评分投影/equipmentVersion。当前合法`active+cleared`允许完整公开证明与继续输入/走向出口；其它loading/recovery/closed、生死与终局资格沿原门禁，不因武器0延长任何原截止或补血。
+
+ST17-01恢复接缝：active+cleared的suspend→resumePrepare→完整证明→ready→当前证明后仍为cleared，重建输入anchor而非重复清房；原确认前沿/已扣实例版本保留，原恢复票deadline不延长，nextRoom仍走已有出口授权。alive/dead/completed的动作资格不因阶段证明可读而改变。

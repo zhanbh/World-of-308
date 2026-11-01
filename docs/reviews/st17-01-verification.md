@@ -48,3 +48,19 @@ node tools/check-all.cjs --typescript /Applications/Cocos/Creator/3.8.8/CocosCre
 ## 后续及限制
 
 只完成01。修理报价/单修/全修、Cocos修理面板、全故事小/8CP联合预算与两轴最终评审仍为02–05。生产SDK/真实网络/设备/正式最大耐久与费用配置未验。此片不改Cocos场景/Prototype，不执行Creator或全7阶段；集成后的独立merger核验另记，不由实现者自称独立通过。
+
+## 独立merger发现后的恢复接缝修复
+
+初始交付`b1dec5e0fa95739d174b84da8e2591203c89ebb5`的上述直接换房/类型结果属实，但未覆盖普通清场后恢复。独立merger发现ready的anchor/acceptingInputs/lastReadyReceipt及客户端RecoveryProof只接active或completed+cleared；真实ordinary cleared进入恢复后connected却无法走出口，初始交付因此尚不可合入。保留前述原日志，不将初次通过改写成已覆盖恢复。
+
+新增真实普通清场→耐久已扣1→LoadingCoordinator重新读取原prepare结果并验资源→CombatRecoveryCoordinator.suspend/resumePrepare/完整页→ready→当前证明→Movement恢复→走出口→prepare/activate/ready→0武器普攻/十字斩。修前owner停loading、预期active，exit1，见[恢复RED](st17-01-recovery-red.log)。沿同一条真实链还捕获RecoveryCoordinator的ready后当前证明分支及recoveryPage原ready回执授权的相同谓词，均同步接受合法active+cleared；无新恢复机制/协议/物理键。
+
+服务端统一inputPhase用于恢复ready、原ready证明、confirmed与simulation，仍只开放active/active和合法cleared(active/combat或completed/looting)。身份、connection、lease/death截止、dead空尾、completed禁攻击与loading/recovery/closed禁输入原门禁不变。客户端RecoveryProof及当前证明分支按相同组合对齐。回归明确验证：首次suspend到期11600，prepare票仍11600；ready重建anchor到3000但acceptedSeq/Tick保持、timeline仅+1，cleared的inputGapBaseAt仍null；7槽仍0且实例版本没有再次推进。合法ready后的新在线lease沿既有规则，不将其称为延长恢复票。
+
+[恢复GREEN](st17-01-recovery-green.log) exit0；随后定向执行：
+
+```bash
+node --experimental-strip-types --test backend/test/room-death-wear.test.mjs backend/test/active-combat-recovery.test.mjs backend/test/dead-looting-recovery.test.mjs backend/test/next-room-v2.test.mjs
+```
+
+[修复后定向日志](st17-01-recovery-focused.log)：**33/33**、exit0、约1.96秒，包含12个当前新增磨损/恢复用例及active/dead/looting/原截止/换房回归。再次检查[backend/shared类型](st17-01-recovery-backend-types.log)与[client模型类型](st17-01-recovery-model-types.log)，均exit0。无全7/Creator/02/推送；最终独立merger新SHA复核仍由集成会话另记。

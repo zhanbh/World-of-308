@@ -373,3 +373,5 @@ Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapte
 ## ST17-01 清房磨损与继续挑战（2026-11-01）
 
 沿现有simulation.submit，同笔确认普通清房−1及新增真实死亡−5、当前7槽实例/必要属性revision、CP、磨损流水和原O；不增加磨损命令。显式本地wear策略与H绑定，不依赖金币/XP开关；无奖励训练默认仍不磨损，详见数据字典ST17-01。`simulation.confirmed`及Movement接受合法`active+cleared`的完整证明，允许向出口移动及既有战斗动作后进入下一房；仍不接受preparing/awaitingReady/recovery/closed作为输入场景，dead仅既有空尾、completed仅既有looting动作。途中0武器不触发暂停，后续新起手按当前有效装备，释放快照保留。新挑战WEAPON_BROKEN门禁保持。
+
+ST17-01独立合入修复：active+cleared恢复也必须完成既有资源/准备票完整页、ready重建anchor/acceptingInputs、原ready回执绑定的当前证明和最终状态复核，才让Movement走向出口。恢复不再次清房扣损；prepare沿原恢复截止，ready前沿保持，cleared不设活动战斗inputGapBaseAt。未放开loading/recovery/closed或dead的新动作权限。
