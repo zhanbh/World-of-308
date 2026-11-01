@@ -1,0 +1,21 @@
+PASS: tap, timeout, buffer, hold loop, reset, axis speeds, diagonal and facing
+PASS: four warrior skills, shared mana, independent cooldowns, one impact, lunge/jump motion and reset
+PASS: skill frame/contact alignment, takeoff, pre-impact interruption and persistent effect cleanup
+PASS: skill-specific stun/knockdown, ultimate recovery, 5s refresh-only bleeding, heartbeat and death/miss cleanup
+PASS: per-cast/target/stage knockdown ledger, normal/elite boundaries, boss immunity and death fade
+PASS: 2/3/1/4 phases, preserved damage, independent ground origin, interruption, piercing projectile and reset
+PASS: moving/knockback targets at 30/60/120Hz and fractional lethal damage
+PASS: hit-stop coalescing, no idle retriggers, heavy/light timing, pixel sparks, cleanup and multi-hit integration
+PASS: independent feedback A/B controls, immediate release, no retroactive hits and reset retention
+PASS: per-hit damage popups, simultaneous events, overkill amount, formatting, bounded pools, independent toggle and cleanup
+PASS: retained preview targets do not replay old hit feedback after cast/reset
+PASS: ground-impact-only shake, bounded integer offsets, independent disable/reset and unchanged ground coordinates
+PASS: versioned fragment crop preserves source scale and shared foot anchor for both facings
+PASS: bounded charge/emission cues with unchanged 200ms charge and hit schedules
+PASS: eight-slot two-half stride playback, walk/run cadence, brake, hurt/action priorities and reset (art requires visual review)
+PASS: additive attack-speed sources, 1/1.25/1.5 timings, stage snapshot, scaled movement, fixed combo/buffer and atomic basic-to-skill cancellation
+PASS: immediate skill cancellation releases previous hit-stop only on success
+PASS: default/forward earth leaps, facing/deadzone/FPS/bounds, landing-origin damage, cancellation and held-basic microstep
+PASS: bleed cadence/expiry/refresh/FPS/periodic feedback/death and ready/fighting/result/retry rounds
+PASS: monster attack cadence, friendly telegraph, recovery pause, and warrior super armor state
+PASS: ST14-01 CombatModel death state, deathIndex tracking, input blocking, and reset

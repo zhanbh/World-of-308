@@ -57,7 +57,8 @@ export class TerminalCoordinator {
  }
  private async send(generation:number){this.current.status='submitting';try{await this.finish(JSON.parse(await this.transport.send(JSON.stringify(this.pending))),generation);}catch{if(generation===this.generation)this.current.status='unknown';}}
  get hasPending(){return this.pending!==null;}
- freeze(){this.frozen=true;++this.generation;this.current.fadeReady=false;if(this.pending)this.current.status='unknown';}
+ // A recovered committed leave remains final even when a later closed control freezes again.
+ freeze(){this.frozen=true;++this.generation;if(this.pending||this.current.status!=='closed')this.current.fadeReady=false;if(this.pending)this.current.status='unknown';}
  async refreshAfterRecovery(){this.frozen=false;await this.read(this.generation);}
  async resolvePendingOriginal(fenced=false):Promise<'settled'|'notFound'|'unknown'>{
   if(!this.pending)return 'settled';const generation=this.generation,q=this.pending,i=this.identity!;

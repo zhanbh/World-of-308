@@ -1,0 +1,51 @@
+(node:39474) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-05-joint-acceptance/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-05-joint-acceptance/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Cocos hide/show freezes held input and asset writes until current proof restores combat (205.696917ms)
+✔ expired recovery prompts existing login and cannot resume the old challenge (43.58875ms)
+✔ destroy and new attach retire an old delayed recovery callback (67.592916ms)
+✔ lifecycle recovery leaves the dead unable to attack and permits only existing empty tail (90.170459ms)
+✔ lifecycle recovery retains completed receipt, movement and actual pickup (52.502708ms)
+✔ lifecycle retries a lost committed ready through original proof without a second timeline (47.132417ms)
+✔ explicit isolated createLootChallengePreview binds lifecycle and strict control DTO over fetch transport (60.798834ms)
+✔ explicit isolated createChallengePreview binds lifecycle and strict control DTO over fetch transport (69.939083ms)
+✔ paused recovery UI stops after ten local seconds without renewing the window (17.367292ms)
+(node:39475) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-05-joint-acceptance/client/assets/scripts/net/TerminalCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-05-joint-acceptance/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ terminal coordinator reads strict receipt from real Boss commit and resolves lost finishLoot before fade (99.889959ms)
+✔ loot model uses confirmed 32px radius, preserves full-bag drops and flips original receipt (61.673959ms)
+✔ completed coordinator rejects combat intents but commits actual CP movement and leave waits for in-flight pickup (81.552292ms)
+✔ scene binding serializes pickup versus leave and preserves pending delivery message (44.508416ms)
+✔ pickup click queued behind frame movement flushes CP without requiring an empty-queue timing window (72.490209ms)
+✔ explicit isolated reward preview drives real Boss input, receipt and pickup without shortcut endpoints (49.09625ms)
+(node:39476) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-05-joint-acceptance/client/assets/scripts/net/DropCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-05-joint-acceptance/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ unknown collect resolves original equipment delivery without replay or optimistic state (84.339292ms)
+✔ owner resolves unknown simulation before suspend without requiring connected movement refresh (103.096ms)
+✔ unknown leave resolves its receipt behind the barrier and preserves one terminal equipment delivery (43.690666ms)
+✔ notFound then old equipment write wins OCC without duplicate assets (35.455625ms)
+✔ notFound then recovery fence wins OCC without duplicate assets (36.717708ms)
+✔ failed original query leaves a visible bounded barrier and retry retains the exact control (44.677584ms)
+✔ movement original result arriving after close cannot change retired view (43.806875ms)
+✔ movement original result arriving after rebind cannot change retired view (39.123125ms)
+✔ drop original result arriving after close cannot change retired view (22.018667ms)
+✔ drop original result arriving after rebind cannot change retired view (18.999083ms)
+✔ leave original result arriving after close cannot change retired view (24.03975ms)
+✔ leave original result arriving after rebind cannot change retired view (26.385542ms)
+✔ owner freezes real drop participant and queries equipment original before its recovery control (29.008084ms)
+✔ a definitive rejected control reconciles current authority before a corrected control is accepted (40.281292ms)
+✔ original-control notFound placeholder never permits retirement before the actual old control is rejected (23.59875ms)
+✔ reopen between barrier journal and control completion recovers one original control tuple (21.069292ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 890.933209

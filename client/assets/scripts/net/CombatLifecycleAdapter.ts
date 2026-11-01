@@ -34,9 +34,9 @@ export class CombatLifecycleAdapter {
    // frontier before any new user intent; prediction and the next submit consume it first.
    const current=this.movement.state.confirmed!;
    if(current.lifeState==='alive'){
-    if(current.result==='active')this.movement.enqueue({kind:'basic',pressed:false,tick:current.acceptedTick});
+    if(current.result==='active')this.movement.enqueue({kind:'basic',pressed:false,tick:current.acceptedTick,seq:current.acceptedSeq+1});
     const position=this.movement.state.position;
-    if(current.result==='active'||position?.intentX||position?.intentY)this.movement.enqueue({kind:'move',x:0,y:0,tick:current.acceptedTick});
+    if(current.result==='active'||position?.intentX||position?.intentY)this.movement.enqueue({kind:'move',x:0,y:0,tick:current.acceptedTick,seq:current.acceptedSeq+(current.result==='active'?2:1)});
    }
    this.clearInput();this.loot.setRecoveryBlocked(false);this.phase='active';this.recoveryStartedAt=null;
   }}
