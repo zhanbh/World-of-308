@@ -41,3 +41,11 @@ node client/tools/build-inventory.cjs /Applications/Cocos/Creator/3.8.8/CocosCre
 修复在完整当前恢复证明成功后、放行预测/新用户动作之前，于acceptedTick有序排入basic:false及move0。alive/active释放普攻及移动；dead不排入任何新动作，保留合法空尾片；looting只在实际非零位移intent时排入move0，避免无必要排队阻断即时拾取。中立输入沿已有有序队列先于新用户输入参与首个预测/真实片段提交，不改私有CP、服务协议或已释放动作。destroy/unknown仍沿原代次/恢复栅栏，未通过完整证明不会排入中立动作。
 
 GREEN证据：首个允许预测的tick3及真实服务提交后held=false、intentX/Y=0；castSequence保持原值且已释放cast仍存在，不擅自取消正常收招。九项生命周期及相关五组测试仍38/38，模型类型通过，实际更新日志同上。根会话已报告此前源码的批准离线构建20秒PASS；本修复后需根会话按批准流程重构建，子任务未启动Creator，也未改写/暂存根会话持有的构建日志。
+
+## 根会话最终构建确认
+
+2026-11-01，修复源码 `af2011aa02384eed09dbbd9d05ba5973e9ebd9f5` 的批准离线构建 exit0，实际 `client/build/web-mobile-inventory/index.html` 存在；最终原始输出见 `st16-04-cocos-build.log`。此前 d78973d 的首次成功日志另存 `st16-04-initial-cocos-build.log`。此条取代上文“尚不声明构建通过”的执行中状态，保留失败经过。构建产生的 Creator 账户/启动页设置已恢复为HEAD原字节，未纳入变更。未进行浏览器或设备运行验收。
+
+## 05联合核验更正
+
+根会话直接复核 `st16-04-model-types.log` 发现实际为 FAIL（中立 basic/move 输入缺少必填 seq），因此上文“类型通过”及子任务交付结论不准确。保留失败原日志，不作为通过证据。05负责补齐序号并以新的类型/最终全7阶段真实退出状态验收。04行为38/38和Creator离线构建事实独立成立，不替代类型门禁。

@@ -105,3 +105,7 @@ P2连续践踏（3段72px圆判）接锁向冲撞、碰墙即停解除霸体与3
 ## ST16-04 生命周期适配（2026-11-01）
 
 Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapter接既有CombatRecovery/Movement/Drop/Terminal；清持有输入、冻结预测与新资产操作，完整资源/恢复证明/ready及当前证明后按alive/dead/looting分别开放动作。首次冻结本地UI最多10秒且不滚动延长，终止只转宿主既有登录入口，不使用旧票据续关；该UI判断不代替服务端原截止和资产结算。没有生产DTO、状态字段、CP/结果格式或服务写事务变更；本机预览额外scene.status读取当前lease，独立隔离奖励授权不变。实际模型/传输证据及离线构建、设备/登录GAP见[04验证](../reviews/st16-04-verification.md)。
+
+## ST16-05 联合验收状态（2026-11-01）
+
+五项批准任务本地实现/联合验收完成，最终全七阶段与Creator离线构建通过，Standards/Spec独立评审无可行动发现。原意图/药品/掉落/通关消费者守恒、实际恢复写点回滚与小CP/合成8CP成本分列见[本地交付与限制](../reviews/st16-local-verification.md)。本条不改变协议或玩法，不关闭SDK/真实网络设备/正式最大发布包络GAP；04历史类型失败在05已更正并补齐seq。

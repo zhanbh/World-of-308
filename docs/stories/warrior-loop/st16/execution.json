@@ -5,7 +5,7 @@
     "Cocos lifecycle and offline build"
   ],
   "platform_device_status": "gap",
-  "status": "implementation-authorized",
+  "status": "local-complete-platform-gaps",
   "approval": {
     "approved_draft_body_sha256": "06eeb2c9a352dc7ad56a2d432cd8445818750aed7f31c8d83e2b202767b74fd6",
     "evidence": "整体确认，连续实施ST16",
@@ -66,34 +66,88 @@
       "revision": "95f1a79948de49276eea69318f014f1176635c98a2f7608bda9e3b46a20c1ae9"
     },
     {
-      "state": "planned",
+      "state": "merged",
       "blocked_by": [
         2,
         3
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/reviews/st16-04-verification.md",
+        "docs/reviews/st16-04-merge-verification.md",
+        "docs/reviews/st16-04-cocos-build.log"
+      ],
       "id": "ST16-04",
       "path": "docs/stories/warrior-loop/st16/issues/04-cocos-lifecycle-recovery.md",
       "number": 4,
-      "revision": "ceabcc15796ad318bdc0b4babf4844de91335741de376a38ec864c6539fa9e22"
+      "revision": "ceabcc15796ad318bdc0b4babf4844de91335741de376a38ec864c6539fa9e22",
+      "worktree": ".worktrees/st16-04-lifecycle",
+      "branch": "feat/st16-04-lifecycle",
+      "base_commit": "4ba7e055b42a9c3dd299e7ce45cf9802c3e725bd",
+      "code_commit": "af2011aa02384eed09dbbd9d05ba5973e9ebd9f5"
     },
     {
-      "state": "planned",
+      "state": "merged",
       "blocked_by": [
         4
       ],
-      "evidence": [],
+      "evidence": [
+        "docs/reviews/st16-05-verification.md",
+        "docs/reviews/st16-05-merge-verification.md",
+        "docs/reviews/st16-05-check-all.log",
+        "docs/reviews/st16-05-cocos-build.log",
+        "docs/reviews/st16-build-standards-review.md",
+        "docs/reviews/st16-build-spec-review.md",
+        "docs/reviews/st16-local-verification.md"
+      ],
       "id": "ST16-05",
       "path": "docs/stories/warrior-loop/st16/issues/05-joint-acceptance-and-review.md",
       "number": 5,
-      "revision": "893a5a02f3c624022fd6c3a251527e9847de10d03c0e2884a15b3f78f29ae1c2"
+      "revision": "893a5a02f3c624022fd6c3a251527e9847de10d03c0e2884a15b3f78f29ae1c2",
+      "worktree": ".worktrees/st16-05-joint-acceptance",
+      "branch": "feat/st16-05-joint-acceptance",
+      "base_commit": "af2011aa02384eed09dbbd9d05ba5973e9ebd9f5",
+      "code_commit": "8d73ca80d781bfbb4b14187ab284d203334a25a7"
     }
   ],
   "integration_branch": "feat-1.0.0",
-  "current_scope": "User requested completion of ST16-02 and ST16-03 only, then stop; ST16-04 and ST16-05 remain unimplemented and are not started. Final seven-stage and independent Standards/Spec review remain ST16-05.",
   "spec_body_sha256": "d428cb55274071ed2d64c91e1ac1b11412130ba7b0d88e5f4c6164d5a3869780",
   "feature": "warrior-loop-st16",
   "published": false,
   "jira_actions": false,
-  "baseline_head": "361ea7b"
+  "baseline_head": "361ea7b",
+  "previous_scope": "User requested completion of ST16-02 and ST16-03 only, then stop; ST16-04 and ST16-05 remain unimplemented and are not started. Final seven-stage and independent Standards/Spec review remain ST16-05.",
+  "current_scope": "2026-11-01 user resumed with 好的，继续吧; proceed ST16-04 then ST16-05 on approved graph; no Jira or external publication.",
+  "resume": {
+    "date": "2026-11-01",
+    "evidence": "好的，继续吧",
+    "remote_checked": true,
+    "head": "4ba7e055b42a9c3dd299e7ce45cf9802c3e725bd",
+    "accepted_source_bytes_rechecked": true
+  },
+  "review": {
+    "head": "8d73ca80d781bfbb4b14187ab284d203334a25a7",
+    "base": "361ea7b7f8f5b327df38ac6dd3cedb4a8bdda5e4",
+    "standards": "docs/reviews/st16-build-standards-review.md",
+    "spec": "docs/reviews/st16-build-spec-review.md",
+    "standards_findings": 0,
+    "spec_findings": 0
+  },
+  "completed_at": "2026-11-01",
+  "verification": {
+    "head": "8d73ca80d781bfbb4b14187ab284d203334a25a7",
+    "full_check_exit": 0,
+    "stages_passed": 7,
+    "stages_total": 7,
+    "tooling_tests": 7,
+    "shared_tests": 230,
+    "backend_tests": 730,
+    "offline_build_exit": 0,
+    "offline_build_index_exists": true,
+    "accepted_source_files_match": 6,
+    "report": "docs/reviews/st16-local-verification.md",
+    "full_log": "docs/reviews/st16-05-check-all.log",
+    "build_log": "docs/reviews/st16-05-cocos-build.log",
+    "worktrees_created_this_run_cleaned": true,
+    "platform_device_sdk_network_release_envelope": "gap"
+  }
 }

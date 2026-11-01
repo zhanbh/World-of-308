@@ -107,3 +107,7 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 2026-10-29：01～04已实现合入；05联合验收、预算保护及评审修复已合入，代码`bb916d809`。最终全量7/7（shared230、backend692），原两轴发现复核关闭。**最大终局预算门禁仍BLOCKED，ST15不标整体Done/可发布**：正常八块CP提交78调用；最大到期效果域原570调用/约3.76MB超限，当前原子拒绝，下一步整改结果存储物理映射。见[本地交付与限制](../../reviews/st15-local-verification.md)、[当前执行](st15/execution.json)及[任务入口](st15/README.md)。Windows历史离线构建、无头测试和本次Mac服务回归分别记录，不替代微信/SDK/设备验收。
 
 2026-10-30更新：ST15已知最大结果存储压力域已整改，future/due/mixed均成功，最高R42/W33/78调用；最终全量7/7（shared230/backend694）、62实际写点故障及两轴复核通过。正式内容包络、SDK和真机仍GAP，不标可发布。当前证据见[存储整改](../../reviews/st15-storage-verification-2026-10-30.md)，上段为2026-10-29历史状态。
+
+## ST16 本地完成记录（2026-11-01）
+
+已按批准五项图完成恢复编排、未知原意图栅栏、dead/looting资格、Cocos生命周期及联合验收；最终源码8d73ca8，全七阶段7/7（shared230/backend730）、最终Creator离线构建通过，Standards/Spec各0可行动发现。见[本地交付与限制](../../reviews/st16-local-verification.md)及[执行状态](st16/execution.json)。04历史类型失败已保留并由05补齐seq，不能据旧汇报算通过。真实网络/微信设备、SDK及正式发布内容包络仍GAP；未push/Jira。ST17为下一业务故事，尚未自动实施。
