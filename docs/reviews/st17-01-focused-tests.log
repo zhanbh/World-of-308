@@ -1,0 +1,121 @@
+✔ real boss death commits completed looting, derives all room sources, XP/gold and zero weapon safely (116.721916ms)
+✔ each terminal write failure preserves active H, wallet, XP, durability, CP and sources (588.181208ms)
+✔ lost terminal response replays original and competing intents cannot mint twice (69.1655ms)
+✔ training boss clear remains rewardless and ordinary kills post rewards before any boss (56.005083ms)
+(node:45133) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ completed public proof restores real coordinator and keeps movement and pickup legal (49.767667ms)
+✔ eight actual targets die through Boss-derived clear without omitting drop or XP facts (31.121291ms)
+✔ real joint service mutual death finalizes free revive and CP without consuming emblem or paid count (56.197958ms)
+ST15-02 actual terminal budget {"R":20,"W":18,"maxWrite":5416}
+✔ all seven equipped wear slots settle in terminal transaction and actual budget remains bounded (29.059ms)
+✔ completed non-final room cannot prepare another room (11.8255ms)
+✔ two public submits preserve death provenance and released cross terminal exactly as an unsplit slice (231.565584ms)
+✔ two public submits preserve death provenance and released earth terminal exactly as an unsplit slice (141.091125ms)
+(node:45134) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ dead coordinator keeps only empty authoritative tail fragments available (99.615459ms)
+✔ dead tail retains original deadline and refuses new actions, old identity, future time, recovery and expiry (160.579875ms)
+✔ dead scene without released effects cannot advance and committed death and tail replay once (116.208459ms)
+✔ real login, selected warrior and town position issue usable difficulty selection without creating a challenge (11.694916ms)
+✔ explicit confirmation atomically reserves one stamina without charging first room and replays original locked choice (5.986625ms)
+✔ entry rejects forged position/context, stale movement generation and foreign identity before replay (5.817667ms)
+✔ level1 starter10 permits entry but level15, broken and missing weapons do not (7.1755ms)
+✔ 0 stamina rejected, refresh loads308, and high level first replay locks capped monster15 (5.998375ms)
+✔ same operation different intent and cross-service receipt fail closed; expected versions are checked (3.547792ms)
+✔ each of five write faults is atomic and a lost reply replays the original challenge (34.773625ms)
+✔ concurrent distinct starts create one challenge and transaction retries reread clock (6.066792ms)
+✔ missing or malformed content cannot turn level gates into defaults (6.978375ms)
+✔ start exposes locked monster, equipment provenance and computed equipment attributes to the client (3.957375ms)
+(node:45135) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/assets/scripts/net/ChallengeEntryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real new login closes an unpaid challenge without checkpoint or extra stamina charge exactly once (7.221416ms)
+✔ durable client selection requires confirmation and reload retries the same start after response loss (10.321375ms)
+✔ real equipment unequip removes entry eligibility and re-equip restores level1 starter10 eligibility (7.428125ms)
+✔ a known rejected start keeps its original result after stamina changes (3.647541ms)
+✔ configured gates are first1/second15/special30, capped first15, and account difficulty unlock adds no score gate (7.048584ms)
+✔ verified E01 adapter exposes only its published level1 normal contract fixture (11.081375ms)
+✔ unregistered template classes and unsafe counters fail closed (5.010417ms)
+ST10-01 maximum fixture UTF-8 bytes {"H":81293,"O":6057,"J":1080}
+✔ maximum13 equipped instances and16 escaped affixes remain bounded in actual H/O/J encoding (15.279583ms)
+✔ cross-service, malformed receipt and orphan journal cannot be consumed by a new start (12.773666ms)
+✔ legal training entry and current level20 earth reaches four ground nodes through actual submission (247.282ms)
+✔ earth CP effects allocate on demand and every actual write rolls back with exact original recovery (696.088875ms)
+✔ whole and split MP regeneration validates skill at the same input boundary and keeps exact fractions (261.53975ms)
+✔ released earth effects survive recovery unchanged and old timeline cannot advance or resample (95.208875ms)
+✔ earth candidates with shared baseline commit exactly once and lost response retains original stream and results (104.9125ms)
+✔ unlock uses current legal character growth and cross skill effect lanes survive one CP proof (103.846666ms)
+✔ room transition clears released effects, retains cooldown/resources and rejects an old scene candidate (52.415541ms)
+✔ controlled player interrupts pending slash and ordinary movement but preserves already released bleed (55.980208ms)
+✔ same tick skill order prevents cross and bengshan from replacing accepted slash and preserves its original cooldown (116.716292ms)
+✔ mixed publication proves cancel graph tails and haste rather than independent cooldown counts (9.971292ms)
+max public proof {"pages":115,"bytes":1679956,"maxPage":14797}
+✔ all3648 allocated-domain effect records rebuild a bounded current public proof without private snapshots (11206.287084ms)
+maximum due-domain simulation {"events":11400,"resultPages":1,"elapsedMs":2065.5015000000003}
+✔ allocated due-domain11400 damage outcomes retain every typed result page and bounded private RNG tape (10602.443958ms)
+✔ large original-result page transaction rolls back first middle and final page writes (37237.75475ms)
+✔ already released earth uses its old attack while a broken current weapon contributes zero on the next cast (161.982916ms)
+✔ 13 slots configuration and categories (0.661416ms)
+✔ validateEquipEligibility checks slot, level, class and binding (0.397875ms)
+✔ applyEquipBinding auto-binds purple and orange equipment to character (1.851375ms)
+✔ calculateSingleItemScore matches ranking-query-baseline-v1 exact checks (0.468625ms)
+✔ aggregateCombatAttributes excludes 0-durability items and counts set pieces correctly (26.567875ms)
+✔ next room inherits wounded role and all seven cooldowns with zero snapshot stamina (65.447708ms)
+✔ exact local-test regeneration splits at buff expiry and preserves fractional resource units (32.399292ms)
+✔ later prepare rejects uncleared, living purple, dead player, forged/outside exit and skipped room (123.540375ms)
+✔ later prepare and activate roll back at every write point and original replay leaves newer room intact (232.8525ms)
+✔ owned bounded pickup fixture contends with actual activate through A/H in both commit orders (37.631417ms)
+✔ exact resource fractions survive arbitrary prefix/suffix cuts, cap overflow and uint64 resources (77.458125ms)
+✔ unknown buff/rate refs and uint32 denominator nonclosure fail before any room or resource commit (54.008125ms)
+✔ ready writes only changed role chunk and every added role write fault rolls back (98.536334ms)
+✔ later prepared recovery excludes four seconds and does not initialize current character/equipment from entry audit (25.062084ms)
+ST10-05 actual UTF-8 {
+  maxRole: 15814,
+  header: 1594,
+  chunks: [ 14716, 1933 ],
+  page: 15074,
+  response: 1518,
+  O: 1788,
+  H: 4807
+}
+ST10 post-ready UTF-8 { page: 15081, ready: 746, H: 5164, lastReadyReceipt: 946 }
+✔ schema2 maximum supported role/public page and actual next activation/receipt stay bounded (44.844583ms)
+✔ later activate authorization/version/terminal and real login takeover remain fenced in both orders (101.169958ms)
+✔ later exit is bound to locked previous manifest and full spawn set rather than a substitute map/enemy list (25.666833ms)
+✔ same regeneration reference cannot be rebound to different rates and prepared exit rule cannot change (32.13825ms)
+✔ crossing global stamina refill during later loading never refreshes reserved snapshot (15.792833ms)
+✔ ordinary room clear atomically wears seven slots without enabling kill rewards; replay and another empty fragment do not wear twice (131.639583ms)
+✔ death without gold/XP rewards wears once, preserves deadline, and clamps all seven slots at zero (86.060459ms)
+✔ unconfigured no-rewards training stays isolated and invalid/mid-challenge wear configuration is refused atomically (265.990417ms)
+(node:45139) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real transport confirms broken weapon public state then next room stays playable without resetting clocks or resources (139.561ms)
+ST17-01 ordinary wear actual transaction {
+  reads: 24,
+  writes: 16,
+  calls: 41,
+  writeCalls: 16,
+  writeBytes: 24831,
+  maxDocumentBytes: 4797
+}
+✔ each actual wear write rolls back, successful lost response resolves original and same fragment under another ID cannot double wear (683.234042ms)
+✔ two concurrent real submissions publish only one room wear and preserve intrinsic score inputs (39.530459ms)
+✔ version overflow refuses a real wear before any asset or checkpoint commit (25.077833ms)
+✔ broken items stop set counting and new stats while a released basic cast keeps its attack snapshot (25.119542ms)
+✔ death to zero preserves released cross tail, original deadline and terminal reward receipt (63.161584ms)
+ℹ tests 75
+ℹ suites 0
+ℹ pass 75
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 61281.106542

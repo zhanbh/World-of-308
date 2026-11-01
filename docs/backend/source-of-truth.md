@@ -109,3 +109,7 @@ Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapte
 ## ST16-05 联合验收状态（2026-11-01）
 
 五项批准任务本地实现/联合验收完成，最终全七阶段与Creator离线构建通过，Standards/Spec独立评审无可行动发现。原意图/药品/掉落/通关消费者守恒、实际恢复写点回滚与小CP/合成8CP成本分列见[本地交付与限制](../reviews/st16-local-verification.md)。本条不改变协议或玩法，不关闭SDK/真实网络设备/正式最大发布包络GAP；04历史类型失败在05已更正并补齐seq。
+
+## ST17-01 清房/死亡磨损（2026-11-01）
+
+普通房权威首次cleared及新增deathIndex独立扣当前7槽1/5，显式本地wear策略与H绑定、不以金币XP开关决定磨损；隔离训练无策略仍不磨损。归零贡献/套装过滤、必要statsVersion及CP同步、原O/流水原子与active+cleared完整证明/走出口已打通。字段/API/状态/CP及预算本次同步，实际验证见[01证据](../reviews/st17-01-verification.md)。修理报价/全修/Cocos修理面板和全故事验收仍属02–05，未在本片实现。

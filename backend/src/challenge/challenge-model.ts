@@ -13,6 +13,7 @@ export interface ChallengeContent {
     movement?: import('../../../shared/src/movement-kernel.ts').MovementConfig;
     exitInteraction?: {profile:'local-test';rulesRef:string;radius:number};
     encounterLayout?: boolean;
+    wear?: {profile:'local-test-wear';authorization:'isolated-local-assets-only';ref:string;roomWear:1;deathWear:5};
     rewards?: {profile:'local-test-kill-rewards';authorization:'isolated-local-assets-only';ref:string;goldPerKill:string;xpPerKill:number;roomWear:number};
     drops?: import('./ground-drops.ts').DropConfig;
     terminal?: import('./terminal-settlement.ts').TerminalConfig;
@@ -74,6 +75,7 @@ export interface EntryChallenge extends HandoffChallenge {
     rewardTotals?: {gold:string;xp:number;kills:number};
     terminalRewardRef?:string;
     terminalConfigHash?:string;
+    wearConfigHash?:string;
     clearReceipt?: import('../../../shared/src/protocol/scene-v2.ts').ClearReceipt;
     confirmedKills?: import('../../../shared/src/encounter-layout.ts').ConfirmedKillFact[];
     lifeState: 'alive' | 'dead';

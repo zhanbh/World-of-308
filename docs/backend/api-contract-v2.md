@@ -369,3 +369,7 @@ ST16-03：scene.recoveryPage与simulation.confirmed沿既有DTO恢复active/dead
 ## ST16-04 生命周期适配（2026-11-01）
 
 Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapter接既有CombatRecovery/Movement/Drop/Terminal；清持有输入、冻结预测与新资产操作，完整资源/恢复证明/ready及当前证明后按alive/dead/looting分别开放动作。首次冻结本地UI最多10秒且不滚动延长，终止只转宿主既有登录入口，不使用旧票据续关；该UI判断不代替服务端原截止和资产结算。没有生产DTO、状态字段、CP/结果格式或服务写事务变更；本机预览额外scene.status读取当前lease，独立隔离奖励授权不变。实际模型/传输证据及离线构建、设备/登录GAP见[04验证](../reviews/st16-04-verification.md)。
+
+## ST17-01 清房磨损与继续挑战（2026-11-01）
+
+沿现有simulation.submit，同笔确认普通清房−1及新增真实死亡−5、当前7槽实例/必要属性revision、CP、磨损流水和原O；不增加磨损命令。显式本地wear策略与H绑定，不依赖金币/XP开关；无奖励训练默认仍不磨损，详见数据字典ST17-01。`simulation.confirmed`及Movement接受合法`active+cleared`的完整证明，允许向出口移动及既有战斗动作后进入下一房；仍不接受preparing/awaitingReady/recovery/closed作为输入场景，dead仅既有空尾、completed仅既有looting动作。途中0武器不触发暂停，后续新起手按当前有效装备，释放快照保留。新挑战WEAPON_BROKEN门禁保持。

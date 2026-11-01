@@ -1,0 +1,28 @@
+✖ ordinary room clear atomically wears seven slots without enabling kill rewards; replay and another empty fragment do not wear twice (57.260291ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 185.862041
+
+✖ failing tests:
+
+test at backend/test/room-death-wear.test.mjs:27:1
+✖ ordinary room clear atomically wears seven slots without enabling kill rewards; replay and another empty fragment do not wear twice (57.260291ms)
+  AssertionError [ERR_ASSERTION]: weapon
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/backend/test/room-death-wear.test.mjs:30:42)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,31 @@
+✔ ordinary room clear atomically wears seven slots without enabling kill rewards; replay and another empty fragment do not wear twice (70.9325ms)
+✔ death without gold/XP rewards wears once, preserves deadline, and clamps all seven slots at zero (41.578375ms)
+✔ unconfigured no-rewards training stays isolated and invalid/mid-challenge wear configuration is refused atomically (147.702084ms)
+(node:45220) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-01-wear/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real transport confirms broken weapon public state then next room stays playable without resetting clocks or resources (86.101833ms)
+ST17-01 ordinary wear actual transaction {
+  reads: 24,
+  writes: 16,
+  calls: 41,
+  writeCalls: 16,
+  writeBytes: 24831,
+  maxDocumentBytes: 4797
+}
+✔ each actual wear write rolls back, successful lost response resolves original and same fragment under another ID cannot double wear (414.319792ms)
+✔ two concurrent real submissions publish only one room wear and preserve intrinsic score inputs (23.283333ms)
+✔ version overflow refuses a real wear before any asset or checkpoint commit (15.6075ms)
+✔ broken items stop set counting and new stats while a released basic cast keeps its attack snapshot (16.353167ms)
+✔ death to zero preserves released cross tail, original deadline and terminal reward receipt (41.4975ms)
+✔ real challenge start binds wear policy before assets are touched; zero weapon still cannot enter a new challenge (2.88425ms)
+✔ cleared permission does not admit preparing, awaitingReady, recovery or closed inputs (36.401042ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1025.895167

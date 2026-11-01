@@ -496,3 +496,9 @@ ST15评审修复：死亡首片按新增deathIndex扣死亡磨损，尾片通关
 CombatRecoveryCoordinator复用现有控制DTO、Loading资源摘要、完整恢复证明与Movement当前证明重建；仅两者均通过才恢复活动预测。冻结不删除原控制意图；未知suspend先查原控制回执，ready重试前重验资源与基础证明。无新增字段/物理键/服务写事务，既有32KiB公开页、CP及结果存储上界不变；Movement重建额外读取两次challenge.get和当前simulation.confirmed全页。确认游标/sceneEpoch保留、timeline换代、暂停不补战斗，1秒预测上界及2秒输入缺口不变。实际46项相关测试与类型验证、后继unknown/dead/looting/Cocos边界见[01验证](../reviews/st16-01-verification.md)。
 
 ST16-03：既有SceneState及lastReadyReceipt字段不变；完整恢复证明包含active/dead与completed/cleared/looting。looting恢复ready的anchorWallAt/anchorTick重建，inputGapBaseAt=null；CD/死亡原截止与资产不重置。详见[恢复时序](recovery-timeline-proposal-v1.md#st16-03-死亡与通关拾取恢复2026-10-30)。
+
+## ST17-01 磨损事实（2026-11-01）
+
+H可含服务私有`wearConfigHash`，绑定开始挑战时的显式本地磨损策略摘要；`ChallengeContent.wear`仅允许`local-test-wear / isolated-local-assets-only`、有界ref及固定`roomWear=1 / deathWear=5`。旧已授权奖励夹具兼容固定1/5（旧`rewards.roomWear`必须为1，0或其它值拒绝）；无wear且无rewards的隔离训练继续不磨损，不因本功能打开收益。新挑战绑定派生策略，显式策略不得中途开启、撤除或更换。
+
+普通房`active→cleared`与新增`deathIndex`分别是扣损事实，沿H原阶段/死亡序号和原O阻重；不新增客户端“已清房/已死亡”上报。仅7磨损槽合法当前穿戴实例扣1/5、截断0，0不反复写实例版本，6不磨损槽显式null保留。实际磨损J记录room/deathIndex和实例前后值；有收益时合入原confirmedKills流水，否则同笔equipmentWear流水。装备贡献/套装计件确有改变才推进C.statsVersion及CP属性revision；评分、scoreReachedAt和评分输入equipmentVersion不变。

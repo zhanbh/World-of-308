@@ -1,3 +1,4 @@
+import {wearPolicy,applyEquipmentWear,wearChangesAttributes} from './equipment-wear.ts';
 import {packEvents,unpackEvents,RESULT_PACK_PAGES,RESULT_PACK_BYTES} from './combat-result-pack.ts';
 import type {PackedEvents} from './combat-result-pack.ts';
 import type {WalletEntity} from '../shop/shop-model.ts';
@@ -304,6 +305,7 @@ export class ChallengeService {
                     const waitRemainingMs = Math.max(0, 60000 - (now - trinketEquippedAt));
                     const trinketEquipWaitUntilTick = Math.ceil(waitRemainingMs / 10);
                     const h: EntryChallenge = { schemaVersion: 2, id, accountId: a.id, characterId: c.id, sessionId: command.sessionId, version: 0, result: 'active', sceneState: 'combat', sceneEpoch: 0, currentRoomNo: -1, roomPhase: 'preparing', staminaSnapshot: { entryValue: stamina.value, remaining: stamina.value, entryRefillWindow: currentWindow, entryAt: now, revision: 0 }, staminaSettlement: { state: 'unsettled' }, dungeonId: d.dungeonId, difficultyId: diff.difficultyId, rolePlayEpoch: c.rolePlayEpoch, releaseRef: this.options.content!.releaseRef, monsterLevel, monsterStatsRef: row.monsterStatsRef, equipmentSourceRef: row.equipmentSourceRef, playerLevel: c.level, equipmentSnapshot: equipment, equipmentAttributes: aggregateCombatAttributes(Object.fromEntries(equipment.map(i => [i.slotKind, i])), this.options.setConfigs), roomCost: diff.roomCost, purpleRoomNo: d.kind === 'first' ? encounterRoom! : null, purpleEncounter: d.kind === 'first' ? {roomNo:encounterRoom!,spawnId:'purple-extra',templateRef:d.purpleTemplateRef!}:null, confirmedKills: [], lifeState:'alive',connection:'connected',timelineEpoch:0,controlSeq:0,heartbeatSeq:0,lease:{mode:'connected',lastEvidenceAt:now,leaseUntil:now+10000,lastHeartbeatAt:now,lastHeartbeatSeq:0,revision:0},roomCount:7, acceptedSeq: 0, acceptedTick: 0, createdAt: now, trinketEquipWaitUntilTick };
+                    const wear=wearPolicy(this.options.content!);if(wear)h.wearConfigHash=await manifestDigest(wear);
                     if(this.options.content?.terminal){validateTerminal(this.options.content.terminal);h.terminalConfigHash=await manifestDigest({terminal:this.options.content.terminal,rewards:this.options.content.rewards});}
                     const nextC = { ...c, version: increment(c.version), stamina, staminaReservation: id, location: { kind: 'challenge' as const, challengeId: id }, updatedAt: now };
                     const nextA = { ...a, version: increment(a.version), writeRevision: increment(a.writeRevision), activeChallengeId: id, openSceneChallengeId: id, updatedAt: now };
@@ -662,7 +664,7 @@ export class ChallengeService {
             requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
             if(await this.expire(tx,a,h,now))return null;
             this.live(h,a,c,q.sessionId,now,true);const {header,role,scene}=await readCheckpoint(tx,h);
-            requireValue((h.roomPhase==='active'||h.result==='completed'&&h.roomPhase==='cleared')&&header.acceptingInputs,'ROOM_NOT_AVAILABLE');
+            requireValue((h.roomPhase==='active'||h.roomPhase==='cleared')&&header.acceptingInputs,'ROOM_NOT_AVAILABLE');
             if(await this.movementGap(tx,h,header,now))return null;
             requireValue(q.payload.sceneEpoch===h.sceneEpoch&&q.payload.timelineEpoch===h.timelineEpoch&&q.payload.checkpointRevision===header.revision,'VERSION_CONFLICT');
             const records=publicRecords(role,scene),pages=publicPages(records,scene.earth?32:64),totalPages=pages.length;requireValue(q.payload.pageIndex<totalPages,'INVALID_ARGUMENT');
@@ -681,7 +683,7 @@ export class ChallengeService {
                 requireValue(await tx.get(await loginKey('assetJournal',[a.id,q.operationId]))===undefined,'SERVICE_UNAVAILABLE');
                 const h=await tx.get<EntryChallenge>(q.payload.challengeId);requireValue(h?.accountId===a.id&&h.characterId===c.id,'NOT_FOUND_OR_FORBIDDEN');
                 if(await this.expire(tx,a,h,now))return {rejected:'DEADLINE_EXPIRED'};
-                this.live(h,a,c,q.sessionId,now,true);const cp=await readCheckpoint(tx,h);this.deadTail(h,cp.scene,q);requireValue((h.roomPhase==='active'||h.result==='completed'&&h.roomPhase==='cleared')&&cp.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
+                this.live(h,a,c,q.sessionId,now,true);const cp=await readCheckpoint(tx,h);this.deadTail(h,cp.scene,q);requireValue((h.roomPhase==='active'||h.roomPhase==='cleared')&&cp.header.acceptingInputs,'ROOM_NOT_AVAILABLE');
                 if(await this.movementGap(tx,h,cp.header,now))return {rejected:'RECOVERY_REQUIRED'};
                 this.validateMovement(q,a,c,h,cp.header,now);
                 const equipment:EquipmentEntity[]=[];for(const [slot,itemId] of Object.entries(c.equipped)){const item=await tx.get<EquipmentEntity>(itemId!);requireValue(item?.schemaVersion===2&&item.id===itemId&&item.accountId===a.id&&item.lifecycle==='active'&&item.location.kind==='equipped'&&item.location.characterId===c.id&&item.location.slotId===slot,'CONFIG_NOT_READY');equipment.push(item);}
@@ -804,17 +806,23 @@ export class ChallengeService {
                 if(bagChanged)tx.set(nextBag.id,nextBag);
                 const rewardConfig=this.options.content?.rewards;
                 const newlyDied=playerDeathIndex>(currentH.deathIndex??0);
-                const wear=(terminalFact&&rewardConfig?rewardConfig.roomWear:0)+(newlyDied&&rewardConfig?5:0);
-                const finalEquipment=equipment.map(item=>{
-                    if(!wear||!['weapon','shoulder','chest','pants','belt','boots','earring'].includes(item.slotKind)||!item.durability.wearEnabled)return item;
-                    requireValue(item.durability.current!==null,'CONFIG_NOT_READY');
-                    return {...item,durability:{...item.durability,current:Math.max(0,item.durability.current-wear)},version:increment(item.version),updatedAt:now};
-                });
+                const policy=wearPolicy(this.options.content!);
+                requireValue(!currentH.wearConfigHash||!!policy&&currentH.wearConfigHash===await manifestDigest(policy),'CONFIG_NOT_READY');
+                // New explicit policies must be locked at challenge creation, not enabled mid-run.
+                requireValue(!this.options.content?.wear||!!currentH.wearConfigHash,'CONFIG_NOT_READY');
+                const newlyCleared=nextRoomPhase==='cleared'&&currentH.roomPhase!=='cleared';
+                const wear=policy?((newlyCleared?policy.roomWear:0)+(newlyDied?policy.deathWear:0)):0;
+                const finalEquipment=applyEquipmentWear(equipment,wear,now);
+                const wearChanges=finalEquipment.flatMap((item,i)=>item===equipment[i]?[]:[{itemId:item.id,slotKind:item.slotKind,before:equipment[i].durability.current,after:item.durability.current}]);
                 for(let i=0;i<equipment.length;i++)if(finalEquipment[i]!==equipment[i])tx.set(finalEquipment[i].id,finalEquipment[i]);
                 let nextC=currentC;
+                if(wearChangesAttributes(equipment,finalEquipment,this.options.setConfigs)){
+                    nextC={...nextC,version:increment(nextC.version),statsVersion:increment(nextC.statsVersion),updatedAt:now};
+                    tx.set(nextC.id,nextC);
+                }
                 if(trinketActivatedTick!==null){
                     const cdUntilMs=h.createdAt+(trinketActivatedTick+12000)*10;
-                    nextC={...currentC,version:increment(currentC.version),trinketCooldownUntil:Math.max(currentC.trinketCooldownUntil??0,cdUntilMs),updatedAt:now};
+                    nextC={...nextC,version:increment(nextC.version),trinketCooldownUntil:Math.max(currentC.trinketCooldownUntil??0,cdUntilMs),updatedAt:now};
                     tx.set(nextC.id,nextC);
                 }
                 const terminalConfig=this.options.content?.terminal;requireValue(!currentH.terminalConfigHash||!!terminalConfig,'CONFIG_NOT_READY');if(terminalConfig){validateTerminal(terminalConfig);requireValue(!!rewardConfig&&currentH.terminalConfigHash===await manifestDigest({terminal:terminalConfig,rewards:rewardConfig}),'CONFIG_NOT_READY');}
@@ -831,10 +839,13 @@ export class ChallengeService {
                     if(terminalConfig){const oldLevel=nextC.level,progression=await advanceProgression(tx,nextC,terminalConfig,now);nextC=progression.character;mails=progression.created;if(nextC.level!==oldLevel){const attrs=terminalConfig.attributes[nextC.level-1];role.player.maxHp=attrs.maxHp;role.player.maxMp=attrs.maxMp;if(BigInt(role.player.mp)>BigInt(attrs.maxMp))role.player.mp=attrs.maxMp;if(role.player.lifeState==='alive'){role.player.hp=attrs.maxHp;role.player.mp=attrs.maxMp;role.hpRegenRemainder={numerator:0,denominator:1};role.mpRegenRemainder={numerator:0,denominator:1};}if(role.combat)role.combat.attributesRevision=nextC.statsVersion;const unlock=[['cross',1],['bengshan',5],['badao',10],['earth',20]] as const;role.unlockedSkills=unlock.filter(([,level])=>nextC.level>=level).map(([skillId,base])=>{const node=this.options.content?.release?.nodes.find(n=>n.id===skillId);requireValue(node,'CONFIG_NOT_READY');return {skillId,level:Math.floor((nextC.level-base)/2)+1,configRef:skillId+'@'+node.version};});}}
                     if(terminalFact&&terminalConfig){requireValue(!currentH.clearReceipt,'CONFIG_NOT_READY');const clear=await planClear(tx,nextC,nextBag,h.id,terminalConfig,now,{kind:this.dungeon(h.dungeonId).kind,monsterLevel:h.monsterLevel});nextC=clear.character;nextBag=clear.bag;nextH.clearReceipt={sourceKey:clear.sourceKey,itemId:clear.itemId,grantId:clear.grantId,route:clear.route,equipment:clear.equipment,gold:nextH.rewardTotals.gold,xp:nextH.rewardTotals.xp,kills:nextH.rewardTotals.kills,elapsedMs:Math.max(0,now-h.createdAt),sceneState:'looting',staminaRemaining:h.staminaSnapshot.remaining,configRef:terminalConfig.ref};}
                     tx.set(nextC.id,nextC);
-                    const journalId=await loginKey('assetJournal',[a.id,q.operationId]),journal={schemaVersion:2,id:journalId,accountId:a.id,operationId:q.operationId,command:q.command,source:{kind:'confirmedKills',challengeId:h.id,roomNo:h.currentRoomNo,configRef:rewardConfig.ref},kills:newKillFacts,gold:String(gold),xp,mails,clearReceipt:nextH.clearReceipt??null,terminalFact:terminalFact??null,createdAt:now};budget(journal,131072);tx.set(journalId,journal);
+                    const journalId=await loginKey('assetJournal',[a.id,q.operationId]),journal={schemaVersion:2,id:journalId,accountId:a.id,operationId:q.operationId,command:q.command,source:{kind:'confirmedKills',challengeId:h.id,roomNo:h.currentRoomNo,configRef:rewardConfig.ref},kills:newKillFacts,gold:String(gold),xp,mails,clearReceipt:nextH.clearReceipt??null,wear:{roomCleared:newlyCleared,deathIndex:newlyDied?playerDeathIndex:null,changes:wearChanges},terminalFact:terminalFact??null,createdAt:now};budget(journal,131072);tx.set(journalId,journal);
                     if(terminalFact)nextH.terminalRewardRef=journalId;
                 }
-                if(combat){role.attackPower=applyTrinketStats(currentBasicStats(nextC,finalEquipment,combat,{x:role.player.x,y:role.player.y,facing:role.player.facing},this.options.setConfigs),role.buffs,q.payload.toTick).attackPower;}
+                if(wearChanges.length&&!(rewardConfig&&newKillFacts.length)){
+                    const journalId=await loginKey('assetJournal',[a.id,q.operationId]),journal={schemaVersion:2,id:journalId,accountId:a.id,operationId:q.operationId,command:q.command,source:{kind:'equipmentWear',challengeId:h.id,roomNo:h.currentRoomNo,configRef:policy!.ref},roomCleared:newlyCleared,deathIndex:newlyDied?playerDeathIndex:null,changes:wearChanges,createdAt:now};budget(journal,131072);tx.set(journalId,journal);
+                }
+                if(combat){role.combat!.attributesRevision=nextC.statsVersion;role.attackPower=applyTrinketStats(currentBasicStats(nextC,finalEquipment,combat,{x:role.player.x,y:role.player.y,facing:role.player.facing},this.options.setConfigs),role.buffs,q.payload.toTick).attackPower;}
                 const hash=await stateHash(role,scene),chunk=await writeChunk(h,0,increment(latest.header.activeChunks[0].chunkRevision),role),sceneChunk=await writeChunk(h,1,increment(latest.header.activeChunks[1].chunkRevision),scene),effectChunks=await writeCrossChunks(h,scene.cross,latest.header.activeChunks,scene.bengshan,scene.badao,scene.earth,cp.effectChunks);
                 const revision=increment(latest.header.revision),state={...latest.header.state,checkpointRevision:revision,publicStateHash:hash,acceptedSeq:q.payload.lastSeq,acceptedTick:q.payload.toTick,roomPhase:nextRoomPhase,result:terminalFact?'completed' as const:latest.header.state.result,lifeState:playerLifeState,deathDeadline:playerDeathDeadline,inputGapBaseAt:now,lastAcceptedInputAt:now};
                 const activeChunks=[...latest.header.activeChunks.slice(0,2)];if(chunk.hash!==activeChunks[0].hash){tx.set(chunk.id,chunk);activeChunks[0]={...activeChunks[0],chunkRevision:chunk.chunkRevision,hash:chunk.hash};}

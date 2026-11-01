@@ -207,3 +207,7 @@ ST16-03：dead/active的suspend→resumePrepare→ready仍dead且原deathDeadlin
 ## ST16-04 生命周期适配（2026-11-01）
 
 Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapter接既有CombatRecovery/Movement/Drop/Terminal；清持有输入、冻结预测与新资产操作，完整资源/恢复证明/ready及当前证明后按alive/dead/looting分别开放动作。首次冻结本地UI最多10秒且不滚动延长，终止只转宿主既有登录入口，不使用旧票据续关；该UI判断不代替服务端原截止和资产结算。没有生产DTO、状态字段、CP/结果格式或服务写事务变更；本机预览额外scene.status读取当前lease，独立隔离奖励授权不变。实际模型/传输证据及离线构建、设备/登录GAP见[04验证](../reviews/st16-04-verification.md)。
+
+## ST17-01 普通房扣损事实（2026-11-01）
+
+首次权威`active→cleared`扣当前合法7磨损槽各1，新增deathIndex额外各5；同刻两事实可叠加6，最低0。原O重放或不同operationId旧片不二扣；cleared中继续走路/空片不再产生清房事实。无收益但显式授权wear的本地挑战可扣损，无显式授权的no-rewards训练不改变资产。磨损、必要statsVersion/CP、流水/O与确认前沿原子提交，不写评分投影/equipmentVersion。当前合法`active+cleared`允许完整公开证明与继续输入/走向出口；其它loading/recovery/closed、生死与终局资格沿原门禁，不因武器0延长任何原截止或补血。

@@ -74,7 +74,7 @@ export class MovementCoordinator {
   const c=this.context!,config=this.config!,query={protocolVersion:2,sessionId:c.sessionId,sessionEpoch:c.sessionEpoch,query:'challenge.get',requestId:'movement-current',payload:{challengeId:c.challengeId}};
   const first=parseChallengeQueryResponse(await this.scene(query));if(generation!==this.generation)return;
   if('error' in first)throw Error(first.error.code);const s=first.data;
-  if('kind' in s||!((s.roomPhase==='active'&&s.result==='active')||(s.roomPhase==='cleared'&&s.result==='completed'))||s.connection!=='connected')throw Error('CURRENT_SCENE_NOT_ACTIVE');
+  if('kind' in s||!((s.roomPhase==='active'&&s.result==='active')||(s.roomPhase==='cleared'&&(s.result==='active'||s.result==='completed')))||s.connection!=='connected')throw Error('CURRENT_SCENE_NOT_ACTIVE');
   if(this.current.confirmed&&(s.sceneEpoch!==this.current.confirmed.sceneEpoch||s.timelineEpoch!==this.current.confirmed.timelineEpoch||s.checkpointRevision<this.current.confirmed.checkpointRevision))throw Error('STALE_STATE');
   const pages=[];let total=1;
   for(let pageIndex=0;pageIndex<total;pageIndex++){
