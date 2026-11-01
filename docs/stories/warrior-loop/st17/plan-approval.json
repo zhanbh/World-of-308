@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-01",
+  "kind": "human",
+  "evidence": "可以，确认；开始01吧先",
+  "spec_body_sha256": "d91949b4ddf0ba08bc39d5fed24f2b26ac3dbbc1cbdb4120fa5aa36293ccc8aa",
+  "approved_task_plan_full_file_sha256": "f105e369198735a95e2d8d7c87ce009bdea28c3749b225d35fa564d4ff637c60",
+  "graph_approved": true,
+  "test_seams_approved": true,
+  "implementation_scope": [
+    "ST17-01"
+  ],
+  "jira_actions": false
+}

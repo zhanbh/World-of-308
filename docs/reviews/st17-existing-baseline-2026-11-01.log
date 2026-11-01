@@ -1,0 +1,62 @@
+✔ two public submits preserve death provenance and released cross terminal exactly as an unsplit slice (166.152834ms)
+✔ two public submits preserve death provenance and released earth terminal exactly as an unsplit slice (107.788084ms)
+(node:43209) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/client/assets/scripts/net/MovementCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ dead coordinator keeps only empty authoritative tail fragments available (82.844625ms)
+✔ dead tail retains original deadline and refuses new actions, old identity, future time, recovery and expiry (119.50375ms)
+✔ dead scene without released effects cannot advance and committed death and tail replay once (81.785833ms)
+✔ legal training entry and current level20 earth reaches four ground nodes through actual submission (199.825041ms)
+✔ earth CP effects allocate on demand and every actual write rolls back with exact original recovery (519.949ms)
+✔ whole and split MP regeneration validates skill at the same input boundary and keeps exact fractions (206.543334ms)
+✔ released earth effects survive recovery unchanged and old timeline cannot advance or resample (70.894ms)
+✔ earth candidates with shared baseline commit exactly once and lost response retains original stream and results (81.592125ms)
+✔ unlock uses current legal character growth and cross skill effect lanes survive one CP proof (76.6115ms)
+✔ room transition clears released effects, retains cooldown/resources and rejects an old scene candidate (43.086ms)
+✔ controlled player interrupts pending slash and ordinary movement but preserves already released bleed (45.124125ms)
+✔ same tick skill order prevents cross and bengshan from replacing accepted slash and preserves its original cooldown (94.707542ms)
+✔ mixed publication proves cancel graph tails and haste rather than independent cooldown counts (9.179125ms)
+max public proof {"pages":115,"bytes":1679956,"maxPage":14797}
+✔ all3648 allocated-domain effect records rebuild a bounded current public proof without private snapshots (11282.958708ms)
+maximum due-domain simulation {"events":11400,"resultPages":1,"elapsedMs":2088.969832999999}
+✔ allocated due-domain11400 damage outcomes retain every typed result page and bounded private RNG tape (10583.902459ms)
+✔ large original-result page transaction rolls back first middle and final page writes (37650.314917ms)
+✔ already released earth uses its old attack while a broken current weapon contributes zero on the next cast (158.415041ms)
+✔ 13 slots configuration and categories (1.133084ms)
+✔ validateEquipEligibility checks slot, level, class and binding (0.467ms)
+✔ applyEquipBinding auto-binds purple and orange equipment to character (0.248708ms)
+✔ calculateSingleItemScore matches ranking-query-baseline-v1 exact checks (0.369333ms)
+✔ aggregateCombatAttributes excludes 0-durability items and counts set pieces correctly (18.697834ms)
+✔ next room inherits wounded role and all seven cooldowns with zero snapshot stamina (41.204709ms)
+✔ exact local-test regeneration splits at buff expiry and preserves fractional resource units (15.541583ms)
+✔ later prepare rejects uncleared, living purple, dead player, forged/outside exit and skipped room (81.513667ms)
+✔ later prepare and activate roll back at every write point and original replay leaves newer room intact (173.932875ms)
+✔ owned bounded pickup fixture contends with actual activate through A/H in both commit orders (31.049333ms)
+✔ exact resource fractions survive arbitrary prefix/suffix cuts, cap overflow and uint64 resources (56.364209ms)
+✔ unknown buff/rate refs and uint32 denominator nonclosure fail before any room or resource commit (39.406625ms)
+✔ ready writes only changed role chunk and every added role write fault rolls back (67.21025ms)
+✔ later prepared recovery excludes four seconds and does not initialize current character/equipment from entry audit (16.413334ms)
+ST10-05 actual UTF-8 {
+  maxRole: 15814,
+  header: 1594,
+  chunks: [ 14716, 1933 ],
+  page: 15074,
+  response: 1518,
+  O: 1788,
+  H: 4807
+}
+ST10 post-ready UTF-8 { page: 15081, ready: 746, H: 5164, lastReadyReceipt: 946 }
+✔ schema2 maximum supported role/public page and actual next activation/receipt stay bounded (33.571625ms)
+✔ later activate authorization/version/terminal and real login takeover remain fenced in both orders (67.420833ms)
+✔ later exit is bound to locked previous manifest and full spawn set rather than a substitute map/enemy list (15.415375ms)
+✔ same regeneration reference cannot be rebound to different rates and prepared exit rule cannot change (18.468084ms)
+✔ crossing global stamina refill during later loading never refreshes reserved snapshot (11.295167ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 61247.497542

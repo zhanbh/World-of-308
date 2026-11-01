@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-01",
+  "kind": "repository-local-plan-validation-no-Jira",
+  "status": "passed",
+  "spec": {
+    "path": "docs/stories/warrior-loop/st17/spec.md",
+    "body_sha256": "d91949b4ddf0ba08bc39d5fed24f2b26ac3dbbc1cbdb4120fa5aa36293ccc8aa",
+    "full_file_sha256": "05f9e049b8661cea6f2fc35ae27ae01678238542fb4ede6068a74fa142833723"
+  },
+  "tickets": [
+    {
+      "id": "ST17-01",
+      "number": 1,
+      "path": "docs/stories/warrior-loop/st17/issues/01-room-death-wear.md",
+      "revision": "b11a66dcdf6ee6866c8086d8eda8a0774d28b42d4c6178cb20c8708606b3d4d6",
+      "full_file_sha256": "ab5fdde55f37cd716fd6aa67c848518b2cae996b94fadea64ecda6c1fca1cb46",
+      "blocked_by": [],
+      "state": "ready",
+      "evidence": []
+    },
+    {
+      "id": "ST17-02",
+      "number": 2,
+      "path": "docs/stories/warrior-loop/st17/issues/02-single-repair.md",
+      "revision": "48a326b23317326a3030fc9569a95324f7ecd9f7433c9b8edfffe6e9a7e17759",
+      "full_file_sha256": "55c98e93d4a814b66356778cbd89a488ef45c90fd15705dab0ab0bf42a320330",
+      "blocked_by": [],
+      "state": "planned",
+      "evidence": []
+    },
+    {
+      "id": "ST17-03",
+      "number": 3,
+      "path": "docs/stories/warrior-loop/st17/issues/03-all-worn-repair.md",
+      "revision": "5c902efff6dd5d5ffa0752e4d213edc29b94a4bbf71891f108e7a04f07c10aba",
+      "full_file_sha256": "cd5940531816a718ce05a7cb6ee063e4d642a1879af4588ae25a78ae2e79e194",
+      "blocked_by": [
+        2
+      ],
+      "state": "planned",
+      "evidence": []
+    },
+    {
+      "id": "ST17-04",
+      "number": 4,
+      "path": "docs/stories/warrior-loop/st17/issues/04-cocos-repair.md",
+      "revision": "1d2a68536a0de9cd382b7f5f864bd183816d0a39db20c4fc86ca11c05ee4ec99",
+      "full_file_sha256": "3fbf7020d00017f9126d1e4e831e4ae37c2942819701a0066bc972831137f998",
+      "blocked_by": [
+        1,
+        3
+      ],
+      "state": "planned",
+      "evidence": []
+    },
+    {
+      "id": "ST17-05",
+      "number": 5,
+      "path": "docs/stories/warrior-loop/st17/issues/05-joint-acceptance-and-review.md",
+      "revision": "745a646ff82caad884ef49667c3da4591b770980a4a23c4aa2770dfdde09da3b",
+      "full_file_sha256": "8c1f99660a3dbe6576395ee13b9d51450da9a9486b1e39475c41d000730805ca",
+      "blocked_by": [
+        4
+      ],
+      "state": "planned",
+      "evidence": []
+    }
+  ],
+  "checks": {
+    "id_unique": true,
+    "dependencies_exist": true,
+    "acyclic": true,
+    "coverage": [
+      "AC17-1",
+      "AC17-2",
+      "AC17-3",
+      "AC17-4",
+      "AC17-5",
+      "AC17-6",
+      "AC17-7",
+      "AC17-8"
+    ],
+    "spec_body_matches": true
+  },
+  "approved": true,
+  "human_approval": "可以，确认；开始01吧先",
+  "implementation_scope": [
+    "ST17-01"
+  ],
+  "external_gate_run": false,
+  "jira_actions": false
+}

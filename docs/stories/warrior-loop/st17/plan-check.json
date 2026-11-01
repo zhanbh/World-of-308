@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-01",
+  "kind": "repository-local-draft-plan-validation-no-Jira",
+  "status": "draft-valid-awaiting-human-approval",
+  "spec_body_sha256": "d91949b4ddf0ba08bc39d5fed24f2b26ac3dbbc1cbdb4120fa5aa36293ccc8aa",
+  "spec_full_file_sha256": "0d885133ef8ec96a465bbda72318dce7b3b6a54d324d2da1e42d17658a89af5c",
+  "task_plan_full_file_sha256": "f105e369198735a95e2d8d7c87ce009bdea28c3749b225d35fa564d4ff637c60",
+  "tasks": [
+    {
+      "number": 1,
+      "id": "ST17-01",
+      "title": "真实清房/死亡磨损与破损继续本局",
+      "blocked_by": [],
+      "ac": [
+        "AC17-1",
+        "AC17-2"
+      ],
+      "deliver": "真实确认清房/死亡→7槽扣损→属性与公开CP一致→继续攻击/换房；保留末房奖励。修补普通清房及奖励配置耦合缺口，复用原事件与幂等，不新造客户端磨损上报接口。",
+      "accept": "真实普通房/死亡/同刻通关、各事实去重、不同ID重报、0截断/6不磨损槽/释放快照、原deadline与评分事实不变；新挑战仍拦截。无需反复真人刷本。"
+    },
+    {
+      "number": 2,
+      "id": "ST17-02",
+      "title": "林纳克斯报价与穿戴/背包单件修满",
+      "blocked_by": [],
+      "ac": [
+        "AC17-3",
+        "AC17-5",
+        "AC17-6"
+      ],
+      "deliver": "真实城镇服务权限→指定本人穿戴或背包实例→版本化费用报价→确认单件修满→协调器刷新钱包/装备；没有Cocos时可经真实授权传输重复演示。",
+      "accept": "0/半损/全满、不磨损/金库/他人/已毁拒绝，候选测试价格与精确单位，实例固有字段/评分时间不变，非法/过期上下文与旧报价拒绝，原O丢响应及实际写点回滚。"
+    },
+    {
+      "number": 3,
+      "id": "ST17-03",
+      "title": "当前穿戴一键全修原子闭环",
+      "blocked_by": [
+        2
+      ],
+      "ac": [
+        "AC17-4",
+        "AC17-5",
+        "AC17-6"
+      ],
+      "deliver": "沿02报价/服务/协调器扩展当前穿戴全修，完整清单及总价可查看，最多7个磨损槽，修满与扣币一次同成同败。",
+      "accept": "13槽满穿+背包/金库均有损耗时只修穿戴7槽；空/全满/余额恰足/差1单位、缺价、目标集合变化整批拒绝；逐实际写点、原O及OCC两序，报价不被悄悄替换。"
+    },
+    {
+      "number": 4,
+      "id": "ST17-04",
+      "title": "Cocos城镇修理面板与破损提示",
+      "blocked_by": [
+        1,
+        3
+      ],
+      "ac": [
+        "AC17-2",
+        "AC17-3",
+        "AC17-4",
+        "AC17-7"
+      ],
+      "deliver": "真实林纳克斯地点交互→穿戴/背包目标展示→报价确认→单修/穿戴全修→钱包/装备/属性刷新；副本破损提示非阻断。沿现有面板和传输组合根，不搭第二套资产逻辑。",
+      "accept": "加载/空/失败/不足/报价变化/提交/未知可见；原O重试不二扣，关面板/重attach/切角迟包隔离；0武器不中断本局；纯适配测试与批准离线构建，不冒称真机。"
+    },
+    {
+      "number": 5,
+      "id": "ST17-05",
+      "title": "磨损—修理—再入本联合验收与两轴评审",
+      "blocked_by": [
+        4
+      ],
+      "ac": [
+        "AC17-1",
+        "AC17-2",
+        "AC17-3",
+        "AC17-4",
+        "AC17-5",
+        "AC17-6",
+        "AC17-7",
+        "AC17-8"
+      ],
+      "deliver": "真实战斗/死亡磨损至0→继续或通关→回城新挑战被拦→修理→重新入场闭环，汇总01-04证据、预算与评审，不将既有实现或静态UI当整体验收。",
+      "accept": "最大7目标/100格背包与小/8CP分列，实际R/W/调用/UTF-8；新写意图逐写点回滚、提交未知、穿脱/出售等现有装备写竞争两序；保留03整批原子/评分不变；一次最终全7阶段、Standards/Spec独立评审及必要修复，SDK/设备/正式配置GAP如实。"
+    }
+  ],
+  "checks": {
+    "id_unique": true,
+    "dependencies_exist": true,
+    "acyclic": true,
+    "coverage": [
+      "AC17-1",
+      "AC17-2",
+      "AC17-3",
+      "AC17-4",
+      "AC17-5",
+      "AC17-6",
+      "AC17-7",
+      "AC17-8"
+    ],
+    "spec_body_matches": true
+  },
+  "human_approval": null,
+  "tickets_published": false,
+  "implementation_started": false,
+  "external_gate_run": false,
+  "jira_actions": false
+}

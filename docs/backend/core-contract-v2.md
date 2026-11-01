@@ -128,7 +128,7 @@ character.create按account+class占位，支持warrior/hunter，每职业一个�
 | 在线离开/失败回城 | 原副本门口，门口范围需离开再走入才重触发 | 一次加载体力；HP/MP满，所有技能/道具CD清零 |
 | 关闭重启/新设备接管 | 不跨进程续关；下次上线当前角色旅店 | 先结束旧挑战并结算，再加载最新角色视图，不覆盖已保存资产 |
 
-result(active/completed/failed)、lifeState(alive/dead)、sceneState(combat/looting/closed)继续独立；completed永不降为failed。首领确认通关后末房磨损武器归零仍通关；非末房武器0暂停是单独行动限制，不能直接等同dead或failed。暂停时钟的未定细节留给耐久实现，不暗中免费复活。
+result(active/completed/failed)、lifeState(alive/dead)、sceneState(combat/looting/closed)继续独立；completed永不降为failed。首领确认通关后末房磨损武器归零仍通关；非末房武器0不暂停，失去武器属性后仍可攻击和换房，不冻结怪物、时钟或原截止，不自动判败/死亡或免费复活。新挑战入场仍要求武器耐久大于0。此处同步主规格及耐久方案已确认的“不暂停”规则，撤销旧暂停描述（2026-11-01文档勘误，非新增玩法）。
 
 死亡10秒、断线/后台恢复10秒、复活保护2秒用不同截止与时间基准；截止以服务端now>=deadline判断。死亡期间合法残留击杀升级不解除dead；通关免费复活等沿挑战流程。此处状态校验不证明客户端击杀真实性，正式经济安全仍需后续验证。
 
