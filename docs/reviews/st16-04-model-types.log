@@ -1,2 +1,8 @@
 Node 24.9.0; TypeScript 5.8.2; compiler /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/Resources/app.asar.unpacked/node_modules/typescript
-PASS: selected type project only.
+client/assets/scripts/net/CombatLifecycleAdapter.ts(37,56): error TS2345: Argument of type '{ kind: "basic"; pressed: false; tick: LogicTick; }' is not assignable to parameter of type 'ActionInput'.
+  Type '{ kind: "basic"; pressed: false; tick: LogicTick; }' is not assignable to type 'InputBase & { kind: "basic"; pressed: boolean; }'.
+    Property 'seq' is missing in type '{ kind: "basic"; pressed: false; tick: LogicTick; }' but required in type 'InputBase'.
+client/assets/scripts/net/CombatLifecycleAdapter.ts(39,94): error TS2345: Argument of type '{ kind: "move"; x: number; y: number; tick: LogicTick; }' is not assignable to parameter of type 'ActionInput'.
+  Type '{ kind: "move"; x: number; y: number; tick: LogicTick; }' is not assignable to type 'InputBase & { kind: "move"; x: number; y: number; }'.
+    Property 'seq' is missing in type '{ kind: "move"; x: number; y: number; tick: LogicTick; }' but required in type 'InputBase'.
+FAIL: selected type project.

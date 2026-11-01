@@ -1,61 +1,61 @@
-(node:36898) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+(node:38120) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ active combat recovery: first fragment after 100ms (295.067875ms)
-✔ active combat recovery: first fragment after 1900ms (174.199125ms)
-✔ active combat recovery: first fragment after 2000ms (118.173875ms)
-✔ a lost suspend response can resolve the original before any checkpoint ticket exists (24.289959ms)
-✔ late movement proof from an old recovery cannot freeze a newly initialized scene owner (42.865625ms)
-(node:36899) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+✔ active combat recovery: first fragment after 100ms (307.929291ms)
+✔ active combat recovery: first fragment after 1900ms (171.223208ms)
+✔ active combat recovery: first fragment after 2000ms (113.028666ms)
+✔ a lost suspend response can resolve the original before any checkpoint ticket exists (22.921208ms)
+✔ late movement proof from an old recovery cannot freeze a newly initialized scene owner (44.7475ms)
+(node:38121) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ Cocos hide/show freezes held input and asset writes until current proof restores combat (129.6655ms)
-✔ expired recovery prompts existing login and cannot resume the old challenge (61.25975ms)
-✔ destroy and new attach retire an old delayed recovery callback (85.521542ms)
-✔ lifecycle recovery leaves the dead unable to attack and permits only existing empty tail (126.218458ms)
-✔ lifecycle recovery retains completed receipt, movement and actual pickup (64.532875ms)
-✔ lifecycle retries a lost committed ready through original proof without a second timeline (49.376042ms)
-✔ explicit isolated createLootChallengePreview binds lifecycle and strict control DTO over fetch transport (68.545417ms)
-✔ explicit isolated createChallengePreview binds lifecycle and strict control DTO over fetch transport (77.721167ms)
-✔ paused recovery UI stops after ten local seconds without renewing the window (20.626417ms)
-(node:36900) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
+✔ Cocos hide/show freezes held input and asset writes until current proof restores combat (201.189667ms)
+✔ expired recovery prompts existing login and cannot resume the old challenge (54.200125ms)
+✔ destroy and new attach retire an old delayed recovery callback (81.32325ms)
+✔ lifecycle recovery leaves the dead unable to attack and permits only existing empty tail (102.85475ms)
+✔ lifecycle recovery retains completed receipt, movement and actual pickup (64.661667ms)
+✔ lifecycle retries a lost committed ready through original proof without a second timeline (54.308875ms)
+✔ explicit isolated createLootChallengePreview binds lifecycle and strict control DTO over fetch transport (66.304667ms)
+✔ explicit isolated createChallengePreview binds lifecycle and strict control DTO over fetch transport (60.491958ms)
+✔ paused recovery UI stops after ten local seconds without renewing the window (17.561709ms)
+(node:38122) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/CombatRecoveryCoordinator.ts is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ confirmed death restores complete proof without reviving or extending the deadline (217.571791ms)
-✔ real Boss completion restores looting and the fixed receipt; lease expiry preserves success (107.160417ms)
-(node:36901) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/TerminalCoordinator.ts is not specified and it doesn't parse as CommonJS.
+✔ confirmed death restores complete proof without reviving or extending the deadline (210.048875ms)
+✔ real Boss completion restores looting and the fixed receipt; lease expiry preserves success (110.3045ms)
+(node:38123) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/TerminalCoordinator.ts is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ terminal coordinator reads strict receipt from real Boss commit and resolves lost finishLoot before fade (113.696458ms)
-✔ loot model uses confirmed 32px radius, preserves full-bag drops and flips original receipt (48.092875ms)
-✔ completed coordinator rejects combat intents but commits actual CP movement and leave waits for in-flight pickup (80.825125ms)
-✔ scene binding serializes pickup versus leave and preserves pending delivery message (68.959041ms)
-✔ pickup click queued behind frame movement flushes CP without requiring an empty-queue timing window (81.566375ms)
-✔ explicit isolated reward preview drives real Boss input, receipt and pickup without shortcut endpoints (46.483458ms)
-(node:36902) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/DropCoordinator.ts is not specified and it doesn't parse as CommonJS.
+✔ terminal coordinator reads strict receipt from real Boss commit and resolves lost finishLoot before fade (103.27775ms)
+✔ loot model uses confirmed 32px radius, preserves full-bag drops and flips original receipt (53.098375ms)
+✔ completed coordinator rejects combat intents but commits actual CP movement and leave waits for in-flight pickup (76.225208ms)
+✔ scene binding serializes pickup versus leave and preserves pending delivery message (56.740833ms)
+✔ pickup click queued behind frame movement flushes CP without requiring an empty-queue timing window (98.399083ms)
+✔ explicit isolated reward preview drives real Boss input, receipt and pickup without shortcut endpoints (50.331042ms)
+(node:38124) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/assets/scripts/net/DropCoordinator.ts is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st16-04-lifecycle/client/package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-✔ unknown collect resolves original equipment delivery without replay or optimistic state (100.399833ms)
-✔ owner resolves unknown simulation before suspend without requiring connected movement refresh (73.380125ms)
-✔ unknown leave resolves its receipt behind the barrier and preserves one terminal equipment delivery (53.09125ms)
-✔ notFound then old equipment write wins OCC without duplicate assets (50.736916ms)
-✔ notFound then recovery fence wins OCC without duplicate assets (47.478584ms)
-✔ failed original query leaves a visible bounded barrier and retry retains the exact control (69.153625ms)
-✔ movement original result arriving after close cannot change retired view (53.3405ms)
-✔ movement original result arriving after rebind cannot change retired view (39.572375ms)
-✔ drop original result arriving after close cannot change retired view (23.706916ms)
-✔ drop original result arriving after rebind cannot change retired view (23.050667ms)
-✔ leave original result arriving after close cannot change retired view (27.400791ms)
-✔ leave original result arriving after rebind cannot change retired view (26.298417ms)
-✔ owner freezes real drop participant and queries equipment original before its recovery control (30.346166ms)
-✔ a definitive rejected control reconciles current authority before a corrected control is accepted (49.387625ms)
-✔ original-control notFound placeholder never permits retirement before the actual old control is rejected (24.819333ms)
-✔ reopen between barrier journal and control completion recovers one original control tuple (18.738958ms)
+✔ unknown collect resolves original equipment delivery without replay or optimistic state (92.815083ms)
+✔ owner resolves unknown simulation before suspend without requiring connected movement refresh (69.418291ms)
+✔ unknown leave resolves its receipt behind the barrier and preserves one terminal equipment delivery (49.632292ms)
+✔ notFound then old equipment write wins OCC without duplicate assets (51.168916ms)
+✔ notFound then recovery fence wins OCC without duplicate assets (43.425584ms)
+✔ failed original query leaves a visible bounded barrier and retry retains the exact control (61.710459ms)
+✔ movement original result arriving after close cannot change retired view (44.484625ms)
+✔ movement original result arriving after rebind cannot change retired view (39.921833ms)
+✔ drop original result arriving after close cannot change retired view (22.746667ms)
+✔ drop original result arriving after rebind cannot change retired view (22.101958ms)
+✔ leave original result arriving after close cannot change retired view (24.984042ms)
+✔ leave original result arriving after rebind cannot change retired view (25.21375ms)
+✔ owner freezes real drop participant and queries equipment original before its recovery control (25.504875ms)
+✔ a definitive rejected control reconciles current authority before a corrected control is accepted (45.996083ms)
+✔ original-control notFound placeholder never permits retirement before the actual old control is rejected (28.123333ms)
+✔ reopen between barrier journal and control completion recovers one original control tuple (22.515834ms)
 ℹ tests 38
 ℹ suites 0
 ℹ pass 38
@@ -63,4 +63,4 @@ To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 958.822167
+ℹ duration_ms 994.780625

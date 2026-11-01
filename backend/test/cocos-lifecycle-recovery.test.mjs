@@ -8,11 +8,16 @@ test('Cocos hide/show freezes held input and asset writes until current proof re
  const h=await monsterClientFixture(),saved=new Map(),store={load:k=>saved.get(k)??null,save:(k,v)=>v===null?saved.delete(k):saved.set(k,v)};
  let seq=1,lease=1,cleared=0;
  const transport={send:async text=>{const q=JSON.parse(text),r=await(q.query?h.service.query(q):h.service.execute(q));if(q.command?.startsWith('scene.')&&r.outcome?.status==='committed')lease=r.leaseRevision;return JSON.stringify(r);},queryOriginalControl:async text=>JSON.stringify(await h.service.queryOriginalControl(JSON.parse(text)))};
+ h.client.enqueue({kind:'basic',pressed:true,tick:h.client.state.confirmed.acceptedTick});h.setNow(1023);await h.client.submit('held-before-hide',h.client.state.confirmed.acceptedTick+1);assert.equal(h.client.state.combat.held,true);lease=2;
  const loot=new LootSceneCoordinator(h.client,transport,store,h.context);await loot.open();
  const recovery=new CombatRecoveryCoordinator(transport,store,h.client,h.loading,[loot.drops,loot.terminal]);recovery.init(h.context,h.config,0,h.basic);await h.client.resumeActive(h.context,h.config,0,h.basic);
  const adapter=new CombatLifecycleAdapter(recovery,h.client,loot,(command,extra)=>({...h.auth,command,controlSeq:++seq,leaseRevision:lease,payload:{characterId:h.characterId,rolePlayEpoch:h.context.rolePlayEpoch,challengeId:h.challengeId,...extra}}),()=>cleared++,()=>{});
  h.setNow(1300);await adapter.hide();assert.ok(cleared>0);assert.equal(adapter.state.message,'正在恢复战斗状态');assert.equal(h.client.state.predictionEnabled,false);await assert.rejects(loot.requestLeave('blocked'),/RECOVERY_IN_PROGRESS/);
  h.setNow(1600);await adapter.show();assert.equal(adapter.state.canAttack,true,JSON.stringify(adapter.state));assert.equal(h.client.state.confirmed.timelineEpoch,2);
+ // No new key/touch input: the first resumed fragment must release the recovered held state.
+ const recoveredCast=h.client.state.combat.castSequence;
+ h.setNow(1610);h.client.predict(h.client.state.confirmed.acceptedTick+1);assert.equal(h.client.state.combat.held,false,'neutralization precedes the first enabled prediction');
+ h.setNow(1610);await loot.submit('neutral-after-show',h.client.state.confirmed.acceptedTick+1);assert.equal(h.client.state.combat.held,false);assert.equal(h.client.state.combat.castSequence,recoveredCast);assert.ok(h.client.state.combat.cast,'released cast may finish normally');assert.equal(h.client.state.position.intentX,0);assert.equal(h.client.state.position.intentY,0);
  adapter.destroy();assert.equal(adapter.state.canAttack,false);
 });
 

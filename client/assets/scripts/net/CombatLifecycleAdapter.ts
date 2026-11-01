@@ -29,7 +29,17 @@ export class CombatLifecycleAdapter {
   s=this.recovery.state;if(s.status==='unknown'||s.status==='failed')return;
   if(s.data?.readyTicket&&!s.predictionEnabled){const {deadline,...ticket}=s.data.readyTicket;const command=await this.command('scene.ready',ticket);if(generation!==this.generation)return;await this.recovery.ready(command);}
   if(generation!==this.generation||this.checkTerminal())return;
-  if(this.recovery.state.predictionEnabled){if(this.hidden){this.phase='paused';this.freeze();}else{this.clearInput();this.loot.setRecoveryBlocked(false);this.phase='active';this.recoveryStartedAt=null;}}
+  if(this.recovery.state.predictionEnabled){if(this.hidden){this.phase='paused';this.freeze();}else{
+   // CP can legitimately retain held attack/movement. Queue release at the confirmed
+   // frontier before any new user intent; prediction and the next submit consume it first.
+   const current=this.movement.state.confirmed!;
+   if(current.lifeState==='alive'){
+    if(current.result==='active')this.movement.enqueue({kind:'basic',pressed:false,tick:current.acceptedTick});
+    const position=this.movement.state.position;
+    if(current.result==='active'||position?.intentX||position?.intentY)this.movement.enqueue({kind:'move',x:0,y:0,tick:current.acceptedTick});
+   }
+   this.clearInput();this.loot.setRecoveryBlocked(false);this.phase='active';this.recoveryStartedAt=null;
+  }}
  }
  private checkTerminal(){const s=this.recovery.state,scene=s.data?.state;const closed=scene&&('kind' in scene?false:scene.roomPhase==='closed');if(closed||['DEADLINE_EXPIRED','SCENE_CLOSED','CHALLENGE_TERMINAL','RECOVERY_EXPIRED','CHALLENGE_CLOSED','SESSION_EXPIRED','SESSION_REPLACED','ROLE_PLAY_EPOCH_MISMATCH','DEATH_EXPIRED'].includes(s.code??'')){++this.generation;this.phase='terminal';this.freeze();return true;}return false;}
  reenter(){if(this.phase!=='terminal')return;this.destroy();this.login();}

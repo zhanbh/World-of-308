@@ -33,3 +33,11 @@ node client/tools/build-inventory.cjs /Applications/Cocos/Creator/3.8.8/CocosCre
 子任务受限沙盒首次尝试立即exit1且日志为空，已向根会话交付同一批准命令，由根会话在允许环境执行并补真实结果。此处尚不声明Creator构建通过。`st16-04-cocos-build.log`为空是该次失败事实，不是成功证据。
 
 模型/fetch边界测试不代表浏览器、真实HTTP中断、Cocos设备事件、触屏或手机前后台通过。云SDK/正式身份登录与旅店导航、账单、任意高熵最大CP/结果域仍按既有独立GAP保留。新生命周期层零服务写预算增量；本机控制工厂每新控制增加一次授权scene.status读取，完整恢复分页与两次当前状态复核沿01/02既有路径。SDK费用与设备性能未测。
+
+## 04复核修复：恢复后释放已确认按住状态
+
+根会话复核指出：清UI按键与authorityBasicHeld标志不能清除已确认CP内的combatAction.held。新增真实复现先在monsterClientFixture提交basic pressed=true，仅推进至tick2（避开后续怪物受击自动清held），确认held=true；hide/show后无新按键推进tick3。修复前断言得到held=true，RED；这不是回调计数或伪造CP的测试。
+
+修复在完整当前恢复证明成功后、放行预测/新用户动作之前，于acceptedTick有序排入basic:false及move0。alive/active释放普攻及移动；dead不排入任何新动作，保留合法空尾片；looting只在实际非零位移intent时排入move0，避免无必要排队阻断即时拾取。中立输入沿已有有序队列先于新用户输入参与首个预测/真实片段提交，不改私有CP、服务协议或已释放动作。destroy/unknown仍沿原代次/恢复栅栏，未通过完整证明不会排入中立动作。
+
+GREEN证据：首个允许预测的tick3及真实服务提交后held=false、intentX/Y=0；castSequence保持原值且已释放cast仍存在，不擅自取消正常收招。九项生命周期及相关五组测试仍38/38，模型类型通过，实际更新日志同上。根会话已报告此前源码的批准离线构建20秒PASS；本修复后需根会话按批准流程重构建，子任务未启动Creator，也未改写/暂存根会话持有的构建日志。
