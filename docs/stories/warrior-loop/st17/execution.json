@@ -2,7 +2,7 @@
   "feature": "warrior-loop-st17",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "131edef",
-  "status": "preparing-ST17-01",
+  "status": "ST17-01-complete-stopped-at-user-scope",
   "current_scope": "User approved five-task graph and testing seams, requested ST17-01 only; do not start02-05.",
   "approval_evidence": "可以，确认；开始01吧先",
   "spec_body_sha256": "d91949b4ddf0ba08bc39d5fed24f2b26ac3dbbc1cbdb4120fa5aa36293ccc8aa",
@@ -14,8 +14,17 @@
       "revision": "b11a66dcdf6ee6866c8086d8eda8a0774d28b42d4c6178cb20c8708606b3d4d6",
       "full_file_sha256": "ab5fdde55f37cd716fd6aa67c848518b2cae996b94fadea64ecda6c1fca1cb46",
       "blocked_by": [],
-      "state": "ready",
-      "evidence": []
+      "state": "merged",
+      "evidence": [
+        "docs/reviews/st17-01-verification.md",
+        "docs/reviews/st17-01-merge-verification.md",
+        "docs/reviews/st17-01-merge-recheck.md"
+      ],
+      "worktree": ".worktrees/st17-01-wear",
+      "branch": "feat/st17-01-wear",
+      "base_commit": "fbfbc72d2f4a7305abff10991e52314c5a63238c",
+      "code_commit": "13a8b6bf4935ce93ec4341b04d8f12d6630c479d",
+      "worktree_cleaned": true
     },
     {
       "id": "ST17-02",
@@ -72,5 +81,21 @@
   ],
   "platform_device_status": "gap",
   "published": false,
-  "jira_actions": false
+  "jira_actions": false,
+  "verification": {
+    "scope": "ST17-01 only",
+    "source_head": "13a8b6bf4935ce93ec4341b04d8f12d6630c479d",
+    "initial_related_tests": 75,
+    "final_recovery_related_tests": 33,
+    "independent_final_new_tests": 12,
+    "backend_types_exit": 0,
+    "client_model_types_exit": 0,
+    "independent_merger": "READY",
+    "initial_merger": "NOT READY; ordinary cleared recovery fixed, original report retained",
+    "accepted_source_files_match": 6,
+    "full_seven_stage": "not run; ST17-05",
+    "creator_build": "not run; ST17-04/05",
+    "remaining_tickets_started": false,
+    "platform_device_status": "gap"
+  }
 }
