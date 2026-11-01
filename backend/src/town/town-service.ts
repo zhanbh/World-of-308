@@ -551,6 +551,8 @@ export class TownService {
         const c = await tx.get<CharacterEntity>(q.payload.characterId), m = this.options.manifest;
         let outcome: unknown, nextCharacter: CharacterEntity | undefined, context: ServiceContextEntity | undefined;
         if (!c || c.schemaVersion !== 2 || c.accountId !== a.id || c.id !== q.payload.characterId || a.selectedCharacterId !== c.id || !Object.values(a.characterIdsByClass).includes(c.id)) outcome = { status: 'rejected', code: 'NOT_FOUND_OR_FORBIDDEN' };
+        else if (q.expected.length !== 1 || q.expected[0].kind !== 'character' || q.expected[0].id !== c.id) outcome = { status: 'rejected', code: 'INVALID_ARGUMENT' };
+        else if (q.expected[0].version !== c.version) outcome = { status: 'rejected', code: 'VERSION_CONFLICT' };
         else if (c.location.kind !== 'town' || !c.townState || c.location.mapId !== m.mapId || c.townState.mapRef !== m.mapId || a.activeChallengeId || a.openSceneChallengeId) outcome = { status: 'rejected', code: 'LOCATION_NOT_ALLOWED' };
         else {
           const anchor = m.serviceAnchors[q.payload.anchorId], t = c.townState;

@@ -265,7 +265,7 @@ test('service.open checks 24px radius, issues context, and service.close termina
     operationId: 'op-open-smith',
     sessionId: session.sessionId,
     sessionEpoch: session.sessionEpoch,
-    expected: [],
+    expected: [{ kind: 'character', id: characterId, version: env.store.inspect(characterId).version }],
     payload: { characterId, serviceKind: 'repair', anchorId: 'blacksmith' },
   });
   assert.equal(openBlacksmith.outcome.status, 'rejected');

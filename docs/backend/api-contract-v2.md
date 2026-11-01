@@ -379,3 +379,5 @@ ST17-01独立合入修复：active+cleared恢复也必须完成既有资源/准�
 ## ST17-02 单件修理（2026-11-02）
 
 `equipment.repair(single)`及`service.quote`沿[单件修理合同](single-repair-contract-v1.md)执行；新增严格repair.get单目标原子读模型，service.quote可选repair明细兼容旧形状，明确目标/耐久差额/单价/总价/固定截止。报价和执行重验当前NPC上下文/角色代次、实例/钱包/必要背包版本；allWorn本片拒绝留03。新repair服务open原O使用既有授权operation.get恢复，原open重放不续期或重开关闭context。
+
+ST17-02角色版本核验修复：新repair service.open要求完整单项character expected，旧版本拒绝VERSION_CONFLICT、缺失/错误集合拒绝INVALID_ARGUMENT；原O回放先于当前版本判定，不允许迟到open覆盖较新的服务指针。详见[单件修理合同](single-repair-contract-v1.md)。

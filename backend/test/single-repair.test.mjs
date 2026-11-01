@@ -86,7 +86,7 @@ test('repair service authenticates trusted identity and active character/session
  }
 });
 test('replayed repair service.open cannot renew TTL or reactivate an old context; opening is atomic at each new write',async()=>{
- const f=await repairFixture(),ctx=f.store.inspect(f.contextId);f.setNow(5000);const replay={...f.auth,command:'service.open',operationId:'repair-open-3',expected:[],payload:{characterId:f.characterId,serviceKind:'repair',anchorId:'blacksmith'}};
+ const f=await repairFixture(),ctx=f.store.inspect(f.contextId);f.setNow(5000);const replay=structuredClone(f.initialOpenRequest);
  const result=await f.town.openService(replay);assert.equal(result.replayed,true);assert.deepEqual(f.store.inspect(f.contextId),ctx);assert.equal((await f.quote()).data.repair.expiresAt,31000);await f.open();const current=f.character().currentServiceContextId;assert.equal((await f.town.openService(replay)).replayed,true);assert.equal(f.character().currentServiceContextId,current);
  for(const write of [1,2,3,4,5]){const h=await repairFixture(),before=h.store.snapshot();h.store.injectWriteFailure(write);await assert.rejects(h.open());assert.deepEqual(h.store.snapshot(),before);}
 });
@@ -119,17 +119,35 @@ test('13-slot attributes and a 100-slot backpack stay bounded without repairing 
 
 import {TownService} from '../src/town/town-service.ts';
 test('repair-open original survives location revisions and closure, rejects tuple collisions, and is queryable after response loss',async()=>{
- const f=await repairFixture(),request={...f.auth,command:'service.open',operationId:'repair-open-3',expected:[],payload:{characterId:f.characterId,serviceKind:'repair',anchorId:'blacksmith'}},ctx=f.store.inspect(f.contextId),original=await f.town.openService(request);
+ const f=await repairFixture(),request=structuredClone(f.initialOpenRequest),ctx=f.store.inspect(f.contextId),original=await f.town.openService(request);
  await f.town.closeService({...f.auth,command:'service.close',operationId:'close-before-open-replay',expected:[],payload:{characterId:f.characterId,contextId:f.contextId}});
  for(const dx of [100,-100])await f.town.move({...f.auth,command:'town.move',operationId:'move-ctx-'+dx,expected:[],payload:{characterId:f.characterId,steps:[{seq:f.character().townState.acceptedSeq+1,dx,dy:0,dtMs:1000}]}});
  f.setNow(5000);const before=f.store.snapshot(),again=await f.town.openService(request);assert.equal(again.replayed,true);assert.deepEqual(again.outcome,original.outcome);assert.deepEqual(f.store.snapshot(),before);assert.equal(f.store.inspect(f.contextId).issuedAt,ctx.issuedAt);assert.equal(f.store.inspect(f.contextId).status,'closed');
  const mismatch=await f.town.openService({...request,payload:{...request.payload,anchorId:'other-anchor'}});assert.equal(mismatch.outcome.code,'OPERATION_MISMATCH');
- const newRequest={...request,operationId:'open-lost'};f.store.injectResponseLoss();assert.equal((await f.town.openService(newRequest)).outcome.status,'unknown');const found=await f.service.query({...f.auth,query:'operation.get',requestId:'open-original',payload:{operationId:'open-lost'}});assert.equal(found.data.status,'found');assert.equal(found.data.command,'service.open');assert.equal(found.data.result.outcome.status,'committed');
+ const newRequest={...request,operationId:'open-lost',expected:[{kind:'character',id:f.characterId,version:f.character().version}]};f.store.injectResponseLoss();assert.equal((await f.town.openService(newRequest)).outcome.status,'unknown');const found=await f.service.query({...f.auth,query:'operation.get',requestId:'open-original',payload:{operationId:'open-lost'}});assert.equal(found.data.status,'found');assert.equal(found.data.command,'service.open');assert.equal(found.data.result.outcome.status,'committed');
  const newContext=found.data.result.outcome.data.contextId,c=f.character(),active=f.store.inspect(newContext);f.setNow(6000);assert.equal((await f.town.openService(newRequest)).replayed,true);assert.deepEqual(f.character(),c);assert.deepEqual(f.store.inspect(newContext),active);
  const quote=await f.quote(f.weaponId,newContext),cmd=f.command(quote);cmd.operationId='open-lost';cmd.payload.contextId=newContext;assert.equal((await f.service.execute(cmd)).outcome.code,'OPERATION_MISMATCH');
 });
 test('new repair-open measures account/context/character/O/J writes through trusted identity and fails closed without it',async()=>{
  const f=await repairFixture(),traces=[],meter={run:fn=>f.store.run(async tx=>{const rkeys=new Set(),writes=[];let calls=0;const result=await fn({get:async id=>{calls++;rkeys.add(id);return tx.get(id);},set:(id,value)=>{calls++;writes.push({id,bytes:new TextEncoder().encode(JSON.stringify(value)).length});tx.set(id,value);}});traces.push({R:rkeys.size,W:new Set(writes.map(w=>w.id)).size,calls,bytes:writes.reduce((n,w)=>n+w.bytes,0)});return result;})};
- const town=new TownService({store:meter,clock:f.clock,identity:f.identity}),request={...f.auth,command:'service.open',operationId:'measured-open',expected:[],payload:{characterId:f.characterId,serviceKind:'repair',anchorId:'blacksmith'}};assert.equal((await town.openService(request)).outcome.status,'committed');assert.equal(traces[0].W,5);assert.ok(traces[0].R<=8&&traces[0].calls<=14);console.log('ST17-02 repair-open actual',JSON.stringify(traces[0]));
+ const town=new TownService({store:meter,clock:f.clock,identity:f.identity}),request={...f.auth,command:'service.open',operationId:'measured-open',expected:[{kind:'character',id:f.characterId,version:f.character().version}],payload:{characterId:f.characterId,serviceKind:'repair',anchorId:'blacksmith'}};assert.equal((await town.openService(request)).outcome.status,'committed');assert.equal(traces[0].W,5);assert.ok(traces[0].R<=8&&traces[0].calls<=14);console.log('ST17-02 repair-open actual',JSON.stringify(traces[0]));
  const noIdentity=new TownService({store:f.store,clock:f.clock});assert.equal((await noIdentity.openService({...request,operationId:'no-identity'})).outcome.code,'AUTH_REQUIRED');
+});
+
+
+test('repair-open rejects stale or missing character expectations without replacing the current service',async()=>{
+ const f=await repairFixture(),c=f.character(),request={...f.auth,command:'service.open',operationId:'stale-repair-open',expected:[{kind:'character',id:c.id,version:c.version-1}],payload:{characterId:c.id,serviceKind:'repair',anchorId:'blacksmith'}};
+ const oldContext=c.currentServiceContextId,r=await f.town.openService(request);assert.equal(r.outcome.code,'VERSION_CONFLICT');assert.deepEqual(f.character(),c);assert.equal(f.character().currentServiceContextId,oldContext);
+ const absent=await f.town.openService({...request,operationId:'missing-repair-expected',expected:[]});assert.equal(absent.outcome.code,'INVALID_ARGUMENT');assert.deepEqual(f.character(),c);
+ const wrong=await f.town.openService({...request,operationId:'wrong-repair-expected',expected:[{kind:'character',id:'other-character',version:c.version}]});assert.equal(wrong.outcome.code,'INVALID_ARGUMENT');assert.deepEqual(f.character(),c);
+ const fresh={...request,operationId:'fresh-repair-expected',expected:[{kind:'character',id:c.id,version:c.version}]};assert.equal((await f.town.openService(fresh)).outcome.status,'committed');
+ const after=f.store.snapshot();assert.equal((await f.town.openService(fresh)).replayed,true);assert.deepEqual(f.store.snapshot(),after);assert.equal((await f.town.openService({...fresh,expected:[{kind:'character',id:c.id,version:f.character().version}]})).outcome.code,'OPERATION_MISMATCH');
+});
+
+test('a held repair-open and a newer service serialize in both OCC orders without restoring the old service pointer',async()=>{
+ for(const repairFirst of [true,false]){
+  const f=await repairFixture(),c=f.character(),repair={...f.auth,command:'service.open',operationId:'held-repair-open',expected:[{kind:'character',id:c.id,version:c.version}],payload:{characterId:c.id,serviceKind:'repair',anchorId:'blacksmith'}},shop={...f.auth,command:'service.open',operationId:'newer-shop-open',expected:[{kind:'character',id:c.id,version:c.version}],payload:{characterId:c.id,serviceKind:'shop',anchorId:'shop'}};
+  const calls=[()=>f.town.openService(repair),()=>f.town.openService(shop)];if(!repairFirst)calls.reverse();const [first,second]=await orderedRace(f,...calls);assert.equal(first.outcome.status,'committed');assert.equal(repairFirst?second.outcome.status:second.outcome.code,repairFirst?'committed':'VERSION_CONFLICT');
+  const shopResult=repairFirst?second:first;assert.equal(f.character().currentServiceContextId,shopResult.outcome.data.contextId);assert.equal(f.store.inspect(f.character().currentServiceContextId).serviceKind,'shop');
+ }
 });

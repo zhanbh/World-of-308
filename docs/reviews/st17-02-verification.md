@@ -69,3 +69,11 @@ quote/repair.get均纯读，原O/J保留；引用价格配置和完整targetVers
 ## 交付限制
 
 字段/API/状态/资产映射/预算/source-of-truth已同步[单件修理合同](../backend/single-repair-contract-v1.md)。只交付02，allWorn明确拒绝；03全修、04Cocos面板、05全故事联合/两轴评审未实施。没有浏览器、Creator、设备/云SDK/真实弱网/费用或正式价格发布配置验收，无Jira、安装、云资源、push/MR。独立merger合入核验由root另记，本文不自称独立通过。
+
+## 独立核验发现及根会话修复（2026-11-02）
+
+独立merger在e21afe0复跑96/96和两types后发现NOT READY：openRepair没有校验q.expected，C.version=5时expected=4仍成功推进版本并替换指针。其报告文件尚未写出时子任务执行额度耗尽，原结论依据保留在会话；根会话接手归档和修复，不冒称已获独立复核。
+
+根会话新增真实旧expected反例，原生产代码实际RED exit1，日志`st17-02-expected-red.log`。最小修复为原O之后、当前位置/新ctx之前验证恰好一个当前character expected，缺失/对象错误拒绝INVALID_ARGUMENT，旧版本拒绝VERSION_CONFLICT。夹具和已有回放用例保存原open命令/版本，正常新请求从当前角色读版本。新真实两序OCC用例证明：旧repair-open先提交后新服务合法替代；新服务先提交时旧open重试被版本拦截，current始终保持新服务。原O重放及改expected同ID的OPERATION_MISMATCH同时保留。
+
+根会话实际运行单修+共享协议+Town服务/协调器定向106/106 exit0（`st17-02-expected-focused.log`），backend/shared及client模型两项types均exit0（`st17-02-expected-backend-types.log`、`st17-02-expected-model-types.log`）。未重复168整套或全7/Creator。新open仍5写点、R7/W5/12调用，请求expected入原tuple后写字节为3777B，较初版日志变化属于真实请求数据增量。独立最终复核状态由集成会话另记；根会话测试不是独立复核。
