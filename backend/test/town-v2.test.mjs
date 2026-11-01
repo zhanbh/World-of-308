@@ -30,6 +30,7 @@ const setupTownEnvironment = () => {
   });
   const townService = new TownService({
     store,
+    identity,
     clock: { now: () => now },
     manifest: DEFAULT_TOWN_MAP,
   });

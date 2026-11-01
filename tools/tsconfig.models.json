@@ -40,6 +40,7 @@
     "../client/assets/scripts/LootVictoryHUDModel.ts",
     "../client/assets/scripts/net/TerminalCoordinator.ts",
     "../client/assets/scripts/net/LootSceneCoordinator.ts",
-    "../client/assets/scripts/net/ChallengePreview.ts"
+    "../client/assets/scripts/net/ChallengePreview.ts",
+    "../client/assets/scripts/net/RepairCoordinator.ts"
   ]
 }

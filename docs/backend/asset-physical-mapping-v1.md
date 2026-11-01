@@ -158,3 +158,7 @@ operations保存稳定摘要、成功/明确拒绝、实际数量/固定随机�
 ## ST15-05 原结果存储增量（2026-10-30）
 
 当前原结果物理映射按[结果存储v2](combat-result-storage-v2.md)：schema2每操作一个有界gzip JSON包；schema1旧页保留读取。公开32事件/页、1024页、稳定ref、授权及CP/资产/O/J原子提交不变。同499页及8改块混合合成压力夹具验收见证据；任意高熵1024页及正式发布包络仍待验证，见[验证](../reviews/st15-storage-verification-2026-10-30.md)。
+
+## ST17-02 单件修理物理增量（2026-11-02）
+
+新repair-open以既有assetOp/assetJournal(account,operation)保存原结果，repairContext(account,operation)稳定保存上下文；与角色current指针和账号栅栏同笔。单修以实例/角色/钱包/A/J/O同笔变更，背包只读作归属/版本栅栏，不因耐久复制可变sortHeader或移动物品；无ranking写、无独立quote持久化。J实际delta与预算见[单件修理合同](single-repair-contract-v1.md)。

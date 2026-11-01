@@ -25,6 +25,7 @@ export interface CharacterEntity extends CharacterSummary {
   staminaReservation?: string;
   quickSlots: (string | null)[];
   location: { kind: 'inn'; characterId: string } | { kind: 'town'; mapId: string; anchorId: string } | { kind: 'challenge'; challengeId: string };
+  currentServiceContextId?: string;
   townState?: import('../town/town-model.ts').TownState;
   mailIds?: string[];
   pendingGrantIds?: string[];

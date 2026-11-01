@@ -213,3 +213,7 @@ Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapte
 首次权威`active→cleared`扣当前合法7磨损槽各1，新增deathIndex额外各5；同刻两事实可叠加6，最低0。原O重放或不同operationId旧片不二扣；cleared中继续走路/空片不再产生清房事实。无收益但显式授权wear的本地挑战可扣损，无显式授权的no-rewards训练不改变资产。磨损、必要statsVersion/CP、流水/O与确认前沿原子提交，不写评分投影/equipmentVersion。当前合法`active+cleared`允许完整公开证明与继续输入/走向出口；其它loading/recovery/closed、生死与终局资格沿原门禁，不因武器0延长任何原截止或补血。
 
 ST17-01恢复接缝：active+cleared的suspend→resumePrepare→完整证明→ready→当前证明后仍为cleared，重建输入anchor而非重复清房；原确认前沿/已扣实例版本保留，原恢复票deadline不延长，nextRoom仍走已有出口授权。alive/dead/completed的动作资格不因阶段证明可读而改变。
+
+## ST17-02 单件修理状态（2026-11-02）
+
+合法当前林纳克斯context→只读报价→显式确认→原子单件修满/扣金币→刷新真实视图；满耐久0扣款且无资产版本变化。关闭/移动/换服务/代次变更令旧报价失效，原O结果不撤销；新repair-open原ID回放不重开/续期限。客户端unknown保留原命令，found查原结果，notFound只原ID安全重试，迟包按组件/身份代次隔离。详见[执行合同](single-repair-contract-v1.md)。

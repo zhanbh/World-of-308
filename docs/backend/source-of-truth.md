@@ -113,3 +113,7 @@ Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapte
 ## ST17-01 清房/死亡磨损（2026-11-01）
 
 普通房权威首次cleared及新增deathIndex独立扣当前7槽1/5，显式本地wear策略与H绑定、不以金币XP开关决定磨损；隔离训练无策略仍不磨损。归零贡献/套装过滤、必要statsVersion及CP同步、原O/流水原子与active+cleared完整证明/走出口已打通。字段/API/状态/CP及预算本次同步，实际验证见[01证据](../reviews/st17-01-verification.md)。修理报价/全修/Cocos修理面板和全故事验收仍属02–05，未在本片实现。
+
+## ST17-02 林纳克斯单件修理（2026-11-02）
+
+当前单目标报价/修满、固定本地上下文截止、原open与修理O/J、原子repair.get及真实协调器按[单件修理合同](single-repair-contract-v1.md)执行；字段/API/状态/映射/预算本次同步。候选价仅local-test，allWorn/面板/全故事验收留03–05；实际实现/故障竞争/传输证据见[02验证](../reviews/st17-02-verification.md)，不关闭正式配置/SDK/设备GAP。

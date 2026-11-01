@@ -502,3 +502,7 @@ ST16-03：既有SceneState及lastReadyReceipt字段不变；完整恢复证明�
 H可含服务私有`wearConfigHash`，绑定开始挑战时的显式本地磨损策略摘要；`ChallengeContent.wear`仅允许`local-test-wear / isolated-local-assets-only`、有界ref及固定`roomWear=1 / deathWear=5`。旧已授权奖励夹具兼容固定1/5（旧`rewards.roomWear`必须为1，0或其它值拒绝）；无wear且无rewards的隔离训练继续不磨损，不因本功能打开收益。新挑战绑定派生策略，显式策略不得中途开启、撤除或更换。
 
 普通房`active→cleared`与新增`deathIndex`分别是扣损事实，沿H原阶段/死亡序号和原O阻重；不新增客户端“已清房/已死亡”上报。仅7磨损槽合法当前穿戴实例扣1/5、截断0，0不反复写实例版本，6不磨损槽显式null保留。实际磨损J记录room/deathIndex和实例前后值；有收益时合入原confirmedKills流水，否则同笔equipmentWear流水。装备贡献/套装计件确有改变才推进C.statsVersion及CP属性revision；评分、scoreReachedAt和评分输入equipmentVersion不变。
+
+## ST17-02 修理字段增量（2026-11-02）
+
+角色可含currentServiceContextId，修理open同笔设置；有该字段后新服务打开会替换指针，使旧修理context失权。私有repairContext键为(accountId,operationId)，保存现有上下文代次/地点/issuedAt，不随位置revision重建同一原操作。新open原O/J及repair原O/J用既有资产命名空间；repair J保留真实耐久/余额/版本前后及报价配置/来源，不用不可逆摘要替代delta。公开repair.get及service.quote可选repair明细定义见[执行合同](single-repair-contract-v1.md)，无新增独立报价集合或TTL资产删除。

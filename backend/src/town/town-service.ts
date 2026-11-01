@@ -1,8 +1,10 @@
 import { time } from '../../../shared/src/exact-values.ts';
 import type { Store, Clock } from '../ports/store.ts';
-import { CommitUnknown, StoreUnavailable } from '../ports/store.ts';
-import type { LoginAccount, LoginSession } from '../identity/login-model.ts';
+import { canonical, CommitUnknown, StoreUnavailable } from '../ports/store.ts';
+import type { LoginAccount, LoginSession, IdentityLink } from '../identity/login-model.ts';
 import type { CharacterEntity, ContainerEntity, MailEntity, RewardGrantEntity } from '../character/character-model.ts';
+import type { IdentityPort } from '../identity/identity-v2.ts';
+import { identityKey, isVerifiedIdentity, loginKey } from '../identity/identity-v2.ts';
 import { characterKey } from '../character/character-service.ts';
 import type {
   TownMapManifest,
@@ -11,13 +13,14 @@ import type {
 } from './town-model.ts';
 import { DEFAULT_TOWN_MAP } from './town-model.ts';
 import { bankContainerView } from '../bank/bank-service.ts';
-import { parseAssetResponse, parseAssetQueryResponse } from '../../../shared/src/protocol/asset-v2.ts';
+import { parseAssetCommand, parseAssetResponse, parseAssetQueryResponse } from '../../../shared/src/protocol/asset-v2.ts';
 import type { AssetResponse, AssetQueryResponse } from '../../../shared/src/protocol/asset-v2.ts';
 
 export interface TownServiceOptions {
   store: Store;
   clock: Clock;
   manifest?: TownMapManifest;
+  identity?: IdentityPort;
 }
 
 export interface TownMoveCommand {
@@ -63,11 +66,12 @@ export interface TownMoveResponse {
 }
 
 export class TownService {
-  private readonly options: Required<TownServiceOptions>;
+  private readonly options: Omit<Required<TownServiceOptions>, 'identity'> & Pick<TownServiceOptions, 'identity'>;
 
   constructor(options: TownServiceOptions) {
     this.options = {
       store: options.store,
+      identity: options.identity,
       clock: options.clock,
       manifest: options.manifest ?? DEFAULT_TOWN_MAP,
     };
@@ -391,6 +395,7 @@ export class TownService {
       anchorId: string;
     };
   }): Promise<AssetResponse<'service.open'>> {
+    if (request.payload.serviceKind === 'repair') return this.openRepair(request);
     const { operationId, sessionId, sessionEpoch, payload } = request;
     const { characterId, serviceKind, anchorId } = payload;
     const manifest = this.options.manifest;
@@ -490,6 +495,13 @@ export class TownService {
         status: 'open',
       };
 
+      let openedCharacterVersion = character.version;
+      if (character.currentServiceContextId) {
+        const nextVersion = character.currentServiceContextId === contextId ? character.version : character.version + 1;
+        if (!Number.isSafeInteger(nextVersion) || nextVersion < 0) return parseAssetResponse('service.open', { operationId, serverTime: currentTime, replayed: false, outcome: { status: 'rejected', code: 'CONFIG_NOT_READY' } });
+        openedCharacterVersion = nextVersion;
+        tx.set(character.id, { ...character, currentServiceContextId: contextId, version: nextVersion });
+      }
       tx.set(contextId, context);
 
       return parseAssetResponse('service.open', {
@@ -504,11 +516,68 @@ export class TownService {
             locationRevision: character.townState.locationRevision,
           },
           resultVersions: [
-            { kind: 'character', id: character.id, version: character.version },
+            { kind: 'character', id: character.id, version: openedCharacterVersion },
           ],
         },
       });
     });
+  }
+
+  /** New repair contexts participate in the same account operation namespace as asset writes. */
+  private async openRepair(value: unknown): Promise<AssetResponse<'service.open'>> {
+    const q = parseAssetCommand(value);
+    if (q.command !== 'service.open' || q.payload.serviceKind !== 'repair') throw new TypeError('UNSUPPORTED_COMMAND');
+    const reply = (outcome: unknown) => parseAssetResponse('service.open', { operationId: q.operationId, serverTime: time(this.options.clock.now()), replayed: false, outcome });
+    let caller: { id: string; tuple: string };
+    try {
+      const i = await this.options.identity?.verify();
+      if (!isVerifiedIdentity(i)) return reply({ status: 'rejected', code: 'AUTH_REQUIRED' });
+      caller = { id: await identityKey(i), tuple: JSON.stringify([i.provider, i.appId, i.subject, i.environment]) };
+    } catch { return reply({ status: 'rejected', code: 'AUTH_REQUIRED' }); }
+    try {
+      return await this.options.store.run(async tx => {
+        const now = time(this.options.clock.now()), link = await tx.get<IdentityLink>(caller.id);
+        if (!link || link.schemaVersion !== 2 || link.id !== caller.id || link.tuple !== caller.tuple) return reply({ status: 'rejected', code: 'AUTH_REQUIRED' });
+        const a = await tx.get<LoginAccount>(link.accountId), session = await tx.get<LoginSession>(q.sessionId);
+        if (!a || a.id !== link.accountId || a.schemaVersion !== 2 || session?.schemaVersion !== 2 || session.id !== q.sessionId || session.accountId !== a.id || session.status !== 'active' || session.epoch !== q.sessionEpoch || a.currentSessionId !== q.sessionId || a.sessionEpoch !== q.sessionEpoch) return reply({ status: 'rejected', code: 'SESSION_REVOKED' });
+        const id = await loginKey('assetOp', [a.id, q.operationId]), journalId = await loginKey('assetJournal', [a.id, q.operationId]), tuple = canonical(q);
+        const old = await tx.get<{ schemaVersion: number; id: string; accountId: string; command: string; tuple: string; result: AssetResponse<'service.open'> }>(id);
+        if (old) {
+          if (old.schemaVersion !== 2 || old.id !== id || old.accountId !== a.id) return reply({ status: 'rejected', code: 'SERVICE_UNAVAILABLE' });
+          if (old.command !== q.command || old.tuple !== tuple) return reply({ status: 'rejected', code: 'OPERATION_MISMATCH' });
+          return parseAssetResponse('service.open', { ...old.result, serverTime: now, replayed: true });
+        }
+        if (await tx.get(journalId)) return reply({ status: 'rejected', code: 'SERVICE_UNAVAILABLE' });
+        const c = await tx.get<CharacterEntity>(q.payload.characterId), m = this.options.manifest;
+        let outcome: unknown, nextCharacter: CharacterEntity | undefined, context: ServiceContextEntity | undefined;
+        if (!c || c.schemaVersion !== 2 || c.accountId !== a.id || c.id !== q.payload.characterId || a.selectedCharacterId !== c.id || !Object.values(a.characterIdsByClass).includes(c.id)) outcome = { status: 'rejected', code: 'NOT_FOUND_OR_FORBIDDEN' };
+        else if (c.location.kind !== 'town' || !c.townState || c.location.mapId !== m.mapId || c.townState.mapRef !== m.mapId || a.activeChallengeId || a.openSceneChallengeId) outcome = { status: 'rejected', code: 'LOCATION_NOT_ALLOWED' };
+        else {
+          const anchor = m.serviceAnchors[q.payload.anchorId], t = c.townState;
+          if (!anchor || anchor.serviceKind !== 'repair') outcome = { status: 'rejected', code: 'CONFIG_NOT_READY' };
+          else if (!Number.isFinite(t.position.x) || !Number.isFinite(t.position.y) || (t.position.x - anchor.x) ** 2 + (t.position.y - anchor.y) ** 2 > 576) outcome = { status: 'rejected', code: 'LOCATION_NOT_ALLOWED' };
+          else if (!Number.isSafeInteger(c.version + 1) || !Number.isSafeInteger(a.writeRevision + 1)) outcome = { status: 'rejected', code: 'CONFIG_NOT_READY' };
+          else {
+            const contextId = await loginKey('repairContext', [a.id, q.operationId]);
+            if (await tx.get(contextId)) return reply({ status: 'rejected', code: 'SERVICE_UNAVAILABLE' });
+            context = { schemaVersion: 2, id: contextId, accountId: a.id, characterId: c.id, rolePlayEpoch: c.rolePlayEpoch, sceneEpoch: t.sceneEpoch, locationRevision: t.locationRevision, anchorId: q.payload.anchorId, serviceKind: 'repair', issuedAt: now, status: 'open' };
+            nextCharacter = { ...c, currentServiceContextId: contextId, version: c.version + 1, updatedAt: now };
+            outcome = { status: 'committed', data: { contextId, serviceKind: 'repair', locationRevision: t.locationRevision }, resultVersions: [{ kind: 'character', id: c.id, version: nextCharacter.version }] };
+          }
+        }
+        const result = reply(outcome), receipt = { schemaVersion: 2, id, accountId: a.id, command: q.command, tuple, result };
+        const journal = { schemaVersion: 2, id: journalId, accountId: a.id, command: q.command, operationId: q.operationId, source: { kind: 'repairContext', characterId: q.payload.characterId }, previousContextId: c?.currentServiceContextId ?? null, result: result.outcome, createdAt: now };
+        const nextA = context ? { ...a, writeRevision: a.writeRevision + 1 } : undefined;
+        for (const entity of [context, nextCharacter, nextA, receipt, journal]) if (entity && new TextEncoder().encode(JSON.stringify(entity)).length > (entity === receipt || entity === context ? 16384 : 131072)) throw new StoreUnavailable('repair context budget');
+        if (context && nextCharacter && nextA) { tx.set(context.id, context); tx.set(nextCharacter.id, nextCharacter); tx.set(a.id, nextA); }
+        tx.set(journalId, journal); tx.set(id, receipt);
+        return result;
+      });
+    } catch (e) {
+      if (e instanceof CommitUnknown) return reply({ status: 'unknown', code: 'RESULT_UNKNOWN' });
+      if (e instanceof StoreUnavailable) return reply({ status: 'rejected', code: 'SERVICE_UNAVAILABLE' });
+      throw e;
+    }
   }
 
   // -------------------------------------------------------------

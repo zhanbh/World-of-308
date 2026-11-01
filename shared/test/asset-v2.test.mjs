@@ -193,3 +193,16 @@ for (const [query, data] of Object.entries(queryViews)) {
     assert.throws(() => parseAssetQueryResponse(query, { ...result, data: { ...data, AppSecret: 'private' } }));
   });
 }
+
+test('repair quote details bind named items and exact integer arithmetic while old quote shape remains compatible',()=>{
+ const versions=[{kind:'equipment',id:'i',version:0}],detail={expiresAt:30000,items:[{itemId:'i',current:30,max:60,missing:30,unitGold:'1',gold:'30'}]},data={quoteRef:'quote',serviceKind:'repair',configRef:'local-prices',costs:[{currency:'gold',amount:'30'}],materialCosts:[],targetVersions:versions,displayChanges:[{kind:'durability',before:'30',after:'60'}],failureConsequences:[],repair:detail},response={requestId:'repair-q',serverTime:1,versions,data};
+ assert.deepEqual(parseAssetQueryResponse('service.quote',response),response);
+ for(const change of [{...detail,items:[{...detail.items[0],missing:31}]},{...detail,items:[{...detail.items[0],unitGold:'0'}]},{...detail,items:[detail.items[0],detail.items[0]]},{...detail,items:[{...detail.items[0],gold:'29'}]}])assert.throws(()=>parseAssetQueryResponse('service.quote',{...response,data:{...data,repair:change}}));
+ assert.throws(()=>parseAssetQueryResponse('service.quote',{...response,data:{...data,costs:[{currency:'gold',amount:'31'}]}}));
+ const {repair,...legacy}=data;assert.deepEqual(parseAssetQueryResponse('service.quote',{...response,data:legacy}).data,legacy);
+});
+test('repair atomic view carries mandatory character, wallet and equipment versions and no private pricing authority',()=>{
+ const request={protocolVersion:2,query:'repair.get',requestId:'r',sessionId:'s',sessionEpoch:1,payload:{characterId:'c',contextId:'ctx',itemId:'i'}};assert.deepEqual(parseAssetQuery(request),request);
+ const versions=[{kind:'character',id:'c',version:2},{kind:'equipment',id:'i',version:0},{kind:'wallet',id:'w',version:3}],response={requestId:'r',serverTime:1,versions,data:{contextId:'ctx',characterId:'c',characterVersion:2,statsVersion:1,item:equipment(),wallet:{walletId:'w',version:3,gold:'100',points:'0'},attributes:[]}};
+ assert.deepEqual(parseAssetQueryResponse('repair.get',response),response);assert.throws(()=>parseAssetQueryResponse('repair.get',{...response,versions:versions.slice(0,2)}));assert.throws(()=>parseAssetQueryResponse('repair.get',{...response,data:{...response.data,accountId:'private'}}));
+});

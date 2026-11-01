@@ -66,6 +66,7 @@ const queryParsers = {
   'dungeon.options': object({ characterId: id, dungeonId: id }),
   'service.get': object({ characterId: id, serviceContextId: id }),
   'service.quote': object({ characterId: id, contextId: id, serviceIntent }),
+  'repair.get': object({ characterId: id, contextId: id, itemId: id }),
   'mail.list': object({ characterId: id, contextId: id, cursor: nullable(text(512, 1)), pageRequest: integer(1, 100) }),
   'reward.list': object({ characterId: id, contextId: id, cursor: nullable(text(512, 1)), pageRequest: integer(1, 100) }),
   'delivery.summary': object({ characterId: id }),
@@ -176,7 +177,7 @@ const characterBrief = object({ characterId: id, classId: choice('warrior', 'hun
 const equippedEntry = object({ slotId: slot, itemId: id });
 const score = object({ basis: choice('intrinsicEquipmentValue'), value: resourceWire, scoreConfigRef: id, equipmentVersion: integer(), scoreReachedAt: time });
 const quote = object({ quoteRef: id, serviceKind, configRef: id, costs: list(object({ currency, amount: resourceWire }), 2), materialCosts: list(object({ templateRef: id, quantity: integer(1, 20) }), 8), targetVersions: parseExpected,
-  displayChanges: list(object({ kind: choice('attackPower', 'enhancementLevel', 'capacity', 'durability'), before: resourceWire, after: resourceWire }), 16), failureConsequences: list(choice('preserve', 'downgrade', 'destroy', 'consumeMemento'), 4) });
+  displayChanges: list(object({ kind: choice('attackPower', 'enhancementLevel', 'capacity', 'durability'), before: resourceWire, after: resourceWire }), 16), failureConsequences: list(choice('preserve', 'downgrade', 'destroy', 'consumeMemento'), 4), repair: optional(object({ expiresAt: time, items: list(object({ itemId: id, current: integer(), max: integer(1), missing: integer(), unitGold: resourceWire, gold: resourceWire }), 7) })) });
 const mailAttachment = object({ attachmentId: id, kind: choice('equipment', 'stack'), templateRef: id, quantityGranted: integer(1, 20), quantityClaimed: integer(0, 20), binding });
 const mailEntry = object({ mailId: id, characterId: id, createdAt: time, expiresAt: time, read: boolean, attachments: list(mailAttachment, 8) });
 const pendingEntry = object({ grantId: id, itemId: id, characterId: id, createdAt: time, state: choice('pending', 'delivered') });
@@ -208,6 +209,7 @@ const queryResults = {
   'dungeon.options': object({ dungeonId: id, options: list(object({ difficultyId: id, unlocked: boolean, canEnter: boolean, reason: nullable(choice('LEVEL_REQUIRED', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'STAMINA_NOT_ENOUGH', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN')) }), 4) }),
   'service.get': object({ contextId: id, serviceKind, state: choice('open', 'closed', 'invalid'), locationRevision: integer(), allowedCommands: list(choice(...Object.keys(commandParsers) as AssetCommandName[]), 19) }),
   'service.quote': quote,
+  'repair.get': object({ contextId: id, characterId: id, characterVersion: integer(), statsVersion: integer(), item: parseEquipmentView, wallet: object({ walletId: id, version: integer(), gold: resourceWire, points: resourceWire }), attributes: list(affix, 32) }),
   'mail.list': object({ entries: list(mailEntry, 100), nextCursor: nullable(text(512, 1)) }),
   'reward.list': object({ entries: list(pendingEntry, 100), nextCursor: nullable(text(512, 1)) }),
   'delivery.summary': object({ unreadMailCount: integer(), pendingCount: integer(), asOf: time }),
@@ -221,6 +223,18 @@ export type AssetQueryResponse<K extends AssetQueryName = AssetQueryName> =
 export function parseAssetQueryResponse<K extends AssetQueryName>(query: K, value: unknown): AssetQueryResponse<K> {
   if (!Object.hasOwn(queryResults, query)) throw new TypeError('UNSUPPORTED_QUERY');
   const result = bounded(union(object({ requestId: operationId, serverTime: time, versions: parseExpected, data: queryResults[query] }), object({ requestId: operationId, serverTime: time, error: object({ code: publicError }) })), assetQueryMaxBytes(query))(value) as AssetQueryResponse<K>;
+  if ('data' in result && query === 'service.quote') {
+    const d = result.data as Value<typeof queryResults['service.quote']>;
+    if (d.repair) {
+      const r=d.repair, items=r.items;
+      if (d.serviceKind!=='repair'||items.length===0||new Set(items.map(i=>i.itemId)).size!==items.length||items.some(i=>i.current>i.max||i.missing!==i.max-i.current||resource(i.unitGold)===0n||resource(i.gold)!==BigInt(i.missing)*resource(i.unitGold)||!d.targetVersions.some(v=>v.kind==='equipment'&&v.id===i.itemId))||d.costs.length!==1||d.costs[0].currency!=='gold'||resource(d.costs[0].amount)!==items.reduce((sum,i)=>sum+resource(i.gold),0n)) throw new TypeError('INVALID_REPAIR_QUOTE');
+    }
+  }
+  if ('data' in result && query === 'repair.get') {
+    const d=result.data as Value<typeof queryResults['repair.get']>;
+    const required=[{kind:'character',id:d.characterId,version:d.characterVersion},{kind:'equipment',id:d.item.itemId,version:d.item.version},{kind:'wallet',id:d.wallet.walletId,version:d.wallet.version}];
+    if(required.some(e=>!result.versions.some(v=>v.kind===e.kind&&v.id===e.id&&v.version===e.version)))throw new TypeError('INVALID_REPAIR_VERSIONS');
+  }
   if ('data' in result && query === 'bank.get') {
     const d = result.data as Value<typeof queryResults['bank.get']>;
     if (d.backpack.kind !== 'backpack' || d.vault.kind === 'backpack' || d.backpack.owner.kind !== 'character' || d.backpack.owner.characterId !== d.characterId || (d.vault.owner.kind === 'character' && d.vault.owner.characterId !== d.characterId)) throw new TypeError('INVALID_BANK_SCOPE');
