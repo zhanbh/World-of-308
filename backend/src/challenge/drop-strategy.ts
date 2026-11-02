@@ -97,6 +97,52 @@ export function validateSpecialDungeonQualification(
   }
 }
 
+export function validateHoldingsSummaryIntegrity(
+  summary: any,
+  expectedScope: 'character' | 'account',
+  characterId: string,
+  domain: BankHoldingsDomain,
+): void {
+  check(summary && typeof summary === 'object');
+  check(summary.schemaVersion === 2);
+  check(summary.scope === expectedScope);
+  check(summary.domainRef === domain.ref);
+  check(Number.isSafeInteger(summary.revision) && summary.revision >= 0);
+  if (expectedScope === 'character') {
+    check(summary.characterId === characterId);
+  } else {
+    check(summary.characterId === undefined);
+  }
+  check(Array.isArray(summary.entries) && summary.entries.length <= 64);
+  const keys = new Set<string>();
+  for (const entry of summary.entries) {
+    check(entry && typeof entry === 'object');
+    check(typeof entry.collectionKey === 'string' && domain.keys.some(k => k.collectionKey === entry.collectionKey));
+    check(!keys.has(entry.collectionKey));
+    keys.add(entry.collectionKey);
+    check(Number.isSafeInteger(entry.permanentCount) && entry.permanentCount >= 0);
+    if (entry.mailLatestExpiryAt !== null && entry.mailLatestExpiryAt !== undefined) {
+      check(Number.isSafeInteger(entry.mailLatestExpiryAt) && entry.mailLatestExpiryAt >= 0);
+    }
+  }
+}
+
+export function isSlotHeld(
+  collectionKey: string,
+  summaries: any[],
+  now: number,
+): boolean {
+  for (const s of summaries) {
+    const entry = s.entries.find((e: any) => e.collectionKey === collectionKey);
+    if (!entry) continue;
+    if (entry.permanentCount > 0) return true;
+    if (s.scope === 'character' && entry.mailLatestExpiryAt !== null && entry.mailLatestExpiryAt > now) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function isCandidateMissing(
   candidate: DropCandidate,
   context: DropStrategyContext,
@@ -115,15 +161,14 @@ export function isCandidateMissing(
   );
   check(keys.length > 0);
 
-  return keys.every(k =>
-    context.summaries!.every((s, scopeIndex) => {
-      const entry = s.entries.find((e: any) => e.collectionKey === k.collectionKey);
-      if (!entry) return true;
-      const permanentZero = entry.permanentCount === 0;
-      const mailExpired = scopeIndex === 1 || entry.mailLatestExpiryAt === null || entry.mailLatestExpiryAt <= context.now;
-      return permanentZero && mailExpired;
-    }),
-  );
+  return keys.every(k => !isSlotHeld(k.collectionKey, context.summaries!, context.now));
+}
+
+export function getMissingCandidates(
+  candidates: DropCandidate[],
+  context: DropStrategyContext,
+): DropCandidate[] {
+  return candidates.filter(c => isCandidateMissing(c, context));
 }
 
 export function selectCandidateByStrategy(
@@ -146,8 +191,10 @@ export function selectCandidateByStrategy(
     validateSpecialDungeonQualification(initial, context.source, context.character.level);
     check(context.holdingsDomain);
     check(context.summaries && context.summaries.length === 2);
+    validateHoldingsSummaryIntegrity(context.summaries[0], 'character', context.character.id, context.holdingsDomain);
+    validateHoldingsSummaryIntegrity(context.summaries[1], 'account', context.character.id, context.holdingsDomain);
 
-    const missingCandidates = pool.filter(c => isCandidateMissing(c, context));
+    const missingCandidates = getMissingCandidates(pool, context);
 
     if (profile.strategyId === 'missing-slot-first') {
       if (missingCandidates.length > 0) {

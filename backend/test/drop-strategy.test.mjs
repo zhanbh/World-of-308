@@ -80,6 +80,7 @@ function makeContext(
     },
     summaries: [
       {
+        schemaVersion: 2,
         scope: 'character',
         characterId: 'test-char-1',
         revision: 1,
@@ -87,6 +88,7 @@ function makeContext(
         entries: charEntries,
       },
       {
+        schemaVersion: 2,
         scope: 'account',
         revision: 1,
         domainRef: domain.ref,
