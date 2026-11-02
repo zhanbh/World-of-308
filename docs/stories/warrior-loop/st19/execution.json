@@ -1,10 +1,10 @@
 {
   "published": false,
-  "status": "ST19-03-in-progress",
+  "status": "ST19-03-merged",
   "jira_actions": false,
   "feature": "warrior-loop-st19",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST19-03: Fixed sample remapping, full set smooth fallback, and submission immutability",
+  "current_scope": "ST19-01, ST19-02, and ST19-03 merged; ready for ST19-04",
   "tickets": [
     {
       "id": "ST19-01",
@@ -26,7 +26,12 @@
     },
     {
       "id": "ST19-03",
-      "state": "in_progress"
+      "state": "merged",
+      "code_commit": "ba18c584508e769edc77e49a1946d39aa6e72c6c",
+      "evidence": [
+        "docs/reviews/st19-03-verification.md",
+        "docs/reviews/st19-03-merge-verification.md"
+      ]
     },
     {
       "id": "ST19-04",
@@ -38,12 +43,12 @@
     }
   ],
   "verification": {
-    "source_head": "b8d42ebe96fab98e344ec41706b2dd804d869650",
+    "source_head": "ba18c584508e769edc77e49a1946d39aa6e72c6c",
     "backend_types_exit": 0,
-    "author_related_tests": 71,
+    "author_related_tests": 77,
     "creator_build": "not run; ST19-05",
-    "independent_tests": 14,
-    "full_seven_stage": "not run; ST19-05",
+    "independent_tests": 20,
+    "full_seven_stage": "passed (861 tests, 0 fail)",
     "remaining_tickets_started": false,
     "date": "2026-11-02",
     "independent_merger": "READY",
