@@ -1,7 +1,9 @@
 ---
 artifact_kind: implementation-ticket
 artifact_id: ticket:warrior-loop-st19-02
-status: proposed
+status: accepted
+revision: 4007207c84ca20ec8271929c8480a39aded9674f2a16670abd737d082030bdc5
+accepted_revision: 4007207c84ca20ec8271929c8480a39aded9674f2a16670abd737d082030bdc5
 ---
 # 02：全口径持有同步检测与双角色严格隔离
 

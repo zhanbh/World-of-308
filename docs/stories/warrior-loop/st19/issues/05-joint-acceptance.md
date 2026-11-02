@@ -1,7 +1,9 @@
 ---
 artifact_kind: implementation-ticket
 artifact_id: ticket:warrior-loop-st19-05
-status: proposed
+status: accepted
+revision: d44157f3dcbbbfc2ab6016c23b6038a0953ed1b578f663518f648ed2c4ac927a
+accepted_revision: d44157f3dcbbbfc2ab6016c23b6038a0953ed1b578f663518f648ed2c4ac927a
 ---
 # 05：全链路大闭环联合验收、预算实测与两轴独立评审
 

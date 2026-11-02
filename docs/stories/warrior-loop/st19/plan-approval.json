@@ -1,0 +1,18 @@
+{
+  "jira_actions": false,
+  "task_plan_sha256": "93f29466d08fba7120efb392ed46425b467660facb501484dd8d839c5e7ba28f",
+  "test_seams_approved": true,
+  "implementation_scope": [
+    "ST19-01"
+  ],
+  "scope_history": [
+    {
+      "ticket": "ST19-01",
+      "evidence": "好的，开始吧"
+    }
+  ],
+  "date": "2026-11-02",
+  "evidence": "好的，开始吧",
+  "kind": "human",
+  "graph_approved": true
+}

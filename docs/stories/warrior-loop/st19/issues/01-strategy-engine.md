@@ -1,7 +1,9 @@
 ---
 artifact_kind: implementation-ticket
 artifact_id: ticket:warrior-loop-st19-01
-status: proposed
+status: accepted
+revision: f4d254e4fe05d6774dafa290a9595a600afdbd50b3fd1d9178dcfe125b1d6eec
+accepted_revision: f4d254e4fe05d6774dafa290a9595a600afdbd50b3fd1d9178dcfe125b1d6eec
 ---
 # 01：策略引擎与多策略分层体系
 

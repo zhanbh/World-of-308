@@ -1,7 +1,9 @@
 ---
 artifact_kind: implementation-ticket
 artifact_id: ticket:warrior-loop-st19-03
-status: proposed
+status: accepted
+revision: 8a1e25d8a4cdb0af16afa508d61501141a402ae2f7302fbe313303c76ad4c7c0
+accepted_revision: 8a1e25d8a4cdb0af16afa508d61501141a402ae2f7302fbe313303c76ad4c7c0
 ---
 # 03：固定样本重映射、全齐平滑回退与提交不可变性
 

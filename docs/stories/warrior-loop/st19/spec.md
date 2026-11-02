@@ -1,7 +1,11 @@
 ---
 artifact_kind: specification
 artifact_id: spec:warrior-loop-st19
-status: proposed
+status: accepted
+spec_hash: c568edf5bed25c7b14874fc6b1c86ea46ab9921198907e7cf8f2a12a1e4c6a44
+accepted_revision: c568edf5bed25c7b14874fc6b1c86ea46ab9921198907e7cf8f2a12a1e4c6a44
+approval_kind: human
+approval_evidence: '好的，开始吧'
 stories: [ST19]
 ---
 # ST19 实施规格草案：特殊副本套装策略与持有检测

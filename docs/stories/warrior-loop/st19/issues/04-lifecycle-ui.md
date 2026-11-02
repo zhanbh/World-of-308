@@ -1,7 +1,9 @@
 ---
 artifact_kind: implementation-ticket
 artifact_id: ticket:warrior-loop-st19-04
-status: proposed
+status: accepted
+revision: a528a4d1433a58dd88bcc8cb9848f6f143454c2dbc25d190c148c667d1554ad9
+accepted_revision: a528a4d1433a58dd88bcc8cb9848f6f143454c2dbc25d190c148c667d1554ad9
 ---
 # 04：生命周期联动与客户端套装收集展示
 
