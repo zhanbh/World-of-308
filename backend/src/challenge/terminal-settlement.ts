@@ -6,16 +6,19 @@ import type {Transaction} from '../ports/store.ts';
 import {toEquipmentView} from '../equipment/equipment-service.ts';
 import {parseHoldingsView} from '../../../shared/src/protocol/asset-v2.ts';
 import type {BankHoldingsDomain} from '../bank/bank-service.ts';
-export type TerminalConfig={profile:'local-test-terminal';authorization:'isolated-local-assets-only';ref:string;gold:string;xp:number;progressionRef:{id:string;version:number};thresholds:number[];attributes:{maxHp:string;maxMp:string}[];equipment:DropCandidate[];missingPolicy:'random'|'missing-first';holdingsDomain?:BankHoldingsDomain;levelWeapons:{node:number;itemLevel:number;templateRef:{id:string;version:number}}[]};
+import type {DropStrategyProfile} from './drop-strategy.ts';
+import {validateDropStrategyProfile,selectCandidateByStrategy} from './drop-strategy.ts';
+export type TerminalConfig={profile:'local-test-terminal';authorization:'isolated-local-assets-only';ref:string;gold:string;xp:number;progressionRef:{id:string;version:number};thresholds:number[];attributes:{maxHp:string;maxMp:string}[];equipment:DropCandidate[];missingPolicy?:'random'|'missing-first';strategyProfile?:DropStrategyProfile;holdingsDomain?:BankHoldingsDomain;levelWeapons:{node:number;itemLevel:number;templateRef:{id:string;version:number}}[]};
 function check(ok:unknown):asserts ok{if(!ok)throw new TypeError('CONFIG_NOT_READY');}
 export function validateTerminal(config:TerminalConfig){
- check(Object.keys(config).every(k=>['profile','authorization','ref','gold','xp','progressionRef','thresholds','attributes','equipment','missingPolicy','holdingsDomain','levelWeapons'].includes(k)));
+ check(Object.keys(config).every(k=>['profile','authorization','ref','gold','xp','progressionRef','thresholds','attributes','equipment','missingPolicy','strategyProfile','holdingsDomain','levelWeapons'].includes(k)));
  check(config.profile==='local-test-terminal'&&config.authorization==='isolated-local-assets-only'&&/^[A-Za-z0-9_-]{1,64}$/.test(config.ref)&&/^(0|[1-9][0-9]{0,11})$/.test(config.gold)&&Number.isSafeInteger(config.xp)&&config.xp>=0);
  check(config.thresholds.length===30&&config.thresholds[0]===0&&config.thresholds.every((v,i)=>Number.isSafeInteger(v)&&v>=0&&(!i||v>config.thresholds[i-1])));
  check(config.attributes.length===30&&config.attributes.every(a=>Object.keys(a).length===2&&[a.maxHp,a.maxMp].every(n=>typeof n==='string'&&/^[1-9][0-9]{0,11}$/.test(n))));
  check(config.progressionRef&&typeof config.progressionRef.id==='string'&&config.progressionRef.id.length<=128&&Number.isSafeInteger(config.progressionRef.version)&&config.progressionRef.version>0);
- check(['random','missing-first'].includes(config.missingPolicy)&&config.levelWeapons.length===6&&config.levelWeapons.every((w,i)=>w.node===(i+1)*5&&[10,15,20,25,30].includes(w.itemLevel)&&w.templateRef.id.length>0&&w.templateRef.id.length<=128&&Number.isSafeInteger(w.templateRef.version)&&w.templateRef.version>0));
+ check((!config.missingPolicy||['random','missing-first'].includes(config.missingPolicy))&&config.levelWeapons.length===6&&config.levelWeapons.every((w,i)=>w.node===(i+1)*5&&[10,15,20,25,30].includes(w.itemLevel)&&w.templateRef.id.length>0&&w.templateRef.id.length<=128&&Number.isSafeInteger(w.templateRef.version)&&w.templateRef.version>0));
  validateDropConfig({profile:'local-test-drops',authorization:config.authorization,ref:config.ref,candidates:config.equipment});check(config.equipment.every(e=>e.kind==='equipment'));
+ if(config.strategyProfile)validateDropStrategyProfile(config.strategyProfile);
  if(config.equipment.some(e=>e.equipment!.setRef)){const d=config.holdingsDomain;check(d&&d.keys.length>0&&d.keys.length<=64&&new Set(d.keys.map(k=>k.collectionKey)).size===d.keys.length&&d.ref.length>0&&d.ref.length<=128);for(const k of d.keys)check(typeof k.collectionKey==='string'&&k.collectionKey.length>0&&k.collectionKey.length<=128&&typeof k.setId==='string'&&k.setId.length>0&&Number.isSafeInteger(k.setVersion)&&k.setVersion>0&&[10,15,20,25,30].includes(k.itemLevel)&&['warrior','hunter'].includes(k.classId));}
  return config;
 }
@@ -40,9 +43,9 @@ export async function planClear(tx:Transaction,c:CharacterEntity,bag:ContainerEn
   const domain=config.holdingsDomain;check(domain);
   const summaries:ReturnType<typeof parseHoldingsView>[]=[];
   for(const scope of ['character','account'] as const){const id=await loginKey('holdings',scope==='character'?[c.accountId,scope,c.id]:[c.accountId,scope]);const h=await tx.get<any>(id);check(h&&h.schemaVersion===2&&h.id===id&&h.accountId===c.accountId&&h.scope===scope&&(scope!=='character'||h.characterId===c.id)&&h.domainRef===domain.ref);parseHoldingsView({scope,...scope==='character'?{characterId:c.id}:{},revision:h.revision,domainRef:h.domainRef,entries:h.entries});check(h.entries.every((e:any)=>domain.keys.some(k=>k.collectionKey===e.collectionKey)));summaries.push(h);}
-  if(config.missingPolicy==='missing-first'){const missing=candidates.filter(e=>{const keys=domain.keys.filter(k=>k.setId===e.equipment!.setRef?.id&&k.setVersion===e.equipment!.setRef?.version&&k.slotId===e.equipment!.slotKind&&k.itemLevel===e.itemLevel&&k.classId===c.classId);check(keys.length);return keys.every(k=>summaries.every((s,i)=>{const a=s.entries.find((a:any)=>a.collectionKey===k.collectionKey);return !a||a.permanentCount===0&&(i===1||a.mailLatestExpiryAt===null||a.mailLatestExpiryAt<=now);}));});if(missing.length)candidates=missing;}
+  const profile:DropStrategyProfile=config.strategyProfile??{profileId:config.ref,version:1,schemaVersion:1,strategyId:config.missingPolicy==='missing-first'?'missing-slot-first':'weighted-random',candidates:config.equipment,holdingsDomain:config.holdingsDomain};
+  d=selectCandidateByStrategy(profile,sample,{character:c,summaries,holdingsDomain:domain,now,source});
  }
- if(d.equipment!.setRef)d=candidates[sample%candidates.length];
  const free=Array.from({length:bag.capacity},(_,i)=>i).find(i=>bag.slots[i]===undefined),route=free===undefined?'pending' as const:'direct' as const;
  const item:EquipmentEntity={schemaVersion:2,id:itemId,accountId:c.accountId,holderCharacterId:c.id,sourceKey,sourceOrdinal:0,sourceLocator:{kind:'challengeClear',challengeId,ordinal:0},templateRef:d.templateRef,slotKind:d.equipment!.slotKind,itemLevel:d.itemLevel,quality:d.quality,rolledAffixes:structuredClone(d.equipment!.affixes),setRef:d.equipment!.setRef,binding:d.binding.kind==='character'?{kind:'character',accountId:c.accountId,characterId:c.id}:d.binding.kind==='account'?{kind:'account',accountId:c.accountId}:{kind:'none'},enhancementLevel:0,durability:structuredClone(d.equipment!.durability),location:route==='direct'?{kind:'container',containerId:bag.id}:{kind:'pending',grantId},lifecycle:'active',version:1,createdAt:now,updatedAt:now};
  const equipment=toEquipmentView(item);check(new TextEncoder().encode(JSON.stringify(item)).length<=4096);tx.set(itemId,item);
