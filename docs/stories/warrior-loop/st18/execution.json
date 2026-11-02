@@ -1,10 +1,10 @@
 {
   "published": false,
-  "status": "ST18-01-complete-stopped-at-user-scope",
+  "status": "ST18-02-complete-stopped-at-user-scope",
   "jira_actions": false,
   "feature": "warrior-loop-st18",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST18-01 only; do not start02-05",
+  "current_scope": "ST18-02 complete; do not start 03-05",
   "tickets": [
     {
       "id": "ST18-01",
@@ -17,7 +17,12 @@
     },
     {
       "id": "ST18-02",
-      "state": "planned"
+      "state": "merged",
+      "code_commit": "099e088291891e28ac768cb0d4af2b1f7d8baa8b",
+      "evidence": [
+        "docs/reviews/st18-02-verification.md",
+        "docs/reviews/st18-02-merge-verification.md"
+      ]
     },
     {
       "id": "ST18-03",
@@ -33,11 +38,11 @@
     }
   ],
   "verification": {
-    "source_head": "375a342fbfede113db1bcd257d9983f7eac79133",
+    "source_head": "099e088291891e28ac768cb0d4af2b1f7d8baa8b",
     "backend_types_exit": 0,
-    "author_related_tests": 167,
+    "author_related_tests": 112,
     "creator_build": "not run; ST18-04/05",
-    "independent_tests": 54,
+    "independent_tests": 62,
     "full_seven_stage": "not run; ST18-05",
     "remaining_tickets_started": false,
     "date": "2026-11-02",

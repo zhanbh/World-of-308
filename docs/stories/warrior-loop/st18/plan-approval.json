@@ -3,7 +3,12 @@
   "task_plan_sha256": "38bb726921b97112dd084eeb510e8f77cedfe7a62c6d2b3644213c0bf391974a",
   "test_seams_approved": true,
   "implementation_scope": [
-    "ST18-01"
+    "ST18-01",
+    "ST18-02"
+  ],
+  "scope_history": [
+    { "ticket": "ST18-01", "evidence": "好的，开始吧" },
+    { "ticket": "ST18-02", "evidence": "继续吧" }
   ],
   "date": "2026-11-02",
   "evidence": "好的，开始吧",
