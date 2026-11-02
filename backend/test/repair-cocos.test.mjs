@@ -470,4 +470,3 @@ test('Input Safety: Double clicks and unauthorized interactions are safely ignor
   await new Promise(resolve => setTimeout(resolve, 50));
   assert.equal(coordinator.state.status, 'ready');
 });
-
