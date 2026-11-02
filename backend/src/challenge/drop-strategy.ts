@@ -200,12 +200,24 @@ export function selectCandidateByStrategy(
       if (missingCandidates.length > 0) {
         return missingCandidates[sample % missingCandidates.length];
       }
-      // Full set collected: smooth fallback to weighted-random
-      return pool[sample % pool.length];
+      // Full set collected: smooth fallback to fallbackStrategy (default weighted-random)
+      const fallback = profile.fallbackStrategy ?? 'weighted-random';
+      if (fallback === 'weighted-random') {
+        return pool[sample % pool.length];
+      }
+      throw new TypeError('CONFIG_NOT_READY');
     }
 
     if (profile.strategyId === 'weighted-missing-first') {
-      if (missingCandidates.length === 0 || missingCandidates.length === pool.length) {
+      if (missingCandidates.length === 0) {
+        // Full set collected: smooth fallback to fallbackStrategy (default weighted-random)
+        const fallback = profile.fallbackStrategy ?? 'weighted-random';
+        if (fallback === 'weighted-random') {
+          return pool[sample % pool.length];
+        }
+        throw new TypeError('CONFIG_NOT_READY');
+      }
+      if (missingCandidates.length === pool.length) {
         return pool[sample % pool.length];
       }
       const missingWeight = profile.parameters?.missingWeight ?? 2;
@@ -227,4 +239,25 @@ export function selectCandidateByStrategy(
   }
 
   return initial;
+}
+
+export async function deriveDropSample(
+  sourceKey: string,
+  configRefOrHash: string,
+): Promise<number> {
+  const digest = new Uint8Array(
+    await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(`${sourceKey}:${configRefOrHash}`),
+    ),
+  );
+  return new DataView(digest.buffer).getUint32(0, false);
+}
+
+export function remapCandidate(
+  profile: DropStrategyProfile,
+  fixedSample: number,
+  context: DropStrategyContext,
+): DropCandidate {
+  return selectCandidateByStrategy(profile, fixedSample, context);
 }

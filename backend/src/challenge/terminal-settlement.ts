@@ -7,7 +7,7 @@ import {toEquipmentView} from '../equipment/equipment-service.ts';
 import {parseHoldingsView} from '../../../shared/src/protocol/asset-v2.ts';
 import type {BankHoldingsDomain} from '../bank/bank-service.ts';
 import type {DropStrategyProfile} from './drop-strategy.ts';
-import {validateDropStrategyProfile,selectCandidateByStrategy} from './drop-strategy.ts';
+import {validateDropStrategyProfile,selectCandidateByStrategy,deriveDropSample} from './drop-strategy.ts';
 export type TerminalConfig={profile:'local-test-terminal';authorization:'isolated-local-assets-only';ref:string;gold:string;xp:number;progressionRef:{id:string;version:number};thresholds:number[];attributes:{maxHp:string;maxMp:string}[];equipment:DropCandidate[];missingPolicy?:'random'|'missing-first';strategyProfile?:DropStrategyProfile;holdingsDomain?:BankHoldingsDomain;levelWeapons:{node:number;itemLevel:number;templateRef:{id:string;version:number}}[]};
 function check(ok:unknown):asserts ok{if(!ok)throw new TypeError('CONFIG_NOT_READY');}
 export function validateTerminal(config:TerminalConfig){
@@ -34,9 +34,11 @@ export async function advanceProgression(tx:Transaction,c:CharacterEntity,config
  }
  return {character:{...c,level,statsVersion:c.statsVersion+(level!==c.level?1:0),mailIds},created};
 }
-export async function planClear(tx:Transaction,c:CharacterEntity,bag:ContainerEntity,challengeId:string,config:TerminalConfig,now:number,source:{kind:string;monsterLevel:number}){
+export async function planClear(tx:Transaction,c:CharacterEntity,bag:ContainerEntity,challengeId:string,config:TerminalConfig,now:number,source:{kind:string;monsterLevel:number},fixedSample?:number){
  validateTerminal(config);validateGroundBag(bag);const sourceKey=await loginKey('clearSource',[challengeId]),itemId=await loginKey('equipment',[challengeId,'clear-equipment']),grantId=await loginKey('clearGrant',[challengeId,0]);
- check(await tx.get(itemId)===undefined);const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceKey+':'+config.ref))),sample=new DataView(digest.buffer).getUint32(0,false);let d=config.equipment[sample%config.equipment.length];
+ const existingItem=await tx.get<EquipmentEntity>(itemId);
+ if(existingItem){const route=existingItem.location.kind==='container'?'direct' as const:'pending' as const;return {character:c,bag,sourceKey,itemId,grantId:route==='pending'?grantId:null,route,equipment:toEquipmentView(existingItem)};}
+ const sample=fixedSample!==undefined?fixedSample:await deriveDropSample(sourceKey,config.ref);let d=config.equipment[sample%config.equipment.length];
  let candidates=config.equipment.filter(e=>e.equipment!.setRef?.id===d.equipment!.setRef?.id&&e.equipment!.setRef?.version===d.equipment!.setRef?.version&&e.itemLevel===d.itemLevel&&e.quality===d.quality);
  if(d.equipment!.setRef){
   check(source.kind==='special'&&source.monsterLevel===30&&c.level===30&&d.itemLevel===30);

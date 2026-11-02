@@ -1,10 +1,10 @@
 {
   "published": false,
-  "status": "ST19-02-merged",
+  "status": "ST19-03-in-progress",
   "jira_actions": false,
   "feature": "warrior-loop-st19",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST19-01 and ST19-02 merged; ready for ST19-03",
+  "current_scope": "ST19-03: Fixed sample remapping, full set smooth fallback, and submission immutability",
   "tickets": [
     {
       "id": "ST19-01",
@@ -26,7 +26,7 @@
     },
     {
       "id": "ST19-03",
-      "state": "planned"
+      "state": "in_progress"
     },
     {
       "id": "ST19-04",
