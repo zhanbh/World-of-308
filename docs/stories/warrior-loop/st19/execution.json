@@ -1,0 +1,30 @@
+{
+  "published": false,
+  "status": "planned",
+  "jira_actions": false,
+  "feature": "warrior-loop-st19",
+  "integration_branch": "feat-1.0.0",
+  "current_scope": "ST19 specification and task graph proposed; waiting for human confirmation",
+  "tickets": [
+    {
+      "id": "ST19-01",
+      "state": "planned"
+    },
+    {
+      "id": "ST19-02",
+      "state": "planned"
+    },
+    {
+      "id": "ST19-03",
+      "state": "planned"
+    },
+    {
+      "id": "ST19-04",
+      "state": "planned"
+    },
+    {
+      "id": "ST19-05",
+      "state": "planned"
+    }
+  ]
+}
