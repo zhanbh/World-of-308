@@ -5,12 +5,16 @@
   "implementation_scope": [
     "ST18-01",
     "ST18-02",
-    "ST18-03"
+    "ST18-03",
+    "ST18-04",
+    "ST18-05"
   ],
   "scope_history": [
     { "ticket": "ST18-01", "evidence": "好的，开始吧" },
     { "ticket": "ST18-02", "evidence": "继续吧" },
-    { "ticket": "ST18-03", "evidence": "好的，继续吧" }
+    { "ticket": "ST18-03", "evidence": "好的，继续吧" },
+    { "ticket": "ST18-04", "evidence": "继续吧，把05也做完" },
+    { "ticket": "ST18-05", "evidence": "继续吧，把05也做完" }
   ],
   "date": "2026-11-02",
   "evidence": "好的，开始吧",
