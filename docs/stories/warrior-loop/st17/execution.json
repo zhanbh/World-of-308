@@ -2,8 +2,8 @@
   "feature": "warrior-loop-st17",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "131edef",
-  "status": "ST17-02-complete-stopped-at-user-scope",
-  "current_scope": "User requested 继续02吧 and 继续吧; completed02 only, do not start03-05.",
+  "status": "ST17-03-complete-stopped-at-user-scope",
+  "current_scope": "User 继续吧 after02push authorized03;03 complete, do not start04-05.",
   "approval_evidence": "可以，确认；开始01吧先",
   "spec_body_sha256": "d91949b4ddf0ba08bc39d5fed24f2b26ac3dbbc1cbdb4120fa5aa36293ccc8aa",
   "tickets": [
@@ -56,8 +56,16 @@
       "blocked_by": [
         2
       ],
-      "state": "planned",
-      "evidence": []
+      "state": "merged",
+      "evidence": [
+        "docs/reviews/st17-03-verification.md",
+        "docs/reviews/st17-03-merge-verification.md"
+      ],
+      "worktree": ".worktrees/st17-03-all-worn-repair",
+      "branch": "feat/st17-03-all-worn-repair",
+      "base_commit": "def983ee550b61d3c92397b8fd7748dcb1a79c7c",
+      "code_commit": "4b7191357519021a7b7862aae07b1e558069e2c5",
+      "worktree_cleaned": true
     },
     {
       "id": "ST17-04",
@@ -94,17 +102,18 @@
   "published": false,
   "jira_actions": false,
   "verification": {
-    "scope": "ST17-02 only",
+    "scope": "ST17-03 only",
     "completed_at": "2026-11-02",
-    "source_head": "0ea7f0fafda90cee844d9e69bb94d90b6f5806f6",
-    "initial_related_tests": 168,
-    "final_expected_related_tests": 106,
-    "independent_final_new_tests": 21,
+    "source_head": "4b7191357519021a7b7862aae07b1e558069e2c5",
+    "focused_tests": 112,
+    "related_tests": 184,
+    "independent_final_new_tests": 14,
     "backend_types_exit": 0,
     "client_model_types_exit": 0,
-    "initial_independent_merger": "NOT READY: missing expected guard; original message archived",
-    "final_independent_merger": "READY: fresh agent verified exact fixed source",
+    "independent_merger": "READY",
     "accepted_source_files_match": 6,
+    "all_worn_read_cap_bytes": 131072,
+    "legacy_single_read_cap_bytes": 65536,
     "full_seven_stage": "not run; ST17-05",
     "creator_build": "not run; ST17-04/05",
     "remaining_tickets_started": false,
@@ -130,12 +139,33 @@
         "remaining_tickets_started": false,
         "platform_device_status": "gap"
       }
+    },
+    {
+      "scope": "User requested 继续02吧 and 继续吧; completed02 only, do not start03-05.",
+      "status": "ST17-02-complete-stopped-at-user-scope",
+      "verification": {
+        "scope": "ST17-02 only",
+        "completed_at": "2026-11-02",
+        "source_head": "0ea7f0fafda90cee844d9e69bb94d90b6f5806f6",
+        "initial_related_tests": 168,
+        "final_expected_related_tests": 106,
+        "independent_final_new_tests": 21,
+        "backend_types_exit": 0,
+        "client_model_types_exit": 0,
+        "initial_independent_merger": "NOT READY: missing expected guard; original message archived",
+        "final_independent_merger": "READY: fresh agent verified exact fixed source",
+        "accepted_source_files_match": 6,
+        "full_seven_stage": "not run; ST17-05",
+        "creator_build": "not run; ST17-04/05",
+        "remaining_tickets_started": false,
+        "platform_device_status": "gap"
+      }
     }
   ],
   "resume": {
     "date": "2026-11-02",
-    "evidence": "继续02吧",
-    "head": "4bbe1840cae9e221d90feceeca8a2aa7f2e9d527",
+    "evidence": "继续吧",
+    "head": "def983ee550b61d3c92397b8fd7748dcb1a79c7c",
     "accepted_source_files_match": 6
   }
 }
