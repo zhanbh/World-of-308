@@ -1,10 +1,10 @@
 {
   "published": false,
-  "status": "ST19-02-in-progress",
+  "status": "ST19-02-merged",
   "jira_actions": false,
   "feature": "warrior-loop-st19",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST19-01 complete; ST19-02 in progress",
+  "current_scope": "ST19-01 and ST19-02 merged; ready for ST19-03",
   "tickets": [
     {
       "id": "ST19-01",
@@ -17,7 +17,12 @@
     },
     {
       "id": "ST19-02",
-      "state": "in-progress"
+      "state": "merged",
+      "code_commit": "b8d42ebe96fab98e344ec41706b2dd804d869650",
+      "evidence": [
+        "docs/reviews/st19-02-verification.md",
+        "docs/reviews/st19-02-merge-verification.md"
+      ]
     },
     {
       "id": "ST19-03",
@@ -33,11 +38,11 @@
     }
   ],
   "verification": {
-    "source_head": "a7967f00d2380f2d87e009ee59292395d98fa65e",
+    "source_head": "b8d42ebe96fab98e344ec41706b2dd804d869650",
     "backend_types_exit": 0,
-    "author_related_tests": 36,
+    "author_related_tests": 71,
     "creator_build": "not run; ST19-05",
-    "independent_tests": 8,
+    "independent_tests": 14,
     "full_seven_stage": "not run; ST19-05",
     "remaining_tickets_started": false,
     "date": "2026-11-02",
