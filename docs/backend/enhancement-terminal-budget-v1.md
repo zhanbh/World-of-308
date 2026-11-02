@@ -73,6 +73,8 @@ ST17-01恢复接缝修复仅对齐既有ready/header/H回执和完整证明资�
 
 ST17-02角色expected修复后新repair-open仍R7/W5、12调用；准确请求tuple增加角色expected后本地样本写入3777B（此前3671B保留为初版证据），没有增加物理写点。
 
+ST17-03真实13穿戴/100格背包全修样本R21/W12/33调用、14448B写（最大3002B），12实际set逐点回滚；all read view R19/W0/5445B。合法长ID/16词条7件服务响应75909B，新allWorn repair.get wire上限131072B、single解析仍65536B；同域真实写97623B、最大12858B，原O保持16384B。纯codec极值形状89203B与自然历史分列，不代表云SDK/完整发布域，原终局门限不变。见[03证据](../reviews/st17-03-verification.md)。
+
 ## ST18-01 本地低段样本（2026-11-02）
 
 最大本地13穿戴/100材料格/20来源记忆成功实测R24/W9/45调用，写26111 UTF-8字节、最大文档15706B；success9/failed7/open5实际写点逐一回滚。此为低段local-test样本，不覆盖高段损毁或SDK真实传输；不替换既有高段预算，也不关闭05联合门禁。见[01验证](../reviews/st18-01-verification.md)。

@@ -1,0 +1,24 @@
+(node:54386) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/assets/scripts/net/RepairCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ all-worn quote and atomic repair include exactly seven worn wear slots and never backpack or vault gear (19.414ms)
+✔ all-worn empty and full sets are free, exact funds suffice, and one missing gold refuses the entire batch (14.77275ms)
+✖ real transport all-worn coordinator shows the complete price and refreshes one confirmed batch (1.716584ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 202.296917
+
+✖ failing tests:
+
+test at backend/test/all-worn-repair.test.mjs:27:1
+✖ real transport all-worn coordinator shows the complete price and refreshes one confirmed batch (1.716584ms)
+  TypeError: client.openAll is not a function
+      at TestContext.<anonymous> (file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/backend/test/all-worn-repair.test.mjs:29:108)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)

@@ -1,0 +1,45 @@
+(node:54466) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/assets/scripts/net/RepairCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ all-worn quote and atomic repair include exactly seven worn wear slots and never backpack or vault gear (17.831958ms)
+✔ all-worn empty and full sets are free, exact funds suffice, and one missing gold refuses the entire batch (21.806459ms)
+✔ real transport all-worn coordinator shows the complete price and refreshes one confirmed batch (10.710583ms)
+✔ late-target configuration and safe-version refusals never commit an early repaired prefix (30.371917ms)
+✔ a quoted full-durability member and the complete worn target set remain version-bound (8.202042ms)
+(node:54467) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/assets/scripts/net/RepairCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real blacksmith quote repairs a broken worn weapon with one exact charge and unchanged intrinsic facts (18.301542ms)
+✔ real transport coordinator confirms quote then refreshes exact wallet, item and effective attributes (5.311875ms)
+✔ backpack single repair restores only the selected instance; full durability is free and does not write asset versions (6.92225ms)
+✔ single repair rejects insufficient gold atomically and does not charge enhancement or affix premiums (5.418583ms)
+✔ repair only accepts live owned wear slots in current equipped or backpack locations (19.000917ms)
+✔ quote expiration, close, same-place reopen and other service opening never revive an old repair quote (23.589875ms)
+✔ quoted item, configuration and exact expected versions must still match; missing or invalid prices are refused (9.090875ms)
+✔ committed originals survive lost response and expired context, while same ID with other arguments cannot charge again (8.397666ms)
+ST17-02 single worn repair actual {"R":9,"W":6,"calls":15,"setCalls":6,"bytes":6383,"maxWrite":1791,"writeKeys":["v2:equipment:qnuqMK-tfLLy0jrcWTx-1R4jNC9gBgtdKVvvW0N52fU","v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA","v2:wallet:qKySAQnKi-x9rO8Fuu8dnyJo09jroxfNs7_9SHIb4Yc","v2:account:KZ97Aycb7ApdShMIjU-gSLNDx63e7E5ZMZPd4JCQAXw","v2:assetJournal:w-NNQ5dCQEWGjHJzIZuQijLd3QpSmKbtfClt9AwMs70","v2:assetOp:pbzg6MW-_vAp6ZrIw7ybrzEWJSpE_WAzUpmmmkxA4LU"]}
+✔ every actual repair write rolls back completely; quote/view budgets measure real reads and writes (27.340708ms)
+✔ real equipment swap and single repair serialize in both OCC orders without repairing a replacement target (9.030209ms)
+✔ real shop sale and repair serialize in both OCC orders with one item lifecycle and no phantom debit (19.04525ms)
+✔ repair service authenticates trusted identity and active character/session epochs, not payload ownership (7.451ms)
+✔ replayed repair service.open cannot renew TTL or reactivate an old context; opening is atomic at each new write (13.817875ms)
+✔ coordinator recovers committed lost response through original O even after closing and reattaching (5.112916ms)
+✔ notFound keeps the same original ID; a held late commit racing retry can only charge once (5.158666ms)
+✔ coordinator rejects stale refresh and retires delayed callbacks on close/rebind without cancelling assets (4.730708ms)
+ST17-02 maximum local slots/one target [{"R":21,"W":0,"calls":21,"bytes":0,"responseBytes":1306},{"R":10,"W":6,"calls":16,"bytes":6401,"responseBytes":440}]
+✔ 13-slot attributes and a 100-slot backpack stay bounded without repairing or charging non-targets (4.5775ms)
+✔ repair-open original survives location revisions and closure, rejects tuple collisions, and is queryable after response loss (3.845417ms)
+ST17-02 repair-open actual {"R":7,"W":5,"calls":12,"bytes":3777}
+✔ new repair-open measures account/context/character/O/J writes through trusted identity and fails closed without it (1.830792ms)
+✔ repair-open rejects stale or missing character expectations without replacing the current service (3.000625ms)
+✔ a held repair-open and a newer service serialize in both OCC orders without restoring the old service pointer (4.122625ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 494.536375

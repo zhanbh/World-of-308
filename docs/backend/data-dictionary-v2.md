@@ -507,6 +507,8 @@ H可含服务私有`wearConfigHash`，绑定开始挑战时的显式本地磨损
 
 角色可含currentServiceContextId，修理open同笔设置；有该字段后新服务打开会替换指针，使旧修理context失权。私有repairContext键为(accountId,operationId)，保存现有上下文代次/地点/issuedAt，不随位置revision重建同一原操作。新open原O/J及repair原O/J用既有资产命名空间；repair J保留真实耐久/余额/版本前后及报价配置/来源，不用不可逆摘要替代delta。公开repair.get及service.quote可选repair明细定义见[执行合同](single-repair-contract-v1.md)，无新增独立报价集合或TTL资产删除。
 
+ST17-03全修复用原equipment/character/wallet/account/O/J对象，不新建报价或容器。公开quote.repair新增可选target={kind:allWorn}，items保留0～7个当前穿戴磨损实例（满耐久也保留），targetVersions=C/W/全部实例。repair.get保留旧single响应，allWorn响应互斥为target/items[]；J的allWorn实际差额为changes.items[]，single的changes.item保持。见[全修字段合同](all-worn-repair-contract-v1.md)。
+
 ## ST18-01 低段强化字段（2026-11-02）
 
 EquipmentEntity/EquipmentView可选enhancementBonus包含configRef、level、attackPower规范资源字符串，级别须等于非0 enhancementLevel且仅武器/耳环；独立于随机词条。只由服务端强化事务从显式不可变候选配置派生，统一属性聚合按耐久有效性计入一次；非0旧实例缺投影保持旧读兼容，但继续强化失败关闭，不能自动补发攻强。

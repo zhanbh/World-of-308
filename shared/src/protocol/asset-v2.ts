@@ -66,7 +66,7 @@ const queryParsers = {
   'dungeon.options': object({ characterId: id, dungeonId: id }),
   'service.get': object({ characterId: id, serviceContextId: id }),
   'service.quote': object({ characterId: id, contextId: id, serviceIntent }),
-  'repair.get': object({ characterId: id, contextId: id, itemId: id }),
+  'repair.get': union(object({ characterId: id, contextId: id, itemId: id }),object({ characterId: id, contextId: id, target: object({kind:choice('allWorn')}) })),
   'enhancement.get': object({ characterId: id, contextId: id, itemId: id }),
   'mail.list': object({ characterId: id, contextId: id, cursor: nullable(text(512, 1)), pageRequest: integer(1, 100) }),
   'reward.list': object({ characterId: id, contextId: id, cursor: nullable(text(512, 1)), pageRequest: integer(1, 100) }),
@@ -179,7 +179,7 @@ const characterBrief = object({ characterId: id, classId: choice('warrior', 'hun
 const equippedEntry = object({ slotId: slot, itemId: id });
 const score = object({ basis: choice('intrinsicEquipmentValue'), value: resourceWire, scoreConfigRef: id, equipmentVersion: integer(), scoreReachedAt: time });
 const quote = object({ quoteRef: id, serviceKind, configRef: id, costs: list(object({ currency, amount: resourceWire }), 2), materialCosts: list(object({ templateRef: id, quantity: integer(1, 20) }), 8), targetVersions: parseExpected,
-  displayChanges: list(object({ kind: choice('attackPower', 'enhancementLevel', 'capacity', 'durability'), before: resourceWire, after: resourceWire }), 16), failureConsequences: list(choice('preserve', 'downgrade', 'destroy', 'consumeMemento'), 4), repair: optional(object({ expiresAt: time, items: list(object({ itemId: id, current: integer(), max: integer(1), missing: integer(), unitGold: resourceWire, gold: resourceWire }), 7) })) });
+  displayChanges: list(object({ kind: choice('attackPower', 'enhancementLevel', 'capacity', 'durability'), before: resourceWire, after: resourceWire }), 16), failureConsequences: list(choice('preserve', 'downgrade', 'destroy', 'consumeMemento'), 4), repair: optional(object({ expiresAt: time, target: optional(object({kind:choice('allWorn')})), items: list(object({ itemId: id, current: integer(), max: integer(1), missing: integer(), unitGold: resourceWire, gold: resourceWire }), 7) })) });
 const mailAttachment = object({ attachmentId: id, kind: choice('equipment', 'stack'), templateRef: id, quantityGranted: integer(1, 20), quantityClaimed: integer(0, 20), binding });
 const mailEntry = object({ mailId: id, characterId: id, createdAt: time, expiresAt: time, read: boolean, attachments: list(mailAttachment, 8) });
 const pendingEntry = object({ grantId: id, itemId: id, characterId: id, createdAt: time, state: choice('pending', 'delivered') });
@@ -211,7 +211,7 @@ const queryResults = {
   'dungeon.options': object({ dungeonId: id, options: list(object({ difficultyId: id, unlocked: boolean, canEnter: boolean, reason: nullable(choice('LEVEL_REQUIRED', 'WEAPON_REQUIRED', 'WEAPON_BROKEN', 'STAMINA_NOT_ENOUGH', 'ACTIVE_CHALLENGE_EXISTS', 'SCENE_STILL_OPEN')) }), 4) }),
   'service.get': object({ contextId: id, serviceKind, state: choice('open', 'closed', 'invalid'), locationRevision: integer(), allowedCommands: list(choice(...Object.keys(commandParsers) as AssetCommandName[]), 19) }),
   'service.quote': quote,
-  'repair.get': object({ contextId: id, characterId: id, characterVersion: integer(), statsVersion: integer(), item: parseEquipmentView, wallet: object({ walletId: id, version: integer(), gold: resourceWire, points: resourceWire }), attributes: list(affix, 32) }),
+  'repair.get': union(object({ contextId: id, characterId: id, characterVersion: integer(), statsVersion: integer(), item: parseEquipmentView, wallet: object({ walletId: id, version: integer(), gold: resourceWire, points: resourceWire }), attributes: list(affix, 32) }),object({ contextId: id, characterId: id, characterVersion: integer(), statsVersion: integer(), target: object({kind:choice('allWorn')}), items: list(parseEquipmentView,7), wallet: object({walletId:id,version:integer(),gold:resourceWire,points:resourceWire}), attributes:list(affix,32) })),
   'enhancement.get': object({ contextId: id, characterId: id, characterVersion: integer(), statsVersion: integer(), item: parseEquipmentView, wallet: object({ walletId: id, version: integer(), gold: resourceWire, points: resourceWire }), attributes: list(affix, 32) }),
   'mail.list': object({ entries: list(mailEntry, 100), nextCursor: nullable(text(512, 1)) }),
   'reward.list': object({ entries: list(pendingEntry, 100), nextCursor: nullable(text(512, 1)) }),
@@ -230,12 +230,16 @@ export function parseAssetQueryResponse<K extends AssetQueryName>(query: K, valu
     const d = result.data as Value<typeof queryResults['service.quote']>;
     if (d.repair) {
       const r=d.repair, items=r.items;
-      if (d.serviceKind!=='repair'||items.length===0||new Set(items.map(i=>i.itemId)).size!==items.length||items.some(i=>i.current>i.max||i.missing!==i.max-i.current||resource(i.unitGold)===0n||resource(i.gold)!==BigInt(i.missing)*resource(i.unitGold)||!d.targetVersions.some(v=>v.kind==='equipment'&&v.id===i.itemId))||d.costs.length!==1||d.costs[0].currency!=='gold'||resource(d.costs[0].amount)!==items.reduce((sum,i)=>sum+resource(i.gold),0n)) throw new TypeError('INVALID_REPAIR_QUOTE');
+      if(r.target&&(d.targetVersions.length!==items.length+2||d.targetVersions.filter(v=>v.kind==='character').length!==1||d.targetVersions.filter(v=>v.kind==='wallet').length!==1||d.targetVersions.filter(v=>v.kind==='equipment').length!==items.length))throw new TypeError('INVALID_REPAIR_SET');
+      if (d.serviceKind!=='repair'||(items.length===0&&!r.target)||new Set(items.map(i=>i.itemId)).size!==items.length||items.some(i=>i.current>i.max||i.missing!==i.max-i.current||resource(i.unitGold)===0n||resource(i.gold)!==BigInt(i.missing)*resource(i.unitGold)||!d.targetVersions.some(v=>v.kind==='equipment'&&v.id===i.itemId))||d.costs.length!==1||d.costs[0].currency!=='gold'||resource(d.costs[0].amount)!==items.reduce((sum,i)=>sum+resource(i.gold),0n)) throw new TypeError('INVALID_REPAIR_QUOTE');
     }
   }
   if ('data' in result && (query === 'repair.get' || query === 'enhancement.get')) {
     const d=result.data as Value<typeof queryResults['repair.get']>;
-    const required=[{kind:'character',id:d.characterId,version:d.characterVersion},{kind:'equipment',id:d.item.itemId,version:d.item.version},{kind:'wallet',id:d.wallet.walletId,version:d.wallet.version}];
+    if('item' in d)bounded(()=>result,65536)(null); // Legacy single-target envelope remains unchanged.
+    const items='items' in d?d.items:[d.item];
+    const required=[{kind:'character',id:d.characterId,version:d.characterVersion},...items.map(i=>({kind:'equipment',id:i.itemId,version:i.version})),{kind:'wallet',id:d.wallet.walletId,version:d.wallet.version}];
+    if('items' in d&&(new Set(items.map(i=>i.itemId)).size!==items.length||new Set(items.map(i=>i.slotKind)).size!==items.length||items.some(i=>!['weapon','shoulder','chest','pants','belt','boots','earring'].includes(i.slotKind)||!i.durability.wearEnabled||i.lifecycle!=='active'||i.location.kind!=='equipped'||i.location.characterId!==d.characterId||i.location.slotId!==i.slotKind)||result.versions.length!==required.length))throw new TypeError('INVALID_REPAIR_SET');
     if(required.some(e=>!result.versions.some(v=>v.kind===e.kind&&v.id===e.id&&v.version===e.version)))throw new TypeError('INVALID_REPAIR_VERSIONS');
   }
   if ('data' in result && query === 'bank.get') {

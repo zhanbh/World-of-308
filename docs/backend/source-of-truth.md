@@ -119,6 +119,10 @@ Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapte
 
 当前单目标报价/修满、固定本地上下文截止、原open与修理O/J、原子repair.get及真实协调器按[单件修理合同](single-repair-contract-v1.md)执行；字段/API/状态/映射/预算本次同步。候选价仅local-test，allWorn/面板/全故事验收留03–05；实际实现/故障竞争/传输证据见[02验证](../reviews/st17-02-verification.md)，不关闭正式配置/SDK/设备GAP。
 
+## ST17-03 当前穿戴一键全修（2026-11-02）
+
+完整穿戴磨损集合的报价/原子全修、allWorn原子读模型与协调器、空/全满零费及原O恢复按[全修合同](all-worn-repair-contract-v1.md)执行。复用02授权/上下文/原结果，旧single兼容；满耐久件也绑定版本，非目标背包/金库不修。当前repair.get新增allWorn有界128KiB形状，single保留64KiB，实际R/W/调用/UTF-8及故障/竞争见[03验证](../reviews/st17-03-verification.md)。04面板/05全故事门禁及正式价格/SDK/设备GAP仍未完成。
+
 ## ST18-01 玛丽低段强化（2026-11-02）
 
 可信玛丽上下文、当前+1至10的原子成功/保级、持久会话记忆与固定秘密原意图样本、独立强化AP投影和真实传输恢复按[低段强化合同](low-enhancement-contract-v1.md)执行。高段/纪念品、完整跨代次矩阵、Cocos面板及最终联合门禁留02–05；正式参数/SDK/设备GAP保留。

@@ -220,6 +220,8 @@ ST17-01恢复接缝：active+cleared的suspend→resumePrepare→完整证明→
 
 ST17-02修理上下文新意图须匹配当前character expected才可替换currentServiceContextId；旧在途open与新服务竞争时受角色OCC/expected约束，旧意图不可在重试后覆盖新指针。原O只回放，不重新建立上下文或修改issuedAt。
 
+ST17-03选定allWorn→完整当前穿戴报价→显式确认→全部修满/扣币同笔→权威刷新；空/全满0收费，余额不足/任何后序目标非法或版本/报价改变整批拒绝。不修背包/金库，不把部分成功视为全修。全部决定与安全递增/字节检查先于资产写；原O重放/unknown恢复及close/rebind代次沿02，见[全修状态合同](all-worn-repair-contract-v1.md)。
+
 ## ST18-01 强化状态（2026-11-02）
 
 玛丽地点→可信open→只读报价→明确确认→成功/保级/降级/损毁并原子消费→重读目标/钱包/属性；前置拒绝不消费。11–12失败降至10，13–20失败转retired并清角色穿戴/背包引用；来源保持审计，适用套装持有减一。显式选用的纪念品成功/失败均消费，损毁返还先入包堆叠，余量走30天MailService邮件。未知保留原tuple查原O；关闭只退休回调。持久记忆跟随rolePlayEpoch：新代次不继承、同代次短恢复保留；0耐久强化不修理，之后单修仍恢复同一强化AP。高段配置和状态见[高段合同](high-enhancement-contract-v1.md)。

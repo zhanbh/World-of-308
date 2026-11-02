@@ -1,0 +1,25 @@
+✖ all-worn quote and atomic repair include exactly seven worn wear slots and never backpack or vault gear (10.829416ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 167.906708
+
+✖ failing tests:
+
+test at backend/test/all-worn-repair.test.mjs:4:1
+✖ all-worn quote and atomic repair include exactly seven worn wear slots and never backpack or vault gear (10.829416ms)
+  AssertionError [ERR_ASSERTION]: {"requestId":"all-worn-quote","serverTime":1000,"error":{"code":"ITEM_NOT_ELIGIBLE"}}
+      at TestContext.<anonymous> (file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/backend/test/all-worn-repair.test.mjs:6:9)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

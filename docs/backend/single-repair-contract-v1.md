@@ -8,7 +8,7 @@
 - 修理open原操作使用既有`assetOp(accountId,operationId)`/`assetJournal`命名空间与canonical完整tuple。原O先于当前位置/角色检查，同ID原参只返回固定原结果，不重写上下文或issuedAt；不同参数/其他命令碰撞拒绝OPERATION_MISMATCH。成功丢响应可通过现有授权operation.get查原service.open，关闭/移动/切换服务不把原成功改为失败。不存在J/O错配时不覆盖已存在来源。
 - 私有上下文键为`repairContext(accountId,operationId)`，与位置revision无关；上下文仍绑定签发时rolePlayEpoch、sceneEpoch、locationRevision、anchor、issuedAt。新open成功同笔写context、角色指针/version、账号writeRevision、J和O；响应含新角色版本。原open重放不重新打开已关闭context，必须另发新open意图才能获得新上下文。
 - 每次报价、视图、执行都验证当前选中角色、当前pointer、open状态、代次、地图/位置及活动挑战/开放场景不存在；旧/关闭/移走/重开/切角/重登不能继续用旧报价。
-- 显式`RepairConfig`只支持profile=local-test、authorization=isolated-local-assets-only；必须注入ref及装等/品质→规范正整数字符串单点价，无缺省价。候选表来自耐久方案，金币沿钱包整数字符串单位，不套战斗1000缩放。只支持single，allWorn明确ITEM_NOT_ELIGIBLE留03。
+- 显式`RepairConfig`只支持profile=local-test、authorization=isolated-local-assets-only；必须注入ref及装等/品质→规范正整数字符串单点价，无缺省价。候选表来自耐久方案，金币沿钱包整数字符串单位，不套战斗1000缩放。02阶段只覆盖single；当前03已扩展allWorn，按[全修增量合同](all-worn-repair-contract-v1.md)执行，旧single协议与原结果保持兼容。
 - 候选工程参数`contextTtlMs`正整数且≤60000；本片夹具30000ms，截止固定为ctx.issuedAt+TTL，now>=截止拒绝。重复quote/视图/原open重放不续期，过期需显式新open。此为local-test限制，不锁定正式产品有效期。
 - 报价是无持久写的有界视图，quoteRef重算摘要绑定账号/会话/角色代次、完整context、字符/目标/钱包/必要背包版本、完整价格配置、真实耐久和成本。执行完全重算，不信客户端价格或期限；即使客户端知道摘要算法也不能改变服务端计算的扣款。QUOTE_CHANGED或VERSION_CONFLICT后必须重新展示并确认，禁止自动用新价重提旧意图。
 
@@ -27,6 +27,8 @@
 新增`repair.get {characterId,contextId,itemId}`返回同笔原子读模型：contextId、characterId/characterVersion/statsVersion、现有EquipmentView、钱包id/version/gold/points、当前支持域的有效attributes。versions必须包含相符角色/目标/钱包及背包目标时的容器版本。此视图不下发账号私有字段或报价权威。
 
 `RepairCoordinator`用真实公开传输，先取得原子view及相同版本的quote，再由调用方显式确认repair。持久保存一个原命令，unknown阻止新写；recover先operation.get，found合并原结果，notFound仅原ID原tuple重试。提交确认后按最低版本刷新钱包/实例/属性；刷新失败保留已确认lastResult并报失败，不伪称资产未知再扣款。close/init/rebind代次隔离旧异步回调，关闭不取消服务端交易或删除未决持久意图。empty指当前未选择目标，不冒充资产目录为空。
+
+本合同中的单件形状是02基线；当前全修选择/读模型/预算见[03增量](all-worn-repair-contract-v1.md)，不再以02阶段“尚不支持allWorn”作为当前拒绝规则。
 
 本片未接Cocos面板或更改TownCoordinator UI恢复行为；原open结果传输/查询由真实协议测试演示，面板及宿主打开服务恢复在04整合，不冒称已有设备操作。
 

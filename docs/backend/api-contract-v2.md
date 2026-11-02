@@ -382,6 +382,8 @@ ST17-01独立合入修复：active+cleared恢复也必须完成既有资源/准�
 
 ST17-02角色版本核验修复：新repair service.open要求完整单项character expected，旧版本拒绝VERSION_CONFLICT、缺失/错误集合拒绝INVALID_ARGUMENT；原O回放先于当前版本判定，不允许迟到open覆盖较新的服务指针。详见[单件修理合同](single-repair-contract-v1.md)。
 
+ST17-03当前equipment.repair/service.quote已支持allWorn，由服务端选定穿戴7磨损槽完整集合（含满耐久件），空/全满0费、余额不足整批拒绝；新增repair.get互斥target=allWorn请求及完整items读模型，旧itemId/single形状兼容。报价绑定C/W/全部目标版本；全修视图131072B，旧single仍65536B。精确字段/行为见[全修合同](all-worn-repair-contract-v1.md)。
+
 ## ST18-01 低段强化协议（2026-11-02）
 
 C17 equipment.enhance在显式隔离配置支持目标当前+1至10/useMemento=false；其余高段/主动纪念品留02。enhance service.open启用与repair同可信身份/character expected/原O路径。R07 service.quote公开金币材料/等级和AP变化/保级后果，私有概率及记忆不进入DTO。

@@ -1,0 +1,29 @@
+(node:54483) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/assets/scripts/net/RepairCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ maximum admitted UTF-8 equipment IDs and sixteen affixes per worn member survive the bounded public all-worn view (31.339292ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 247.284
+
+✖ failing tests:
+
+test at backend/test/all-worn-repair.test.mjs:55:1
+✖ maximum admitted UTF-8 equipment IDs and sixteen affixes per worn member survive the bounded public all-worn view (31.339292ms)
+  AssertionError [ERR_ASSERTION]: {"requestId":"maximum-all-view","serverTime":1000,"error":{"code":"CONFIG_NOT_READY"}}
+      at TestContext.<anonymous> (file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/backend/test/all-worn-repair.test.mjs:59:9)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

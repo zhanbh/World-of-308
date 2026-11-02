@@ -26,7 +26,7 @@ test('repair only accepts live owned wear slots in current equipped or backpack 
  for(const change of [i=>({...i,location:{kind:'container',containerId:'personal-vault'}}),i=>({...i,holderCharacterId:'other-character'}),i=>({...i,binding:{kind:'character',accountId:i.accountId,characterId:'other-character'}}),i=>({...i,lifecycle:'destroyed'}),i=>({...i,slotKind:'ring',durability:{wearEnabled:false,current:null,max:null,policyRef:'none'}})]){
   const f=await repairFixture();await patch(f,f.weaponId,change);const before=f.store.snapshot(),r=await f.quote();assert.ok(r.error,JSON.stringify(r));assert.equal(r.error.code,'ITEM_NOT_ELIGIBLE');assert.deepEqual(f.store.snapshot(),before);
  }
- const f=await repairFixture(),q=await f.quote();const all={...f.command(q),payload:{...f.command(q).payload,target:{kind:'allWorn'}}};assert.equal((await f.service.execute(all)).outcome.code,'ITEM_NOT_ELIGIBLE');assert.equal(f.wallet().gold,'1000');
+ const f=await repairFixture(),q=await f.quote();const all={...f.command(q),payload:{...f.command(q).payload,target:{kind:'allWorn'}}};assert.equal((await f.service.execute(all)).outcome.code,'QUOTE_CHANGED');assert.equal(f.wallet().gold,'1000'); // A single quote cannot silently authorize the new all-worn selection.
 });
 test('quote expiration, close, same-place reopen and other service opening never revive an old repair quote',async()=>{
  for(const mode of ['equal-expiry','close','reopen','other-service','move']){

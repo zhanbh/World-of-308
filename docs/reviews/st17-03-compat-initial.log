@@ -1,0 +1,134 @@
+(node:54434) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/assets/scripts/net/RepairCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ real blacksmith quote repairs a broken worn weapon with one exact charge and unchanged intrinsic facts (45.219792ms)
+✔ real transport coordinator confirms quote then refreshes exact wallet, item and effective attributes (11.840875ms)
+✔ backpack single repair restores only the selected instance; full durability is free and does not write asset versions (20.262333ms)
+✔ single repair rejects insufficient gold atomically and does not charge enhancement or affix premiums (8.32125ms)
+✖ repair only accepts live owned wear slots in current equipped or backpack locations (48.417458ms)
+✔ quote expiration, close, same-place reopen and other service opening never revive an old repair quote (65.240084ms)
+✔ quoted item, configuration and exact expected versions must still match; missing or invalid prices are refused (24.243459ms)
+✔ committed originals survive lost response and expired context, while same ID with other arguments cannot charge again (23.812083ms)
+ST17-02 single worn repair actual {"R":9,"W":6,"calls":15,"setCalls":6,"bytes":6383,"maxWrite":1791,"writeKeys":["v2:equipment:qnuqMK-tfLLy0jrcWTx-1R4jNC9gBgtdKVvvW0N52fU","v2:character:MuRP5_A_FLqE9QMN5-kERTgzS6fzQ3t_lsYSmZUsFOA","v2:wallet:qKySAQnKi-x9rO8Fuu8dnyJo09jroxfNs7_9SHIb4Yc","v2:account:KZ97Aycb7ApdShMIjU-gSLNDx63e7E5ZMZPd4JCQAXw","v2:assetJournal:w-NNQ5dCQEWGjHJzIZuQijLd3QpSmKbtfClt9AwMs70","v2:assetOp:pbzg6MW-_vAp6ZrIw7ybrzEWJSpE_WAzUpmmmkxA4LU"]}
+✔ every actual repair write rolls back completely; quote/view budgets measure real reads and writes (82.985041ms)
+✔ real equipment swap and single repair serialize in both OCC orders without repairing a replacement target (36.587208ms)
+✔ real shop sale and repair serialize in both OCC orders with one item lifecycle and no phantom debit (46.043ms)
+✔ repair service authenticates trusted identity and active character/session epochs, not payload ownership (33.797417ms)
+✔ replayed repair service.open cannot renew TTL or reactivate an old context; opening is atomic at each new write (54.948ms)
+✔ coordinator recovers committed lost response through original O even after closing and reattaching (27.726459ms)
+✔ notFound keeps the same original ID; a held late commit racing retry can only charge once (15.398584ms)
+✔ coordinator rejects stale refresh and retires delayed callbacks on close/rebind without cancelling assets (27.766542ms)
+ST17-02 maximum local slots/one target [{"R":21,"W":0,"calls":21,"bytes":0,"responseBytes":1306},{"R":10,"W":6,"calls":16,"bytes":6401,"responseBytes":440}]
+✔ 13-slot attributes and a 100-slot backpack stay bounded without repairing or charging non-targets (8.121958ms)
+✔ repair-open original survives location revisions and closure, rejects tuple collisions, and is queryable after response loss (14.661875ms)
+ST17-02 repair-open actual {"R":7,"W":5,"calls":12,"bytes":3777}
+✔ new repair-open measures account/context/character/O/J writes through trusted identity and fails closed without it (19.105833ms)
+✔ repair-open rejects stale or missing character expectations without replacing the current service (14.909959ms)
+✔ a held repair-open and a newer service serialize in both OCC orders without restoring the old service pointer (14.357125ms)
+✔ scene.exitInn validates its own public intent and rejects missing/extra fields (8.219958ms)
+✔ service.open validates its own public intent and rejects missing/extra fields (0.386875ms)
+✔ service.close validates its own public intent and rejects missing/extra fields (0.356958ms)
+✔ inventory.transfer validates its own public intent and rejects missing/extra fields (0.213958ms)
+✔ inventory.expand validates its own public intent and rejects missing/extra fields (0.133875ms)
+✔ inventory.organize validates its own public intent and rejects missing/extra fields (0.061958ms)
+✔ equipment.equip validates its own public intent and rejects missing/extra fields (0.070416ms)
+✔ equipment.unequip validates its own public intent and rejects missing/extra fields (0.496ms)
+✔ quickslot.assign validates its own public intent and rejects missing/extra fields (0.665709ms)
+✔ shop.buy validates its own public intent and rejects missing/extra fields (1.195333ms)
+✔ shop.sell validates its own public intent and rejects missing/extra fields (0.365583ms)
+✔ wallet.exchange validates its own public intent and rejects missing/extra fields (0.243458ms)
+✔ equipment.repair validates its own public intent and rejects missing/extra fields (0.171334ms)
+✔ equipment.enhance validates its own public intent and rejects missing/extra fields (0.256291ms)
+✔ mail.markRead validates its own public intent and rejects missing/extra fields (0.157958ms)
+✔ mail.claimAttachment validates its own public intent and rejects missing/extra fields (0.130542ms)
+✔ mail.claimAvailable validates its own public intent and rejects missing/extra fields (0.167125ms)
+✔ mail.delete validates its own public intent and rejects missing/extra fields (0.112709ms)
+✔ reward.claim validates its own public intent and rejects missing/extra fields (0.141375ms)
+✔ asset commands reject invalid quantities, duplicates and battle-consumption bypasses (2.103459ms)
+✔ account.get separates query envelope from write/identity fields (0.790625ms)
+✔ character.get separates query envelope from write/identity fields (0.166375ms)
+✔ inventory.get separates query envelope from write/identity fields (0.235375ms)
+✔ equipment.get separates query envelope from write/identity fields (1.1615ms)
+✔ dungeon.options separates query envelope from write/identity fields (0.378958ms)
+✔ service.get separates query envelope from write/identity fields (0.264125ms)
+✔ service.quote separates query envelope from write/identity fields (0.465ms)
+✔ mail.list separates query envelope from write/identity fields (0.392916ms)
+✔ reward.list separates query envelope from write/identity fields (0.188625ms)
+✔ delivery.summary separates query envelope from write/identity fields (0.132333ms)
+✔ ranking.list separates query envelope from write/identity fields (0.28075ms)
+✔ operation.get separates query envelope from write/identity fields (2.224167ms)
+✔ configuration.public separates query envelope from write/identity fields (0.297583ms)
+✔ query pages and bank context are bounded and required (1.378625ms)
+✔ equipment public views keep thirteen slots, required durability and exclusive source/location (2.155667ms)
+✔ containers validate capacity, stack bounds and explicit character/account ownership (1.379167ms)
+✔ holdings are an explicit scoped summary, never a claimable balance (0.653291ms)
+✔ original results are bounded versioned summaries, not current balance snapshots (2.058333ms)
+✔ empty lists stay distinct from query failures and pending never duplicates equipment payload (0.299417ms)
+✔ caller wire boundary binds original operation and request IDs before exposing views (0.252958ms)
+✔ operation.get recognizes the new verified-input receipt without accepting v1 event results (0.332458ms)
+✔ scene.exitInn result summary validates independently from current state (0.093458ms)
+✔ service.open result summary validates independently from current state (0.082875ms)
+✔ service.close result summary validates independently from current state (0.0745ms)
+✔ inventory.transfer result summary validates independently from current state (0.071625ms)
+✔ inventory.expand result summary validates independently from current state (0.070333ms)
+✔ inventory.organize result summary validates independently from current state (0.062417ms)
+✔ equipment.equip result summary validates independently from current state (0.064584ms)
+✔ equipment.unequip result summary validates independently from current state (0.067083ms)
+✔ quickslot.assign result summary validates independently from current state (0.067083ms)
+✔ shop.buy result summary validates independently from current state (0.067125ms)
+✔ shop.sell result summary validates independently from current state (0.065042ms)
+✔ wallet.exchange result summary validates independently from current state (0.146083ms)
+✔ equipment.repair result summary validates independently from current state (0.328375ms)
+✔ equipment.enhance result summary validates independently from current state (0.185667ms)
+✔ mail.markRead result summary validates independently from current state (0.140333ms)
+✔ mail.claimAttachment result summary validates independently from current state (0.130375ms)
+✔ mail.claimAvailable result summary validates independently from current state (0.123416ms)
+✔ mail.delete result summary validates independently from current state (0.138916ms)
+✔ reward.claim result summary validates independently from current state (0.198375ms)
+✔ mail progress and batch summaries cannot claim impossible partial results (0.416125ms)
+✔ quotes expose deterministic effects and failure consequences without enhancement probabilities (0.39725ms)
+✔ account.get public response validates its typed view and rejects private fields (0.306708ms)
+✔ character.get public response validates its typed view and rejects private fields (0.257625ms)
+✔ inventory.get public response validates its typed view and rejects private fields (0.250792ms)
+✔ equipment.get public response validates its typed view and rejects private fields (0.135459ms)
+✔ dungeon.options public response validates its typed view and rejects private fields (0.119625ms)
+✔ service.get public response validates its typed view and rejects private fields (0.0595ms)
+✔ service.quote public response validates its typed view and rejects private fields (0.055625ms)
+✔ mail.list public response validates its typed view and rejects private fields (0.05775ms)
+✔ reward.list public response validates its typed view and rejects private fields (0.0455ms)
+✔ delivery.summary public response validates its typed view and rejects private fields (0.309667ms)
+✔ ranking.list public response validates its typed view and rejects private fields (0.066417ms)
+✔ operation.get public response validates its typed view and rejects private fields (0.052208ms)
+✔ configuration.public public response validates its typed view and rejects private fields (0.046042ms)
+✔ repair quote details bind named items and exact integer arithmetic while old quote shape remains compatible (0.98ms)
+✔ repair atomic view carries mandatory character, wallet and equipment versions and no private pricing authority (0.646875ms)
+ℹ tests 98
+ℹ suites 0
+ℹ pass 97
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1010.97025
+
+✖ failing tests:
+
+test at backend/test/single-repair.test.mjs:25:1
+✖ repair only accepts live owned wear slots in current equipped or backpack locations (48.417458ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'QUOTE_CHANGED'
+  - 'ITEM_NOT_ELIGIBLE'
+  
+      at TestContext.<anonymous> (file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/backend/test/single-repair.test.mjs:29:143)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'QUOTE_CHANGED',
+    expected: 'ITEM_NOT_ELIGIBLE',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

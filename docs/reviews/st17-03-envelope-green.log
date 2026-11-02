@@ -1,0 +1,15 @@
+(node:54668) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/assets/scripts/net/RepairCoordinator.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/zhanbohan/IdeaProjects/World-of-308/.worktrees/st17-03-all-worn-repair/client/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ST17-03 maximum admitted all-worn public UTF-8 bytes 75909
+ST17-03 all-worn maximum scalar/UTF-8 codec-only shape bytes 89203
+✔ maximum admitted UTF-8 equipment IDs and sixteen affixes per worn member survive the bounded public all-worn view (56.676458ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 372.296416
