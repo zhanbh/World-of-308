@@ -1,0 +1,30 @@
+{
+  "published": false,
+  "status": "approved-ST18-01-in-progress",
+  "jira_actions": false,
+  "feature": "warrior-loop-st18",
+  "integration_branch": "feat-1.0.0",
+  "current_scope": "ST18-01 only; do not start02-05",
+  "tickets": [
+    {
+      "id": "ST18-01",
+      "state": "in-progress"
+    },
+    {
+      "id": "ST18-02",
+      "state": "planned"
+    },
+    {
+      "id": "ST18-03",
+      "state": "planned"
+    },
+    {
+      "id": "ST18-04",
+      "state": "planned"
+    },
+    {
+      "id": "ST18-05",
+      "state": "planned"
+    }
+  ]
+}

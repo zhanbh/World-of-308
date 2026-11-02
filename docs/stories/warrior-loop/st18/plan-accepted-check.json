@@ -1,0 +1,35 @@
+{
+  "approval_evidence": "好的，开始吧",
+  "files": [
+    {
+      "path": "docs/stories/warrior-loop/st18/spec.md",
+      "full_file_sha256": "d87ff8048929ff70d089f97376d24a9687ff129c23dfb4ca76006e35fe7294d9",
+      "body_sha256": "fd790deb5c5f6a4725b0b9657d2b3faaf9e08673265505af7d7ced19204dd642"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st18/issues/01-authorized-enhancement.md",
+      "full_file_sha256": "2f05f926d1843f8945d7d0ab01b8dd75767ddcd1ddc89de28879b360d8580e84",
+      "body_sha256": "2625ab7a52a2f52417c4dede307c075a1cf096e0e8711bb8180b55d1962f1957"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st18/issues/02-destruction-memento.md",
+      "full_file_sha256": "2650459b5536c9c6ea073ed1452966f53deeb065799db3a66bdde495905b56f0",
+      "body_sha256": "26a268b6541f3c901998875d4467ed2c911d17f5baf558ba918e8c48813f4afc"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st18/issues/03-memory-recovery.md",
+      "full_file_sha256": "2245f6806d2c11202ec4f521b1f0be9d1e825ef30bd31f13f5647b8fdf31c658",
+      "body_sha256": "8cf875d04977db421e2d17a5737c1ab2b40011ba075f34ea84ee063592b1ee36"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st18/issues/04-cocos-enhancement.md",
+      "full_file_sha256": "82f442d2da8eff3c654bbc427f7531f9f50401cd3cc6dbfc85f706e404a344d7",
+      "body_sha256": "80572cb56bf03c7f25738ee063ac429ada0c0669bb9b7a561a66a8cdba51821d"
+    },
+    {
+      "path": "docs/stories/warrior-loop/st18/issues/05-joint-acceptance.md",
+      "full_file_sha256": "76a2e77935b1ad3bdcf063c121235edadcf3f1ad75b3d9934d07b04718a272de",
+      "body_sha256": "49f889942f9d00fc38dce7bd3858973f606c1dd5df8278aff5e32d751a973f65"
+    }
+  ]
+}
