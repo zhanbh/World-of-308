@@ -67,6 +67,7 @@ const queryParsers = {
   'service.get': object({ characterId: id, serviceContextId: id }),
   'service.quote': object({ characterId: id, contextId: id, serviceIntent }),
   'repair.get': object({ characterId: id, contextId: id, itemId: id }),
+  'enhancement.get': object({ characterId: id, contextId: id, itemId: id }),
   'mail.list': object({ characterId: id, contextId: id, cursor: nullable(text(512, 1)), pageRequest: integer(1, 100) }),
   'reward.list': object({ characterId: id, contextId: id, cursor: nullable(text(512, 1)), pageRequest: integer(1, 100) }),
   'delivery.summary': object({ characterId: id }),
@@ -100,7 +101,7 @@ const location = union(object({ kind: choice('container'), containerId: id }), o
 const quality = choice('white', 'green', 'blue', 'purple', 'orange');
 const itemLevel = choice(10, 15, 20, 25, 30);
 const affix = object({ statId: id, value: resourceWire });
-const equipmentParser = object({ itemId: id, version: integer(), templateRef: id, slotKind: slot, itemLevel, quality, rolledAffixes: list(affix, 16), setRef: optional(id), enhancementLevel: integer(0, 20), binding, durability, location, lifecycle: choice('active', 'destroyed', 'sold', 'expired'), source: sourceLocator });
+const equipmentParser = object({ itemId: id, version: integer(), templateRef: id, slotKind: slot, itemLevel, quality, rolledAffixes: list(affix, 16), setRef: optional(id), enhancementLevel: integer(0, 20), enhancementBonus: optional(object({ configRef: id, level: integer(1, 20), attackPower: resourceWire })), binding, durability, location, lifecycle: choice('active', 'destroyed', 'sold', 'expired'), source: sourceLocator });
 export type EquipmentView = Value<typeof equipmentParser>;
 export function parseEquipmentView(value: unknown): EquipmentView {
   const e = equipmentParser(value);
@@ -109,6 +110,7 @@ export function parseEquipmentView(value: unknown): EquipmentView {
   if (!['weapon', 'earring'].includes(e.slotKind) && e.enhancementLevel !== 0) throw new TypeError('INVALID_ENHANCEMENT');
   if (e.location.kind === 'equipped' && e.location.slotId !== e.slotKind) throw new TypeError('INVALID_EQUIPMENT_SLOT');
   if ((e.lifecycle === 'active') === (e.location.kind === 'retired')) throw new TypeError('INVALID_LIFECYCLE');
+  if (e.enhancementBonus && (e.enhancementBonus.level !== e.enhancementLevel || !['weapon','earring'].includes(e.slotKind) || BigInt(e.enhancementBonus.attackPower) === 0n)) throw new TypeError('INVALID_ENHANCEMENT_BONUS');
   const affixIds = e.rolledAffixes.map(a => a.statId);
   if (new Set(affixIds).size !== affixIds.length) throw new TypeError('DUPLICATE_AFFIX');
   return e;
@@ -210,6 +212,7 @@ const queryResults = {
   'service.get': object({ contextId: id, serviceKind, state: choice('open', 'closed', 'invalid'), locationRevision: integer(), allowedCommands: list(choice(...Object.keys(commandParsers) as AssetCommandName[]), 19) }),
   'service.quote': quote,
   'repair.get': object({ contextId: id, characterId: id, characterVersion: integer(), statsVersion: integer(), item: parseEquipmentView, wallet: object({ walletId: id, version: integer(), gold: resourceWire, points: resourceWire }), attributes: list(affix, 32) }),
+  'enhancement.get': object({ contextId: id, characterId: id, characterVersion: integer(), statsVersion: integer(), item: parseEquipmentView, wallet: object({ walletId: id, version: integer(), gold: resourceWire, points: resourceWire }), attributes: list(affix, 32) }),
   'mail.list': object({ entries: list(mailEntry, 100), nextCursor: nullable(text(512, 1)) }),
   'reward.list': object({ entries: list(pendingEntry, 100), nextCursor: nullable(text(512, 1)) }),
   'delivery.summary': object({ unreadMailCount: integer(), pendingCount: integer(), asOf: time }),
@@ -230,7 +233,7 @@ export function parseAssetQueryResponse<K extends AssetQueryName>(query: K, valu
       if (d.serviceKind!=='repair'||items.length===0||new Set(items.map(i=>i.itemId)).size!==items.length||items.some(i=>i.current>i.max||i.missing!==i.max-i.current||resource(i.unitGold)===0n||resource(i.gold)!==BigInt(i.missing)*resource(i.unitGold)||!d.targetVersions.some(v=>v.kind==='equipment'&&v.id===i.itemId))||d.costs.length!==1||d.costs[0].currency!=='gold'||resource(d.costs[0].amount)!==items.reduce((sum,i)=>sum+resource(i.gold),0n)) throw new TypeError('INVALID_REPAIR_QUOTE');
     }
   }
-  if ('data' in result && query === 'repair.get') {
+  if ('data' in result && (query === 'repair.get' || query === 'enhancement.get')) {
     const d=result.data as Value<typeof queryResults['repair.get']>;
     const required=[{kind:'character',id:d.characterId,version:d.characterVersion},{kind:'equipment',id:d.item.itemId,version:d.item.version},{kind:'wallet',id:d.wallet.walletId,version:d.wallet.version}];
     if(required.some(e=>!result.versions.some(v=>v.kind===e.kind&&v.id===e.id&&v.version===e.version)))throw new TypeError('INVALID_REPAIR_VERSIONS');

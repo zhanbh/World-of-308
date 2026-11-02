@@ -395,7 +395,7 @@ export class TownService {
       anchorId: string;
     };
   }): Promise<AssetResponse<'service.open'>> {
-    if (request.payload.serviceKind === 'repair') return this.openRepair(request);
+    if (request.payload.serviceKind === 'repair' || request.payload.serviceKind === 'enhance') return this.openRepair(request);
     const { operationId, sessionId, sessionEpoch, payload } = request;
     const { characterId, serviceKind, anchorId } = payload;
     const manifest = this.options.manifest;
@@ -526,7 +526,7 @@ export class TownService {
   /** New repair contexts participate in the same account operation namespace as asset writes. */
   private async openRepair(value: unknown): Promise<AssetResponse<'service.open'>> {
     const q = parseAssetCommand(value);
-    if (q.command !== 'service.open' || q.payload.serviceKind !== 'repair') throw new TypeError('UNSUPPORTED_COMMAND');
+    if (q.command !== 'service.open' || !['repair', 'enhance'].includes(q.payload.serviceKind)) throw new TypeError('UNSUPPORTED_COMMAND');
     const reply = (outcome: unknown) => parseAssetResponse('service.open', { operationId: q.operationId, serverTime: time(this.options.clock.now()), replayed: false, outcome });
     let caller: { id: string; tuple: string };
     try {
@@ -556,15 +556,15 @@ export class TownService {
         else if (c.location.kind !== 'town' || !c.townState || c.location.mapId !== m.mapId || c.townState.mapRef !== m.mapId || a.activeChallengeId || a.openSceneChallengeId) outcome = { status: 'rejected', code: 'LOCATION_NOT_ALLOWED' };
         else {
           const anchor = m.serviceAnchors[q.payload.anchorId], t = c.townState;
-          if (!anchor || anchor.serviceKind !== 'repair') outcome = { status: 'rejected', code: 'CONFIG_NOT_READY' };
+          if (!anchor || anchor.serviceKind !== q.payload.serviceKind) outcome = { status: 'rejected', code: 'CONFIG_NOT_READY' };
           else if (!Number.isFinite(t.position.x) || !Number.isFinite(t.position.y) || (t.position.x - anchor.x) ** 2 + (t.position.y - anchor.y) ** 2 > 576) outcome = { status: 'rejected', code: 'LOCATION_NOT_ALLOWED' };
           else if (!Number.isSafeInteger(c.version + 1) || !Number.isSafeInteger(a.writeRevision + 1)) outcome = { status: 'rejected', code: 'CONFIG_NOT_READY' };
           else {
-            const contextId = await loginKey('repairContext', [a.id, q.operationId]);
+            const contextId = await loginKey(q.payload.serviceKind === 'repair' ? 'repairContext' : 'enhanceContext', [a.id, q.operationId]);
             if (await tx.get(contextId)) return reply({ status: 'rejected', code: 'SERVICE_UNAVAILABLE' });
-            context = { schemaVersion: 2, id: contextId, accountId: a.id, characterId: c.id, rolePlayEpoch: c.rolePlayEpoch, sceneEpoch: t.sceneEpoch, locationRevision: t.locationRevision, anchorId: q.payload.anchorId, serviceKind: 'repair', issuedAt: now, status: 'open' };
+            context = { schemaVersion: 2, id: contextId, accountId: a.id, characterId: c.id, rolePlayEpoch: c.rolePlayEpoch, sceneEpoch: t.sceneEpoch, locationRevision: t.locationRevision, anchorId: q.payload.anchorId, serviceKind: q.payload.serviceKind, issuedAt: now, status: 'open' };
             nextCharacter = { ...c, currentServiceContextId: contextId, version: c.version + 1, updatedAt: now };
-            outcome = { status: 'committed', data: { contextId, serviceKind: 'repair', locationRevision: t.locationRevision }, resultVersions: [{ kind: 'character', id: c.id, version: nextCharacter.version }] };
+            outcome = { status: 'committed', data: { contextId, serviceKind: q.payload.serviceKind, locationRevision: t.locationRevision }, resultVersions: [{ kind: 'character', id: c.id, version: nextCharacter.version }] };
           }
         }
         const result = reply(outcome), receipt = { schemaVersion: 2, id, accountId: a.id, command: q.command, tuple, result };

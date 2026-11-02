@@ -162,3 +162,7 @@ operations保存稳定摘要、成功/明确拒绝、实际数量/固定随机�
 ## ST17-02 单件修理物理增量（2026-11-02）
 
 新repair-open以既有assetOp/assetJournal(account,operation)保存原结果，repairContext(account,operation)稳定保存上下文；与角色current指针和账号栅栏同笔。单修以实例/角色/钱包/A/J/O同笔变更，背包只读作归属/版本栅栏，不因耐久复制可变sortHeader或移动物品；无ranking写、无独立quote持久化。J实际delta与预算见[单件修理合同](single-repair-contract-v1.md)。
+
+## ST18-01 强化增量来源（2026-11-02）
+
+非损毁低段强化不增减持有贡献，不生成新装备来源。金币、按绑定池扣材料及余量新J谱系、现有装备等级/独立强化AP投影、会话记忆、必要属性/评分、A栅栏及O/J同事务。enhancementBonus不是额外资产或第二份随机词条；原操作重放不重扣或重抽。见[低段执行合同](low-enhancement-contract-v1.md)。

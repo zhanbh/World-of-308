@@ -87,6 +87,7 @@ export interface EquipmentEntity {
   setRef: { id: string; version: number } | null;
   binding: { kind: 'none' | 'account' | 'character'; accountId?: string; characterId?: string };
   enhancementLevel: number;
+  enhancementBonus?: { configRef: string; level: number; attackPower: string };
   durability: {
     wearEnabled: boolean;
     current: number | null;

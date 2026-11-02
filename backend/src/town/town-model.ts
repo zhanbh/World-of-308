@@ -53,6 +53,7 @@ export const DEFAULT_TOWN_MAP: TownMapManifest = {
     bank: { anchorId: 'bank', serviceKind: 'bank', x: 110, y: 100 },       // dist = 10px <= 24px
     mailbox: { anchorId: 'mailbox', serviceKind: 'mailbox', x: 100, y: 115 }, // dist = 15px <= 24px
     blacksmith: { anchorId: 'blacksmith', serviceKind: 'repair', x: 300, y: 300 }, // dist = 282px > 24px
+    mary: { anchorId: 'mary', serviceKind: 'enhance', x: 340, y: 300 },
     shop: { anchorId: 'shop', serviceKind: 'shop', x: 310, y: 300 },           // dist = 290px > 24px
   },
   speedLimit: 160,

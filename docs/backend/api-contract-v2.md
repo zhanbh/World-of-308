@@ -381,3 +381,9 @@ ST17-01独立合入修复：active+cleared恢复也必须完成既有资源/准�
 `equipment.repair(single)`及`service.quote`沿[单件修理合同](single-repair-contract-v1.md)执行；新增严格repair.get单目标原子读模型，service.quote可选repair明细兼容旧形状，明确目标/耐久差额/单价/总价/固定截止。报价和执行重验当前NPC上下文/角色代次、实例/钱包/必要背包版本；allWorn本片拒绝留03。新repair服务open原O使用既有授权operation.get恢复，原open重放不续期或重开关闭context。
 
 ST17-02角色版本核验修复：新repair service.open要求完整单项character expected，旧版本拒绝VERSION_CONFLICT、缺失/错误集合拒绝INVALID_ARGUMENT；原O回放先于当前版本判定，不允许迟到open覆盖较新的服务指针。详见[单件修理合同](single-repair-contract-v1.md)。
+
+## ST18-01 低段强化协议（2026-11-02）
+
+C17 equipment.enhance在显式隔离配置支持目标当前+1至10/useMemento=false；其余高段/主动纪念品留02。enhance service.open启用与repair同可信身份/character expected/原O路径。R07 service.quote公开金币材料/等级和AP变化/保级后果，私有概率及记忆不进入DTO。
+
+新增enhancement.get(characterId,contextId,itemId)：原子目标、钱包、当前有效attributes及角色/目标/钱包/背包版本，形状沿repair.get；可读已到10的结果。EquipmentView可选enhancementBonus按[低段合同](low-enhancement-contract-v1.md)解析；原O查询仍在统一operation.get，不新增重试ID或独立余额。

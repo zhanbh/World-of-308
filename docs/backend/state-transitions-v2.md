@@ -219,3 +219,7 @@ ST17-01恢复接缝：active+cleared的suspend→resumePrepare→完整证明→
 合法当前林纳克斯context→只读报价→显式确认→原子单件修满/扣金币→刷新真实视图；满耐久0扣款且无资产版本变化。关闭/移动/换服务/代次变更令旧报价失效，原O结果不撤销；新repair-open原ID回放不重开/续期限。客户端unknown保留原命令，found查原结果，notFound只原ID安全重试，迟包按组件/身份代次隔离。详见[执行合同](single-repair-contract-v1.md)。
 
 ST17-02修理上下文新意图须匹配当前character expected才可替换currentServiceContextId；旧在途open与新服务竞争时受角色OCC/expected约束，旧意图不可在重试后覆盖新指针。原O只回放，不重新建立上下文或修改issuedAt。
+
+## ST18-01 强化状态（2026-11-02）
+
+玛丽地点→可信open→只读报价→明确确认→成功或保级并原子消费→重读目标/钱包/属性；前置拒绝不消费。未知保留原tuple查原O；关闭只退休回调。持久记忆跟随rolePlayEpoch：新代次不继承、同代次短恢复保留；0耐久强化不修理，之后单修仍恢复同一强化AP。高段退役与纪念品留02，见[低段合同](low-enhancement-contract-v1.md)。

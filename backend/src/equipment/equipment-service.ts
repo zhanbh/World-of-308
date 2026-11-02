@@ -76,6 +76,7 @@ export function toEquipmentView(item: EquipmentEntity): EquipmentView {
     })),
     setRef: item.setRef ? item.setRef.id : undefined,
     enhancementLevel: item.enhancementLevel,
+    ...(item.enhancementBonus ? { enhancementBonus: item.enhancementBonus } : {}),
     binding:
       item.binding.kind === 'character'
         ? { kind: 'character', characterId: item.binding.characterId }

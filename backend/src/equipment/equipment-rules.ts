@@ -145,6 +145,11 @@ export function aggregateCombatAttributes(
       continue;
     }
 
+    if (item.enhancementBonus) {
+      const b=item.enhancementBonus;
+      requireValue(['weapon','earring'].includes(item.slotKind) && b.level===item.enhancementLevel && b.level>0 && resource(b.attackPower)>0n && resource(b.attackPower)<=BigInt(Number.MAX_SAFE_INTEGER), 'CONFIG_NOT_READY');
+      totals.attackPower=(totals.attackPower??0)+Number(b.attackPower);
+    }
     if (Array.isArray(item.rolledAffixes)) {
       for (const affix of item.rolledAffixes) {
         totals[affix.stat] = (totals[affix.stat] ?? 0) + affix.value;

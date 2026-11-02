@@ -117,3 +117,7 @@ Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapte
 ## ST17-02 林纳克斯单件修理（2026-11-02）
 
 当前单目标报价/修满、固定本地上下文截止、原open与修理O/J、原子repair.get及真实协调器按[单件修理合同](single-repair-contract-v1.md)执行；字段/API/状态/映射/预算本次同步。候选价仅local-test，allWorn/面板/全故事验收留03–05；实际实现/故障竞争/传输证据见[02验证](../reviews/st17-02-verification.md)，不关闭正式配置/SDK/设备GAP。
+
+## ST18-01 玛丽低段强化（2026-11-02）
+
+可信玛丽上下文、当前+1至10的原子成功/保级、持久会话记忆与固定秘密原意图样本、独立强化AP投影和真实传输恢复按[低段强化合同](low-enhancement-contract-v1.md)执行。高段/纪念品、完整跨代次矩阵、Cocos面板及最终联合门禁留02–05；正式参数/SDK/设备GAP保留。
