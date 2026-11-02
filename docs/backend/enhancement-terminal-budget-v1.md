@@ -78,3 +78,16 @@ ST17-02角色expected修复后新repair-open仍R7/W5、12调用；准确请求tu
 最大本地13穿戴/100材料格/20来源记忆成功实测R24/W9/45调用，写26111 UTF-8字节、最大文档15706B；success9/failed7/open5实际写点逐一回滚。此为低段local-test样本，不覆盖高段损毁或SDK真实传输；不替换既有高段预算，也不关闭05联合门禁。见[01验证](../reviews/st18-01-verification.md)。
 
 ST18-02另以100格满包、目标装备损毁、1纪念品消耗、适用套装持有减一及4个纪念品溢出邮件进行高段实测；实际读/写/调用/字节与11个物理set故障点逐一回滚见[02验证](../reviews/st18-02-verification.md)。这是MemoryStore本地结果，不代表SDK事务数/字节或生产上限。
+
+## ST18-05 最终联合验收实测（2026-11-02）
+
+在 ST18-05 联合验收实测中，执行最重终局强化损毁完整路径：13槽穿戴、100格满背包、20来源会话记忆数组、目标装备为套装装备（触发适用套装持有减一及评分投影更新）、主动消耗纪念品、强化失败永久损毁、返还纪念品溢出生成一封邮件，并记录原操作 Receipt 与流水 Journal。
+
+实际实测计量数据：
+- 唯一读键（Unique Reads）：26 键；
+- 唯一写键（Unique Writes）：11 键（分别为 equipment、rankingEntry、enhancementMemory、container、wallet、character、account、holdings、mail、assetJournal、assetOp）；
+- 事务调用总数（Calls）：37 次（26次 get，11次 set）；
+- 序列化写入字节（Write Bytes）：29466 UTF-8 字节；
+- 最大单文档字节（Max Document Bytes）：16622 字节（100格满背包容器文档）。
+
+实测结果严格吻合[2026-10-22决定3A](#2026-10-22决定3a缺件策略附加预算)预设的 `R26 / W11` 理论上限，且均在应用预算限制（R ≤ 30、W ≤ 15、调用 ≤ 80、字节 ≤ 65536、单文档 ≤ 32768）之内。11个物理写点逐一注入故障全部通过原子回滚验证。这是 MemoryStore 本地实测结果，不代表云端 SDK 事务账单或生产上限。正式概率校准、微信小游戏真机与 SDK 事务仍保持 GAP。
