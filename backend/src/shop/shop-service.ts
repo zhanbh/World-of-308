@@ -8,6 +8,7 @@ import type { CharacterEntity, ContainerEntity, EquipmentEntity, ContainerSlotSt
 import type { ServiceContextEntity } from '../town/town-model.ts';
 import type { WalletEntity, ShopCatalog } from './shop-model.ts';
 import { DEFAULT_SHOP_CATALOG } from './shop-model.ts';
+import type { BankHoldingsDomain } from '../bank/bank-service.ts';
 import {
   ShopRefusal,
   validateBuyEligibility,
@@ -54,6 +55,7 @@ export interface ShopServiceOptions {
   clock: Clock;
   identity: IdentityPort;
   catalog?: ShopCatalog;
+  holdingsDomain?: BankHoldingsDomain;
 }
 
 export class ShopService {
@@ -62,12 +64,14 @@ export class ShopService {
     clock: Clock;
     identity: IdentityPort;
     catalog: ShopCatalog;
+    holdingsDomain?: BankHoldingsDomain;
   };
 
   constructor(options: ShopServiceOptions) {
     this.options = {
       ...options,
       catalog: options.catalog ? structuredClone(options.catalog) : structuredClone(DEFAULT_SHOP_CATALOG),
+      holdingsDomain: options.holdingsDomain ? structuredClone(options.holdingsDomain) : undefined,
     };
   }
 
@@ -434,6 +438,30 @@ export class ShopService {
               item.version++;
               item.updatedAt = now;
               tx.set(item.id, item);
+
+              if (item.setRef && this.options.holdingsDomain) {
+                const domain = this.options.holdingsDomain;
+                const exactKey = domain.keys.find(
+                  k =>
+                    k.setId === item.setRef!.id &&
+                    k.setVersion === item.setRef!.version &&
+                    k.itemLevel === item.itemLevel &&
+                    k.slotId === item.slotKind &&
+                    k.classId === character.classId,
+                );
+                if (exactKey) {
+                  const hid = await loginKey('holdings', [account.id, 'character', character.id]);
+                  const holding = await tx.get<any>(hid);
+                  if (holding?.entries) {
+                    const entry = holding.entries.find((e: any) => e.collectionKey === exactKey.collectionKey);
+                    if (entry && entry.permanentCount > 0) {
+                      entry.permanentCount -= 1;
+                      holding.revision++;
+                      tx.set(hid, holding);
+                    }
+                  }
+                }
+              }
 
               delete bag.slots[slotIdx];
             } else {
