@@ -2,8 +2,8 @@
   "feature": "warrior-loop-st17",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "131edef",
-  "status": "ST17-03-complete-stopped-at-user-scope",
-  "current_scope": "User 继续吧 after02push authorized03;03 complete, do not start04-05.",
+  "status": "ST17-04-complete",
+  "current_scope": "ST17-04 Cocos repair panel and non-blocking broken equipment notice implemented and verified",
   "approval_evidence": "可以，确认；开始01吧先",
   "spec_body_sha256": "d91949b4ddf0ba08bc39d5fed24f2b26ac3dbbc1cbdb4120fa5aa36293ccc8aa",
   "tickets": [
@@ -77,8 +77,12 @@
         1,
         3
       ],
-      "state": "planned",
-      "evidence": []
+      "state": "completed",
+      "branch": "feat/st17-04-cocos-repair",
+      "base_commit": "a5322f998c3caac6b0e1657dd1aeb52b1c5a6e53",
+      "evidence": [
+        "docs/reviews/st17-04-verification.md"
+      ]
     },
     {
       "id": "ST17-05",

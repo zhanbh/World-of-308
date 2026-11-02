@@ -10,6 +10,8 @@ import { skillCuePixels, WarriorBodyAnimation } from './WarriorSkillAnimation';
 import { BankPanel } from './ui/BankPanel';
 import { connectBankPreview } from './net/BankPreview';
 import type { BankCoordinator } from './net/BankCoordinator';
+import { RepairPanel } from './ui/RepairPanel';
+import type { RepairCoordinator } from './net/RepairCoordinator';
 import { InventoryPanel } from './ui/InventoryPanel';
 import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
@@ -82,6 +84,11 @@ export class Prototype extends Component {
     private bankGeneration = 0;
     private bankKeyHeld = false;
     private bankHadStats = false;
+    private repairPanel: RepairPanel | null = null;
+    private repairCoordinator: RepairCoordinator | null = null;
+    private repairKeyHeld = false;
+    private repairHadStats = false;
+    private brokenEquipmentNotice!: Label;
     private inventoryPanel: InventoryPanel | null = null;
     private inventoryCoordinator: InventoryCoordinator | null = null;
     private inventoryConnecting = false;
@@ -112,6 +119,9 @@ export class Prototype extends Component {
         this.text('308 动作样板 · 战士技能与三副本实机联调', -30, 242, 22, 730);
         this.text('背包 B', 430, 242, 16, 80);
         this.text('银行 N', 430, 198, 16, 80);
+        this.text('修理 M', 430, 154, 16, 80);
+        this.brokenEquipmentNotice = this.text('', 0, 102, 14, 800);
+        this.brokenEquipmentNotice.color = new Color(255, 90, 90);
         this.inventoryNotice = this.text('N：银行（需本机预览服务）', 0, 150, 17, 800);
         this.challengeNotice = this.text('战斗链路：本地沙盒模式（按 C 或传参 challengePreview=1 连权威服务）', 0, 126, 14, 800);
         this.text('WASD/摇杆移动 · 空格普攻 · E/F/Q/G技能 · 1首本/2工坊/3裂隙 · 走向右侧绿门/换房', 0, 212, 14);
@@ -192,6 +202,7 @@ export class Prototype extends Component {
         game.off(Game.EVENT_SHOW, this.onShowAuthority, this);
         ++this.bankGeneration;
         this.bankPanel?.dispose();
+        this.repairPanel?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
         this.lootPanel?.dispose();
@@ -220,6 +231,19 @@ export class Prototype extends Component {
             nextOperationId: () => `bank-${Date.now().toString(36)}-${++this.operationSequence}-${Math.random().toString(36).slice(2, 10)}`,
             templateLabel: id => labels[id] ?? id,
             onVisibility: visible => { if (visible) { this.clearInput(); this.bankHadStats = profiler.isShowingStats(); profiler.hideStats(); } else if (this.bankHadStats) profiler.showStats(); },
+        });
+    }
+
+    public attachRepair(coordinator: RepairCoordinator, contextId: string, labels: Record<string, string> = {}): void {
+        this.repairPanel?.dispose();
+        this.repairCoordinator = coordinator;
+        this.repairPanel = new RepairPanel(this.node, coordinator, {
+            contextId,
+            templateLabel: id => labels[id] ?? id,
+            onVisibility: visible => {
+                if (visible) { this.clearInput(); this.repairHadStats = profiler.isShowingStats(); profiler.hideStats(); }
+                else if (this.repairHadStats) profiler.showStats();
+            },
         });
     }
 
@@ -278,6 +302,12 @@ export class Prototype extends Component {
         await this.bankPanel?.open();
     }
 
+    private async toggleRepair(): Promise<void> {
+        if (this.repairPanel?.isOpen) { this.repairPanel.close(); return; }
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen) return;
+        await this.repairPanel?.open();
+    }
+
     private async toggleInventory(): Promise<void> {
         if (this.bankPanel?.isOpen || this.bankConnecting) return;
         if (this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
@@ -327,7 +357,7 @@ export class Prototype extends Component {
     }
 
     private touchStart(e: EventTouch): void {
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen) return;
         const id = e.getID();
         if (id === null) return;
         const p = this.point(e);
@@ -341,6 +371,7 @@ export class Prototype extends Component {
             }
             return;
         }
+        if (p.x >= 390 && p.x <= 470 && p.y >= 135 && p.y <= 170) { void this.toggleRepair(); return; }
         if (p.x >= 390 && p.x <= 470 && p.y >= 180 && p.y <= 215) { void this.toggleBank(); return; }
         if (p.x >= 390 && p.x <= 470 && p.y >= 225 && p.y <= 260) { void this.toggleInventory(); return; }
         if (this.inventoryConnecting || this.bankConnecting) return;
@@ -425,12 +456,14 @@ export class Prototype extends Component {
         }
         if (e.keyCode === KeyCode.KEY_C) { void this.toggleChallenge(); return; }
         if (e.keyCode === KeyCode.KEY_N) { if (!this.bankKeyHeld) { this.bankKeyHeld = true; void this.toggleBank(); } return; }
+        if (e.keyCode === KeyCode.KEY_M) { if (!this.repairKeyHeld) { this.repairKeyHeld = true; void this.toggleRepair(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.repairPanel?.isOpen) { this.repairPanel.close(); return; }
         if (e.keyCode === KeyCode.KEY_B) { if (!this.inventoryKeyHeld) { this.inventoryKeyHeld = true; void this.toggleInventory(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen) return;
         if (e.keyCode === KeyCode.ENTER && this.encounter.state !== 'fighting') {
             if (this.encounter.state !== 'ready') this.restartEncounter();
             this.encounter.start(); return;
@@ -461,6 +494,7 @@ export class Prototype extends Component {
 
     private keyUp(e: EventKeyboard): void {
         if (e.keyCode === KeyCode.KEY_N) this.bankKeyHeld = false;
+        if (e.keyCode === KeyCode.KEY_M) this.repairKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_B) this.inventoryKeyHeld = false;
         this.keys.delete(e.keyCode);
         if (e.keyCode === KeyCode.SPACE && this.attackIds.size === 0) this.model.release();
@@ -478,14 +512,38 @@ export class Prototype extends Component {
         this.axis = { x: 0, y: 0 }; this.model.release(); this.model.buffered = false;
     }
 
+    private checkBrokenEquipment(): void {
+        const coord = this.repairCoordinator?.state;
+        let weaponBroken = false;
+        let anyBroken = false;
+        if (coord?.view) {
+            const items = 'items' in coord.view ? coord.view.items : [coord.view.item];
+            for (const item of items) {
+                if (item.durability && item.durability.current === 0) {
+                    anyBroken = true;
+                    if (item.slotKind === 'weapon') weaponBroken = true;
+                }
+            }
+        }
+        if (weaponBroken) {
+            this.brokenEquipmentNotice.string = '【装备破损警告】主手武器耐久归零，攻击力加成失效，但可继续战斗！';
+        } else if (anyBroken) {
+            this.brokenEquipmentNotice.string = '【装备破损警告】部分防具耐久归零，防御与套装属性失效！';
+        } else {
+            this.brokenEquipmentNotice.string = '';
+        }
+    }
+
     update(dt: number): void {
         this.inventoryPanel?.update();
         this.bankPanel?.update();
+        this.repairPanel?.update();
+        this.checkBrokenEquipment();
         if(this.challengeCoordinator){this.updateAuthority(dt);return;}
         this.frames++; this.fpsTime += dt;
         if (this.fpsTime >= 0.5) { this.fps = Math.round(this.frames / this.fpsTime); this.frames = this.fpsTime = 0; }
         const has = (a: KeyCode, b: KeyCode) => Number(this.keys.has(a) || this.keys.has(b));
-        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting;
+        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen;
         const x = inventoryBlocked ? 0 : this.horizontalInput();
         const y = inventoryBlocked ? 0 : this.stickId !== null ? this.axis.y : has(KeyCode.KEY_W, KeyCode.ARROW_UP) - has(KeyCode.KEY_S, KeyCode.ARROW_DOWN);
         this.accumulator += Math.min(dt, 0.1);
