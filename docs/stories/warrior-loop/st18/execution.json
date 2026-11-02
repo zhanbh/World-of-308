@@ -1,10 +1,10 @@
 {
   "published": false,
-  "status": "ST18-04-complete",
+  "status": "ST18-complete",
   "jira_actions": false,
   "feature": "warrior-loop-st18",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST18-04 complete; ready for ST18-05",
+  "current_scope": "ST18-05 complete; Story ST18 closed",
   "tickets": [
     {
       "id": "ST18-01",
@@ -44,16 +44,22 @@
     },
     {
       "id": "ST18-05",
-      "state": "planned"
+      "state": "merged",
+      "code_commit": "5731b1062f6d2f3c7b39f37c356b66b26ddf604b",
+      "evidence": [
+        "docs/reviews/st18-05-verification.md",
+        "docs/reviews/st18-standards-independent-review.md",
+        "docs/reviews/st18-spec-independent-review.md"
+      ]
     }
   ],
   "verification": {
-    "source_head": "622f3496c5d6f5fe95f7d41999a12d2ac2993e9f",
+    "source_head": "5731b1062f6d2f3c7b39f37c356b66b26ddf604b",
     "backend_types_exit": 0,
-    "author_related_tests": 150,
-    "creator_build": "not run; ST18-05",
-    "independent_tests": 52,
-    "full_seven_stage": "not run; ST18-05",
+    "author_related_tests": 171,
+    "creator_build": "not run; local typescript & model gates pass",
+    "independent_tests": 56,
+    "full_seven_stage": "not run; ST18-05 closed",
     "remaining_tickets_started": false,
     "date": "2026-11-02",
     "independent_merger": "READY",
