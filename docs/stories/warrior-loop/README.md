@@ -141,4 +141,5 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 - **ST19-01（策略引擎与多策略分层体系）**：算法与 Profile 解耦、三种策略注册表、30 级特殊副本严格校验已合入，源码 `a7967f0`；见[01记录](../../reviews/st19-01-verification.md)及[独立核验](../../reviews/st19-01-merge-verification.md)。
 - **ST19-02（全口径持有聚合与双角色严格隔离）**：穿戴/背包/个人库/账号库/有效邮件/待领全 6 类存储源聚合覆盖、严格双角色私域隔离、公共账号库联动、邮件时效判定与损坏摘要完整性保护已合入，源码 `b8d42eb`；见[02记录](../../reviews/st19-02-verification.md)及[独立核验](../../reviews/st19-02-merge-verification.md)。
 - **ST19-03（固定样本重映射、全齐平滑回退与提交不可变性）**：`deriveDropSample` 确定性样本生成、OCC 重试未提交候选重映射且基础样本不漂移、11 部位全齐平滑安全回退至 `fallbackStrategy`（`weighted-random` 绝不卡死拒发）、终局结算 `planClear` 提交后绝对不可变性与网络丢包幂等返回原回执已交付合入，源码 `ba18c58`；全量 7 阶段门禁检查 7/7 全部通过（861 项测试全部通过），见[03记录](../../reviews/st19-03-verification.md)及[独立核验](../../reviews/st19-03-merge-verification.md)。
-- 04 客户端套装收集展示与生命周期联动、05 联合门禁待启动；无 Jira，未 push。
+- **ST19-04（生命周期联动与套装收集展示）**：商店出售、强化损毁（+13~+20）与金库跨域转移即时同步持有并在最后一件移出时恢复缺件判定；客户端纯模型协调器（`CollectionCoordinator.ts`）维护 11 部位套装进度（`X/11`）、高亮/灰显、通关回执解析反馈及 generation 异步隔离已合入，源码 `583e655`；全量 7 阶段门禁检查 7/7 全部通过（867 项测试全部通过），见[04记录](../../reviews/st19-04-verification.md)及[独立核验](../../reviews/st19-04-merge-verification.md)。
+- 05 全链路大闭环联合验收、预算实测与两轴独立评审待启动；无 Jira，未 push。

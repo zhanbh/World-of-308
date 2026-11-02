@@ -22,4 +22,8 @@
 
 ## ST19-03 本地交付
 
-源码 `ba18c584508e769edc77e49a1946d39aa6e72c6c`：确定性基础样本生成（`deriveDropSample` 基于 `sourceKey` 与配置哈希）、并发 OCC 冲突重试未提交候选重映射且基础样本不漂移（`remapCandidate`）、11 部位全齐平滑安全回退至 `fallbackStrategy`（`weighted-random` 正常发放绝不卡死拒发）、终局结算 `planClear` 提交后绝对不可变性与网络丢包幂等返回原回执。独立定向测试 6/6 全部通过，全量 7 阶段门禁检查 7/7 全部通过（861 项测试 0 失败），TypeScript 编译 Exit Code 0，`git diff --check` 通过。见[03验证报告](../../../reviews/st19-03-verification.md)及[03合入核验](../../../reviews/st19-03-merge-verification.md)。04～05待启动，正式概率参数与真机继续 GAP；未 push。
+源码 `ba18c584508e769edc77e49a1946d39aa6e72c6c`：确定性基础样本生成（`deriveDropSample` 基于 `sourceKey` 与配置哈希）、并发 OCC 冲突重试未提交候选重映射且基础样本不漂移（`remapCandidate`）、11 部位全齐平滑安全回退至 `fallbackStrategy`（`weighted-random` 正常发放绝不卡死拒发）、终局结算 `planClear` 提交后绝对不可变性与网络丢包幂等返回原回执。独立定向测试 6/6 全部通过，全量 7 阶段门禁检查 7/7 全部通过（861 项测试 0 失败），TypeScript 编译 Exit Code 0，`git diff --check` 通过。见[03验证报告](../../../reviews/st19-03-verification.md)及[03合入核验](../../../reviews/st19-03-merge-verification.md)。
+
+## ST19-04 本地交付
+
+源码 `583e655a6d5103a8d56bdfa29796e626e38ea8f3`：资产全生命周期联动与客户端套装收集展示协调器。涵盖商店出售（`shop.sell`）、强化损毁（+13~+20 在 `EnhancementService`）及公共金库跨作用域转移（`BankService`）即时同步持有摘要并在移出最后一件时即时恢复未持有（缺失件）状态；客户端纯模型协调器（`CollectionCoordinator.ts`）跟踪 11 部位套装进度（`X/11`）、高亮/灰显、通关回执解析反馈（`latestAwardedSlot`、`isNewCompletion`）、未知状态防御降级及 generation 异步隔离。独立定向测试 6/6 全部通过，全量 7 阶段门禁检查 7/7 全部通过（867 项测试 0 失败），TypeScript 静态检查两项均 Exit Code 0，`git diff --check` 通过。见[04验证报告](../../../reviews/st19-04-verification.md)及[04合入核验](../../../reviews/st19-04-merge-verification.md)。05待启动，正式概率参数与真机继续 GAP；未 push。
