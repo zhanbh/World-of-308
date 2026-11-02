@@ -159,7 +159,7 @@ Binding联合：`none`、`account{accountId}`、`character{accountId,characterId
 | location | EquipmentLocation，必填 | 与槽/穿戴/交付记录一致，互斥 |
 | lifecycle | active/destroyed/sold/expired，active | 不因售出/损毁物理删实例而丢来源和去重依据，非active不可再装备/转移 |
 
-EquipmentLocation候选：container{containerId}、equipped{characterId,slotId}、pending{grantId}、retired{reason,operationId或sourceId}。容器内slotIndex只在containers.slots维护，实例不另存可失配的副本；纯整理无需逐件更新equipment。邮件装备在附件描述中固定随机结果，领取时以确定itemId物化；永久待领装备先创建实例且location=pending，grant只引用itemId。不得同时另留可领取的可变payload或混用延迟物化重造实例。
+EquipmentLocation：container{containerId}、equipped{characterId,slotId}、pending{grantId}、retired{reason,sourceRef}。retired的sourceRef保留原装备ID以供来源审计。容器内slotIndex只在containers.slots维护，实例不另存可失配的副本；纯整理无需逐件更新equipment。邮件装备在附件描述中固定随机结果，领取时以确定itemId物化；永久待领装备先创建实例且location=pending，grant只引用itemId。不得同时另留可领取的可变payload或混用延迟物化重造实例。
 
 双刀是一把武器实例，不新增副手槽；饰品是装备实例但其使用与职业技能/药品冷却分开。实例快照用于挑战属性，不代替永久实例状态。
 
@@ -512,3 +512,7 @@ H可含服务私有`wearConfigHash`，绑定开始挑战时的显式本地磨损
 EquipmentEntity/EquipmentView可选enhancementBonus包含configRef、level、attackPower规范资源字符串，级别须等于非0 enhancementLevel且仅武器/耳环；独立于随机词条。只由服务端强化事务从显式不可变候选配置派生，统一属性聚合按耐久有效性计入一次；非0旧实例缺投影保持旧读兼容，但继续强化失败关闭，不能自动补发攻强。
 
 enhancementMemory以角色/rolePlayEpoch确定键，schemaVersion2、accountId/characterId/rolePlayEpoch/configRef、20个整数来源值、version；与消费/装备/O/J同笔。记忆、样本、阈值不公开。详细有限域与兼容见[低段合同](low-enhancement-contract-v1.md)。
+
+## ST18-02 高段损毁与纪念品字段（2026-11-02）
+
+11–12失败改为+10；13–20失败写入lifecycle=destroyed及location=retired{reason:'destroyed',sourceRef:itemId}，角色穿戴/背包槽移除，原sourceKey/sourceLocator保留。主动选择的纪念品用character绑定stack在背包中扣减；损毁返还stack与30天邮件附件同用纪念品模板/绑定，沿用现有MailEntity/MailAttachment，不新建余额或grant。高段概率、成本/增益/返还表均是显式local-test配置；规范字段及事务见[高段合同](high-enhancement-contract-v1.md)。

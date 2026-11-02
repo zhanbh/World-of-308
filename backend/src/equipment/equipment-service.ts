@@ -99,7 +99,9 @@ export function toEquipmentView(item: EquipmentEntity): EquipmentView {
         ? { kind: 'container', containerId: item.location.containerId }
         : item.location.kind === 'equipped'
         ? { kind: 'equipped', characterId: item.location.characterId, slotId: item.location.slotId }
-        : { kind: 'pending', grantId: item.location.grantId },
+        : item.location.kind === 'pending'
+        ? { kind: 'pending', grantId: item.location.grantId }
+        : { kind: 'retired', reason: item.location.reason, sourceRef: item.location.sourceRef },
     lifecycle: item.lifecycle,
     source: item.sourceLocator,
   });

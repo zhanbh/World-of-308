@@ -165,4 +165,4 @@ operations保存稳定摘要、成功/明确拒绝、实际数量/固定随机�
 
 ## ST18-01 强化增量来源（2026-11-02）
 
-非损毁低段强化不增减持有贡献，不生成新装备来源。金币、按绑定池扣材料及余量新J谱系、现有装备等级/独立强化AP投影、会话记忆、必要属性/评分、A栅栏及O/J同事务。enhancementBonus不是额外资产或第二份随机词条；原操作重放不重扣或重抽。见[低段执行合同](low-enhancement-contract-v1.md)。
+非损毁强化不增减持有贡献，不生成新装备来源。高段损毁装备保留原sourceKey/sourceLocator并置retired；穿戴/背包引用、钱包、强化材料与选用纪念品、纪念品返还/溢出邮件、会话记忆、必要属性/评分/持有、A栅栏及O/J同事务。enhancementBonus不是额外资产或第二份随机词条；原操作重放不重扣或重抽。低段见[低段执行合同](low-enhancement-contract-v1.md)，高段见[高段合同](high-enhancement-contract-v1.md)。

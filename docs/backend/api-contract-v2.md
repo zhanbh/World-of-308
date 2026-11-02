@@ -386,4 +386,4 @@ ST17-02角色版本核验修复：新repair service.open要求完整单项charac
 
 C17 equipment.enhance在显式隔离配置支持目标当前+1至10/useMemento=false；其余高段/主动纪念品留02。enhance service.open启用与repair同可信身份/character expected/原O路径。R07 service.quote公开金币材料/等级和AP变化/保级后果，私有概率及记忆不进入DTO。
 
-新增enhancement.get(characterId,contextId,itemId)：原子目标、钱包、当前有效attributes及角色/目标/钱包/背包版本，形状沿repair.get；可读已到10的结果。EquipmentView可选enhancementBonus按[低段合同](low-enhancement-contract-v1.md)解析；原O查询仍在统一operation.get，不新增重试ID或独立余额。
+新增enhancement.get(characterId,contextId,itemId)：原子目标、钱包、当前有效attributes及角色/目标/钱包/背包版本，形状沿repair.get；可读已到20的结果。service.quote的materialCosts可包含所选角色绑定纪念品，不公开概率/阈值；高段成功、降至+10或损毁及邮件引用见[高段合同](high-enhancement-contract-v1.md)。EquipmentView可选enhancementBonus按[低段合同](low-enhancement-contract-v1.md)解析；原O查询仍在统一operation.get，不新增重试ID或独立余额。

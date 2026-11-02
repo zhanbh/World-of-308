@@ -94,7 +94,7 @@ export interface EquipmentEntity {
     max: number | null;
     policyRef: string;
   };
-  location: { kind: 'container'; containerId: string } | { kind: 'equipped'; characterId: string; slotId: string } | { kind: 'pending'; grantId: string };
+  location: { kind: 'container'; containerId: string } | { kind: 'equipped'; characterId: string; slotId: string } | { kind: 'pending'; grantId: string } | { kind: 'retired'; reason: 'destroyed' | 'sold' | 'expired'; sourceRef: string };
   lifecycle: 'active' | 'destroyed' | 'sold' | 'expired';
   version: number;
   createdAt: number;

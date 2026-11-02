@@ -21,6 +21,7 @@
 | 容器/来源/原结果 | [物理映射](asset-physical-mapping-v1.md) | 字典、原子转移/物化、流水守恒及来源唯一性 |
 | 缺件范围/汇总 | [持有合同](collection-holdings-projection-v1.md)、[策略](../design/drop-strategy-proposal-v1.md) | scope按实际容器/来源；固定样本、未提交重映射、已提交不变 |
 | 评分/排行 | [评分映射](scoring-projection-mapping-v1.md)、[查询基线](ranking-query-baseline-v1.md) | 固有价值不受耐久影响；公式权重/缓存参数是可校准工程候选 |
+| 强化/纪念品 | [低段合同](low-enhancement-contract-v1.md)、[高段合同](high-enhancement-contract-v1.md) | 1–20级失败结果、AP来源、候选配置、邮件返还与持有减量必须同笔；正式候选参数不视作产品定值 |
 | 事务预算 | [强化与终局预算](enhancement-terminal-budget-v1.md) | 工作表/持有合同/SDK验证；当前含汇总终局R44/W33，不用历史79代替 |
 | 身份/适配 | [身份合同](identity-adapter-proposal-v1.md)、[平台基线](platform-adapter-baseline-v1.md) | 实测前不得宣称可信链、真实事务或费用通过 |
 | UI功能边界 | [UI纠偏合同](../design/ui-review-authoritative-delta-v1.md)、[状态覆盖](../design/ui-state-coverage-v1.md) | PNG/HTML仅表现参考；运行时热区/拖动/恢复待验收 |
@@ -121,3 +122,7 @@ Cocos hide/show、显式暂停/恢复/重试通过可注入CombatLifecycleAdapte
 ## ST18-01 玛丽低段强化（2026-11-02）
 
 可信玛丽上下文、当前+1至10的原子成功/保级、持久会话记忆与固定秘密原意图样本、独立强化AP投影和真实传输恢复按[低段强化合同](low-enhancement-contract-v1.md)执行。高段/纪念品、完整跨代次矩阵、Cocos面板及最终联合门禁留02–05；正式参数/SDK/设备GAP保留。
+
+## ST18-02 玛丽高段强化与纪念品（2026-11-02）
+
+11–12失败降至+10，13–20失败永久损毁；主动选用角色绑定纪念品时成功/失败均消耗。损毁后先扣材料与纪念品、清理背包装备格，再合堆/新堆返回，满包余量写30天确定邮件并由既有MailService领取。穿戴损毁同笔重算属性/固有评分/排行；适用套装持有贡献同步减一；实例转为retired并保留原来源。概率、纪念品消耗/加成/返还、15–20高段率仍须显式隔离配置，未定候选不能变成正式数值。完整执行边界及实际预算见[高段合同](high-enhancement-contract-v1.md)和[02验证](../reviews/st18-02-verification.md)。
