@@ -1,10 +1,10 @@
 {
   "published": false,
-  "status": "ST19-01-complete",
+  "status": "ST19-02-in-progress",
   "jira_actions": false,
   "feature": "warrior-loop-st19",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST19-01 complete; ready for ST19-02",
+  "current_scope": "ST19-01 complete; ST19-02 in progress",
   "tickets": [
     {
       "id": "ST19-01",
@@ -17,7 +17,7 @@
     },
     {
       "id": "ST19-02",
-      "state": "planned"
+      "state": "in-progress"
     },
     {
       "id": "ST19-03",
