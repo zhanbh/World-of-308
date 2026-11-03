@@ -4,7 +4,7 @@
   "jira_actions": false,
   "feature": "warrior-loop-st20",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST20-03 merged; awaiting authorization for next ticket",
+  "current_scope": "ST20-04 in-progress: Cocos RankingPanel and RankingCoordinator",
   "tickets": [
     {
       "id": "ST20-01",
@@ -35,7 +35,7 @@
     },
     {
       "id": "ST20-04",
-      "state": "planned",
+      "state": "in-progress",
       "code_commit": null,
       "evidence": []
     },
