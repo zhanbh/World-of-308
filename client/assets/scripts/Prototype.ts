@@ -103,6 +103,14 @@ export class Prototype extends Component {
     private rankingHadStats = false;
     private rankingIdentity: RankingIdentity | null = null;
     private brokenEquipmentNotice!: Label;
+    private sceneMode: 'town' | 'dungeon' = 'town';
+    private linusLabel!: Label;
+    private maryLabel!: Label;
+    private bankNpcLabel!: Label;
+    private portalLabel!: Label;
+    private sceneSwitchLabel!: Label;
+    private titleLabel!: Label;
+    private hudLabels: Label[] = [];
     private inventoryPanel: InventoryPanel | null = null;
     private inventoryCoordinator: InventoryCoordinator | null = null;
     private inventoryConnecting = false;
@@ -130,17 +138,30 @@ export class Prototype extends Component {
         this.actor = this.makeGraphics('Warrior');
         this.warriorSprite = new WarriorSpriteSheetView(this.actor.node);
         this.controls = this.makeGraphics('Controls');
-        this.text('308 动作样板 · 战士技能与三副本实机联调', -30, 242, 22, 730);
-        this.text('背包 B', 430, 242, 16, 80);
-        this.text('银行 N', 430, 198, 16, 80);
-        this.text('修理 M', 430, 154, 16, 80);
-        this.text('强化 K', 430, 110, 16, 80);
-        this.text('排行 O', 430, 66, 16, 80);
+        this.titleLabel = this.text('308 世界 · 微风小镇', -375, 242, 16, 190);
+        this.titleLabel.horizontalAlign = Label.HorizontalAlign.LEFT;
+        this.sceneSwitchLabel = this.text('▶ 前往地下城', -215, 242, 13, 100);
+        this.sceneSwitchLabel.color = new Color(255, 215, 64);
+        this.hudLabels = [
+            this.text('背包 B', -100, 242, 13, 60),
+            this.text('银行 N', -30, 242, 13, 60),
+            this.text('修理 M', 40, 242, 13, 60),
+            this.text('强化 K', 110, 242, 13, 60),
+            this.text('排行 O', 180, 242, 13, 60),
+        ];
+        this.linusLabel = this.text('铁匠·林纳克斯\n[修理 M]', -150, 60, 12, 120);
+        this.linusLabel.color = new Color(245, 190, 120);
+        this.maryLabel = this.text('炉火·玛丽\n[强化 K]', -10, 60, 12, 120);
+        this.maryLabel.color = new Color(255, 140, 170);
+        this.bankNpcLabel = this.text('行长·金库\n[银行 N]', 130, 60, 12, 120);
+        this.bankNpcLabel.color = new Color(130, 220, 245);
+        this.portalLabel = this.text('▶ 前往地下城', 205, 55, 12, 130);
+        this.portalLabel.color = new Color(160, 130, 255);
         this.brokenEquipmentNotice = this.text('', 0, 102, 14, 800);
         this.brokenEquipmentNotice.color = new Color(255, 90, 90);
-        this.inventoryNotice = this.text('N：银行（需本机预览服务）', 0, 150, 17, 800);
-        this.challengeNotice = this.text('战斗链路：本地沙盒模式（按 C 或传参 challengePreview=1 连权威服务）', 0, 126, 14, 800);
-        this.text('WASD移动 · 空格普攻 · E/F/Q/G技能 · B背包 · N银行 · M修理 · K强化 · O排行', 0, 212, 14);
+        this.inventoryNotice = this.text('', 0, 150, 17, 800);
+        this.challengeNotice = this.text('全业务闭环：微风小镇安全区与三大地下城实机联动', -60, 126, 14, 680);
+        this.text('WASD移动 · 空格普攻 · E/F/Q/G技能 · B背包 · N银行 · M修理 · K强化 · O排行', -60, 212, 13, 680);
         this.healthStatus = this.text('', -130, 178, 17, 660);
         this.healthStatus.horizontalAlign = Label.HorizontalAlign.LEFT;
         this.healthStatus.overflow = Label.Overflow.SHRINK;
@@ -192,6 +213,7 @@ export class Prototype extends Component {
         this.text('受击预警 · 走出红框躲避', 0, -208, 16);
         this.speedLabels = attackSpeedTuning.presets.map((rate, index) => this.text(`${rate}×`, -360 + index * 70, 126, 12, 64));
         this.restartEncounter();
+        this.returnToTown();
         const search = (sys.isBrowser && typeof window !== 'undefined' && window.location?.search) ? window.location.search : '';
         if (search && typeof URLSearchParams !== 'undefined' && new URLSearchParams(search).get('challengePreview') === '1') {
             void this.toggleChallenge();
@@ -207,6 +229,48 @@ export class Prototype extends Component {
         input.on(Input.EventType.KEY_UP, this.keyUp, this);
         game.on(Game.EVENT_HIDE, this.onHideInput, this);
         game.on(Game.EVENT_SHOW, this.onShowAuthority, this);
+    }
+
+    private updateTownNPCVisibility(visible: boolean): void {
+        if (this.linusLabel) this.linusLabel.node.active = visible;
+        if (this.maryLabel) this.maryLabel.node.active = visible;
+        if (this.bankNpcLabel) this.bankNpcLabel.node.active = visible;
+        if (this.portalLabel) this.portalLabel.node.active = visible;
+        if (this.modeLabels) this.modeLabels.forEach(l => l.node.active = !visible);
+        if (this.sceneSwitchLabel) this.sceneSwitchLabel.string = visible ? '▶ 进入地下城' : '◀ 返回城镇';
+        if (this.roundLabel) this.roundLabel.node.active = true;
+    }
+
+    private enterDungeon(): void {
+        this.sceneMode = 'dungeon';
+        this.roomNo = 0;
+        this.model.x = -140;
+        this.model.y = 20;
+        this.restartEncounter();
+        this.encounter.start();
+        this.updateTownNPCVisibility(false);
+    }
+
+    private returnToTown(): void {
+        this.sceneMode = 'town';
+        this.model.hp = 100;
+        this.model.x = 0;
+        this.model.y = 0;
+        this.clearInput();
+        this.skills.reset();
+        this.skillEffects.clear();
+        this.feedback.clear();
+        this.enemies = [];
+        this.enemyVisuals.forEach(v => v.node.active = false);
+        this.updateTownNPCVisibility(true);
+    }
+
+    private toggleSceneMode(): void {
+        if (this.sceneMode === 'town') {
+            this.enterDungeon();
+        } else {
+            this.returnToTown();
+        }
     }
 
     onDestroy(): void {
@@ -341,22 +405,11 @@ export class Prototype extends Component {
     }
     private async toggleBank(): Promise<void> {
         if (this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
-        if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
+        if (this.inventoryPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if (!this.bankPanel) {
-            const generation = ++this.bankGeneration; this.bankConnecting = true; this.inventoryNotice.string = '正在连接银行…';
-            try {
-                const preview = await connectBankPreview();
-                if (!this.isValid || generation !== this.bankGeneration) return;
-                this.attachBank(preview.coordinator, preview.contextId, preview.labels);
-                this.inventoryNotice.string = '本机银行试玩 · 临时数据与测试价格';
-            } catch {
-                if (this.isValid && generation === this.bankGeneration) {
-                    const sandbox = createSandboxBankCoordinator();
-                    this.attachBank(sandbox.coordinator, sandbox.contextId, sandbox.labels);
-                    this.inventoryNotice.string = '本地沙盒银行模式';
-                }
-            } finally { if (generation === this.bankGeneration) this.bankConnecting = false; }
+            const sandbox = createSandboxBankCoordinator();
+            this.attachBank(sandbox.coordinator, sandbox.contextId, sandbox.labels);
+            this.inventoryNotice.string = '本地沙盒银行模式';
         }
         await this.bankPanel?.open();
     }
@@ -393,24 +446,12 @@ export class Prototype extends Component {
     }
 
     private async toggleInventory(): Promise<void> {
-        if (this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        if (this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if (this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
-        if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (!this.inventoryPanel) {
-            const generation = ++this.inventoryConnectGeneration;
-            this.inventoryConnecting = true;
-            this.inventoryNotice.string = '正在连接背包…';
-            try {
-                const preview = await connectInventoryPreview();
-                if (!this.isValid || generation !== this.inventoryConnectGeneration) return;
-                this.attachInventory(preview.coordinator, preview.labels, preview.assignable, true);
-            } catch {
-                if (this.isValid && generation === this.inventoryConnectGeneration) {
-                    const sandbox = createSandboxInventoryCoordinator();
-                    this.attachInventory(sandbox.coordinator, sandbox.labels, sandbox.assignable, true);
-                    this.inventoryNotice.string = '本地沙盒背包模式';
-                }
-            } finally { if (generation === this.inventoryConnectGeneration) this.inventoryConnecting = false; }
+            const sandbox = createSandboxInventoryCoordinator();
+            this.attachInventory(sandbox.coordinator, sandbox.labels, sandbox.assignable, true);
+            this.inventoryNotice.string = '本地沙盒背包模式';
         }
         await this.inventoryPanel?.open();
     }
@@ -482,12 +523,25 @@ export class Prototype extends Component {
             }
             return;
         }
-        if (p.x >= 390 && p.x <= 470 && p.y >= 45 && p.y <= 80) { void this.toggleRanking(); return; }
-        if (p.x >= 390 && p.x <= 470 && p.y >= 90 && p.y <= 125) { void this.toggleEnhancement(); return; }
-        if (p.x >= 390 && p.x <= 470 && p.y >= 135 && p.y <= 170) { void this.toggleRepair(); return; }
-        if (p.x >= 390 && p.x <= 470 && p.y >= 180 && p.y <= 215) { void this.toggleBank(); return; }
-        if (p.x >= 390 && p.x <= 470 && p.y >= 225 && p.y <= 260) { void this.toggleInventory(); return; }
-        if (this.inventoryConnecting || this.bankConnecting) return;
+        if (p.y >= 214 && p.y <= 256) {
+            if (p.x >= -265 && p.x <= -165) { this.toggleSceneMode(); return; }
+            if (p.x >= -130 && p.x <= -70)  { void this.toggleInventory(); return; }
+            if (p.x >= -60  && p.x <= 0)    { void this.toggleBank(); return; }
+            if (p.x >= 10   && p.x <= 70)   { void this.toggleRepair(); return; }
+            if (p.x >= 80   && p.x <= 140)  { void this.toggleEnhancement(); return; }
+            if (p.x >= 150  && p.x <= 210)  { void this.toggleRanking(); return; }
+        }
+        if (this.sceneMode === 'town') {
+            if (Math.hypot(p.x - (-150), p.y - 40) < 45) { void this.toggleRepair(); return; }
+            if (Math.hypot(p.x - (-10), p.y - 40) < 45)  { void this.toggleEnhancement(); return; }
+            if (Math.hypot(p.x - 130, p.y - 40) < 45)   { void this.toggleBank(); return; }
+            if (p.x >= 180 && Math.abs(p.y - 20) < 40)   { this.enterDungeon(); return; }
+            if (this.stickId === null && Math.hypot(p.x + 345, p.y + 150) < 95) {
+                this.stickId = id;
+                this.touchMove(e);
+            }
+            return;
+        }
         if (Math.abs(p.x) < 410 && p.y > 45 && p.y < 105 && this.encounter.state !== 'fighting') {
             if (this.encounter.state !== 'ready') this.restartEncounter();
             this.encounter.start();
@@ -589,6 +643,7 @@ export class Prototype extends Component {
         if (this.encounter.state === 'ready') {
             this.encounter.start();
         }
+        if (e.keyCode === KeyCode.KEY_V) { this.toggleSceneMode(); return; }
         if (e.keyCode === KeyCode.ENTER && this.encounter.state !== 'fighting') {
             if (this.encounter.state !== 'ready') this.restartEncounter();
             this.encounter.start(); return;
@@ -677,6 +732,16 @@ export class Prototype extends Component {
         this.accumulator += Math.min(dt, 0.1);
         while (this.accumulator >= 1 / 120) {
             const fixedDt = 1 / 120;
+            if (this.sceneMode === 'town') {
+                this.model.update(fixedDt, x, y);
+                this.model.x = Math.max(-218, Math.min(218, this.model.x));
+                this.bodyAnimation.update(fixedDt, this.model.moving, this.model.running, 0, false, false);
+                if (this.model.x >= 185 && this.model.y >= -15 && this.model.y <= 55) {
+                    this.enterDungeon();
+                }
+                this.accumulator -= fixedDt;
+                continue;
+            }
             if (this.encounter.state !== 'fighting' && !this.roomCleared) {
                 this.feedback.update(fixedDt);
                 for (const enemy of this.enemies) if (enemy.state === 'dead') enemy.update(fixedDt, this.model, true);
@@ -725,6 +790,10 @@ export class Prototype extends Component {
                 this.clearInput(); this.model.reset(); this.model.moving = this.model.running = false;
                 this.skills.cancel(); this.skillEffects.clear();
             }
+            if (this.roomCleared && this.roomNo >= 6 && this.model.x >= 165 && this.model.y >= -20 && this.model.y <= 65) {
+                this.returnToTown();
+                return;
+            }
             if (this.roomCleared && this.roomNo < 6 && this.model.x >= 165 && this.model.y >= -20 && this.model.y <= 65) {
                 this.roomNo++;
                 this.restartEncounter();
@@ -739,10 +808,18 @@ export class Prototype extends Component {
         if (fadeOutComplete) {
             this.handleFadeOutComplete();
         }
+        if (this.sceneMode === 'town') {
+            this.roundLabel.string = '微风小镇安全区 · 走进NPC即可办理业务 · 走向右侧传送门进入地下城';
+            this.healthStatus.string = '战士生命 100/100   法力 100/100   [微风小镇安全区] 自由探索中';
+            this.status.string = `${this.fps} FPS | 微风小镇安全区 | ${this.model.moving ? (this.model.running ? '奔跑' : '漫步') : '站街'} | 邻近NPC可按快捷键或点击交互`;
+            this.draw(dt);
+            this.localElapsedTicks += dt * 100;
+            return;
+        }
         const round = this.encounter.state;
         const dName = this.dungeonKind === 'first' ? '首本牛头怪' : (this.dungeonKind === 'workshop' ? '失落工坊' : '裂隙遗址');
         this.roundLabel.string = this.deathReviveHUD.isVisible ? '' : (this.roomCleared
-            ? (this.roomNo < 6 ? '清场完毕！走向右侧绿门换房 ▶' : '通关！已击败首领！按R重新挑战')
+            ? (this.roomNo < 6 ? '清场完毕！走向右侧绿门换房 ▶' : '通关！走向传送门返回城镇 ▶')
             : round === 'fighting' ? ''
             : round === 'ready' ? `[${dName} R${this.roomNo + 1}/7] 触控摇杆/技能或点击开始`
             : `战败 · ${this.encounter.elapsed.toFixed(1)}秒 · 点击再挑战 / Enter`);
@@ -823,30 +900,52 @@ export class Prototype extends Component {
     private draw(dt: number): void {
         const ui = this.controls;
         ui.clear();
-        for (const y of [225, 180, 135, 90, 45]) {
-            this.rect(ui, 390, y, 80, 32, '#283a42');
+        this.rect(ui, -265, 228, 100, 28, this.sceneMode === 'town' ? '#2e5d44' : '#5d382e');
+        for (const x of [-100, -30, 40, 110, 180]) {
+            this.rect(ui, x - 30, 228, 60, 28, '#283a42');
         }
+        const m = this.model;
         const g = this.world;
         const shake = this.feedback.shakeOffset;
         g.node.setPosition(shake.x * 2, shake.y * 2);
         g.clear();
-        this.rect(g, -240, -135, 480, 270, '#18252d');
-        this.rect(g, -232, -42, 464, 135, '#34433d');
-        if (this.roomNo < 6) {
-            const doorColor = this.roomCleared ? new Color(70, 230, 110, 220) : new Color(180, 50, 50, 150);
-            const doorFill = this.roomCleared ? new Color(50, 200, 90, 80) : new Color(120, 30, 30, 60);
-            g.fillColor = doorFill;
-            g.rect(185, 0, 25, 40); g.fill();
-            g.strokeColor = doorColor; g.lineWidth = 2;
-            g.rect(185, 0, 25, 40); g.stroke();
+        if (this.sceneMode === 'town') {
+            this.rect(g, -240, -135, 480, 270, '#19242d');
+            this.rect(g, -232, -42, 464, 135, '#2b3b44');
+            g.strokeColor = new Color(55, 75, 88); g.lineWidth = 0.5;
+            for (let x = -224; x < 240; x += 24) { g.moveTo(x, -42); g.lineTo(x, 93); }
+            for (let y = -42; y <= 93; y += 24) { g.moveTo(-232, y); g.lineTo(232, y); }
+            g.stroke();
+            g.fillColor = new Color(75, 55, 45); g.rect(-170, 0, 40, 28); g.fill();
+            g.fillColor = new Color(140, 130, 120); g.rect(-165, 12, 30, 10); g.fill();
+            g.strokeColor = new Color(220, 170, 110); g.lineWidth = 1; g.rect(-170, 0, 40, 28); g.stroke();
+            g.fillColor = new Color(85, 40, 35); g.rect(-30, 0, 40, 28); g.fill();
+            g.fillColor = new Color(255, 120, 50, 220); g.ellipse(-10, 14, 10, 8); g.fill();
+            g.strokeColor = new Color(255, 150, 170); g.lineWidth = 1; g.rect(-30, 0, 40, 28); g.stroke();
+            g.fillColor = new Color(35, 65, 80); g.rect(110, 0, 40, 28); g.fill();
+            g.fillColor = new Color(245, 195, 50); g.rect(125, 9, 10, 10); g.fill();
+            g.strokeColor = new Color(100, 200, 230); g.lineWidth = 1; g.rect(110, 0, 40, 28); g.stroke();
+            const pulse = 0.7 + 0.3 * Math.sin(Date.now() / 250);
+            g.fillColor = new Color(110, 45, 180, Math.round(180 * pulse)); g.rect(190, -10, 30, 55); g.fill();
+            g.strokeColor = new Color(180, 120, 255, Math.round(230 * pulse)); g.lineWidth = 2; g.rect(190, -10, 30, 55); g.stroke();
+        } else {
+            this.rect(g, -240, -135, 480, 270, '#18252d');
+            this.rect(g, -232, -42, 464, 135, '#34433d');
+            if (this.roomNo < 6) {
+                const doorColor = this.roomCleared ? new Color(70, 230, 110, 220) : new Color(180, 50, 50, 150);
+                const doorFill = this.roomCleared ? new Color(50, 200, 90, 80) : new Color(120, 30, 30, 60);
+                g.fillColor = doorFill;
+                g.rect(185, 0, 25, 40); g.fill();
+                g.strokeColor = doorColor; g.lineWidth = 2;
+                g.rect(185, 0, 25, 40); g.stroke();
+            }
+            g.strokeColor = new Color(71, 87, 75); g.lineWidth = 0.5;
+            for (let x = -224; x < 240; x += 16) { g.moveTo(x, -42); g.lineTo(x, 93); }
+            for (let y = -42; y <= 93; y += 16) { g.moveTo(-232, y); g.lineTo(232, y); }
+            g.stroke();
+            this.drawSkillEffect(g);
+            this.drawEnemies(g);
         }
-        g.strokeColor = new Color(71, 87, 75); g.lineWidth = 0.5;
-        for (let x = -224; x < 240; x += 16) { g.moveTo(x, -42); g.lineTo(x, 93); }
-        for (let y = -42; y <= 93; y += 16) { g.moveTo(-232, y); g.lineTo(232, y); }
-        g.stroke();
-        const m = this.model;
-        this.drawSkillEffect(g);
-        this.drawEnemies(g);
         const x = Math.round(m.x), y = Math.round(m.y);
         g.fillColor = new Color(15, 24, 25, 150); g.ellipse(x, y, 14, 4.8); g.fill();
         if (m.superArmor) {
