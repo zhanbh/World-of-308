@@ -35,7 +35,7 @@ export class InventoryPanel {
     private releaseOnReturn = (event: PointerEvent): void => { if (event.pointerType === 'mouse' && event.buttons === 0) this.cancel(); };
     private browserPointer: 'mouse' | 'touch' = 'touch';
     private trackPointer = (event: PointerEvent): void => { this.browserPointer = event.pointerType === 'mouse' ? 'mouse' : 'touch'; };
-    private isMouseTouch(event: EventTouch): boolean { return event.simulate || (sys.isBrowser && this.browserPointer === 'mouse'); }
+    private isMouseTouch(_event: EventTouch): boolean { return false; }
     constructor(parent: Node, private readonly coordinator: InventoryCoordinator, private readonly options: Options) {
         if (!Mask) throw new Error('MASK_MODULE_REQUIRED');
         if (sys.isBrowser && typeof window !== 'undefined') {
@@ -52,7 +52,8 @@ export class InventoryPanel {
         this.root.active = false;
         const shade = this.root.addComponent(Graphics); shade.fillColor = new Color(9, 14, 22, 255); shade.rect(-480, -270, 960, 540); shade.fill();
         this.label(this.root, '背包 · 整理与快捷位', -50, 226, 26, 700);
-        this.button('关闭', 403, 226, () => this.close(), true);
+        this.button('✕ 关闭', 280, 226, () => this.close(), true, 90);
+        this.button('✕ 关闭', -400, 226, () => this.close(), true, 90);
         this.status = this.label(this.root, '', 0, 179, 16, 900);
         const viewport = this.node(this.root, 'InventoryViewport', -206, -34, 340, VIEW_HEIGHT);
         viewport.addComponent(Mask).type = Mask.Type.GRAPHICS_RECT;

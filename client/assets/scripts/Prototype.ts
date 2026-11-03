@@ -266,6 +266,7 @@ export class Prototype extends Component {
     }
 
     private toggleSceneMode(): void {
+        this.closeAllPanels();
         if (this.sceneMode === 'town') {
             this.enterDungeon();
         } else {
@@ -403,9 +404,17 @@ export class Prototype extends Component {
             if (gen === this.challengeGeneration) this.challengeConnecting = false;
         }
     }
+    public closeAllPanels(): void {
+        if (this.inventoryPanel?.isOpen) this.inventoryPanel.close();
+        if (this.bankPanel?.isOpen) this.bankPanel.close();
+        if (this.repairPanel?.isOpen) this.repairPanel.close();
+        if (this.enhancementPanel?.isOpen) this.enhancementPanel.close();
+        if (this.rankingPanel?.isOpen) this.rankingPanel.close();
+    }
+
     private async toggleBank(): Promise<void> {
         if (this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        this.closeAllPanels();
         if (!this.bankPanel) {
             const sandbox = createSandboxBankCoordinator();
             this.attachBank(sandbox.coordinator, sandbox.contextId, sandbox.labels);
@@ -416,7 +425,7 @@ export class Prototype extends Component {
 
     private async toggleRepair(): Promise<void> {
         if (this.repairPanel?.isOpen) { this.repairPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        this.closeAllPanels();
         if (!this.repairPanel) {
             const sandbox = createSandboxRepairCoordinator();
             this.attachRepair(sandbox.coordinator, sandbox.contextId, sandbox.labels);
@@ -426,7 +435,7 @@ export class Prototype extends Component {
 
     private async toggleEnhancement(): Promise<void> {
         if (this.enhancementPanel?.isOpen) { this.enhancementPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        this.closeAllPanels();
         if (!this.enhancementPanel) {
             const sandbox = createSandboxEnhancementCoordinator();
             this.attachEnhancement(sandbox.coordinator, sandbox.contextId, sandbox.labels);
@@ -436,7 +445,7 @@ export class Prototype extends Component {
 
     private async toggleRanking(): Promise<void> {
         if (this.rankingPanel?.isOpen) { this.rankingPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen) return;
+        this.closeAllPanels();
         if (!this.rankingPanel) {
             const sandbox = createSandboxRankingCoordinator();
             this.attachRanking(sandbox.coordinator, sandbox.identity);
@@ -446,8 +455,8 @@ export class Prototype extends Component {
     }
 
     private async toggleInventory(): Promise<void> {
-        if (this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if (this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
+        this.closeAllPanels();
         if (!this.inventoryPanel) {
             const sandbox = createSandboxInventoryCoordinator();
             this.attachInventory(sandbox.coordinator, sandbox.labels, sandbox.assignable, true);
@@ -509,10 +518,18 @@ export class Prototype extends Component {
     }
 
     private touchStart(e: EventTouch): void {
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         const id = e.getID();
         if (id === null) return;
         const p = this.point(e);
+        if (p.y >= 214 && p.y <= 256) {
+            if (p.x >= -265 && p.x <= -165) { this.toggleSceneMode(); return; }
+            if (p.x >= -130 && p.x <= -70)  { void this.toggleInventory(); return; }
+            if (p.x >= -60  && p.x <= 0)    { void this.toggleBank(); return; }
+            if (p.x >= 10   && p.x <= 70)   { void this.toggleRepair(); return; }
+            if (p.x >= 80   && p.x <= 140)  { void this.toggleEnhancement(); return; }
+            if (p.x >= 150  && p.x <= 210)  { void this.toggleRanking(); return; }
+        }
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if(this.challengeCoordinator){this.authorityTouch(p.x,p.y,id,e);return;}
         if (this.deathReviveHUD.isVisible) {
             const hit = this.deathReviveHUD.hitTest(p.x, p.y);
@@ -522,14 +539,6 @@ export class Prototype extends Component {
                 this.handleDeathLeave();
             }
             return;
-        }
-        if (p.y >= 214 && p.y <= 256) {
-            if (p.x >= -265 && p.x <= -165) { this.toggleSceneMode(); return; }
-            if (p.x >= -130 && p.x <= -70)  { void this.toggleInventory(); return; }
-            if (p.x >= -60  && p.x <= 0)    { void this.toggleBank(); return; }
-            if (p.x >= 10   && p.x <= 70)   { void this.toggleRepair(); return; }
-            if (p.x >= 80   && p.x <= 140)  { void this.toggleEnhancement(); return; }
-            if (p.x >= 150  && p.x <= 210)  { void this.toggleRanking(); return; }
         }
         if (this.sceneMode === 'town') {
             if (Math.hypot(p.x - (-150), p.y - 40) < 45) { void this.toggleRepair(); return; }

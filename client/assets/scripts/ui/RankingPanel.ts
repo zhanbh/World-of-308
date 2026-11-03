@@ -93,8 +93,8 @@ export class RankingPanel {
   private releaseOnReturn = (e: PointerEvent): void => {
     if (e.pointerType === 'mouse' && e.buttons === 0) this.cancel();
   };
-  private isMouseTouch(e: EventTouch): boolean {
-    return (e as any).simulate || (sys.isBrowser && this.browserPointer === 'mouse');
+  private isMouseTouch(_e: EventTouch): boolean {
+    return false;
   }
 
   constructor(
@@ -127,7 +127,8 @@ export class RankingPanel {
     this.titleLabel = this.label(this.root, '装备评分排行榜', 0, 235, 24, 600);
     this.titleLabel.color = new Color(245, 240, 220);
 
-    this.closeButtonNode = this.button('关闭', 410, 235, () => this.close(), () => true, 80);
+    this.closeButtonNode = this.button('✕ 关闭', 280, 235, () => this.close(), () => true, 80);
+    this.button('✕ 关闭', -400, 235, () => this.close(), () => true, 80);
 
     // Scope Tabs
     this.allTabNode = this.button(

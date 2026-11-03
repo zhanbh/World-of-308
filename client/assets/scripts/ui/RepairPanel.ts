@@ -106,8 +106,8 @@ export class RepairPanel {
   private releaseOnReturn = (e: PointerEvent): void => {
     if (e.pointerType === 'mouse' && e.buttons === 0) this.cancel();
   };
-  private isMouseTouch(e: EventTouch): boolean {
-    return (e as any).simulate || (sys.isBrowser && this.browserPointer === 'mouse');
+  private isMouseTouch(_e: EventTouch): boolean {
+    return false;
   }
 
   constructor(
@@ -139,7 +139,8 @@ export class RepairPanel {
 
     // Panel Header
     this.label(this.root, '林纳克斯 · 装备修理', 0, 230, 24, 600);
-    this.button('关闭', 410, 230, () => this.close(), () => true, 90);
+    this.button('✕ 关闭', 280, 230, () => this.close(), () => true, 90);
+    this.button('✕ 关闭', -400, 230, () => this.close(), () => true, 90);
 
     // Mode Toggle Tabs
     this.allWornTabNode = this.button(

@@ -33,13 +33,14 @@ export class BankPanel {
     private releaseOutside = (e: PointerEvent): void => { if (e.isPrimary) { const epoch = this.inputEpoch; setTimeout(() => { if (epoch === this.inputEpoch) this.cancel(); }, 0); } };
     private cancelPointer = (e: PointerEvent): void => { if (e.isPrimary) this.cancel(); };
     private releaseOnReturn = (e: PointerEvent): void => { if (e.pointerType === 'mouse' && e.buttons === 0) this.cancel(); };
-    private isMouseTouch(e: EventTouch): boolean { return e.simulate || (sys.isBrowser && this.browserPointer === 'mouse'); }
+    private isMouseTouch(_e: EventTouch): boolean { return false; }
     constructor(parent: Node, private coordinator: BankCoordinator, private options: Options) {
         this.state = coordinator.state;
         this.root = this.node(parent, 'BankPanel', 0, 0, 960, 540);
         const bg = this.root.addComponent(Graphics); bg.fillColor = new Color(12, 19, 27); bg.rect(-480, -270, 960, 540); bg.fill();
         this.label(this.root, '银行 · 左库右包', 0, 238, 24, 650);
-        this.button('关闭', 410, 238, () => this.close(), true, 90);
+        this.button('✕ 关闭', 280, 238, () => this.close(), true, 90);
+        this.button('✕ 关闭', -400, 238, () => this.close(), true, 90);
         this.button('个人金库', -300, 190, () => this.tab('personalVault'), true, 130);
         this.button('账号金库', -150, 190, () => this.tab('accountVault'), true, 130);
         this.titles = { vault: this.label(this.root, '', -215, 145, 18, 350), backpack: this.label(this.root, '', 215, 145, 18, 350) };
