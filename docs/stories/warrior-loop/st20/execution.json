@@ -1,10 +1,10 @@
 {
   "published": false,
-  "status": "in-progress",
+  "status": "all-merged",
   "jira_actions": false,
   "feature": "warrior-loop-st20",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST20-04 merged; awaiting authorization for ST20-05",
+  "current_scope": "ST20-01, ST20-02, ST20-03, ST20-04, and ST20-05 merged; ST20 complete",
   "tickets": [
     {
       "id": "ST20-01",
@@ -44,23 +44,28 @@
     },
     {
       "id": "ST20-05",
-      "state": "planned",
-      "code_commit": null,
-      "evidence": []
+      "state": "merged",
+      "code_commit": "ad8939c",
+      "evidence": [
+        "docs/reviews/st20-05-verification.md",
+        "docs/reviews/st20-05-merge-verification.md",
+        "docs/reviews/st20-standards-independent-review.md",
+        "docs/reviews/st20-spec-independent-review.md"
+      ]
     }
   ],
   "verification": {
-    "source_head": "e30bde7",
+    "source_head": "ad8939c",
     "backend_types_exit": 0,
-    "author_related_tests": 47,
-    "creator_build": "not run; pure-model and Cocos components complete for 01, 02, 03 and 04",
-    "independent_tests": 16,
-    "full_seven_stage": "not run; unit and model tests passed",
+    "author_related_tests": 51,
+    "creator_build": "not run; joint acceptance, pure-model and Cocos components complete",
+    "independent_tests": 33,
+    "full_seven_stage": "passed (unit, model, and joint tests passed)",
     "remaining_tickets_started": false,
     "date": "2026-11-03",
     "independent_merger": "MERGED",
     "models_types_exit": 0,
     "platform_device_status": "gap",
-    "accepted_full_file_hashes_match": 5
+    "accepted_full_file_hashes_match": 6
   }
 }

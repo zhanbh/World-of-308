@@ -8,9 +8,9 @@
 - [任务批准记录](plan-approval.json)
 - [执行状态追踪](execution.json)
 
-## 当前批准（2026-11-03）
+## 当前状态（2026-11-03）
 
-用户已批准规格与五项任务图及测试边界，已完成 ST20-01、ST20-02、ST20-03 与 ST20-04 交付；05 尚未启动。
+ST20（查看当前装备评分排行榜）全部五项子任务已全部交付并独立核验快进合入主干 `feat-1.0.0`，两轴独立评审通过，ST20 完整交付闭环。
 
 
 
@@ -56,7 +56,18 @@
 - 构建 Cocos 表现层组件 `RankingPanel.ts`：全榜/分职业榜单切换选项卡、金色高光本人名次置顶横幅（`OwnRankBanner`）、前三名金银铜特殊着色、15 秒缓存快照/实时新鲜度状态显示、触底翻页与错误重试；
 - 交互与生命周期保护：统一双端触控/鼠标防误触与防重复提交，`dispose()` 完整注销事件并安全释放节点。
 - 定向测试 6/6 通过，关联回归 47/47 通过，两项 TypeScript 编译 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS，merger READY。详见[04证据](../../../reviews/st20-04-verification.md)及[独立合入核验](../../../reviews/st20-04-merge-verification.md)。
-- 本地工作分支已清理；未 push；05 尚未启动。
+- 本地工作分支已清理；未 push。
+
+## ST20-05 本地交付（2026-11-03）
+
+05 已实现并独立核验快进合入主干，固定源码 `ad8939c`：
+- 构建换装（ST05）/强化（ST18）到排行榜投影即时刷新端到端联合验收套件 `backend/test/ranking-joint-acceptance.test.mjs`；
+- 换装即时响应：15 秒缓存新鲜期内本人名次采用三段式互斥计数即时反映（武器 +10 评分升至 3040 即时登顶 #1，脱装评分归零即时跌落 #3，重新穿装同分较晚达成排 #2 严格证明三元组排序）；
+- 物理存储与传输预算实测全部达标：`rankCaches` 首屏 50 条条目文档 12,604 字节 $\le$ 16 KiB，`RankingEntryEntity` 实体 335 字节 $\le$ 16 KiB，`ranking.list` 单页网络响应 12,532 字节 $\le$ 64 KiB；
+- 防击穿并发验证（10 并发查询处于 3 秒 CAS 活跃租约下安全回退旧缓存 `stale: true`）、租约超时接管、容量超额熔断与缓存写故障资产零污染；
+- 并发换装与排行查询 OCC 串行化安全竞争；
+- 定向测试 4/4 通过，全套 ST20 测试 33/33 通过，两项 TypeScript 编译 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS，两轴独立评审通过（Standards 0 违规，Spec 0 偏离）。详见[05证据](../../../reviews/st20-05-verification.md)、[独立合入核验](../../../reviews/st20-05-merge-verification.md)、[Standards独立评审](../../../reviews/st20-standards-independent-review.md)及[Spec独立评审](../../../reviews/st20-spec-independent-review.md)。
+- ST20 全部 5 项子任务完整交付合入；未 push。
 
 ## 任务列表
 
@@ -64,7 +75,7 @@
 2. [ST20-02: 短租约原子刷新缓存、TTL 新鲜度机制与并发抢锁](issues/02-cache-lease-ttl.md)（已合入）
 3. [ST20-03: 本人名次三段式精准计数与大容量降级熔断](issues/03-own-rank-counter.md)（已合入）
 4. [ST20-04: Cocos 排行榜面板与纯模型协调器](issues/04-cocos-ranking-panel.md)（已合入）
-5. [ST20-05: 换装/强化即时刷新联合验收、物理预算与两轴评审](issues/05-joint-acceptance.md)（已计划）
+5. [ST20-05: 换装/强化即时刷新联合验收、物理预算与两轴评审](issues/05-joint-acceptance.md)（已合入）
 
 
 
