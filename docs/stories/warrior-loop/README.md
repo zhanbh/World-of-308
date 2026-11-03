@@ -145,3 +145,7 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 - **ST19-03（固定样本重映射、全齐平滑回退与提交不可变性）**：`deriveDropSample` 确定性样本生成、OCC 重试未提交候选重映射且基础样本不漂移、11 部位全齐平滑安全回退至 `fallbackStrategy`（`weighted-random` 绝不卡死拒发）、终局结算 `planClear` 提交后绝对不可变性与网络丢包幂等返回原回执已交付合入，源码 `ba18c58`；全量 7 阶段门禁检查 7/7 全部通过（861 项测试全部通过），见[03记录](../../reviews/st19-03-verification.md)及[独立核验](../../reviews/st19-03-merge-verification.md)。
 - **ST19-04（生命周期联动与套装收集展示）**：商店出售、强化损毁（+13~+20）与金库跨域转移即时同步持有并在最后一件移出时恢复缺件判定；客户端纯模型协调器（`CollectionCoordinator.ts`）维护 11 部位套装进度（`X/11`）、高亮/灰显、通关回执解析反馈及 generation 异步隔离已合入，源码 `583e655`；全量 7 阶段门禁检查 7/7 全部通过（867 项测试全部通过），见[04记录](../../reviews/st19-04-verification.md)及[独立核验](../../reviews/st19-04-merge-verification.md)。
 - **ST19-05（全链路大闭环联合验收、预算测量与两轴独立评审）**：0 到 11 件渐进收集定向补齐、账号金库跨角色共享与多角色持有隔离、商店出售与强化损毁即时恢复未收集、满件平滑回退加权随机；终局物理事务预算实测满足硬限制（R42 <= 44, W33 <= 33, calls 78 <= 80, writeBytes 327,245 <= 1.5 MiB, holdings 461 <= 16 KiB）；28 个实际物理写点故障注入 100% 干净原子回滚无残留；并发 OCC 竞争串行化安全裁决已交付合入，源码 `c33a0bd`；全量 7 阶段门禁检查 7/7 全部通过（871 项测试全部通过），两轴独立评审通过（Standards 0 违规，Spec 0 偏离）。见[05记录](../../reviews/st19-05-verification.md)、[05合入核验](../../reviews/st19-05-merge-verification.md)、[Standards独立评审](../../reviews/st19-standards-independent-review.md)及[Spec独立评审](../../reviews/st19-spec-independent-review.md)。ST19 全部 5 项子任务完整交付合入。
+
+## ST20 本地实施准备（2026-11-03）
+
+用户已指示推进 ST20（查看当前装备评分排行榜）。已完成草案规格与五项任务图编制，详见 [ST20 任务入口](st20/README.md)、[实施规格草案](st20/spec.md) 及 [五项任务图提案](st20/task-plan.md)。硬依赖 ST05、ST18 均已在本地主干交付。目前处于待用户人工确认状态，尚未启动业务编码。

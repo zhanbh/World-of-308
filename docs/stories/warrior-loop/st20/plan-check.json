@@ -1,0 +1,96 @@
+{
+  "date": "2026-11-03",
+  "kind": "repository-local-draft-plan-validation-no-Jira",
+  "status": "draft-valid-awaiting-human-approval",
+  "spec_full_file_sha256": "3a92a12e437bc97ece2d0dd9a740afa85517fedbb6dfcde7ba78e787c61afd2a",
+  "task_plan_full_file_sha256": "214bf24d766b32a6b34d17b1e1e38d59d8adcee346105d22b9388f4e20a9745b",
+  "tasks": [
+    {
+      "number": 1,
+      "id": "ST20-01",
+      "title": "评分排行服务核心、索引排序与分页查询协议",
+      "path": "docs/stories/warrior-loop/st20/issues/01-ranking-service-query.md",
+      "sha256": "cdf65d73c6c0f28f0219b005099e04ad674101391b93ed62835ea91956aec2aa",
+      "blocked_by": [],
+      "ac": [
+        "AC20-1",
+        "AC20-2",
+        "AC20-3",
+        "AC20-6"
+      ],
+      "deliver": "构建 RankingService 核心并接入 ranking.list 协议；建立 (score DESC, scoreReachedAt ASC, characterId ASC) 稳定排序；支持全榜/职业榜；实现有界游标分页。",
+      "accept": "三元组稳定排序单测通过；同分保持时间通过；游标翻页跨页去重通过；查询只读不修改达到时间。"
+    },
+    {
+      "number": 2,
+      "id": "ST20-02",
+      "title": "短租约原子刷新缓存、TTL 新鲜度机制与并发抢锁",
+      "path": "docs/stories/warrior-loop/st20/issues/02-cache-lease-ttl.md",
+      "sha256": "07cb9c70565717af2eb2c4d742e49e4ffc3c75e0d96769fa5c54e1f7fbe14e2d",
+      "blocked_by": [
+        1
+      ],
+      "ac": [
+        "AC20-4",
+        "AC20-6"
+      ],
+      "deliver": "首屏独立确定键缓存；15 秒新鲜期/60 秒旧数据回退；3 秒短租约与版本 CAS 抢锁刷新，防高并发击穿。",
+      "accept": "15s 内 stale: false，15~60s stale: true，超 60s 强制刷新；并发抢锁通过；缓存写失败不回滚装备事实。"
+    },
+    {
+      "number": 3,
+      "id": "ST20-03",
+      "title": "本人名次三段式精准计数与大容量降级熔断",
+      "path": "docs/stories/warrior-loop/st20/issues/03-own-rank-counter.md",
+      "sha256": "3963b4672cf983d3911d4eca073dee4b04cb198675f5e2857ae455d32a58b2d0",
+      "blocked_by": [
+        1
+      ],
+      "ac": [
+        "AC20-5",
+        "AC20-6"
+      ],
+      "deliver": "三段式互斥索引条件（分高 + 同分先到 + 同分同秒ID小）计算本人精准名次；大容量/超时降级返回 ownRank: null。",
+      "accept": "本人名次与全量排序排位严格一致；换装名次升降即时反映；模拟 count 失败优雅降级返回 null。"
+    },
+    {
+      "number": 4,
+      "id": "ST20-04",
+      "title": "Cocos 排行榜面板与纯模型协调器",
+      "path": "docs/stories/warrior-loop/st20/issues/04-cocos-ranking-panel.md",
+      "sha256": "59e5e552cd9724ad93670960bb718bcd5504be11eb46062cdf8f7f191a1b187e",
+      "blocked_by": [
+        2,
+        3
+      ],
+      "ac": [
+        "AC20-3",
+        "AC20-7"
+      ],
+      "deliver": "纯模型协调器 RankingCoordinator.ts 状态机与代次隔离（generation）；Cocos 排行榜面板 RankingPanel.ts（全榜/职业榜切换、触底翻页、本人悬浮、新鲜度标识）。",
+      "accept": "协调器状态机与代次隔离通过；翻页数据按 characterId 幂等去重；断网友好恢复；Cocos 离线构建通过。"
+    },
+    {
+      "number": 5,
+      "id": "ST20-05",
+      "title": "换装/强化即时刷新联合验收、物理预算与两轴评审",
+      "path": "docs/stories/warrior-loop/st20/issues/05-joint-acceptance.md",
+      "sha256": "ae531a43cebc0d6fecaadfd91fa840b2bc53d8d3bcea76cb1e7ead0fdd488650",
+      "blocked_by": [
+        4
+      ],
+      "ac": [
+        "AC20-1",
+        "AC20-2",
+        "AC20-3",
+        "AC20-4",
+        "AC20-5",
+        "AC20-6",
+        "AC20-7",
+        "AC20-8"
+      ],
+      "deliver": "换装/强化即时刷新大闭环联合验收套件；物理事务与传输预算实测；并发 OCC 竞争；全量 7 阶段自动化门禁；Standards 与 Spec 独立两轴双向评审归档。",
+      "accept": "端到端大闭环 100% 通过；物理事务与传输预算合格；全量回归 0 失败；双轴评审 0 违规 0 偏离。"
+    }
+  ]
+}
