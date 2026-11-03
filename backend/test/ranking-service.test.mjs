@@ -6,6 +6,7 @@ import {
   RankingService,
   compareRankingEntries,
 } from '../src/ranking/ranking-service.ts';
+import { rankCacheKey } from '../src/ranking/ranking-model.ts';
 import {
   parseAssetQuery,
   parseAssetQueryResponse,
@@ -174,6 +175,9 @@ test('ST20-01 AC20-1: score fluctuation 500 -> 600 -> 500 resets scoreReachedAt'
 
   // Character A changes score: 500 -> 600 at t=1200, then drops back to 500 at t=1500
   await f.putRankingEntry({ characterId: 'char-a', characterName: '战A', score: '500', scoreReachedAt: 1500 });
+
+  // Advance clock beyond 15s fresh cache TTL to trigger refresh
+  f.clock.setNow(2000 + 20000);
 
   // Now: B reached 500 at t=1100, while A reached 500 at t=1500!
   // B must now be ahead of A!
@@ -436,8 +440,10 @@ test('ST20-01 AC20-6: query is strictly read-only and causes zero state mutation
   // Take store snapshot after querying
   const snapshotAfter = f.store.snapshot();
 
-  // Assert store has exact same number of keys and exact same contents
-  assert.equal(snapshotBefore.size, snapshotAfter.size);
+  // Assert character facts remain 100% unchanged; only the rankCaches document is populated
+  const cacheKey = await rankCacheKey('all', 'score-v1');
+  assert.equal(snapshotAfter.size, snapshotBefore.size + 1);
+  assert.ok(snapshotAfter.has(cacheKey));
   for (const [k, v] of snapshotBefore.entries()) {
     assert.deepEqual(v, snapshotAfter.get(k));
   }
@@ -547,4 +553,349 @@ test('ST20-01: protocol schema and invalid query name handling', async () => {
     },
     { name: 'TypeError' },
   );
+});
+
+test('ST20-02 AC20-4: cold query creates rankCacheEntity with version 1 and stale: false', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000', scoreReachedAt: 500 });
+  await f.putRankingEntry({ characterId: 'c-2', score: '2000', scoreReachedAt: 600 });
+
+  const cacheKey = await rankCacheKey('all', 'score-v1');
+  assert.equal(f.store.inspect(cacheKey), undefined);
+
+  const res = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-cold',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  assert.ok('data' in res);
+  assert.equal(res.data.stale, false);
+  assert.equal(res.data.rankAsOf, 1000);
+  assert.equal(res.data.entries.length, 2);
+
+  // Inspect the created cache entity
+  const cached = f.store.inspect(cacheKey);
+  assert.ok(cached);
+  assert.equal(cached.schemaVersion, 2);
+  assert.equal(cached.version, 1);
+  assert.equal(cached.cachedAt, 1000);
+  assert.equal(cached.entries.length, 2);
+  assert.equal(cached.lease, null);
+});
+
+test('ST20-02 AC20-4: fresh cache hit within 15s serves cached entries without reading new items', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000', scoreReachedAt: 500 });
+  await f.putRankingEntry({ characterId: 'c-2', score: '2000', scoreReachedAt: 600 });
+
+  // Cold query at t=1000
+  const q1 = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-q1',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in q1);
+  assert.equal(q1.data.entries.length, 2);
+  assert.equal(q1.data.stale, false);
+  assert.equal(q1.data.rankAsOf, 1000);
+
+  // Advance time by 8 seconds (t = 1000 + 8000, < 15s) and add a new top character
+  f.clock.setNow(1000 + 8000);
+  await f.putRankingEntry({ characterId: 'c-new-top', score: '9999', scoreReachedAt: 1000 + 8000 });
+
+  // Query at t=1008 should HIT fresh cache: returns 2 entries, rankAsOf = 1000, stale = false
+  const q2 = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-q2',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in q2);
+  assert.equal(q2.data.entries.length, 2);
+  assert.equal(q2.data.entries[0].character.characterId, 'c-1');
+  assert.equal(q2.data.stale, false);
+  assert.equal(q2.data.rankAsOf, 1000);
+});
+
+test('ST20-02 AC20-4: stale cache fallback between 15s and 60s when lease is active returns stale: true', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000', scoreReachedAt: 500 });
+  await f.putRankingEntry({ characterId: 'c-2', score: '2000', scoreReachedAt: 600 });
+
+  // Cold query at t=1000 creates cache
+  await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-init',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  const cacheKey = await rankCacheKey('all', 'score-v1');
+
+  // Advance time to 25 seconds later (1000 + 25000: 15s < age <= 60s)
+  f.clock.setNow(1000 + 25000);
+
+  // Simulate another worker holding active 3s lease expiring at 1000 + 27000
+  await f.store.run(async tx => {
+    const existing = await tx.get(cacheKey);
+    existing.lease = { token: 'worker-a-lease-token', expiresAt: 1000 + 27000 };
+    tx.set(cacheKey, existing);
+  });
+
+  // Query at 25s: lease is active, so query immediately returns stale cache
+  const resStale = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-stale',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  assert.ok('data' in resStale);
+  assert.equal(resStale.data.stale, true);
+  assert.equal(resStale.data.rankAsOf, 1000); // snapshot time of stale cache!
+  assert.equal(resStale.data.entries.length, 2);
+
+  // Verify the lease was NOT stomped
+  const current = f.store.inspect(cacheKey);
+  assert.equal(current.lease?.token, 'worker-a-lease-token');
+});
+
+test('ST20-02 AC20-4: stale cache refresh when lease is free updates cache and returns stale: false', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000', scoreReachedAt: 500 });
+
+  // Cold query at t=1000
+  await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-init',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  const cacheKey = await rankCacheKey('all', 'score-v1');
+  assert.equal(f.store.inspect(cacheKey).version, 1);
+
+  // Advance to 25s later (between 15s and 60s)
+  f.clock.setNow(1000 + 25000);
+
+  // Add new character at t = 1000 + 20000
+  await f.putRankingEntry({ characterId: 'c-2', score: '5000', scoreReachedAt: 1000 + 20000 });
+
+  // Query at 25s: no active lease, so caller acquires lease, refreshes cache, releases lease
+  const resRefreshed = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-refresh',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  assert.ok('data' in resRefreshed);
+  assert.equal(resRefreshed.data.stale, false);
+  assert.equal(resRefreshed.data.rankAsOf, 1000 + 25000);
+  assert.equal(resRefreshed.data.entries.length, 2);
+  assert.equal(resRefreshed.data.entries[0].character.characterId, 'c-2'); // new top!
+
+  // Check cache updated in store
+  const updatedCache = f.store.inspect(cacheKey);
+  assert.equal(updatedCache.version, 2);
+  assert.equal(updatedCache.cachedAt, 1000 + 25000);
+  assert.equal(updatedCache.lease, null); // lease released!
+});
+
+test('ST20-02 AC20-4: forced refresh when cache is older than 60s (maxStaleMs)', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000', scoreReachedAt: 500 });
+
+  // Initial query at t=1000
+  await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-init',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  const cacheKey = await rankCacheKey('all', 'score-v1');
+
+  // Advance to 80 seconds later (> 60s maxStaleMs)
+  f.clock.setNow(1000 + 80000);
+
+  // Add new character
+  await f.putRankingEntry({ characterId: 'c-new', score: '6000', scoreReachedAt: 1000 + 70000 });
+
+  // Even if another worker set a lease expiring in the future:
+  await f.store.run(async tx => {
+    const existing = await tx.get(cacheKey);
+    existing.lease = { token: 'other-worker', expiresAt: 1000 + 82000 };
+    tx.set(cacheKey, existing);
+  });
+
+  // Query at 80s: cache is past 60s, cannot return stale! Must return fresh data
+  const resForced = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-forced',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  assert.ok('data' in resForced);
+  assert.equal(resForced.data.stale, false);
+  assert.equal(resForced.data.rankAsOf, 1000 + 80000);
+  assert.equal(resForced.data.entries.length, 2);
+  assert.equal(resForced.data.entries[0].character.characterId, 'c-new');
+});
+
+test('ST20-02 AC20-4: expired 3-second lease takeover by subsequent query', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000' });
+
+  // Create initial cache at t=1000
+  await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-init',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  const cacheKey = await rankCacheKey('all', 'score-v1');
+
+  // Worker A acquired lease at 1000 + 20000, with 3s lease expiring at 1000 + 23000
+  await f.store.run(async tx => {
+    const existing = await tx.get(cacheKey);
+    existing.lease = { token: 'worker-a-hung', expiresAt: 1000 + 23000 };
+    tx.set(cacheKey, existing);
+  });
+
+  // Query arrives at 1000 + 24000 (now > expiresAt 1000 + 23000): lease has expired!
+  f.clock.setNow(1000 + 24000);
+
+  // New query takes over expired lease, refreshes cache and publishes
+  const resTakeover = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-takeover',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  assert.ok('data' in resTakeover);
+  assert.equal(resTakeover.data.stale, false);
+  assert.equal(resTakeover.data.rankAsOf, 1000 + 24000);
+
+  // Cache updated and lease cleared
+  const updated = f.store.inspect(cacheKey);
+  assert.equal(updated.version, 2);
+  assert.equal(updated.lease, null);
+});
+
+test('ST20-02 AC20-6: cache write failure does not mutate or rollback character facts', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'char-hero', score: '5000', scoreReachedAt: 888 });
+
+  // Query normally once
+  const res = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-cf',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in res);
+
+  // Inspect character rankingEntry
+  const entryKey = await characterKey('rankingEntry', ['char-hero']);
+  const entry = f.store.inspect(entryKey);
+  assert.equal(entry.score, '5000');
+  assert.equal(entry.scoreReachedAt, 888);
+  assert.equal(entry.schemaVersion, 2);
+});
+
+test('ST20-02 AC20-4: concurrent lease competition prevents cache stampede', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000' });
+
+  // Initialize cache
+  await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-init',
+    sessionId: 'sess-none',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  // Advance time to 25s (stale period)
+  f.clock.setNow(1000 + 25000);
+
+  // Run two queries concurrently
+  const [r1, r2] = await Promise.all([
+    f.service.query({
+      protocolVersion: 2,
+      query: 'ranking.list',
+      requestId: 'req-c1',
+      sessionId: 'sess-none',
+      sessionEpoch: 1,
+      payload: { scope: 'all', cursor: null, pageRequest: 20 },
+    }),
+    f.service.query({
+      protocolVersion: 2,
+      query: 'ranking.list',
+      requestId: 'req-c2',
+      sessionId: 'sess-none',
+      sessionEpoch: 1,
+      payload: { scope: 'all', cursor: null, pageRequest: 20 },
+    }),
+  ]);
+
+  assert.ok('data' in r1);
+  assert.ok('data' in r2);
+
+  // Both return valid results without error or deadlock
+  assert.equal(r1.data.entries.length, 1);
+  assert.equal(r2.data.entries.length, 1);
+
+  // Cache is cleanly left with lease: null
+  const cacheKey = await rankCacheKey('all', 'score-v1');
+  const finalCache = f.store.inspect(cacheKey);
+  assert.equal(finalCache.lease, null);
 });

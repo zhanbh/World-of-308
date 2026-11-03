@@ -1,5 +1,6 @@
 import type { RankingEntryEntity } from '../equipment/equipment-model.ts';
 import type { Time } from '../../../shared/src/exact-values.ts';
+import { characterKey } from '../character/character-service.ts';
 
 export type RankingScope = 'all' | 'warrior' | 'hunter';
 
@@ -39,6 +40,24 @@ export interface RankingListResult {
   nextCursor: string | null;
 }
 
+export interface RankCacheLease {
+  token: string;
+  expiresAt: number;
+}
+
+export interface RankCacheEntity {
+  schemaVersion: 2;
+  id: string;
+  scope: RankingScope;
+  scoreConfigRef: string;
+  version: number;
+  cachedAt: number;
+  entries: RankingEntryView[];
+  totalAvailable: number;
+  hasMore: boolean;
+  lease: RankCacheLease | null;
+}
+
 export function isRankingEntryEntity(val: unknown): val is RankingEntryEntity {
   if (!val || typeof val !== 'object') return false;
   const r = val as Partial<RankingEntryEntity>;
@@ -53,4 +72,8 @@ export function isRankingEntryEntity(val: unknown): val is RankingEntryEntity {
     typeof r.scoreConfigRef === 'string' &&
     typeof r.scoreReachedAt === 'number'
   );
+}
+
+export async function rankCacheKey(scope: RankingScope, scoreConfigRef: string): Promise<string> {
+  return await characterKey('rankCache', [scope, scoreConfigRef]);
 }
