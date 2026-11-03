@@ -10,7 +10,8 @@
 
 ## 当前批准（2026-11-03）
 
-用户已批准规格与五项任务图及测试边界，已完成 ST20-01 与 ST20-02 交付；03～05 尚未启动。
+用户已批准规格与五项任务图及测试边界，已完成 ST20-01、ST20-02 与 ST20-03 交付；04～05 尚未启动。
+
 
 ## ST20-01 本地交付（2026-11-03）
 
@@ -34,13 +35,25 @@
 - 定向测试 16/16 通过，关联回归 34/34 通过，两项 TypeScript 编译 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS，merger READY。详见[02证据](../../../reviews/st20-02-verification.md)及[独立合入核验](../../../reviews/st20-02-merge-verification.md)。
 - 本地工作分支已清理；未 push；03～05 尚未启动。
 
+## ST20-03 本地交付（2026-11-03）
+
+03 已实现并独立核验快进合入主干，固定源码 `ad1de71`：
+- 构建 `(score DESC, scoreReachedAt ASC, characterId ASC)` 三段式互斥统计求和算法：$C_1$ 比本人分高 + $C_2$ 同分先达到 + $C_3$ 同分同秒 ID 较小，三段计数相加 + 1 与全量三元组排序排位 100% 严格一致；
+- 换装即时响应：换装或脱装改变评分与达到时间后，`ownRank` 即时计算并反映排名升降，不受首屏 15 秒缓存延迟影响；
+- 大容量超额熔断与优雅降级：支持 `countCapacityLimit` 容量超限检测、故障注入 `simulateCountFailure` 与自定义外部计数器异常保护，触发时优雅降级返回 `ownRank: null`，榜单列表、快照时间与分页游标完全正常可用，严禁伪造“未上榜”或 0；
+- 职业榜单严格隔离：战士角色查询猎人榜单返回 `ownRank: null`，查询战士榜与全榜返回准确排位；
+- 只读与资产不变量：查询与统计全程只读，0 次修改角色事实，`scoreReachedAt` 与评分绝对不变。
+- 定向测试 23/23 通过，关联回归 41/41 通过，两项 TypeScript 编译 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS，merger READY。详见[03证据](../../../reviews/st20-03-verification.md)及[独立合入核验](../../../reviews/st20-03-merge-verification.md)。
+- 本地工作分支已清理；未 push；04～05 尚未启动。
+
 ## 任务列表
 
 1. [ST20-01: 评分排行服务核心、索引排序与分页查询协议](issues/01-ranking-service-query.md)（已合入）
 2. [ST20-02: 短租约原子刷新缓存、TTL 新鲜度机制与并发抢锁](issues/02-cache-lease-ttl.md)（已合入）
-3. [ST20-03: 本人名次三段式精准计数与大容量降级熔断](issues/03-own-rank-counter.md)（已计划）
+3. [ST20-03: 本人名次三段式精准计数与大容量降级熔断](issues/03-own-rank-counter.md)（已合入）
 4. [ST20-04: Cocos 排行榜面板与纯模型协调器](issues/04-cocos-ranking-panel.md)（已计划）
 5. [ST20-05: 换装/强化即时刷新联合验收、物理预算与两轴评审](issues/05-joint-acceptance.md)（已计划）
+
 
 ## 约束与设计真相源
 

@@ -4,7 +4,7 @@
   "jira_actions": false,
   "feature": "warrior-loop-st20",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST20-03 in-progress: own rank triad count & degradation",
+  "current_scope": "ST20-03 merged; awaiting authorization for next ticket",
   "tickets": [
     {
       "id": "ST20-01",
@@ -26,9 +26,12 @@
     },
     {
       "id": "ST20-03",
-      "state": "in-progress",
-      "code_commit": null,
-      "evidence": []
+      "state": "merged",
+      "code_commit": "ad1de71",
+      "evidence": [
+        "docs/reviews/st20-03-verification.md",
+        "docs/reviews/st20-03-merge-verification.md"
+      ]
     },
     {
       "id": "ST20-04",
@@ -44,10 +47,10 @@
     }
   ],
   "verification": {
-    "source_head": "e13ad34",
+    "source_head": "ad1de71",
     "backend_types_exit": 0,
-    "author_related_tests": 34,
-    "creator_build": "not run; pure-model and backend complete for 01 and 02",
+    "author_related_tests": 41,
+    "creator_build": "not run; pure-model and backend complete for 01, 02 and 03",
     "independent_tests": 16,
     "full_seven_stage": "not run; unit and model tests passed",
     "remaining_tickets_started": false,
