@@ -1,3 +1,4 @@
+import './polyfill';
 import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
     input, Input, EventTouch, EventKeyboard, EventMouse, KeyCode, Vec3, view, ResolutionPolicy, game, Game, profiler, sys } from 'cc';
 import { CombatModel, tuning, attackSpeedTuning } from './CombatModel';
@@ -149,14 +150,14 @@ export class Prototype extends Component {
             this.text('强化 K', 110, 242, 13, 60),
             this.text('排行 O', 180, 242, 13, 60),
         ];
-        this.linusLabel = this.text('铁匠·林纳克斯\n[修理 M]', -150, 60, 12, 120);
-        this.linusLabel.color = new Color(245, 190, 120);
-        this.maryLabel = this.text('炉火·玛丽\n[强化 K]', -10, 60, 12, 120);
-        this.maryLabel.color = new Color(255, 140, 170);
-        this.bankNpcLabel = this.text('行长·金库\n[银行 N]', 130, 60, 12, 120);
-        this.bankNpcLabel.color = new Color(130, 220, 245);
-        this.portalLabel = this.text('▶ 前往地下城', 205, 55, 12, 130);
-        this.portalLabel.color = new Color(160, 130, 255);
+        this.linusLabel = this.text('铁匠·林纳克斯\n[修理 M]', -150, 72, 12, 120);
+        this.linusLabel.color = new Color(255, 215, 130);
+        this.maryLabel = this.text('炉火·玛丽\n[强化 K]', -10, 72, 12, 120);
+        this.maryLabel.color = new Color(255, 160, 210);
+        this.bankNpcLabel = this.text('行长·金库\n[银行 N]', 120, 72, 12, 120);
+        this.bankNpcLabel.color = new Color(140, 230, 255);
+        this.portalLabel = this.text('格兰之森\n[传送门 ▶]', 198, 72, 12, 120);
+        this.portalLabel.color = new Color(210, 170, 255);
         this.brokenEquipmentNotice = this.text('', 0, 102, 14, 800);
         this.brokenEquipmentNotice.color = new Color(255, 90, 90);
         this.inventoryNotice = this.text('', 0, 150, 17, 800);
@@ -541,10 +542,10 @@ export class Prototype extends Component {
             return;
         }
         if (this.sceneMode === 'town') {
-            if (Math.hypot(p.x - (-150), p.y - 40) < 45) { void this.toggleRepair(); return; }
-            if (Math.hypot(p.x - (-10), p.y - 40) < 45)  { void this.toggleEnhancement(); return; }
-            if (Math.hypot(p.x - 130, p.y - 40) < 45)   { void this.toggleBank(); return; }
-            if (p.x >= 180 && Math.abs(p.y - 20) < 40)   { this.enterDungeon(); return; }
+            if (Math.hypot(p.x - (-150), p.y - 20) < 45) { void this.toggleRepair(); return; }
+            if (Math.hypot(p.x - (-10), p.y - 20) < 45)  { void this.toggleEnhancement(); return; }
+            if (Math.hypot(p.x - 120, p.y - 20) < 45)   { void this.toggleBank(); return; }
+            if (p.x >= 175 && Math.abs(p.y - 20) < 50)   { this.enterDungeon(); return; }
             if (this.stickId === null && Math.hypot(p.x + 345, p.y + 150) < 95) {
                 this.stickId = id;
                 this.touchMove(e);
@@ -906,6 +907,189 @@ export class Prototype extends Component {
         g.fillColor = new Color().fromHEX(color); g.rect(x, y, w, h); g.fill();
     }
 
+    private drawTown(g: Graphics, _dt: number): void {
+        const time = Date.now() / 1000;
+        this.rect(g, -240, 20, 480, 115, '#121924');
+        this.rect(g, -240, 20, 480, 50, '#1c2635');
+        this.rect(g, -240, 20, 480, 25, '#273447');
+
+        const stars = [[-210, 110], [-170, 125], [-110, 115], [-50, 120], [20, 128], [70, 112], [140, 122], [220, 118]];
+        for (const [sx, sy] of stars) {
+            const twinkle = 0.5 + 0.5 * Math.sin(time * 3 + sx);
+            g.fillColor = new Color(255, 240, 200, Math.round(150 + 100 * twinkle));
+            g.circle(sx, sy, 1.2); g.fill();
+        }
+
+        g.fillColor = new Color(28, 38, 48); g.rect(-220, 25, 120, 65); g.fill();
+        g.fillColor = new Color(130, 45, 40);
+        g.moveTo(-225, 90); g.lineTo(-160, 122); g.lineTo(-95, 90); g.close(); g.fill();
+        g.fillColor = new Color(70, 60, 55); g.rect(-205, 90, 14, 28); g.fill();
+        for (let i = 0; i < 3; i++) {
+            const smokeT = (time * 1.5 + i * 0.8) % 2.5;
+            const smokeX = -198 + Math.sin(smokeT * 2 + i) * 8;
+            const smokeY = 120 + smokeT * 18;
+            const smokeAlpha = Math.max(0, 1 - smokeT / 2.5) * 120;
+            g.fillColor = new Color(200, 200, 210, Math.round(smokeAlpha));
+            g.circle(smokeX, smokeY, 4 + smokeT * 3); g.fill();
+        }
+        g.fillColor = new Color(255, 200, 60, 210); g.roundRect(-145, 45, 20, 22, 3); g.fill();
+        g.strokeColor = new Color(100, 60, 30); g.lineWidth = 1;
+        g.moveTo(-135, 45); g.lineTo(-135, 67); g.moveTo(-145, 56); g.lineTo(-125, 56); g.stroke();
+
+        g.fillColor = new Color(34, 32, 50); g.rect(-60, 25, 100, 72); g.fill();
+        g.fillColor = new Color(50, 42, 85);
+        g.moveTo(-65, 97); g.lineTo(-10, 132); g.lineTo(45, 97); g.close(); g.fill();
+        g.strokeColor = new Color(240, 180, 255, 220); g.lineWidth = 1.5;
+        g.circle(-10, 115, 6); g.stroke();
+        const arcaneGlow = 0.7 + 0.3 * Math.sin(time * 2);
+        g.fillColor = new Color(190, 110, 255, Math.round(180 * arcaneGlow));
+        g.roundRect(-22, 50, 24, 30, 4); g.fill();
+
+        g.fillColor = new Color(42, 52, 64); g.rect(70, 25, 95, 68); g.fill();
+        g.fillColor = new Color(60, 75, 90);
+        g.moveTo(65, 93); g.lineTo(117, 118); g.lineTo(170, 93); g.close(); g.fill();
+        g.strokeColor = new Color(220, 180, 90); g.lineWidth = 1.5;
+        g.moveTo(65, 93); g.lineTo(117, 118); g.lineTo(170, 93); g.stroke();
+        for (const px of [75, 100, 130, 155]) {
+            g.fillColor = new Color(90, 105, 120); g.rect(px, 25, 8, 65); g.fill();
+        }
+        g.fillColor = new Color(160, 130, 50); g.circle(117, 45, 16); g.fill();
+        g.strokeColor = new Color(240, 200, 80); g.lineWidth = 1.5; g.circle(117, 45, 16); g.stroke();
+        g.circle(117, 45, 6); g.stroke();
+
+        this.rect(g, -232, -42, 464, 68, '#2e3a44');
+        g.fillColor = new Color(45, 85, 55); g.rect(-232, 23, 464, 4); g.fill();
+        g.fillColor = new Color(65, 120, 75);
+        for (let gx = -228; gx < 230; gx += 16) {
+            g.moveTo(gx, 23); g.lineTo(gx + 3, 27); g.lineTo(gx + 6, 23); g.fill();
+        }
+        for (let y = -42; y <= 20; y += 14) {
+            const rowOffset = (Math.floor(y / 14) % 2) * 12;
+            for (let x = -232 + rowOffset; x < 232; x += 24) {
+                const shade = 40 + Math.abs((x * 17 + y * 31) % 15);
+                g.fillColor = new Color(shade, shade + 8, shade + 15, 220);
+                g.roundRect(x + 1, y + 1, 22, 12, 2); g.fill();
+                g.strokeColor = new Color(25, 33, 40, 180); g.lineWidth = 0.8;
+                g.roundRect(x + 1, y + 1, 22, 12, 2); g.stroke();
+            }
+        }
+        this.rect(g, -232, -45, 464, 3, '#1d252c');
+
+        for (const lx of [-90, 55]) {
+            g.fillColor = new Color(20, 25, 30); g.rect(lx - 2, -15, 4, 48); g.fill();
+            g.circle(lx, 33, 4); g.fill();
+            g.fillColor = new Color(255, 190, 70, 240); g.roundRect(lx - 5, 23, 10, 12, 2); g.fill();
+            g.strokeColor = new Color(180, 120, 30); g.lineWidth = 1; g.roundRect(lx - 5, 23, 10, 12, 2); g.stroke();
+            const lampPulse = 0.85 + 0.15 * Math.sin(time * 4 + lx);
+            g.fillColor = new Color(255, 210, 100, Math.round(45 * lampPulse));
+            g.circle(lx, 29, 22); g.fill();
+        }
+
+        for (let c = 0; c < 5; c++) {
+            g.fillColor = c % 2 === 0 ? new Color(180, 50, 45) : new Color(235, 185, 70);
+            g.rect(-175 + c * 10, 16, 10, 14); g.fill();
+        }
+        g.strokeColor = new Color(60, 35, 20); g.lineWidth = 1; g.rect(-175, 16, 50, 14); g.stroke();
+        g.fillColor = new Color(90, 60, 35); g.rect(-162, -14, 24, 16); g.fill();
+        g.fillColor = new Color(130, 138, 145);
+        g.rect(-165, 0, 30, 8); g.fill();
+        g.moveTo(-168, 7); g.lineTo(-165, 0); g.lineTo(-135, 0); g.lineTo(-132, 7); g.close(); g.fill();
+        const heatPulse = 0.7 + 0.3 * Math.sin(time * 5);
+        g.strokeColor = new Color(255, Math.round(90 + 50 * heatPulse), 20, 240); g.lineWidth = 2;
+        g.moveTo(-160, 6); g.lineTo(-140, 6); g.stroke();
+        g.fillColor = new Color(255, 140, 30, 220); g.circle(-130, 8, 7 + 2 * Math.sin(time * 6)); g.fill();
+        g.fillColor = new Color(255, 230, 70, 240); g.circle(-130, 8, 4 + 1.5 * Math.sin(time * 8)); g.fill();
+
+        g.fillColor = new Color(90, 35, 130); g.roundRect(-35, 16, 50, 14, 2); g.fill();
+        g.strokeColor = new Color(255, 215, 100); g.lineWidth = 1.2;
+        g.moveTo(-35, 16); g.lineTo(15, 16); g.stroke();
+        g.fillColor = new Color(55, 60, 75); g.roundRect(-22, -10, 24, 22, 4); g.fill();
+        g.strokeColor = new Color(190, 120, 255); g.lineWidth = 1.5; g.roundRect(-22, -10, 24, 22, 4); g.stroke();
+        const flamePulse = Math.sin(time * 4);
+        g.fillColor = new Color(240, 80, 210, Math.round(190 + 50 * flamePulse));
+        g.ellipse(-10, 8, 9, 6 + 1.5 * flamePulse); g.fill();
+        g.fillColor = new Color(100, 230, 255, 220);
+        g.circle(-10, 8, 3.5); g.fill();
+        for (let sp = 0; sp < 4; sp++) {
+            const st = (time * 2 + sp * 1.6) % 3;
+            const sx = -10 + Math.sin(st * 3 + sp) * 12;
+            const sy = 10 + st * 12;
+            const sa = Math.max(0, 1 - st / 3) * 230;
+            g.fillColor = new Color(220, 140, 255, Math.round(sa));
+            g.circle(sx, sy, 1.8); g.fill();
+        }
+
+        g.fillColor = new Color(75, 50, 35); g.roundRect(100, -8, 40, 22, 2); g.fill();
+        g.strokeColor = new Color(190, 150, 90); g.lineWidth = 1; g.roundRect(100, -8, 40, 22, 2); g.stroke();
+        g.fillColor = new Color(90, 55, 30); g.rect(103, 10, 16, 12); g.fill();
+        g.fillColor = new Color(255, 215, 0, 245);
+        g.ellipse(111, 19, 7, 5); g.fill();
+        g.fillColor = new Color(255, 245, 140, 250); g.circle(109, 20, 1.8); g.circle(113, 19, 1.5); g.fill();
+        const gemSparkle = 0.5 + 0.5 * Math.sin(time * 6);
+        g.fillColor = new Color(255, 60, 80, Math.round(200 * gemSparkle));
+        g.circle(111, 21, 2); g.fill();
+        g.strokeColor = new Color(230, 190, 70); g.lineWidth = 1.2;
+        g.moveTo(132, 10); g.lineTo(132, 24); g.moveTo(126, 21); g.lineTo(138, 21); g.stroke();
+        g.circle(126, 18, 2.5); g.circle(138, 18, 2.5); g.stroke();
+
+        g.fillColor = new Color(55, 50, 70);
+        g.rect(178, -15, 10, 65); g.fill();
+        g.rect(218, -15, 10, 65); g.fill();
+        g.rect(174, 46, 58, 10); g.fill();
+        g.strokeColor = new Color(130, 100, 180); g.lineWidth = 1.2;
+        g.rect(178, -15, 10, 65); g.stroke();
+        g.rect(218, -15, 10, 65); g.stroke();
+        g.rect(174, 46, 58, 10); g.stroke();
+        const runeGlow = 0.6 + 0.4 * Math.sin(time * 2.5);
+        g.fillColor = new Color(160, 120, 255, Math.round(220 * runeGlow));
+        for (const ry of [0, 16, 32]) {
+            g.circle(183, ry, 2); g.fill();
+            g.circle(223, ry, 2); g.fill();
+        }
+        const portalPulse = 0.8 + 0.2 * Math.sin(time * 3);
+        g.fillColor = new Color(60, 20, 110, Math.round(180 * portalPulse));
+        g.ellipse(203, 18, 15 * portalPulse, 26 * portalPulse); g.fill();
+        g.fillColor = new Color(130, 50, 220, Math.round(210 * portalPulse));
+        g.ellipse(203, 18, 10 * portalPulse, 20 * portalPulse); g.fill();
+        g.fillColor = new Color(80, 220, 255, Math.round(230 * portalPulse));
+        g.ellipse(203, 18, 5 * portalPulse, 12 * portalPulse); g.fill();
+        g.fillColor = new Color(255, 255, 255, 240);
+        g.circle(203, 18, 2.5); g.fill();
+        g.strokeColor = new Color(190, 140, 255, Math.round(240 * portalPulse));
+        g.lineWidth = 2;
+        g.ellipse(203, 18, 15 * portalPulse, 26 * portalPulse); g.stroke();
+        for (let vp = 0; vp < 5; vp++) {
+            const vt = (time * 1.8 + vp * 1.2) % 2.5;
+            const vx = 203 + Math.cos(time * 3 + vp * 1.3) * (8 + vt * 3);
+            const vy = 5 + vt * 16;
+            const va = Math.max(0, 1 - vt / 2.5) * 220;
+            g.fillColor = new Color(180, 220, 255, Math.round(va));
+            g.circle(vx, vy, 1.6); g.fill();
+        }
+
+        const px = this.model.x;
+        const py = this.model.y;
+        const npcs = [
+            { x: -150, color: new Color(255, 200, 110) },
+            { x: -10,  color: new Color(255, 150, 200) },
+            { x: 120,  color: new Color(130, 225, 255) },
+            { x: 198,  color: new Color(200, 160, 255) },
+        ];
+        for (const npc of npcs) {
+            const dist = Math.hypot(px - npc.x, py - 10);
+            if (dist < 48) {
+                const auraBounce = 0.7 + 0.3 * Math.sin(time * 5);
+                g.fillColor = new Color(npc.color.r, npc.color.g, npc.color.b, Math.round(55 * auraBounce));
+                g.ellipse(npc.x, -14, 28, 10); g.fill();
+                g.strokeColor = new Color(npc.color.r, npc.color.g, npc.color.b, Math.round(180 * auraBounce));
+                g.lineWidth = 1.2; g.ellipse(npc.x, -14, 28, 10); g.stroke();
+                const bounceY = Math.sin(time * 6) * 3;
+                g.fillColor = new Color(npc.color.r, npc.color.g, npc.color.b, 230);
+                g.moveTo(npc.x - 5, 50 + bounceY); g.lineTo(npc.x + 5, 50 + bounceY); g.lineTo(npc.x, 45 + bounceY); g.close(); g.fill();
+            }
+        }
+    }
+
     private draw(dt: number): void {
         const ui = this.controls;
         ui.clear();
@@ -919,24 +1103,7 @@ export class Prototype extends Component {
         g.node.setPosition(shake.x * 2, shake.y * 2);
         g.clear();
         if (this.sceneMode === 'town') {
-            this.rect(g, -240, -135, 480, 270, '#19242d');
-            this.rect(g, -232, -42, 464, 135, '#2b3b44');
-            g.strokeColor = new Color(55, 75, 88); g.lineWidth = 0.5;
-            for (let x = -224; x < 240; x += 24) { g.moveTo(x, -42); g.lineTo(x, 93); }
-            for (let y = -42; y <= 93; y += 24) { g.moveTo(-232, y); g.lineTo(232, y); }
-            g.stroke();
-            g.fillColor = new Color(75, 55, 45); g.rect(-170, 0, 40, 28); g.fill();
-            g.fillColor = new Color(140, 130, 120); g.rect(-165, 12, 30, 10); g.fill();
-            g.strokeColor = new Color(220, 170, 110); g.lineWidth = 1; g.rect(-170, 0, 40, 28); g.stroke();
-            g.fillColor = new Color(85, 40, 35); g.rect(-30, 0, 40, 28); g.fill();
-            g.fillColor = new Color(255, 120, 50, 220); g.ellipse(-10, 14, 10, 8); g.fill();
-            g.strokeColor = new Color(255, 150, 170); g.lineWidth = 1; g.rect(-30, 0, 40, 28); g.stroke();
-            g.fillColor = new Color(35, 65, 80); g.rect(110, 0, 40, 28); g.fill();
-            g.fillColor = new Color(245, 195, 50); g.rect(125, 9, 10, 10); g.fill();
-            g.strokeColor = new Color(100, 200, 230); g.lineWidth = 1; g.rect(110, 0, 40, 28); g.stroke();
-            const pulse = 0.7 + 0.3 * Math.sin(Date.now() / 250);
-            g.fillColor = new Color(110, 45, 180, Math.round(180 * pulse)); g.rect(190, -10, 30, 55); g.fill();
-            g.strokeColor = new Color(180, 120, 255, Math.round(230 * pulse)); g.lineWidth = 2; g.rect(190, -10, 30, 55); g.stroke();
+            this.drawTown(g, dt);
         } else {
             this.rect(g, -240, -135, 480, 270, '#18252d');
             this.rect(g, -232, -42, 464, 135, '#34433d');

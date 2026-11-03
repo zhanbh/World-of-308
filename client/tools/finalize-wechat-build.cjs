@@ -29,6 +29,38 @@ if (!game.subpackages.some(item => item.name === 'resources')) {
 }
 settings.assets.subpackages ||= [];
 if (!settings.assets.subpackages.includes('resources')) settings.assets.subpackages.push('resources');
+// Inject structuredClone polyfill into WeChat entry file if needed
+const entryJsPath = path.join(root, 'game.js');
+if (fs.existsSync(entryJsPath)) {
+    let entryCode = fs.readFileSync(entryJsPath, 'utf8');
+    if (!entryCode.includes('structuredClone')) {
+        const polyfillCode = `// Polyfill structuredClone for WeChat Mini Game runtime
+(function() {
+  function __deepClone(v) {
+    if (v === null || typeof v !== 'object') return v;
+    if (v instanceof Date) return new Date(v.getTime());
+    if (v instanceof Set) return new Set(Array.from(v, __deepClone));
+    if (v instanceof Map) return new Map(Array.from(v.entries(), function(e) { return [__deepClone(e[0]), __deepClone(e[1])]; }));
+    if (Array.isArray(v)) return v.map(__deepClone);
+    var o = {};
+    for (var k of Object.keys(v)) o[k] = __deepClone(v[k]);
+    return o;
+  }
+  if (typeof globalThis !== 'undefined' && typeof globalThis.structuredClone !== 'function') {
+    globalThis.structuredClone = __deepClone;
+  }
+  if (typeof GameGlobal !== 'undefined' && typeof GameGlobal.structuredClone !== 'function') {
+    GameGlobal.structuredClone = __deepClone;
+  }
+  if (typeof window !== 'undefined' && typeof window.structuredClone !== 'function') {
+    window.structuredClone = __deepClone;
+  }
+})();
+`;
+        fs.writeFileSync(entryJsPath, polyfillCode + entryCode);
+    }
+}
 fs.writeFileSync(gamePath, JSON.stringify(game, null, 2) + '\n');
 fs.writeFileSync(settingsPath, JSON.stringify(settings));
-console.log('Finalized resources bundle as a WeChat subpackage (no texture conversion)');
+console.log('Finalized resources bundle and injected structuredClone polyfill for WeChat');
+
