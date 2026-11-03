@@ -10,7 +10,8 @@
 
 ## 当前批准（2026-11-03）
 
-用户已批准规格与五项任务图及测试边界，已完成 ST20-01、ST20-02 与 ST20-03 交付；04～05 尚未启动。
+用户已批准规格与五项任务图及测试边界，已完成 ST20-01、ST20-02、ST20-03 与 ST20-04 交付；05 尚未启动。
+
 
 
 ## ST20-01 本地交付（2026-11-03）
@@ -46,13 +47,25 @@
 - 定向测试 23/23 通过，关联回归 41/41 通过，两项 TypeScript 编译 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS，merger READY。详见[03证据](../../../reviews/st20-03-verification.md)及[独立合入核验](../../../reviews/st20-03-merge-verification.md)。
 - 本地工作分支已清理；未 push；04～05 尚未启动。
 
+## ST20-04 本地交付（2026-11-03）
+
+04 已实现并独立核验快进合入主干，固定源码 `e30bde7`：
+- 构建纯模型协调器 `RankingCoordinator.ts`：完备状态机管理（`closed` -> `loading` -> `ready` / `paging` / `failed`），严格 `generation` 代次隔离彻底丢弃在途延迟迟包；
+- 游标分页与客户端幂等去重：`loadMore` 携带 `nextCursor` 触底拉取，按 `characterId` 唯一性集合自动去重；
+- 异常重试与断网恢复：网络/协议错误进入 `failed` 状态并保留错误码，提供 `retry()` 优雅恢复；
+- 构建 Cocos 表现层组件 `RankingPanel.ts`：全榜/分职业榜单切换选项卡、金色高光本人名次置顶横幅（`OwnRankBanner`）、前三名金银铜特殊着色、15 秒缓存快照/实时新鲜度状态显示、触底翻页与错误重试；
+- 交互与生命周期保护：统一双端触控/鼠标防误触与防重复提交，`dispose()` 完整注销事件并安全释放节点。
+- 定向测试 6/6 通过，关联回归 47/47 通过，两项 TypeScript 编译 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS，merger READY。详见[04证据](../../../reviews/st20-04-verification.md)及[独立合入核验](../../../reviews/st20-04-merge-verification.md)。
+- 本地工作分支已清理；未 push；05 尚未启动。
+
 ## 任务列表
 
 1. [ST20-01: 评分排行服务核心、索引排序与分页查询协议](issues/01-ranking-service-query.md)（已合入）
 2. [ST20-02: 短租约原子刷新缓存、TTL 新鲜度机制与并发抢锁](issues/02-cache-lease-ttl.md)（已合入）
 3. [ST20-03: 本人名次三段式精准计数与大容量降级熔断](issues/03-own-rank-counter.md)（已合入）
-4. [ST20-04: Cocos 排行榜面板与纯模型协调器](issues/04-cocos-ranking-panel.md)（已计划）
+4. [ST20-04: Cocos 排行榜面板与纯模型协调器](issues/04-cocos-ranking-panel.md)（已合入）
 5. [ST20-05: 换装/强化即时刷新联合验收、物理预算与两轴评审](issues/05-joint-acceptance.md)（已计划）
+
 
 
 ## 约束与设计真相源

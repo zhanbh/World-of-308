@@ -4,7 +4,7 @@
   "jira_actions": false,
   "feature": "warrior-loop-st20",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST20-04 in-progress: Cocos RankingPanel and RankingCoordinator",
+  "current_scope": "ST20-04 merged; awaiting authorization for ST20-05",
   "tickets": [
     {
       "id": "ST20-01",
@@ -35,9 +35,12 @@
     },
     {
       "id": "ST20-04",
-      "state": "in-progress",
-      "code_commit": null,
-      "evidence": []
+      "state": "merged",
+      "code_commit": "e30bde7",
+      "evidence": [
+        "docs/reviews/st20-04-verification.md",
+        "docs/reviews/st20-04-merge-verification.md"
+      ]
     },
     {
       "id": "ST20-05",
@@ -47,10 +50,10 @@
     }
   ],
   "verification": {
-    "source_head": "ad1de71",
+    "source_head": "e30bde7",
     "backend_types_exit": 0,
-    "author_related_tests": 41,
-    "creator_build": "not run; pure-model and backend complete for 01, 02 and 03",
+    "author_related_tests": 47,
+    "creator_build": "not run; pure-model and Cocos components complete for 01, 02, 03 and 04",
     "independent_tests": 16,
     "full_seven_stage": "not run; unit and model tests passed",
     "remaining_tickets_started": false,
