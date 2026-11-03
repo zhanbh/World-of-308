@@ -1,0 +1,54 @@
+{
+  "published": false,
+  "status": "in-progress",
+  "jira_actions": false,
+  "feature": "warrior-loop-st20",
+  "integration_branch": "feat-1.0.0",
+  "current_scope": "ST20-01 authorized",
+  "tickets": [
+    {
+      "id": "ST20-01",
+      "state": "in-progress",
+      "code_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "ST20-02",
+      "state": "planned",
+      "code_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "ST20-03",
+      "state": "planned",
+      "code_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "ST20-04",
+      "state": "planned",
+      "code_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "ST20-05",
+      "state": "planned",
+      "code_commit": null,
+      "evidence": []
+    }
+  ],
+  "verification": {
+    "source_head": null,
+    "backend_types_exit": null,
+    "author_related_tests": null,
+    "creator_build": "not run; pure-model and backend in progress",
+    "independent_tests": null,
+    "full_seven_stage": "not run",
+    "remaining_tickets_started": false,
+    "date": "2026-11-03",
+    "independent_merger": null,
+    "models_types_exit": null,
+    "platform_device_status": "gap",
+    "accepted_full_file_hashes_match": 5
+  }
+}

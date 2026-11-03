@@ -1,7 +1,9 @@
 ---
 artifact_kind: implementation-ticket
 artifact_id: ticket:warrior-loop-st20-01
-status: draft
+status: accepted
+revision: cdf65d73c6c0f28f0219b005099e04ad674101391b93ed62835ea91956aec2aa
+accepted_revision: cdf65d73c6c0f28f0219b005099e04ad674101391b93ed62835ea91956aec2aa
 implements: [ST20]
 blocked_by: []
 ---

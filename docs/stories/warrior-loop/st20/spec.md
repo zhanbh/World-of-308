@@ -1,7 +1,11 @@
 ---
 artifact_kind: specification
 artifact_id: spec:warrior-loop-st20
-status: draft
+status: accepted
+spec_hash: 3a92a12e437bc97ece2d0dd9a740afa85517fedbb6dfcde7ba78e787c61afd2a
+accepted_revision: 3a92a12e437bc97ece2d0dd9a740afa85517fedbb6dfcde7ba78e787c61afd2a
+approval_kind: human
+approval_evidence: '好的，先开始01吧'
 stories: [ST20]
 ---
 # ST20 实施规格草案：查看当前装备评分排行榜
