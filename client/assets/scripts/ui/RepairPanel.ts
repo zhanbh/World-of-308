@@ -457,8 +457,8 @@ export class RepairPanel {
           const templateName = this.options.templateLabel ? this.options.templateLabel(item.templateRef) : item.templateRef;
           row.slotLabel.string = `[${slotName}] ${templateName}`;
 
-          const cur = item.durability.current;
-          const max = item.durability.max;
+          const cur = item.durability.current ?? 0;
+          const max = item.durability.max ?? 1;
           row.durLabel.string = `耐久: ${cur} / ${max}`;
           if (cur === 0) {
             row.durLabel.color = new Color(255, 80, 80);
@@ -509,8 +509,8 @@ export class RepairPanel {
         const templateName = this.options.templateLabel ? this.options.templateLabel(item.templateRef) : item.templateRef;
         this.singleItemTitleLabel.string = `【${slotName}】${templateName} (装等 ${item.itemLevel} · 品质 ${item.quality})`;
 
-        const cur = item.durability.current;
-        const max = item.durability.max;
+        const cur = item.durability.current ?? 0;
+        const max = item.durability.max ?? 1;
         this.singleDurabilityLabel.string = `当前耐久度: ${cur} / ${max}`;
         if (cur === 0) {
           this.singleDurabilityLabel.color = new Color(255, 80, 80);

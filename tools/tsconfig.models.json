@@ -44,6 +44,7 @@
     "../client/assets/scripts/net/RepairCoordinator.ts",
     "../client/assets/scripts/net/EnhancementCoordinator.ts",
     "../client/assets/scripts/net/CollectionCoordinator.ts",
-    "../client/assets/scripts/net/RankingCoordinator.ts"
+    "../client/assets/scripts/net/RankingCoordinator.ts",
+    "../client/assets/scripts/net/PrototypePreview.ts"
   ]
 }

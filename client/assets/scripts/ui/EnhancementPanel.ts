@@ -358,7 +358,8 @@ export class EnhancementPanel {
           const diff = Number(apChange.after) - Number(apChange.before);
           this.apChangeLabel.string = `攻击力: ${apChange.before} → ${apChange.after} (+${diff})`;
         } else {
-          this.apChangeLabel.string = `当前攻击力: ${item.attackPower}`;
+          const curAp = item.enhancementBonus?.attackPower ?? (item as any).attackPower ?? '基础';
+          this.apChangeLabel.string = `当前攻击力: ${curAp}`;
         }
 
         // Failure consequence risk warning
@@ -386,7 +387,8 @@ export class EnhancementPanel {
         });
         this.costMaterialLabel.string = matLines.length > 0 ? `材料: ${matLines.join('，')}` : '材料: 无';
       } else {
-        this.apChangeLabel.string = `当前攻击力: ${item.attackPower}`;
+        const curAp = item.enhancementBonus?.attackPower ?? (item as any).attackPower ?? '基础';
+        this.apChangeLabel.string = `当前攻击力: ${curAp}`;
         this.riskLabel.string = '';
         this.costGoldLabel.string = '';
         this.costMaterialLabel.string = '';

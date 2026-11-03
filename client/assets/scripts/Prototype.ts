@@ -12,9 +12,14 @@ import { connectBankPreview } from './net/BankPreview';
 import type { BankCoordinator } from './net/BankCoordinator';
 import { RepairPanel } from './ui/RepairPanel';
 import type { RepairCoordinator } from './net/RepairCoordinator';
+import { EnhancementPanel } from './ui/EnhancementPanel';
+import type { EnhancementCoordinator } from './net/EnhancementCoordinator';
+import { RankingPanel } from './ui/RankingPanel';
+import type { RankingCoordinator, RankingIdentity } from './net/RankingCoordinator';
 import { InventoryPanel } from './ui/InventoryPanel';
 import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
+import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator } from './net/PrototypePreview';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
 import type {CombatLifecycleAdapter} from './net/CombatLifecycleAdapter';
 import { MovementCoordinator } from './net/MovementCoordinator';
@@ -88,6 +93,15 @@ export class Prototype extends Component {
     private repairCoordinator: RepairCoordinator | null = null;
     private repairKeyHeld = false;
     private repairHadStats = false;
+    private enhancementPanel: EnhancementPanel | null = null;
+    private enhancementCoordinator: EnhancementCoordinator | null = null;
+    private enhancementKeyHeld = false;
+    private enhancementHadStats = false;
+    private rankingPanel: RankingPanel | null = null;
+    private rankingCoordinator: RankingCoordinator | null = null;
+    private rankingKeyHeld = false;
+    private rankingHadStats = false;
+    private rankingIdentity: RankingIdentity | null = null;
     private brokenEquipmentNotice!: Label;
     private inventoryPanel: InventoryPanel | null = null;
     private inventoryCoordinator: InventoryCoordinator | null = null;
@@ -120,11 +134,13 @@ export class Prototype extends Component {
         this.text('背包 B', 430, 242, 16, 80);
         this.text('银行 N', 430, 198, 16, 80);
         this.text('修理 M', 430, 154, 16, 80);
+        this.text('强化 K', 430, 110, 16, 80);
+        this.text('排行 O', 430, 66, 16, 80);
         this.brokenEquipmentNotice = this.text('', 0, 102, 14, 800);
         this.brokenEquipmentNotice.color = new Color(255, 90, 90);
         this.inventoryNotice = this.text('N：银行（需本机预览服务）', 0, 150, 17, 800);
         this.challengeNotice = this.text('战斗链路：本地沙盒模式（按 C 或传参 challengePreview=1 连权威服务）', 0, 126, 14, 800);
-        this.text('WASD/摇杆移动 · 空格普攻 · E/F/Q/G技能 · 1首本/2工坊/3裂隙 · 走向右侧绿门/换房', 0, 212, 14);
+        this.text('WASD移动 · 空格普攻 · E/F/Q/G技能 · B背包 · N银行 · M修理 · K强化 · O排行', 0, 212, 14);
         this.healthStatus = this.text('', -130, 178, 17, 660);
         this.healthStatus.horizontalAlign = Label.HorizontalAlign.LEFT;
         this.healthStatus.overflow = Label.Overflow.SHRINK;
@@ -203,6 +219,8 @@ export class Prototype extends Component {
         ++this.bankGeneration;
         this.bankPanel?.dispose();
         this.repairPanel?.dispose();
+        this.enhancementPanel?.dispose();
+        this.rankingPanel?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
         this.lootPanel?.dispose();
@@ -245,6 +263,31 @@ export class Prototype extends Component {
                 else if (this.repairHadStats) profiler.showStats();
             },
         });
+    }
+
+    public attachEnhancement(coordinator: EnhancementCoordinator, contextId: string, labels: Record<string, string> = {}): void {
+        this.enhancementPanel?.dispose();
+        this.enhancementCoordinator = coordinator;
+        this.enhancementPanel = new EnhancementPanel(this.node, coordinator, {
+            contextId,
+            templateLabel: id => labels[id] ?? id,
+            onVisibility: visible => {
+                if (visible) { this.clearInput(); this.enhancementHadStats = profiler.isShowingStats(); profiler.hideStats(); }
+                else if (this.enhancementHadStats) profiler.showStats();
+            },
+        });
+    }
+
+    public attachRanking(coordinator: RankingCoordinator, identity?: RankingIdentity): void {
+        this.rankingPanel?.dispose();
+        this.rankingCoordinator = coordinator;
+        this.rankingPanel = new RankingPanel(this.node, coordinator, {
+            onVisibility: visible => {
+                if (visible) { this.clearInput(); this.rankingHadStats = profiler.isShowingStats(); profiler.hideStats(); }
+                else if (this.rankingHadStats) profiler.showStats();
+            },
+        });
+        if (identity) this.rankingIdentity = { ...identity };
     }
 
     public attachChallenge(coordinator: MovementCoordinator, preview = false, loot?: LootSceneCoordinator, lifecycle?: (clearInput:()=>void,reenter:()=>void)=>CombatLifecycleAdapter, reenter?:()=>void): void {
@@ -304,8 +347,33 @@ export class Prototype extends Component {
 
     private async toggleRepair(): Promise<void> {
         if (this.repairPanel?.isOpen) { this.repairPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        if (!this.repairPanel) {
+            const sandbox = createSandboxRepairCoordinator();
+            this.attachRepair(sandbox.coordinator, sandbox.contextId, sandbox.labels);
+        }
         await this.repairPanel?.open();
+    }
+
+    private async toggleEnhancement(): Promise<void> {
+        if (this.enhancementPanel?.isOpen) { this.enhancementPanel.close(); return; }
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        if (!this.enhancementPanel) {
+            const sandbox = createSandboxEnhancementCoordinator();
+            this.attachEnhancement(sandbox.coordinator, sandbox.contextId, sandbox.labels);
+        }
+        await this.enhancementPanel?.open();
+    }
+
+    private async toggleRanking(): Promise<void> {
+        if (this.rankingPanel?.isOpen) { this.rankingPanel.close(); return; }
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen) return;
+        if (!this.rankingPanel) {
+            const sandbox = createSandboxRankingCoordinator();
+            this.attachRanking(sandbox.coordinator, sandbox.identity);
+        }
+        const identity = this.rankingIdentity ?? { sessionId: 'sandbox-session', sessionEpoch: 1, characterId: 'char-test-308' };
+        await this.rankingPanel?.open(identity);
     }
 
     private async toggleInventory(): Promise<void> {
@@ -371,6 +439,8 @@ export class Prototype extends Component {
             }
             return;
         }
+        if (p.x >= 390 && p.x <= 470 && p.y >= 45 && p.y <= 80) { void this.toggleRanking(); return; }
+        if (p.x >= 390 && p.x <= 470 && p.y >= 90 && p.y <= 125) { void this.toggleEnhancement(); return; }
         if (p.x >= 390 && p.x <= 470 && p.y >= 135 && p.y <= 170) { void this.toggleRepair(); return; }
         if (p.x >= 390 && p.x <= 470 && p.y >= 180 && p.y <= 215) { void this.toggleBank(); return; }
         if (p.x >= 390 && p.x <= 470 && p.y >= 225 && p.y <= 260) { void this.toggleInventory(); return; }
@@ -457,13 +527,17 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.KEY_C) { void this.toggleChallenge(); return; }
         if (e.keyCode === KeyCode.KEY_N) { if (!this.bankKeyHeld) { this.bankKeyHeld = true; void this.toggleBank(); } return; }
         if (e.keyCode === KeyCode.KEY_M) { if (!this.repairKeyHeld) { this.repairKeyHeld = true; void this.toggleRepair(); } return; }
+        if (e.keyCode === KeyCode.KEY_K) { if (!this.enhancementKeyHeld) { this.enhancementKeyHeld = true; void this.toggleEnhancement(); } return; }
+        if (e.keyCode === KeyCode.KEY_O) { if (!this.rankingKeyHeld) { this.rankingKeyHeld = true; void this.toggleRanking(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.repairPanel?.isOpen) { this.repairPanel.close(); return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.enhancementPanel?.isOpen) { this.enhancementPanel.close(); return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.rankingPanel?.isOpen) { this.rankingPanel.close(); return; }
         if (e.keyCode === KeyCode.KEY_B) { if (!this.inventoryKeyHeld) { this.inventoryKeyHeld = true; void this.toggleInventory(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if (e.keyCode === KeyCode.ENTER && this.encounter.state !== 'fighting') {
             if (this.encounter.state !== 'ready') this.restartEncounter();
             this.encounter.start(); return;
@@ -495,6 +569,8 @@ export class Prototype extends Component {
     private keyUp(e: EventKeyboard): void {
         if (e.keyCode === KeyCode.KEY_N) this.bankKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_M) this.repairKeyHeld = false;
+        if (e.keyCode === KeyCode.KEY_K) this.enhancementKeyHeld = false;
+        if (e.keyCode === KeyCode.KEY_O) this.rankingKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_B) this.inventoryKeyHeld = false;
         this.keys.delete(e.keyCode);
         if (e.keyCode === KeyCode.SPACE && this.attackIds.size === 0) this.model.release();
@@ -505,7 +581,7 @@ export class Prototype extends Component {
     public retryCombat():void {void this.lifecycle?.retry();}
     public reenterGame():void {this.lifecycle?.reenter();}
     private onShowAuthority():void {void this.lifecycle?.show();}
-    private onHideInput(): void { void this.lifecycle?.hide(); this.bankKeyHeld = false; if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; } this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.clearInput(); }
+    private onHideInput(): void { void this.lifecycle?.hide(); this.bankKeyHeld = false; if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; } this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.repairKeyHeld = false; this.enhancementKeyHeld = false; this.rankingKeyHeld = false; this.clearInput(); }
 
     private clearInput(): void {
         this.keys.clear(); this.attackIds.clear(); this.stickId = null;
@@ -538,12 +614,13 @@ export class Prototype extends Component {
         this.inventoryPanel?.update();
         this.bankPanel?.update();
         this.repairPanel?.update();
+        this.enhancementPanel?.update();
         this.checkBrokenEquipment();
         if(this.challengeCoordinator){this.updateAuthority(dt);return;}
         this.frames++; this.fpsTime += dt;
         if (this.fpsTime >= 0.5) { this.fps = Math.round(this.frames / this.fpsTime); this.frames = this.fpsTime = 0; }
         const has = (a: KeyCode, b: KeyCode) => Number(this.keys.has(a) || this.keys.has(b));
-        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen;
+        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen;
         const x = inventoryBlocked ? 0 : this.horizontalInput();
         const y = inventoryBlocked ? 0 : this.stickId !== null ? this.axis.y : has(KeyCode.KEY_W, KeyCode.ARROW_UP) - has(KeyCode.KEY_S, KeyCode.ARROW_DOWN);
         this.accumulator += Math.min(dt, 0.1);
