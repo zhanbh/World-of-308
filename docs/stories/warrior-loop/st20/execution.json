@@ -4,13 +4,16 @@
   "jira_actions": false,
   "feature": "warrior-loop-st20",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST20-01 authorized",
+  "current_scope": "ST20-01 merged; awaiting authorization for next ticket",
   "tickets": [
     {
       "id": "ST20-01",
-      "state": "in-progress",
-      "code_commit": null,
-      "evidence": []
+      "state": "merged",
+      "code_commit": "2805636",
+      "evidence": [
+        "docs/reviews/st20-01-verification.md",
+        "docs/reviews/st20-01-merge-verification.md"
+      ]
     },
     {
       "id": "ST20-02",
@@ -38,16 +41,16 @@
     }
   ],
   "verification": {
-    "source_head": null,
-    "backend_types_exit": null,
-    "author_related_tests": null,
-    "creator_build": "not run; pure-model and backend in progress",
-    "independent_tests": null,
-    "full_seven_stage": "not run",
+    "source_head": "2805636",
+    "backend_types_exit": 0,
+    "author_related_tests": 26,
+    "creator_build": "not run; pure-model and backend complete for 01",
+    "independent_tests": 8,
+    "full_seven_stage": "not run; unit and model tests passed",
     "remaining_tickets_started": false,
     "date": "2026-11-03",
-    "independent_merger": null,
-    "models_types_exit": null,
+    "independent_merger": "MERGED",
+    "models_types_exit": 0,
     "platform_device_status": "gap",
     "accepted_full_file_hashes_match": 5
   }

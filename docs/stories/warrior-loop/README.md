@@ -146,6 +146,7 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 - **ST19-04（生命周期联动与套装收集展示）**：商店出售、强化损毁（+13~+20）与金库跨域转移即时同步持有并在最后一件移出时恢复缺件判定；客户端纯模型协调器（`CollectionCoordinator.ts`）维护 11 部位套装进度（`X/11`）、高亮/灰显、通关回执解析反馈及 generation 异步隔离已合入，源码 `583e655`；全量 7 阶段门禁检查 7/7 全部通过（867 项测试全部通过），见[04记录](../../reviews/st19-04-verification.md)及[独立核验](../../reviews/st19-04-merge-verification.md)。
 - **ST19-05（全链路大闭环联合验收、预算测量与两轴独立评审）**：0 到 11 件渐进收集定向补齐、账号金库跨角色共享与多角色持有隔离、商店出售与强化损毁即时恢复未收集、满件平滑回退加权随机；终局物理事务预算实测满足硬限制（R42 <= 44, W33 <= 33, calls 78 <= 80, writeBytes 327,245 <= 1.5 MiB, holdings 461 <= 16 KiB）；28 个实际物理写点故障注入 100% 干净原子回滚无残留；并发 OCC 竞争串行化安全裁决已交付合入，源码 `c33a0bd`；全量 7 阶段门禁检查 7/7 全部通过（871 项测试全部通过），两轴独立评审通过（Standards 0 违规，Spec 0 偏离）。见[05记录](../../reviews/st19-05-verification.md)、[05合入核验](../../reviews/st19-05-merge-verification.md)、[Standards独立评审](../../reviews/st19-standards-independent-review.md)及[Spec独立评审](../../reviews/st19-spec-independent-review.md)。ST19 全部 5 项子任务完整交付合入。
 
-## ST20 本地实施准备（2026-11-03）
+## ST20 本地实施记录（2026-11-03）
 
-用户已指示推进 ST20（查看当前装备评分排行榜）。已完成草案规格与五项任务图编制，详见 [ST20 任务入口](st20/README.md)、[实施规格草案](st20/spec.md) 及 [五项任务图提案](st20/task-plan.md)。硬依赖 ST05、ST18 均已在本地主干交付。目前处于待用户人工确认状态，尚未启动业务编码。
+用户已指示推进 ST20（查看当前装备评分排行榜）。实施规格与五项任务图已获用户确认并冻结，详见 [ST20 任务入口](st20/README.md)、[实施规格](st20/spec.md) 及 [五项任务图](st20/task-plan.md)。硬依赖 ST05、ST18 均已在本地主干交付。
+- **ST20-01（评分排行服务核心、索引排序与分页查询协议）**：构建 `RankingService` 服务核心并接入 `ranking.list` 协议；建立 `(score DESC, scoreReachedAt ASC, characterId ASC)` 稳定三元组排序；支持全服总榜（`all`）、战士榜（`warrior`）、猎人榜（`hunter`）与 `scoreConfigRef` 隔离；实现 HMAC-SHA256 签名有界游标编解码（单页 1~50 条，默认 20 条，防篡改、防跨域与 10 分钟 TTL 过期保护）；查询纯只读（0 次 `tx.set`，存储文档无任何修改，`scoreReachedAt` 绝对不变）已交付合入，源码 `2805636`；定向测试 8/8 通过，关联回归 26/26 通过，两项 TS 检查 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS，见[01记录](../../reviews/st20-01-verification.md)及[独立核验](../../reviews/st20-01-merge-verification.md)。
