@@ -1,10 +1,10 @@
 {
   "published": false,
-  "status": "ST19-04-merged",
+  "status": "all-merged",
   "jira_actions": false,
   "feature": "warrior-loop-st19",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST19-01, ST19-02, ST19-03, and ST19-04 merged; ready for ST19-05",
+  "current_scope": "ST19-01, ST19-02, ST19-03, ST19-04, and ST19-05 merged; ST19 complete",
   "tickets": [
     {
       "id": "ST19-01",
@@ -44,19 +44,26 @@
     },
     {
       "id": "ST19-05",
-      "state": "planned"
+      "state": "merged",
+      "code_commit": "c33a0bd8b90ba4bdb2f672798543478528d30926",
+      "evidence": [
+        "docs/reviews/st19-05-verification.md",
+        "docs/reviews/st19-05-merge-verification.md",
+        "docs/reviews/st19-standards-independent-review.md",
+        "docs/reviews/st19-spec-independent-review.md"
+      ]
     }
   ],
   "verification": {
-    "source_head": "583e655a6d5103a8d56bdfa29796e626e38ea8f3",
+    "source_head": "c33a0bd8b90ba4bdb2f672798543478528d30926",
     "backend_types_exit": 0,
-    "author_related_tests": 83,
-    "creator_build": "not run; ST19-05",
-    "independent_tests": 26,
-    "full_seven_stage": "passed (867 tests, 0 fail)",
+    "author_related_tests": 87,
+    "creator_build": "not run; pure-model and backend complete",
+    "independent_tests": 30,
+    "full_seven_stage": "passed (871 tests, 0 fail)",
     "remaining_tickets_started": false,
     "date": "2026-11-03",
-    "independent_merger": "READY",
+    "independent_merger": "MERGED",
     "models_types_exit": 0,
     "platform_device_status": "gap",
     "accepted_full_file_hashes_match": 6
