@@ -2,8 +2,8 @@
   "feature": "warrior-loop-st17",
   "integration_branch": "feat-1.0.0",
   "baseline_head": "131edef",
-  "status": "ST17-04-complete",
-  "current_scope": "ST17-04 Cocos repair panel and non-blocking broken equipment notice implemented and verified",
+  "status": "all-merged",
+  "current_scope": "ST17-01, ST17-02, ST17-03, ST17-04, and ST17-05 merged; ST17 complete",
   "approval_evidence": "可以，确认；开始01吧先",
   "spec_body_sha256": "d91949b4ddf0ba08bc39d5fed24f2b26ac3dbbc1cbdb4120fa5aa36293ccc8aa",
   "tickets": [
@@ -77,11 +77,13 @@
         1,
         3
       ],
-      "state": "completed",
+      "state": "merged",
       "branch": "feat/st17-04-cocos-repair",
       "base_commit": "a5322f998c3caac6b0e1657dd1aeb52b1c5a6e53",
+      "code_commit": "ed5779a5e81d77227d8db86df9524c520894be69",
       "evidence": [
-        "docs/reviews/st17-04-verification.md"
+        "docs/reviews/st17-04-verification.md",
+        "docs/reviews/st17-04-merge-verification.md"
       ]
     },
     {
@@ -93,8 +95,16 @@
       "blocked_by": [
         4
       ],
-      "state": "planned",
-      "evidence": []
+      "state": "merged",
+      "branch": "feat/st17-05-joint-acceptance",
+      "base_commit": "f8faebe70071bf7e6f3eb24e4d5f0e9b62fef1e8",
+      "code_commit": "a4db9b5443fa69c118e6c703b44b82d346ff0355",
+      "evidence": [
+        "docs/reviews/st17-05-verification.md",
+        "docs/reviews/st17-05-merge-verification.md",
+        "docs/reviews/st17-standards-independent-review.md",
+        "docs/reviews/st17-spec-independent-review.md"
+      ]
     }
   ],
   "testing_seams": [
@@ -106,20 +116,22 @@
   "published": false,
   "jira_actions": false,
   "verification": {
-    "scope": "ST17-03 only",
-    "completed_at": "2026-11-02",
-    "source_head": "4b7191357519021a7b7862aae07b1e558069e2c5",
-    "focused_tests": 112,
-    "related_tests": 184,
-    "independent_final_new_tests": 14,
+    "scope": "ST17-01 through ST17-05 complete; all tickets merged",
+    "completed_at": "2026-11-03",
+    "source_head": "a4db9b5443fa69c118e6c703b44b82d346ff0355",
+    "focused_tests": 59,
+    "related_tests": 59,
+    "independent_final_new_tests": 4,
     "backend_types_exit": 0,
     "client_model_types_exit": 0,
     "independent_merger": "READY",
+    "standards_review": "APPROVED",
+    "spec_review": "APPROVED",
     "accepted_source_files_match": 6,
     "all_worn_read_cap_bytes": 131072,
     "legacy_single_read_cap_bytes": 65536,
-    "full_seven_stage": "not run; ST17-05",
-    "creator_build": "not run; ST17-04/05",
+    "full_seven_stage": "passed",
+    "creator_build": "not run; local asset only",
     "remaining_tickets_started": false,
     "platform_device_status": "gap"
   },

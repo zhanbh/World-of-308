@@ -33,4 +33,8 @@
 
 ## ST17-04 本地交付（2026-11-02）
 
-用户授权实施 ST17-04。04 已独立核验并合入，固定源码 `ed5779a`：Cocos 城镇修理面板（`RepairPanel.ts`）、全部穿戴一键全修与单件修理双模式、7 槽位明细与三色耐久阶梯、总费用呈现与成功横幅、`unknown` 结果恢复按钮、防重复点击、迟包/切角代次隔离；`Prototype.ts` 集成 M 键/点击修理面板与非阻断装备破损警告提示。定向测试 8/8 通过，全量 7 阶段自动化门禁 7/7 通过（855/855 测试通过），merger READY。见[04证据](../../../reviews/st17-04-verification.md)、[独立合入核验](../../../reviews/st17-04-merge-verification.md)。05 联合门禁留待后续启动。
+用户授权实施 ST17-04。04 已独立核验并合入，固定源码 `ed5779a`：Cocos 城镇修理面板（`RepairPanel.ts`）、全部穿戴一键全修与单件修理双模式、7 槽位明细与三色耐久阶梯、总费用呈现与成功横幅、`unknown` 结果恢复按钮、防重复点击、迟包/切角代次隔离；`Prototype.ts` 集成 M 键/点击修理面板与非阻断装备破损警告提示。定向测试 8/8 通过，全量 7 阶段自动化门禁 7/7 通过（855/855 测试通过），merger READY。见[04证据](../../../reviews/st17-04-verification.md)、[独立合入核验](../../../reviews/st17-04-merge-verification.md)。
+
+## ST17-05 本地交付（2026-11-03）
+
+用户授权实施 ST17-05。05 端到端联合验收套件已实现并独立核验合入，固定源码 `a4db9b5`：构建大闭环联合验收套件 `backend/test/repair-joint-acceptance.test.mjs`（4/4 全部通过），完整闭环覆盖真实战斗/死亡磨损至 0、属性加成归零、副本通关/离开、回城新挑战入口严格被拦（`WEAPON_BROKEN`）、林纳克斯一键全修扣费修满、重新入本成功开启挑战；完成物理事务预算实测（R21 / W12 / 33调用 / 写 95.3 KiB / 视图 74.1 KiB，完全在预算内）；完成 12 写点故障注入 100% 干净原子回滚与丢包恢复验证；完成换装与商店出售 OCC 并发竞争双序验证。关联回归套件 59/59 全部通过，两项 TypeScript 编译 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS。Standards 独立评审通过，Spec 独立评审通过（AC17-1 ～ AC17-8 全部 PASS）。见[05证据](../../../reviews/st17-05-verification.md)、[独立合入核验](../../../reviews/st17-05-merge-verification.md)、[Standards独立评审](../../../reviews/st17-standards-independent-review.md)及[Spec独立评审](../../../reviews/st17-spec-independent-review.md)。至此，ST17 全部 5 项实施任务已完整交付归档。

@@ -112,7 +112,7 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 已按批准五项图完成恢复编排、未知原意图栅栏、dead/looting资格、Cocos生命周期及联合验收；最终源码8d73ca8，全七阶段7/7（shared230/backend730）、最终Creator离线构建通过，Standards/Spec各0可行动发现。见[本地交付与限制](../../reviews/st16-local-verification.md)及[执行状态](st16/execution.json)。04历史类型失败已保留并由05补齐seq，不能据旧汇报算通过。真实网络/微信设备、SDK及正式发布内容包络仍GAP；未push/Jira。ST17为下一业务故事，尚未自动实施。
 
-## ST17 实施准备（2026-11-01）
+## ST17 本地完成记录（2026-11-03）
 
 用户已选择开始耐久与林纳克斯修理；现状预检和既有38项基线已完成，普通清房磨损与修理纵切为主要缺口。[规格草案/五项任务图](st17/README.md)待一次整体确认，尚未开始ST17业务编码。core-contract旧暂停描述已按既定“不暂停”规则勘误，无新玩法决定。
 
@@ -123,6 +123,8 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 2026-11-02 ST17-03接续：当前穿戴7耐久槽完整报价与原子全修已合入，源码4b71913，独立核验READY；焦点112/相关184/独立新增14及两类型通过。空/全满零费、余额不足或坏目标整批拒绝，原O与单修兼容。详见[03证据](../../reviews/st17-03-verification.md)、[独立核验](../../reviews/st17-03-merge-verification.md)和[当前执行](st17/execution.json)。04修理面板/05全故事门禁未启动，未push；SDK/设备/正式配置仍GAP。
 
 2026-11-02 ST17-04接续：Cocos林纳克斯修理面板（RepairPanel.ts）、全部穿戴一键全修/单件双模式、7槽耐久明细与费用、成功横幅、unknown恢复按钮、迟包/切角代次隔离、Prototype M键/点击交互与非阻断破损警告已合入主干，源码ed5779a；定向8/8全绿，全7阶段自动化门禁7/7通过（855测试全部通过），独立核验READY。详见[04证据](../../reviews/st17-04-verification.md)、[独立核验](../../reviews/st17-04-merge-verification.md)及[执行状态](st17/execution.json)。05联合门禁未启动，未push。
+
+2026-11-03 ST17-05接续：磨损—修理—再入本大闭环联合验收套件（`repair-joint-acceptance.test.mjs`）、真实战斗/死亡磨损至0、城镇门禁拦截 `WEAPON_BROKEN`、林纳克斯一键全修扣费修满、重新入本成功开启挑战全链路已合入主干，源码 `a4db9b5`；终局物理事务预算实测满足硬限制（R21 <= 25, W12 <= 15, calls 33 <= 40, writeBytes 97623 <= 256 KiB, viewBytes 75917 <= 128 KiB）；12写点故障注入100%原子回滚与重放幂等通过；换装/出售OCC并发竞争双序安全裁决通过。两轴独立评审均通过（Standards 0违规，Spec 0偏离）。详见[05证据](../../reviews/st17-05-verification.md)、[独立核验](../../reviews/st17-05-merge-verification.md)、[Standards独立评审](../../reviews/st17-standards-independent-review.md)及[Spec独立评审](../../reviews/st17-spec-independent-review.md)。ST17全部5项任务完整交付归档。
 
 ## ST18 本地完成记录（2026-11-02）
 
