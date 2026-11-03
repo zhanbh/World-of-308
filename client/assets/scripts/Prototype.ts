@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
-    input, Input, EventTouch, EventKeyboard, KeyCode, Vec3, view, ResolutionPolicy, game, Game, profiler } from 'cc';
+    input, Input, EventTouch, EventKeyboard, EventMouse, KeyCode, Vec3, view, ResolutionPolicy, game, Game, profiler, sys } from 'cc';
 import { CombatModel, tuning, attackSpeedTuning } from './CombatModel';
 import { WarriorView } from './WarriorView';
 import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText, EncounterModel, enemyKnockdownPolicies } from './EnemyModel';
@@ -19,7 +19,7 @@ import type { RankingCoordinator, RankingIdentity } from './net/RankingCoordinat
 import { InventoryPanel } from './ui/InventoryPanel';
 import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
-import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator } from './net/PrototypePreview';
+import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator, createSandboxInventoryCoordinator, createSandboxBankCoordinator } from './net/PrototypePreview';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
 import type {CombatLifecycleAdapter} from './net/CombatLifecycleAdapter';
 import { MovementCoordinator } from './net/MovementCoordinator';
@@ -192,13 +192,17 @@ export class Prototype extends Component {
         this.text('受击预警 · 走出红框躲避', 0, -208, 16);
         this.speedLabels = attackSpeedTuning.presets.map((rate, index) => this.text(`${rate}×`, -360 + index * 70, 126, 12, 64));
         this.restartEncounter();
-        if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('challengePreview') === '1') {
+        const search = (sys.isBrowser && typeof window !== 'undefined' && window.location?.search) ? window.location.search : '';
+        if (search && typeof URLSearchParams !== 'undefined' && new URLSearchParams(search).get('challengePreview') === '1') {
             void this.toggleChallenge();
         }
         input.on(Input.EventType.TOUCH_START, this.touchStart, this);
         input.on(Input.EventType.TOUCH_MOVE, this.touchMove, this);
         input.on(Input.EventType.TOUCH_END, this.touchEnd, this);
         input.on(Input.EventType.TOUCH_CANCEL, this.touchEnd, this);
+        input.on(Input.EventType.MOUSE_DOWN, this.mouseDown, this);
+        input.on(Input.EventType.MOUSE_MOVE, this.mouseMove, this);
+        input.on(Input.EventType.MOUSE_UP, this.mouseUp, this);
         input.on(Input.EventType.KEY_DOWN, this.keyDown, this);
         input.on(Input.EventType.KEY_UP, this.keyUp, this);
         game.on(Game.EVENT_HIDE, this.onHideInput, this);
@@ -212,6 +216,9 @@ export class Prototype extends Component {
         input.off(Input.EventType.TOUCH_MOVE, this.touchMove, this);
         input.off(Input.EventType.TOUCH_END, this.touchEnd, this);
         input.off(Input.EventType.TOUCH_CANCEL, this.touchEnd, this);
+        input.off(Input.EventType.MOUSE_DOWN, this.mouseDown, this);
+        input.off(Input.EventType.MOUSE_MOVE, this.mouseMove, this);
+        input.off(Input.EventType.MOUSE_UP, this.mouseUp, this);
         input.off(Input.EventType.KEY_DOWN, this.keyDown, this);
         input.off(Input.EventType.KEY_UP, this.keyUp, this);
         game.off(Game.EVENT_HIDE, this.onHideInput, this);
@@ -334,13 +341,22 @@ export class Prototype extends Component {
     }
     private async toggleBank(): Promise<void> {
         if (this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
         if (!this.bankPanel) {
             const generation = ++this.bankGeneration; this.bankConnecting = true; this.inventoryNotice.string = '正在连接银行…';
-            try { const preview = await connectBankPreview(); if (!this.isValid || generation !== this.bankGeneration) return; this.attachBank(preview.coordinator, preview.contextId, preview.labels); this.inventoryNotice.string = '本机银行试玩 · 临时数据与测试价格'; }
-            catch { if (this.isValid && generation === this.bankGeneration) this.inventoryNotice.string = '银行尚未连接；本机试玩需启用 bankPreview 并启动银行服务'; return; }
-            finally { if (generation === this.bankGeneration) this.bankConnecting = false; }
+            try {
+                const preview = await connectBankPreview();
+                if (!this.isValid || generation !== this.bankGeneration) return;
+                this.attachBank(preview.coordinator, preview.contextId, preview.labels);
+                this.inventoryNotice.string = '本机银行试玩 · 临时数据与测试价格';
+            } catch {
+                if (this.isValid && generation === this.bankGeneration) {
+                    const sandbox = createSandboxBankCoordinator();
+                    this.attachBank(sandbox.coordinator, sandbox.contextId, sandbox.labels);
+                    this.inventoryNotice.string = '本地沙盒银行模式';
+                }
+            } finally { if (generation === this.bankGeneration) this.bankConnecting = false; }
         }
         await this.bankPanel?.open();
     }
@@ -377,7 +393,7 @@ export class Prototype extends Component {
     }
 
     private async toggleInventory(): Promise<void> {
-        if (this.bankPanel?.isOpen || this.bankConnecting) return;
+        if (this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if (this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
         if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (!this.inventoryPanel) {
@@ -389,8 +405,11 @@ export class Prototype extends Component {
                 if (!this.isValid || generation !== this.inventoryConnectGeneration) return;
                 this.attachInventory(preview.coordinator, preview.labels, preview.assignable, true);
             } catch {
-                if (this.isValid && generation === this.inventoryConnectGeneration) this.inventoryNotice.string = '背包尚未连接，请先登录；本机试玩需启动背包预览服务';
-                return;
+                if (this.isValid && generation === this.inventoryConnectGeneration) {
+                    const sandbox = createSandboxInventoryCoordinator();
+                    this.attachInventory(sandbox.coordinator, sandbox.labels, sandbox.assignable, true);
+                    this.inventoryNotice.string = '本地沙盒背包模式';
+                }
             } finally { if (generation === this.inventoryConnectGeneration) this.inventoryConnecting = false; }
         }
         await this.inventoryPanel?.open();
@@ -424,8 +443,32 @@ export class Prototype extends Component {
         return this.canvas.convertToNodeSpaceAR(new Vec3(p.x, p.y, 0));
     }
 
+    private mouseDown(e: EventMouse): void {
+        const fakeTouch = {
+            getID: () => 1,
+            getUILocation: () => e.getUILocation(),
+        } as unknown as EventTouch;
+        this.touchStart(fakeTouch);
+    }
+
+    private mouseMove(e: EventMouse): void {
+        const fakeTouch = {
+            getID: () => 1,
+            getUILocation: () => e.getUILocation(),
+        } as unknown as EventTouch;
+        this.touchMove(fakeTouch);
+    }
+
+    private mouseUp(e: EventMouse): void {
+        const fakeTouch = {
+            getID: () => 1,
+            getUILocation: () => e.getUILocation(),
+        } as unknown as EventTouch;
+        this.touchEnd(fakeTouch);
+    }
+
     private touchStart(e: EventTouch): void {
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         const id = e.getID();
         if (id === null) return;
         const p = this.point(e);
@@ -456,20 +499,25 @@ export class Prototype extends Component {
             return;
         }
         if (p.y > 145 && p.y < 190 && Math.abs(p.x - 215) < 28) {
-            this.mode = 7; this.dungeonKind = 'first'; this.roomNo = 0; this.restartEncounter();
+            this.mode = 7; this.dungeonKind = 'first'; this.roomNo = 0; this.restartEncounter(); return;
         } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 275) < 28) {
-            this.mode = 7; this.dungeonKind = 'workshop'; this.roomNo = 0; this.restartEncounter();
+            this.mode = 7; this.dungeonKind = 'workshop'; this.roomNo = 0; this.restartEncounter(); return;
         } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 335) < 28) {
-            this.mode = 7; this.dungeonKind = 'rift'; this.roomNo = 0; this.restartEncounter();
+            this.mode = 7; this.dungeonKind = 'rift'; this.roomNo = 0; this.restartEncounter(); return;
         } else if (p.y > 145 && p.y < 190 && Math.abs(p.x - 395) < 28) {
             if (this.roomNo < 6) {
                 this.roomNo++;
                 this.restartEncounter();
                 this.encounter.start();
             }
+            return;
+        }
+        if (this.encounter.state === 'ready') {
+            this.encounter.start();
         } else if (this.encounter.state !== 'fighting' && !this.roomCleared) {
             return;
-        } else if (this.touchSupplyButton(p.x, p.y)) {
+        }
+        if (this.touchSupplyButton(p.x, p.y)) {
             return;
         } else if (this.touchSkillButton(p.x, p.y)) {
             return;
@@ -484,7 +532,7 @@ export class Prototype extends Component {
 
     private touchMove(e: EventTouch): void {
         if (this.deathReviveHUD.isVisible) return;
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if (e.getID() !== this.stickId) return;
         const p = this.point(e);
         const x = (p.x + 345) / 68;
@@ -495,7 +543,7 @@ export class Prototype extends Component {
 
     private touchEnd(e: EventTouch): void {
         if (this.deathReviveHUD.isVisible) return;
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         const id = e.getID();
         if (id === null) return;
         if (e.getID() === this.stickId) {
@@ -538,6 +586,9 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
         if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        if (this.encounter.state === 'ready') {
+            this.encounter.start();
+        }
         if (e.keyCode === KeyCode.ENTER && this.encounter.state !== 'fighting') {
             if (this.encounter.state !== 'ready') this.restartEncounter();
             this.encounter.start(); return;
@@ -693,7 +744,7 @@ export class Prototype extends Component {
         this.roundLabel.string = this.deathReviveHUD.isVisible ? '' : (this.roomCleared
             ? (this.roomNo < 6 ? '清场完毕！走向右侧绿门换房 ▶' : '通关！已击败首领！按R重新挑战')
             : round === 'fighting' ? ''
-            : round === 'ready' ? `[${dName} R${this.roomNo + 1}/7] 点击场地上方开始战斗 / Enter`
+            : round === 'ready' ? `[${dName} R${this.roomNo + 1}/7] 触控摇杆/技能或点击开始`
             : `战败 · ${this.encounter.elapsed.toFixed(1)}秒 · 点击再挑战 / Enter`);
         this.draw(dt);
         const aliveEnemies = this.enemies.filter(e => e.state !== 'dead').length;
@@ -772,7 +823,9 @@ export class Prototype extends Component {
     private draw(dt: number): void {
         const ui = this.controls;
         ui.clear();
-        this.rect(ui, 390, 225, 80, 32, '#334a50');
+        for (const y of [225, 180, 135, 90, 45]) {
+            this.rect(ui, 390, y, 80, 32, '#283a42');
+        }
         const g = this.world;
         const shake = this.feedback.shakeOffset;
         g.node.setPosition(shake.x * 2, shake.y * 2);

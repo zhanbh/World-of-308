@@ -1,7 +1,9 @@
 import { RepairCoordinator } from './RepairCoordinator.ts';
 import { EnhancementCoordinator } from './EnhancementCoordinator.ts';
 import { RankingCoordinator, type RankingIdentity, type RankingItemView } from './RankingCoordinator.ts';
-import type { EquipmentView, AssetQuery, AssetQueryResponse } from '../../../../shared/src/protocol/asset-v2.ts';
+import { InventoryCoordinator } from './InventoryCoordinator.ts';
+import { BankCoordinator } from './BankCoordinator.ts';
+import type { EquipmentView, AssetQuery, AssetQueryResponse, ContainerView } from '../../../../shared/src/protocol/asset-v2.ts';
 import { time, type Time } from '../../../../shared/src/exact-values.ts';
 
 export const PROTOTYPE_LABELS: Record<string, string> = {
@@ -13,6 +15,8 @@ export const PROTOTYPE_LABELS: Record<string, string> = {
   'arm-epic-boots': '疾风追影重靴',
   'acc-epic-earring': '黑珍珠-米奈',
   'mat-carbon': '炉岩碳',
+  'con-hp-potion': '生命药剂',
+  'con-mp-potion': '魔力药剂',
 };
 
 export function createSandboxRepairCoordinator(): { coordinator: RepairCoordinator; contextId: string; labels: Record<string, string> } {
@@ -433,3 +437,203 @@ export function createSandboxRankingCoordinator(): { coordinator: RankingCoordin
   const coordinator = new RankingCoordinator(handler);
   return { coordinator, identity };
 }
+
+export function createSandboxInventoryCoordinator(): {
+  coordinator: InventoryCoordinator;
+  labels: Record<string, string>;
+  assignable: Set<string>;
+} {
+  const characterId = 'warrior-player-1';
+  const identity = { sessionId: 'sandbox-inventory', sessionEpoch: 1, characterId };
+  const persistence = {
+    load: (_k: string) => null,
+    save: (_k: string, _v: string | null) => {},
+  };
+
+  const bag: ContainerView = {
+    containerId: 'sandbox-bag-1',
+    version: 1,
+    kind: 'backpack',
+    owner: { kind: 'character', characterId },
+    capacity: 20,
+    unlockStage: 0,
+    slots: [
+      { index: 0, entry: { kind: 'stack', stackId: 'stk-1', templateRef: 'con-hp-potion', quantity: 15, binding: { kind: 'none' }, traceRef: 'tr-1' } },
+      { index: 1, entry: { kind: 'stack', stackId: 'stk-2', templateRef: 'con-mp-potion', quantity: 10, binding: { kind: 'none' }, traceRef: 'tr-2' } },
+      { index: 2, entry: { kind: 'equipment', itemId: 'item-sandbox-weapon', sortHeader: { itemLevel: 30, quality: 'purple', slotKind: 'weapon' } } },
+      { index: 3, entry: { kind: 'stack', stackId: 'stk-3', templateRef: 'mat-carbon', quantity: 20, binding: { kind: 'none' }, traceRef: 'tr-3' } },
+    ],
+  };
+
+  const quickSlots = {
+    characterId,
+    version: 1,
+    slots: [
+      { slotIndex: 0, templateId: 'con-hp-potion', quantity: 15 },
+      { slotIndex: 1, templateId: 'con-mp-potion', quantity: 10 },
+      { slotIndex: 2, templateId: null, quantity: 0 },
+    ],
+  };
+
+  const transport = {
+    send: async (text: string): Promise<string> => {
+      const msg = JSON.parse(text);
+      if ('query' in msg) {
+        if (msg.query === 'inventory.get') {
+          return JSON.stringify({
+            requestId: msg.requestId,
+            serverTime: time(Date.now()),
+            versions: [
+              { kind: 'container', id: bag.containerId, version: bag.version },
+            ],
+            data: structuredClone(bag),
+          });
+        }
+        if (msg.query === 'quickslot.get') {
+          return JSON.stringify({
+            requestId: msg.requestId,
+            serverTime: time(Date.now()),
+            versions: [
+              { kind: 'character', id: characterId, version: quickSlots.version },
+              { kind: 'container', id: bag.containerId, version: bag.version },
+            ],
+            data: structuredClone(quickSlots),
+          });
+        }
+      }
+      if (msg.command === 'inventory.organize') {
+        bag.version++;
+        if (msg.payload?.direction === 'reverse') {
+          bag.slots.reverse();
+          bag.slots.forEach((s, idx) => { s.index = idx; });
+        } else {
+          bag.slots.sort((a, b) => a.entry.kind.localeCompare(b.entry.kind));
+          bag.slots.forEach((s, idx) => { s.index = idx; });
+        }
+        return JSON.stringify({
+          operationId: msg.operationId,
+          serverTime: time(Date.now()),
+          outcome: {
+            status: 'applied',
+            appliedAt: time(Date.now()),
+            resultVersions: [
+              { kind: 'container', id: bag.containerId, version: bag.version },
+              { kind: 'character', id: characterId, version: quickSlots.version },
+            ],
+          },
+        });
+      }
+      if (msg.command === 'quickslot.assign') {
+        const { slotIndex, templateId } = msg.payload ?? {};
+        if (typeof slotIndex === 'number' && quickSlots.slots[slotIndex]) {
+          quickSlots.slots[slotIndex].templateId = templateId ?? null;
+          quickSlots.slots[slotIndex].quantity = templateId ? 10 : 0;
+          quickSlots.version++;
+        }
+        return JSON.stringify({
+          operationId: msg.operationId,
+          serverTime: time(Date.now()),
+          outcome: {
+            status: 'applied',
+            appliedAt: time(Date.now()),
+            resultVersions: [
+              { kind: 'character', id: characterId, version: quickSlots.version },
+            ],
+          },
+        });
+      }
+      return JSON.stringify({ requestId: msg.requestId || msg.operationId, error: { code: 'UNSUPPORTED' } });
+    },
+  };
+
+  const coordinator = new InventoryCoordinator(transport, persistence);
+  coordinator.init(identity);
+  return {
+    coordinator,
+    labels: PROTOTYPE_LABELS,
+    assignable: new Set(['con-hp-potion', 'con-mp-potion']),
+  };
+}
+
+export function createSandboxBankCoordinator(): {
+  coordinator: BankCoordinator;
+  contextId: string;
+  labels: Record<string, string>;
+} {
+  const characterId = 'warrior-player-1';
+  const contextId = 'sandbox-bank-context';
+  const identity = { sessionId: 'sandbox-bank', sessionEpoch: 1, characterId };
+  const persistence = {
+    load: (_k: string) => null,
+    save: (_k: string, _v: string | null) => {},
+  };
+
+  const bag: ContainerView = {
+    containerId: 'sandbox-bag-1',
+    version: 1,
+    kind: 'backpack',
+    owner: { kind: 'character', characterId },
+    capacity: 20,
+    unlockStage: 0,
+    slots: [
+      { index: 0, entry: { kind: 'stack', stackId: 'stk-1', templateRef: 'con-hp-potion', quantity: 15, binding: { kind: 'none' }, traceRef: 'tr-1' } },
+      { index: 1, entry: { kind: 'stack', stackId: 'stk-2', templateRef: 'con-mp-potion', quantity: 10, binding: { kind: 'none' }, traceRef: 'tr-2' } },
+      { index: 2, entry: { kind: 'equipment', itemId: 'item-sandbox-weapon', sortHeader: { itemLevel: 30, quality: 'purple', slotKind: 'weapon' } } },
+      { index: 3, entry: { kind: 'stack', stackId: 'stk-3', templateRef: 'mat-carbon', quantity: 20, binding: { kind: 'none' }, traceRef: 'tr-3' } },
+    ],
+  };
+
+  const vault: ContainerView = {
+    containerId: 'sandbox-vault-1',
+    version: 1,
+    kind: 'personalVault',
+    owner: { kind: 'character', characterId },
+    capacity: 20,
+    unlockStage: 0,
+    slots: [
+      { index: 0, entry: { kind: 'stack', stackId: 'stk-vault-1', templateRef: 'mat-carbon', quantity: 20, binding: { kind: 'none' }, traceRef: 'tr-v1' } },
+    ],
+  };
+
+  const wallet = {
+    walletId: 'sandbox-wallet-1',
+    version: 1,
+    gold: '150000',
+    points: '1200',
+  };
+
+  const transport = {
+    send: async (text: string): Promise<string> => {
+      const msg = JSON.parse(text);
+      if ('query' in msg && msg.query === 'bank.get') {
+        return JSON.stringify({
+          requestId: msg.requestId,
+          serverTime: time(Date.now()),
+          versions: [
+            { kind: 'character', id: characterId, version: 1 },
+            { kind: 'container', id: bag.containerId, version: bag.version },
+            { kind: 'container', id: vault.containerId, version: vault.version },
+            { kind: 'wallet', id: wallet.walletId, version: wallet.version },
+          ],
+          data: {
+            characterId,
+            characterVersion: 1,
+            backpack: structuredClone(bag),
+            vault: structuredClone(vault),
+            wallet: structuredClone(wallet),
+          },
+        });
+      }
+      return JSON.stringify({ requestId: msg.requestId || msg.operationId, error: { code: 'UNSUPPORTED' } });
+    },
+  };
+
+  const coordinator = new BankCoordinator(transport, persistence);
+  coordinator.init(identity);
+  return {
+    coordinator,
+    contextId,
+    labels: PROTOTYPE_LABELS,
+  };
+}
+
