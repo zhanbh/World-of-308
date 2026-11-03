@@ -4,7 +4,7 @@
   "jira_actions": false,
   "feature": "warrior-loop-st20",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST20-01 merged; awaiting authorization for next ticket",
+  "current_scope": "ST20-02 authorized; ST20-01 merged",
   "tickets": [
     {
       "id": "ST20-01",
@@ -17,7 +17,7 @@
     },
     {
       "id": "ST20-02",
-      "state": "planned",
+      "state": "in-progress",
       "code_commit": null,
       "evidence": []
     },
@@ -44,7 +44,7 @@
     "source_head": "2805636",
     "backend_types_exit": 0,
     "author_related_tests": 26,
-    "creator_build": "not run; pure-model and backend complete for 01",
+    "creator_build": "not run; pure-model and backend in progress",
     "independent_tests": 8,
     "full_seven_stage": "not run; unit and model tests passed",
     "remaining_tickets_started": false,

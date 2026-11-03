@@ -27,7 +27,7 @@
 ## 任务列表
 
 1. [ST20-01: 评分排行服务核心、索引排序与分页查询协议](issues/01-ranking-service-query.md)（已合入）
-2. [ST20-02: 短租约原子刷新缓存、TTL 新鲜度机制与并发抢锁](issues/02-cache-lease-ttl.md)（已计划）
+2. [ST20-02: 短租约原子刷新缓存、TTL 新鲜度机制与并发抢锁](issues/02-cache-lease-ttl.md)（进行中）
 3. [ST20-03: 本人名次三段式精准计数与大容量降级熔断](issues/03-own-rank-counter.md)（已计划）
 4. [ST20-04: Cocos 排行榜面板与纯模型协调器](issues/04-cocos-ranking-panel.md)（已计划）
 5. [ST20-05: 换装/强化即时刷新联合验收、物理预算与两轴评审](issues/05-joint-acceptance.md)（已计划）

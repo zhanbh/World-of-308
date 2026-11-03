@@ -1,18 +1,23 @@
 {
   "date": "2026-11-03",
   "kind": "human",
-  "evidence": "好的，先开始01吧",
+  "evidence": "好的，继续吧",
   "spec_body_sha256": "3a92a12e437bc97ece2d0dd9a740afa85517fedbb6dfcde7ba78e787c61afd2a",
   "approved_task_plan_full_file_sha256": "214bf24d766b32a6b34d17b1e1e38d59d8adcee346105d22b9388f4e20a9745b",
   "graph_approved": true,
   "test_seams_approved": true,
   "implementation_scope": [
-    "ST20-01"
+    "ST20-01",
+    "ST20-02"
   ],
   "scope_history": [
     {
       "ticket": "ST20-01",
       "evidence": "好的，先开始01吧"
+    },
+    {
+      "ticket": "ST20-02",
+      "evidence": "好的，继续吧"
     }
   ],
   "jira_actions": false
