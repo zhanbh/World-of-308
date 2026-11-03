@@ -45,6 +45,23 @@ export interface RankCacheLease {
   expiresAt: number;
 }
 
+export interface OwnRankCountSegments {
+  higherScoreCount: number; // C1: score > myScore
+  earlierReachedCount: number; // C2: score == myScore && scoreReachedAt < myScoreReachedAt
+  smallerIdCount: number; // C3: score == myScore && scoreReachedAt == myScoreReachedAt && characterId < myCharacterId
+  totalRank: number; // C1 + C2 + C3 + 1
+}
+
+export interface OwnRankCounterParams {
+  scope: RankingScope;
+  scoreConfigRef: string;
+  characterId: string;
+  classId: 'warrior' | 'hunter';
+  myScore: string;
+  myScoreReachedAt: number;
+}
+
+
 export interface RankCacheEntity {
   schemaVersion: 2;
   id: string;

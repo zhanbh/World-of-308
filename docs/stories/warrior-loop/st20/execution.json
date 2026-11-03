@@ -4,7 +4,7 @@
   "jira_actions": false,
   "feature": "warrior-loop-st20",
   "integration_branch": "feat-1.0.0",
-  "current_scope": "ST20-02 merged; awaiting authorization for next ticket",
+  "current_scope": "ST20-03 in-progress: own rank triad count & degradation",
   "tickets": [
     {
       "id": "ST20-01",
@@ -26,7 +26,7 @@
     },
     {
       "id": "ST20-03",
-      "state": "planned",
+      "state": "in-progress",
       "code_commit": null,
       "evidence": []
     },

@@ -10,14 +10,23 @@ import type {
 } from '../../../shared/src/protocol/asset-v2.ts';
 import type { RankingEntryEntity } from '../equipment/equipment-model.ts';
 import type { LoginAccount, LoginSession } from '../identity/login-model.ts';
+import type { CharacterEntity } from '../character/character-model.ts';
+import { characterKey } from '../character/character-service.ts';
 import {
   type RankingScope,
   type RankingCursorPayload,
   type RankingEntryView,
   type RankCacheEntity,
+  type OwnRankCountSegments,
+  type OwnRankCounterParams,
   rankCacheKey,
   isRankingEntryEntity,
 } from './ranking-model.ts';
+
+export type OwnRankCountProvider = (
+  params: OwnRankCounterParams,
+  tx: Transaction,
+) => Promise<{ c1: number; c2: number; c3: number } | null>;
 
 export interface RankingServiceOptions {
   store: Store;
@@ -31,7 +40,11 @@ export interface RankingServiceOptions {
   maxStaleMs?: number;
   leaseTtlMs?: number;
   cacheSize?: number;
+  countCapacityLimit?: number;
+  countProvider?: OwnRankCountProvider;
+  simulateCountFailure?: boolean;
 }
+
 
 const DEFAULT_SECRET = new TextEncoder().encode('ranking-cursor-secret-v1-308-world');
 const DEFAULT_SCORE_CONFIG_REF = 'score-v1';
@@ -55,6 +68,67 @@ export function compareRankingEntries(a: RankingEntryEntity, b: RankingEntryEnti
   }
   return 0;
 }
+
+export function countHigherScore(myScore: bigint, candidates: Iterable<RankingEntryEntity>): number {
+  let count = 0;
+  for (const c of candidates) {
+    if (BigInt(c.score) > myScore) count++;
+  }
+  return count;
+}
+
+export function countEarlierReached(myScore: bigint, myReachedAt: number, candidates: Iterable<RankingEntryEntity>): number {
+  let count = 0;
+  for (const c of candidates) {
+    if (BigInt(c.score) === myScore && c.scoreReachedAt < myReachedAt) count++;
+  }
+  return count;
+}
+
+export function countSmallerId(myScore: bigint, myReachedAt: number, myCharId: string, candidates: Iterable<RankingEntryEntity>): number {
+  let count = 0;
+  for (const c of candidates) {
+    if (BigInt(c.score) === myScore && c.scoreReachedAt === myReachedAt && c.characterId < myCharId) count++;
+  }
+  return count;
+}
+
+export function computeThreePartTriadRank(
+  myEntry: RankingEntryEntity,
+  candidates: Iterable<RankingEntryEntity>,
+): OwnRankCountSegments {
+  const myScore = BigInt(myEntry.score);
+  const myReachedAt = myEntry.scoreReachedAt;
+  const myCharId = myEntry.characterId;
+
+  let higherScoreCount = 0;
+  let earlierReachedCount = 0;
+  let smallerIdCount = 0;
+
+  for (const other of candidates) {
+    if (other.characterId === myCharId) continue;
+    const otherScore = BigInt(other.score);
+    if (otherScore > myScore) {
+      higherScoreCount++;
+    } else if (otherScore === myScore) {
+      if (other.scoreReachedAt < myReachedAt) {
+        earlierReachedCount++;
+      } else if (other.scoreReachedAt === myReachedAt) {
+        if (other.characterId < myCharId) {
+          smallerIdCount++;
+        }
+      }
+    }
+  }
+
+  return {
+    higherScoreCount,
+    earlierReachedCount,
+    smallerIdCount,
+    totalRank: higherScoreCount + earlierReachedCount + smallerIdCount + 1,
+  };
+}
+
 
 function isAfterCursor(e: RankingEntryEntity, c: RankingCursorPayload): boolean {
   const scoreE = BigInt(e.score);
@@ -95,6 +169,9 @@ export class RankingService {
   private readonly maxStaleMs: number;
   private readonly leaseTtlMs: number;
   private readonly cacheSize: number;
+  private readonly countCapacityLimit?: number;
+  private readonly countProvider?: OwnRankCountProvider;
+  private readonly simulateCountFailure?: boolean;
 
   constructor(options: RankingServiceOptions) {
     this.options = { ...options };
@@ -111,7 +188,11 @@ export class RankingService {
     this.maxStaleMs = options.maxStaleMs ?? DEFAULT_MAX_STALE_MS;
     this.leaseTtlMs = options.leaseTtlMs ?? DEFAULT_LEASE_TTL_MS;
     this.cacheSize = options.cacheSize ?? DEFAULT_CACHE_SIZE;
+    this.countCapacityLimit = options.countCapacityLimit;
+    this.countProvider = options.countProvider;
+    this.simulateCountFailure = options.simulateCountFailure;
   }
+
 
   private async sign(data: string): Promise<string> {
     const key = await crypto.subtle.importKey(
@@ -215,6 +296,125 @@ export class RankingService {
     }));
   }
 
+  async getOwnRankingEntry(characterId: string, tx: Transaction): Promise<RankingEntryEntity | null> {
+    const rankingKey = await characterKey('rankingEntry', [characterId]);
+    let entry: RankingEntryEntity | null = null;
+    try {
+      entry = (await tx.get<RankingEntryEntity>(rankingKey)) ?? null;
+    } catch {
+      entry = null;
+    }
+    if (!entry && 'snapshot' in this.options.store && typeof (this.options.store as any).snapshot === 'function') {
+      const snap: Map<string, unknown> = (this.options.store as any).snapshot();
+      for (const val of snap.values()) {
+        if (isRankingEntryEntity(val) && val.characterId === characterId && val.scoreConfigRef === this.scoreConfigRef) {
+          entry = val;
+          break;
+        }
+      }
+    }
+    if (!entry) {
+      try {
+        const char = await tx.get<CharacterEntity>(characterId);
+        if (
+          char &&
+          char.score != null &&
+          char.scoreReachedAt != null &&
+          (char.scoreConfigRef ?? 'score-v1') === this.scoreConfigRef
+        ) {
+          entry = {
+            schemaVersion: 2,
+            id: rankingKey,
+            characterId: char.id,
+            accountId: char.accountId,
+            classId: char.classId,
+            characterName: char.characterName,
+            level: char.level,
+            score: String(char.score),
+            scoreConfigRef: char.scoreConfigRef ?? 'score-v1',
+            equipmentVersion: char.equipmentVersion ?? 0,
+            scoreReachedAt: char.scoreReachedAt,
+            projectionVersion: char.equipmentVersion ?? 0,
+            updatedAt: char.updatedAt,
+          };
+        }
+      } catch {
+        entry = null;
+      }
+    }
+    return entry;
+  }
+
+  async computeOwnRankDetails(
+    scope: RankingScope,
+    characterId: string,
+    tx: Transaction,
+  ): Promise<{ ownRank: number | null; segments: OwnRankCountSegments | null; entry: RankingEntryEntity | null }> {
+    try {
+      if (this.simulateCountFailure) {
+        return { ownRank: null, segments: null, entry: null };
+      }
+
+      const ownEntry = await this.getOwnRankingEntry(characterId, tx);
+      if (!ownEntry) {
+        return { ownRank: null, segments: null, entry: null };
+      }
+      if (ownEntry.scoreConfigRef !== this.scoreConfigRef) {
+        return { ownRank: null, segments: null, entry: ownEntry };
+      }
+      if (scope === 'warrior' && ownEntry.classId !== 'warrior') {
+        return { ownRank: null, segments: null, entry: ownEntry };
+      }
+      if (scope === 'hunter' && ownEntry.classId !== 'hunter') {
+        return { ownRank: null, segments: null, entry: ownEntry };
+      }
+
+      if (this.countProvider) {
+        const customResult = await this.countProvider(
+          {
+            scope,
+            scoreConfigRef: this.scoreConfigRef,
+            characterId,
+            classId: ownEntry.classId,
+            myScore: ownEntry.score,
+            myScoreReachedAt: ownEntry.scoreReachedAt,
+          },
+          tx,
+        );
+        if (!customResult) {
+          return { ownRank: null, segments: null, entry: ownEntry };
+        }
+        const total = customResult.c1 + customResult.c2 + customResult.c3 + 1;
+        const segments: OwnRankCountSegments = {
+          higherScoreCount: customResult.c1,
+          earlierReachedCount: customResult.c2,
+          smallerIdCount: customResult.c3,
+          totalRank: total,
+        };
+        return { ownRank: total, segments, entry: ownEntry };
+      }
+
+      const { filtered } = this.collectEntriesFromStore(scope);
+      if (this.countCapacityLimit != null && filtered.length > this.countCapacityLimit) {
+        return { ownRank: null, segments: null, entry: ownEntry };
+      }
+
+      const segments = computeThreePartTriadRank(ownEntry, filtered);
+      return { ownRank: segments.totalRank, segments, entry: ownEntry };
+    } catch {
+      return { ownRank: null, segments: null, entry: null };
+    }
+  }
+
+  async computeOwnRank(
+    scope: RankingScope,
+    characterId: string,
+    tx: Transaction,
+  ): Promise<number | null> {
+    const details = await this.computeOwnRankDetails(scope, characterId, tx);
+    return details.ownRank;
+  }
+
   async query(rawInput: unknown): Promise<AssetQueryResponse<'ranking.list'>> {
     let parsed: AssetQuery;
     try {
@@ -248,6 +448,10 @@ export class RankingService {
         }
       }
 
+      if (ownCharacterId) {
+        ownRank = await this.computeOwnRank(scope, ownCharacterId, tx);
+      }
+
       // 2. Cursor query (subsequent pages): directly query indexed sorted entries without caching
       if (cursor != null) {
         let decodedCursor: RankingCursorPayload;
@@ -262,11 +466,6 @@ export class RankingService {
         }
 
         const { sorted } = this.collectEntriesFromStore(scope);
-        if (ownCharacterId) {
-          const ownIdx = sorted.findIndex(e => e.characterId === ownCharacterId);
-          if (ownIdx >= 0) ownRank = ownIdx + 1;
-        }
-
         const remaining = sorted.filter(e => isAfterCursor(e, decodedCursor));
         const pageEntries = remaining.slice(0, pageRequest);
         const remainingCount = remaining.length - pageEntries.length;
@@ -329,17 +528,6 @@ export class RankingService {
           });
         }
 
-        if (ownCharacterId) {
-          const inCache = cache.entries.find(e => e.character.characterId === ownCharacterId);
-          if (inCache && inCache.rank != null) {
-            ownRank = inCache.rank;
-          } else {
-            const { sorted } = this.collectEntriesFromStore(scope);
-            const ownIdx = sorted.findIndex(e => e.characterId === ownCharacterId);
-            if (ownIdx >= 0) ownRank = ownIdx + 1;
-          }
-        }
-
         return parseAssetQueryResponse('ranking.list', {
           requestId,
           serverTime: time(now),
@@ -372,13 +560,6 @@ export class RankingService {
           });
         }
 
-        if (ownCharacterId) {
-          const inCache = cache.entries.find(e => e.character.characterId === ownCharacterId);
-          if (inCache && inCache.rank != null) {
-            ownRank = inCache.rank;
-          }
-        }
-
         return parseAssetQueryResponse('ranking.list', {
           requestId,
           serverTime: time(now),
@@ -397,11 +578,6 @@ export class RankingService {
       // If another worker holds active lease but cache is missing or > 60s, do bounded direct query
       if (isLeaseActive && !isStaleUsable) {
         const { sorted } = this.collectEntriesFromStore(scope);
-        if (ownCharacterId) {
-          const ownIdx = sorted.findIndex(e => e.characterId === ownCharacterId);
-          if (ownIdx >= 0) ownRank = ownIdx + 1;
-        }
-
         const pageEntries = sorted.slice(0, pageRequest);
         let nextCursor: string | null = null;
         if (sorted.length > pageEntries.length && pageEntries.length > 0) {
@@ -447,13 +623,9 @@ export class RankingService {
 
       // Compute fresh dataset from store
       const { sorted } = this.collectEntriesFromStore(scope);
-      if (ownCharacterId) {
-        const ownIdx = sorted.findIndex(e => e.characterId === ownCharacterId);
-        if (ownIdx >= 0) ownRank = ownIdx + 1;
-      }
-
       const cachedViews = this.toEntryViews(sorted.slice(0, this.cacheSize), sorted);
       const pageViews = cachedViews.slice(0, pageRequest);
+
 
       let nextCursor: string | null = null;
       if (sorted.length > pageViews.length && pageViews.length > 0) {

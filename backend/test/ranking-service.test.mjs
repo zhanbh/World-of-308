@@ -5,6 +5,10 @@ import { characterKey } from '../src/character/character-service.ts';
 import {
   RankingService,
   compareRankingEntries,
+  countHigherScore,
+  countEarlierReached,
+  countSmallerId,
+  computeThreePartTriadRank,
 } from '../src/ranking/ranking-service.ts';
 import { rankCacheKey } from '../src/ranking/ranking-model.ts';
 import {
@@ -22,7 +26,7 @@ function createMockClock(initialTime = 1000) {
   };
 }
 
-async function createFixture() {
+async function createFixture(overrides = {}) {
   const store = new MemoryStore();
   const clock = createMockClock(2000);
   const service = new RankingService({
@@ -30,7 +34,9 @@ async function createFixture() {
     clock,
     secret: 'test-ranking-secret-32-bytes-long!!',
     scoreConfigRef: 'score-v1',
+    ...overrides,
   });
+
 
   async function putRankingEntry({
     characterId,
@@ -898,4 +904,261 @@ test('ST20-02 AC20-4: concurrent lease competition prevents cache stampede', asy
   const cacheKey = await rankCacheKey('all', 'score-v1');
   const finalCache = f.store.inspect(cacheKey);
   assert.equal(finalCache.lease, null);
+});
+
+test('ST20-03 AC20-5: three-part mutually exclusive index count algorithm strictly matches full triad sort order', async () => {
+  const entries = [
+    { schemaVersion: 2, id: '1', characterId: 'c-alpha', accountId: 'a1', classId: 'warrior', characterName: 'Alpha', level: 10, score: '4000', scoreConfigRef: 'score-v1', equipmentVersion: 1, scoreReachedAt: 1000, projectionVersion: 1, updatedAt: 1000 },
+    { schemaVersion: 2, id: '2', characterId: 'c-beta', accountId: 'a2', classId: 'warrior', characterName: 'Beta', level: 10, score: '3000', scoreConfigRef: 'score-v1', equipmentVersion: 1, scoreReachedAt: 800, projectionVersion: 1, updatedAt: 800 },
+    { schemaVersion: 2, id: '3', characterId: 'c-gamma', accountId: 'a3', classId: 'warrior', characterName: 'Gamma', level: 10, score: '3000', scoreConfigRef: 'score-v1', equipmentVersion: 1, scoreReachedAt: 1000, projectionVersion: 1, updatedAt: 1000 },
+    { schemaVersion: 2, id: '4', characterId: 'c-delta', accountId: 'a4', classId: 'warrior', characterName: 'Delta', level: 10, score: '3000', scoreConfigRef: 'score-v1', equipmentVersion: 1, scoreReachedAt: 1000, projectionVersion: 1, updatedAt: 1000 },
+    { schemaVersion: 2, id: '5', characterId: 'c-epsilon', accountId: 'a5', classId: 'warrior', characterName: 'Epsilon', level: 10, score: '2000', scoreConfigRef: 'score-v1', equipmentVersion: 1, scoreReachedAt: 500, projectionVersion: 1, updatedAt: 500 },
+    { schemaVersion: 2, id: '6', characterId: 'c-zeta', accountId: 'a6', classId: 'warrior', characterName: 'Zeta', level: 10, score: '5000', scoreConfigRef: 'score-v1', equipmentVersion: 1, scoreReachedAt: 2000, projectionVersion: 1, updatedAt: 2000 },
+  ];
+
+  // Full triad sort
+  const sorted = [...entries].sort(compareRankingEntries);
+  assert.equal(sorted[0].characterId, 'c-zeta');
+  assert.equal(sorted[1].characterId, 'c-alpha');
+  assert.equal(sorted[2].characterId, 'c-beta');
+  assert.equal(sorted[3].characterId, 'c-delta');
+  assert.equal(sorted[4].characterId, 'c-gamma');
+  assert.equal(sorted[5].characterId, 'c-epsilon');
+
+  for (const item of entries) {
+    const fullSortRank = sorted.indexOf(item) + 1;
+    const triad = computeThreePartTriadRank(item, entries);
+
+    const c1 = countHigherScore(BigInt(item.score), entries);
+    const c2 = countEarlierReached(BigInt(item.score), item.scoreReachedAt, entries);
+    const c3 = countSmallerId(BigInt(item.score), item.scoreReachedAt, item.characterId, entries);
+
+    assert.equal(triad.higherScoreCount, c1, `C1 mismatch for ${item.characterId}`);
+    assert.equal(triad.earlierReachedCount, c2, `C2 mismatch for ${item.characterId}`);
+    assert.equal(triad.smallerIdCount, c3, `C3 mismatch for ${item.characterId}`);
+
+    assert.equal(triad.totalRank, fullSortRank, `Rank mismatch for ${item.characterId}`);
+    assert.equal(c1 + c2 + c3 + 1, fullSortRank, `3-part sum mismatch for ${item.characterId}`);
+  }
+});
+
+test('ST20-03 AC20-5: equipment swap (换装) immediately updates ownRank without waiting for cache refresh', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'char-rival', score: '3000', scoreReachedAt: 1000 });
+  await f.putRankingEntry({ characterId: 'char-me', score: '2000', scoreReachedAt: 1000 });
+  await f.setupActiveSession('acc-me', 'char-me', 'sess-me', 1);
+
+  const q1 = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-swap-1',
+    sessionId: 'sess-me',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in q1);
+  assert.equal(q1.data.ownRank, 2);
+  assert.equal(q1.data.stale, false);
+
+  // Time advances 5s (still within 15s fresh TTL)
+  f.clock.setNow(1000 + 5000);
+
+  // Character swaps to legendary equipment: score becomes 5000!
+  await f.putRankingEntry({ characterId: 'char-me', score: '5000', scoreReachedAt: 1000 + 5000 });
+
+  const q2 = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-swap-2',
+    sessionId: 'sess-me',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in q2);
+  assert.equal(q2.data.ownRank, 1, 'ownRank must immediately climb to 1 after equipment upgrade');
+  assert.equal(q2.data.stale, false);
+
+  // Character unequips gear: score drops to 1000!
+  f.clock.setNow(1000 + 8000);
+  await f.putRankingEntry({ characterId: 'char-me', score: '1000', scoreReachedAt: 1000 + 8000 });
+
+  const q3 = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-swap-3',
+    sessionId: 'sess-me',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in q3);
+  assert.equal(q3.data.ownRank, 2, 'ownRank must immediately drop to 2 after unequip');
+});
+
+test('ST20-03 AC20-5: simulated count failure gracefully degrades to ownRank: null without failing query', async () => {
+  const f = await createFixture({ simulateCountFailure: true });
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000' });
+  await f.putRankingEntry({ characterId: 'c-2', score: '2000' });
+  await f.setupActiveSession('acc-1', 'c-1', 'sess-fail', 1);
+
+  const res = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-deg-1',
+    sessionId: 'sess-fail',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  assert.ok('data' in res);
+  assert.equal(res.data.entries.length, 2);
+  assert.equal(res.data.ownRank, null);
+  assert.equal(typeof res.data.stale, 'boolean');
+});
+
+test('ST20-03 AC20-5: count capacity limit exceeded triggers graceful degradation to ownRank: null', async () => {
+  const f = await createFixture({ countCapacityLimit: 2 });
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '5000' });
+  await f.putRankingEntry({ characterId: 'c-2', score: '4000' });
+  await f.putRankingEntry({ characterId: 'c-3', score: '3000' });
+  await f.setupActiveSession('acc-1', 'c-3', 'sess-cap', 1);
+
+  const resExceeded = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-cap-exceeded',
+    sessionId: 'sess-cap',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in resExceeded);
+  assert.equal(resExceeded.data.entries.length, 3);
+  assert.equal(resExceeded.data.ownRank, null, 'Must degrade to null when capacity limit exceeded');
+
+  const fNormal = await createFixture({ countCapacityLimit: 10 });
+  await fNormal.putRankingEntry({ characterId: 'c-1', score: '5000' });
+  await fNormal.putRankingEntry({ characterId: 'c-2', score: '4000' });
+  await fNormal.putRankingEntry({ characterId: 'c-3', score: '3000' });
+  await fNormal.setupActiveSession('acc-1', 'c-3', 'sess-cap', 1);
+
+  const resNormal = await fNormal.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-cap-normal',
+    sessionId: 'sess-cap',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in resNormal);
+  assert.equal(resNormal.data.ownRank, 3, 'Must compute rank 3 when within capacity limit');
+});
+
+test('ST20-03 AC20-5: custom count provider exception degrades gracefully to ownRank: null', async () => {
+  const f = await createFixture({
+    countProvider: async () => {
+      throw new Error('INDEX_TIMEOUT_CIRCUIT_BROKEN');
+    },
+  });
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'c-1', score: '3000' });
+  await f.setupActiveSession('acc-1', 'c-1', 'sess-prov-err', 1);
+
+  const res = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-prov-err',
+    sessionId: 'sess-prov-err',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  assert.ok('data' in res);
+  assert.equal(res.data.entries.length, 1);
+  assert.equal(res.data.ownRank, null, 'Provider throw must gracefully degrade to ownRank: null');
+});
+
+test('ST20-03 AC20-2 & AC20-5: class scope mismatch returns ownRank: null', async () => {
+  const f = await createFixture();
+  f.clock.setNow(1000);
+
+  await f.putRankingEntry({ characterId: 'w-1', classId: 'warrior', score: '4000' });
+  await f.putRankingEntry({ characterId: 'h-1', classId: 'hunter', score: '3500' });
+  await f.setupActiveSession('acc-w', 'w-1', 'sess-w', 1);
+
+  const resHunterScope = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-scope-diff',
+    sessionId: 'sess-w',
+    sessionEpoch: 1,
+    payload: { scope: 'hunter', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in resHunterScope);
+  assert.equal(resHunterScope.data.entries.length, 1);
+  assert.equal(resHunterScope.data.entries[0].character.characterId, 'h-1');
+  assert.equal(resHunterScope.data.ownRank, null, 'Warrior querying hunter list must have ownRank null');
+
+  const resWarriorScope = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-scope-same',
+    sessionId: 'sess-w',
+    sessionEpoch: 1,
+    payload: { scope: 'warrior', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in resWarriorScope);
+  assert.equal(resWarriorScope.data.ownRank, 1);
+
+  const resAllScope = await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-scope-all',
+    sessionId: 'sess-w',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+  assert.ok('data' in resAllScope);
+  assert.equal(resAllScope.data.ownRank, 1);
+});
+
+test('ST20-03 AC20-6: ownRank computation is strictly read-only and never mutates scoreReachedAt', async () => {
+  const f = await createFixture();
+  f.clock.setNow(2000);
+
+  await f.putRankingEntry({
+    characterId: 'char-ro',
+    score: '3500',
+    scoreReachedAt: 888,
+  });
+  await f.setupActiveSession('acc-ro', 'char-ro', 'sess-ro', 1);
+
+  await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-ro-1',
+    sessionId: 'sess-ro',
+    sessionEpoch: 1,
+    payload: { scope: 'all', cursor: null, pageRequest: 20 },
+  });
+
+  await f.service.query({
+    protocolVersion: 2,
+    query: 'ranking.list',
+    requestId: 'req-ro-2',
+    sessionId: 'sess-ro',
+    sessionEpoch: 1,
+    payload: { scope: 'warrior', cursor: null, pageRequest: 20 },
+  });
+
+  const entryKey = await characterKey('rankingEntry', ['char-ro']);
+  const entry = f.store.inspect(entryKey);
+  assert.equal(entry.score, '3500');
+  assert.equal(entry.scoreReachedAt, 888, 'scoreReachedAt must remain absolutely unchanged');
+  assert.equal(entry.updatedAt, 888);
 });
