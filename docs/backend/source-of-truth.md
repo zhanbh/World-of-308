@@ -25,7 +25,7 @@
 | 事务预算 | [强化与终局预算](enhancement-terminal-budget-v1.md) | 工作表/持有合同/SDK验证；当前含汇总终局R44/W33，不用历史79代替 |
 | 身份/适配 | [身份合同](identity-adapter-proposal-v1.md)、[平台基线](platform-adapter-baseline-v1.md) | 实测前不得宣称可信链、真实事务或费用通过 |
 | UI功能边界与审阅 | [UI纠偏合同](../design/ui-review-authoritative-delta-v1.md)、[状态覆盖](../design/ui-state-coverage-v1.md)、[UI审阅记录](../reviews/ui-design-review-v1.md) | PNG/HTML仅表现参考；尺寸、拖动、长卡片与手机触达仍缺实机证据待验收 |
-| UI与美术规范 (候选方案) | [风格方案(候选)](../design/ui-art-style-standardization-v1.md)、[UI规格](../design/ui-layout-specification-v1.md)、[图标规范](../art/item-icons-specification-v1.md)、[审阅证据](../reviews/ui-design-review-v1.md) | 候选UI核心色盘、9-Patch切片探索、AI提示词模板与动效试验；非最终冻结合同，直接关联前序审阅证据，待小样实机验证 |
+| UI与美术规范 (候选方案) | [风格方案(候选)](../design/ui-art-style-standardization-v1.md)、[UI规格](../design/ui-layout-specification-v1.md)、[图标规范](../art/item-icons-specification-v1.md)、[审阅证据](../reviews/ui-design-review-v1.md) | 候选UI色盘、切片、图标尺寸及动效；资源清单为计划产物，触控与性能须先完成真机小样验证再冻结 |
 | 发布/保留/恢复 | [发布基线](release-and-validation-baseline-v1.md)、[保留合同](retention-and-replay-proposal-v1.md) | 真实配置表、版本兼容、账单/备份门禁；不自动TTL权威来源 |
 
 ## 本轮修订与准入
