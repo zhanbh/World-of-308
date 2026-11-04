@@ -298,22 +298,22 @@
 
 1. **图集母版与运行时切片**：
    - 官方母版图集：[item-icons-sheet-v1.png](../art/item-icons-sheet-v1.png)（1024×1024，4×4 经典网格，共 16 枚核心物品与装备图标）；
-   - 运行时资源库：`client/assets/resources/icons/` 提供 64×64 预缩放位图；
+   - 运行时资源库：`client/assets/resources/icons/` 提供 **48×48 px** 运行时独立点阵图集（适配 56×56 标准格子）及 **64×64 px** 装备详情大卡片独立切片，严禁在运行时使用非整数倍缩放（如 0.75×）破坏点阵像素均匀性；
    - 详尽规范说明书：参见 [item-icons-specification-v1.md](../art/item-icons-specification-v1.md)。
-2. **涵盖全部 13 部位与核心消耗材料**：
-   - **武器类**：`weapon_dual_blades_64.png`（冷钢交叉双刃）；
-   - **防具 5 件**：`armor_shoulders_64.png`（护肩）、`armor_chest_64.png`（上衣）、`armor_belt_64.png`（腰带）、`armor_pants_64.png`（下衣）、`armor_boots_64.png`（鞋子）；
-   - **首饰 3 件**：`jewelry_necklace_64.png`（项链）、`jewelry_bracelet_64.png`（手镯）、`jewelry_ring_64.png`（戒指）；
-   - **特殊装备 3 件**：`special_book_64.png`（辅助装备图腾法典）、`special_stone_64.png`（魔法石）、`special_earring_64.png`（耳环）；
-   - **主动饰品与纪念品**：`material_souvenir_64.png`（战功纹章 / 强化损毁纪念品）；
-   - **消耗品与强化材料**：`consumable_hp_potion_64.png`（生命药水）、`consumable_mp_potion_64.png`（法力药水）、`material_adamantite_64.png`（金青色精金矿锭）。
-3. **网格视觉装配层叠 (Z-Index Hierarchy)**：
-   - **Layer 0**：底板暗色网格背景 `#10181e`；
-   - **Layer 1**：居中放置 34×34px（纸娃娃）或 38×38px（背包）的像素图标（`image-rendering: pixelated`）；
-   - **Layer 2**：边框品质光晕（白/绿/蓝/紫/橙）；
+2. **涵盖全部 13 部位与核心消耗材料 (命名规则: `*_48.png` 槽位 / `*_64.png` 详情)**：
+   - **武器类**：`weapon_dual_blades_48.png` / `_64.png`（冷钢交叉双刃）；
+   - **防具 5 件**：`armor_shoulders_48.png`（护肩）、`armor_chest_48.png`（上衣）、`armor_belt_48.png`（腰带）、`armor_pants_48.png`（下衣）、`armor_boots_48.png`（鞋子）；
+   - **首饰 3 件**：`jewelry_necklace_48.png`（项链）、`jewelry_bracelet_48.png`（手镯）、`jewelry_ring_48.png`（戒指）；
+   - **特殊装备 3 件**：`special_book_48.png`（辅助装备图腾法典）、`special_stone_48.png`（魔法石）、`special_earring_48.png`（耳环）；
+   - **主动饰品与纪念品**：`material_souvenir_48.png`（战功纹章 / 强化损毁纪念品）；
+   - **消耗品与强化材料**：`consumable_hp_potion_48.png`（生命药水）、`consumable_mp_potion_48.png`（法力药水）、`material_adamantite_48.png`（金青色精金矿锭）。
+3. **网格视觉装配层叠与透明底解耦 (Z-Index Hierarchy)**：
+   - **Layer 0**：底板暗色网格背景 `#10181e`（由 `panel_well_inner` 9-Patch 切片统一提供，图标本身不含底衬）；
+   - **Layer 1**：居中放置 34×34px（纸娃娃紧凑槽位）或 48×48px（背包/金库 56×56 标准格子，留 4px 内边距）的**纯透明底**像素图标（`image-rendering: pixelated`）；
+   - **Layer 2**：独立边框品质光晕 Sprite（由 UI 按品质白/绿/蓝/紫/橙/红挂载，图标自身不带边框）；
    - **Layer 3**：右上角强化等级角标（`+10` 等，带粉光粒子）；
    - **Layer 4**：底部 3px 纯三色耐久进度条；
-   - **Layer 5**：右下角堆叠数量徽标（如 `x15`、`x20`）。
+   - **Layer 5**：右下角堆叠数量徽标（如 `x5`、`x20`，单堆上限严格执行系统规约 `MAX_STACK = 20`）。
 
 ---
 
