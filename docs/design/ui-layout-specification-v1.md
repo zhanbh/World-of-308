@@ -1,6 +1,6 @@
 # 308世界 — UI 视觉布局与交互规格说明书 v1
 
-日期：2026-10-20。关联：[D05城镇与资产方案](town-interactions-proposal-v1.md)、[D05验收清单](town-interactions-acceptance-v1.md)、[城镇交互审阅](../reviews/town-interactions-review-v1.md)、[战斗数值与公式方案](combat-formulas-proposal-v1.md)。
+日期：2026-10-20。关联：[UI与美术风格标准化 v1](ui-art-style-standardization-v1.md)、[D05城镇与资产方案](town-interactions-proposal-v1.md)、[D05验收清单](town-interactions-acceptance-v1.md)、[城镇交互审阅](../reviews/town-interactions-review-v1.md)、[战斗数值与公式方案](combat-formulas-proposal-v1.md)。
 2026-10-20范围澄清：本稿中的玩家搜索、他人检视、好友、私聊及城镇其他玩家展示属于后续社交规则储备，不纳入本期实现与验收；本期不展示其可操作入口。本人角色信息、背包与基础排行榜仍属本期。后续社交草图不构成本期UI开发要求。
 
 状态：设计阶段正式规范。本规范为客户端 UI 界面开发与 Cocos 场景拼装的权威视觉与交互基准。

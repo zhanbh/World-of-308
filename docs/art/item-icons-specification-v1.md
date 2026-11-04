@@ -1,6 +1,6 @@
 # 308世界 — 物品与装备像素图标规范说明书 (v1)
 
-更新日期：2026-10-21。关联：[UI视觉布局与交互规格说明书 v1](../design/ui-layout-specification-v1.md)、[装备方案 v1](../design/equipment-proposal-v1.md)。
+更新日期：2026-10-21。关联：[UI视觉布局与交互规格说明书 v1](../design/ui-layout-specification-v1.md)、[UI与美术风格标准化 v1](../design/ui-art-style-standardization-v1.md)、[装备方案 v1](../design/equipment-proposal-v1.md)。
 
 ---
 

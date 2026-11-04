@@ -25,6 +25,7 @@
 | 事务预算 | [强化与终局预算](enhancement-terminal-budget-v1.md) | 工作表/持有合同/SDK验证；当前含汇总终局R44/W33，不用历史79代替 |
 | 身份/适配 | [身份合同](identity-adapter-proposal-v1.md)、[平台基线](platform-adapter-baseline-v1.md) | 实测前不得宣称可信链、真实事务或费用通过 |
 | UI功能边界 | [UI纠偏合同](../design/ui-review-authoritative-delta-v1.md)、[状态覆盖](../design/ui-state-coverage-v1.md) | PNG/HTML仅表现参考；运行时热区/拖动/恢复待验收 |
+| UI与美术标准化 | [风格标准化](../design/ui-art-style-standardization-v1.md)、[UI规格](../design/ui-layout-specification-v1.md)、[图标规范](../art/item-icons-specification-v1.md) | 16色调色板锁定、9-Patch矢量切片、AI提示词模板与零美工动效管线 |
 | 发布/保留/恢复 | [发布基线](release-and-validation-baseline-v1.md)、[保留合同](retention-and-replay-proposal-v1.md) | 真实配置表、版本兼容、账单/备份门禁；不自动TTL权威来源 |
 
 ## 本轮修订与准入
