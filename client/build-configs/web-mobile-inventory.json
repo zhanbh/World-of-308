@@ -47,6 +47,10 @@
     {
       "url": "db://assets/scenes/Prototype.scene",
       "uuid": "8627f424-97ac-47b3-82fa-cd7a692188a3"
+    },
+    {
+      "url": "db://assets/scenes/UISliceKitPrototype.scene",
+      "uuid": "e3771629-a868-40e0-bcc7-472b40083668"
     }
   ],
   "wasmCompressionMode": false,

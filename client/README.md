@@ -58,6 +58,12 @@ node client/tools/check-model.cjs 'C:\ProgramData\cocos\editors\Creator\3.8.8'
 
 跑步步态修复：移动改用独立 `warrior-gait-v2.png`，包含两腿交替前伸、支撑、后蹬与回摆。8个播放槽/7个独立姿势，跑步400ms、步行约615ms；急停/受击/技能姿势保持原优先级。`/skills`新增步态逐帧选项，来源、选帧与验证见[步态v2归档](../docs/art/motion-studies/warrior/body/gait-v2/README.md)。本轮H5已重建更新。
 
+## UI 切片与触控小样（2026-11-08）
+
+运行 node client/tools/preview-ui-slice-kit.cjs，打开 http://127.0.0.1:8774 。小样含背包切片、两级装备卡、四角避让、完整触控 HUD 与验证记录导出。首次运行会生成构建；源码修改后加 --rebuild。也可在 Creator 直接打开 assets/scenes/UISliceKitPrototype.scene。常规 Prototype 重建后可在城镇点“UI小样 U”进入。
+
+微信小样执行 node client/tools/build-ui-slice-kit.cjs /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/MacOS/CocosCreator wechat，导入 client/build/wechatgame-ui-slice-kit。操作与验收步骤见[运行验收说明](../docs/reviews/ui-slice-kit-runtime-verification.md)。数据仅在小样内存中；手机多指与性能需实际验收。
+
 ## 微信小游戏构建与导入
 
 已配置本项目AppID，横屏入口为Prototype。执行 `node client/tools/build-wechat.cjs /Applications/Cocos/Creator/3.8.8/CocosCreator.app/Contents/MacOS/CocosCreator` 完成构建、内置资源分包后处理及主包预算检查，再将 `client/build/wechatgame` 导入微信开发者工具，点击预览扫码。仅通过编辑器重建会覆盖后处理结果，需随后运行 `node client/tools/finalize-wechat-build.cjs` 和 `node client/tools/check-wechat-build.cjs`。本轮已成功生成二维码；具体包体、资源加载与待完成的真机验收见[微信构建记录](../docs/reviews/wechat-build-review-v1.md)。

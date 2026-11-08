@@ -1,6 +1,6 @@
 import './polyfill';
 import { _decorator, Component, Node, Graphics, Color, UITransform, Label,
-    input, Input, EventTouch, EventKeyboard, EventMouse, KeyCode, Vec3, view, ResolutionPolicy, game, Game, profiler, sys } from 'cc';
+    input, Input, EventTouch, EventKeyboard, EventMouse, KeyCode, Vec3, view, ResolutionPolicy, game, Game, profiler, sys, director } from 'cc';
 import { CombatModel, tuning, attackSpeedTuning } from './CombatModel';
 import { WarriorView } from './WarriorView';
 import { EnemyModel, CombatFeedback, hitSparkPixels, hitFeedbackTuning, damageText, EncounterModel, enemyKnockdownPolicies } from './EnemyModel';
@@ -149,6 +149,7 @@ export class Prototype extends Component {
             this.text('修理 M', 40, 242, 13, 60),
             this.text('强化 K', 110, 242, 13, 60),
             this.text('排行 O', 180, 242, 13, 60),
+            this.text('UI小样 U', 280, 242, 14, 100),
         ];
         this.linusLabel = this.text('铁匠·林纳克斯\n[修理 M]', -150, 72, 12, 120);
         this.linusLabel.color = new Color(255, 215, 130);
@@ -523,6 +524,7 @@ export class Prototype extends Component {
         if (id === null) return;
         const p = this.point(e);
         if (p.y >= 214 && p.y <= 256) {
+            if (p.x >= 230 && p.x <= 330 && this.sceneMode === 'town' && !this.challengeCoordinator) { this.openUISliceKit(); return; }
             if (p.x >= -265 && p.x <= -165) { this.toggleSceneMode(); return; }
             if (p.x >= -130 && p.x <= -70)  { void this.toggleInventory(); return; }
             if (p.x >= -60  && p.x <= 0)    { void this.toggleBank(); return; }
@@ -619,6 +621,7 @@ export class Prototype extends Component {
     }
 
     private keyDown(e: EventKeyboard): void {
+        if (e.keyCode === KeyCode.KEY_U && this.sceneMode === 'town' && !this.challengeCoordinator) { this.openUISliceKit(); return; }
         if(this.challengeCoordinator){
             if(e.keyCode===KeyCode.KEY_C){void this.toggleChallenge();return;}
             if(e.keyCode===KeyCode.KEY_P){this.authorityAction('collect');return;}
@@ -697,6 +700,13 @@ export class Prototype extends Component {
     public retryCombat():void {void this.lifecycle?.retry();}
     public reenterGame():void {this.lifecycle?.reenter();}
     private onShowAuthority():void {void this.lifecycle?.show();}
+    private openUISliceKit(): void {
+        if (this.sceneMode !== 'town' || this.challengeCoordinator || this.inventoryConnecting || this.bankConnecting
+            || this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen
+            || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        this.clearInput(); director.loadScene('UISliceKitPrototype');
+    }
+
     private onHideInput(): void { void this.lifecycle?.hide(); this.bankKeyHeld = false; if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; } this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.repairKeyHeld = false; this.enhancementKeyHeld = false; this.rankingKeyHeld = false; this.clearInput(); }
 
     private clearInput(): void {
