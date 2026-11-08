@@ -8,7 +8,7 @@ test('isolated preview boots through real login/create/select and serves valid b
   const identity = demo.bootstrap.identity;
   const request = (query, payload) => ({ protocolVersion: 2, sessionId: identity.sessionId, sessionEpoch: identity.sessionEpoch, requestId: `preview-${query}`, query, payload });
   const bag = parseAssetQueryResponse('inventory.get', await demo.rpc(request('inventory.get', {characterId:identity.characterId,containerKind:'backpack'})));
-  assert.equal(bag.data.capacity,20); assert.equal(bag.data.slots.length,5);
+  assert.equal(bag.data.capacity,20); assert.equal(bag.data.slots.length,8);
   const quick = await demo.rpc(request('quickslot.get',{characterId:identity.characterId}));
   const assigned = await demo.rpc({ protocolVersion:2, sessionId:identity.sessionId, sessionEpoch:identity.sessionEpoch, operationId:'preview-assign',command:'quickslot.assign',expected:[{kind:'character',id:identity.characterId,version:quick.data.version}],payload:{characterId:identity.characterId,slotIndex:0,templateId:'item:hp-potion-small-v1'}});
   assert.equal(assigned.outcome.status,'committed');

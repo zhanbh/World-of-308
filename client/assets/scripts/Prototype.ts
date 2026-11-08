@@ -219,6 +219,9 @@ export class Prototype extends Component {
         if (search && typeof URLSearchParams !== 'undefined' && new URLSearchParams(search).get('challengePreview') === '1') {
             void this.toggleChallenge();
         }
+        if (search && typeof URLSearchParams !== 'undefined' && new URLSearchParams(search).get('inventoryPreview') === '1') {
+            void this.toggleInventory();
+        }
         input.on(Input.EventType.TOUCH_START, this.touchStart, this);
         input.on(Input.EventType.TOUCH_MOVE, this.touchMove, this);
         input.on(Input.EventType.TOUCH_END, this.touchEnd, this);
@@ -459,9 +462,24 @@ export class Prototype extends Component {
         if (this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
         this.closeAllPanels();
         if (!this.inventoryPanel) {
+            const local = sys.isBrowser && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('inventoryPreview') === '1';
+            if (local) {
+                const generation = ++this.inventoryConnectGeneration;
+                this.inventoryConnecting = true; this.inventoryNotice.string = '正在连接本机背包服务…';
+                try {
+                    const preview = await connectInventoryPreview();
+                    if (generation !== this.inventoryConnectGeneration) return;
+                    this.attachInventory(preview.coordinator, preview.labels, preview.assignable, true);
+                    this.inventoryNotice.string = '本机背包服务 · 临时测试数据';
+                } catch {
+                    if (generation === this.inventoryConnectGeneration) this.inventoryNotice.string = '本机背包服务未连接，请启动预览服务后重试';
+                    return;
+                } finally { if (generation === this.inventoryConnectGeneration) this.inventoryConnecting = false; }
+            } else {
             const sandbox = createSandboxInventoryCoordinator();
             this.attachInventory(sandbox.coordinator, sandbox.labels, sandbox.assignable, true);
             this.inventoryNotice.string = '本地沙盒背包模式';
+            }
         }
         await this.inventoryPanel?.open();
     }
@@ -648,7 +666,7 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.ESCAPE && this.rankingPanel?.isOpen) { this.rankingPanel.close(); return; }
         if (e.keyCode === KeyCode.KEY_B) { if (!this.inventoryKeyHeld) { this.inventoryKeyHeld = true; void this.toggleInventory(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
-        if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { this.inventoryPanel.close(); return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { if (!this.inventoryPanel.closeDetails()) this.inventoryPanel.close(); return; }
         if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
         if (this.encounter.state === 'ready') {
             this.encounter.start();

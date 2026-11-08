@@ -64,6 +64,14 @@ node client/tools/check-model.cjs 'C:\ProgramData\cocos\editors\Creator\3.8.8'
 
 ## ST04 背包实际界面试玩
 
+2026-11-09：背包已接入验收通过的暗岩切片、56px 网格与原生48px图标。装备点开紧凑卡，再点“完整详情”；详情来自现有 equipment.get。根目录运行以下命令，一起启动独立临时服务与界面：
+
+    node client/tools/preview-inventory.cjs
+
+打开 http://127.0.0.1:8775/?inventoryPreview=1&inventoryPort=8792 。代码变更后加 --rebuild。白装、长名16词条/+10/0耐久武器和无耐久戒指均由本机真实服务读取；整理、快捷位、扩容走原事务。微信离线展示模式仍明确标注为沙盒。
+
+本轮交付范围与验证证据见[背包样式落地记录](../docs/reviews/inventory-ui-style-verification.md)。已验收的独立小样保留在 feat/ui-slice-kit-preview / aa27196。
+
 已接入Prototype的背包按钮与B键（Esc关闭），包含5列滚动/锁格、正倒序整理、3个模板快捷位、鼠标拖入与触屏长按拖入；提交中禁写，结果未知保留原操作身份。默认动作样板没有正式登录时不显示虚构背包。
 
 本机隔离试玩仅使用临时数据、真实v2内存服务，不连接微信或真实资产。Node24下分别启动：

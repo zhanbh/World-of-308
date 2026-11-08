@@ -45,6 +45,8 @@
     "../client/assets/scripts/net/EnhancementCoordinator.ts",
     "../client/assets/scripts/net/CollectionCoordinator.ts",
     "../client/assets/scripts/net/RankingCoordinator.ts",
-    "../client/assets/scripts/net/PrototypePreview.ts"
+    "../client/assets/scripts/net/PrototypePreview.ts",
+    "../client/assets/scripts/ui/InventoryDetails.ts",
+    "../client/assets/scripts/ui/InventoryPresentation.ts"
   ]
 }

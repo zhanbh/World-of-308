@@ -8,6 +8,7 @@ import { CharacterService } from '../../backend/src/character/character-service.
 import { InventoryService } from '../../backend/src/inventory/inventory-service.ts';
 import { BankService } from '../../backend/src/bank/bank-service.ts';
 import { TownService } from '../../backend/src/town/town-service.ts';
+import { EquipmentService } from '../../backend/src/equipment/equipment-service.ts';
 import { BANK_TEST_CONFIG } from '../../backend/test/fixtures/bank-fixture.mjs';
 
 export async function createInventoryPreview() {
@@ -41,16 +42,31 @@ export async function createInventoryPreview() {
     const binding = { kind: 'character', accountId: character.accountId, characterId };
     const stack = (stackId, template, quantity, ordinal) => ({ kind: 'stack', stackId, templateRef: { id: template, version: 1 }, quantity, binding, traceRef: `${journalId}:${ordinal}` });
     const slots = { 1: stack('preview-hp-a', 'item:hp-potion-small-v1', 3, 0), 6: stack('preview-mp-a', 'item:mp-potion-small-v1', 2, 1), 9: stack('preview-hp-b', 'item:hp-potion-small-v1', 5, 2), 13: stack('preview-mp-b', 'item:mp-potion-small-v1', 6, 3), 18: stack('preview-ore', 'preview:ore', 7, 4) };
-    tx.set(journalId, { schemaVersion: 2, id: journalId, accountId: character.accountId, characterId, command: 'isolated-preview.seed', changes: { outputs: Object.values(slots).map((s, ordinal) => ({ ...s, ordinal })) } });
+    const starter = await tx.get(character.equipped.weapon);
+    if (!starter) throw new Error('PREVIEW_STARTER_MISSING');
+    const equipment = [
+      { ...starter, id: 'preview:plain-blades', templateRef: { id: 'preview:plain-blades-v1', version: 1 }, slotKind: 'weapon', quality: 'white', itemLevel: 10, enhancementLevel: 0, enhancementBonus: undefined, rolledAffixes: [{ stat: 'strength', value: 8 }], durability: { ...starter.durability, current: 120, max: 120 } },
+      { ...starter, id: 'preview:rift-blades', templateRef: { id: 'preview:rift-blades-v1', version: 1 }, slotKind: 'weapon', quality: 'purple', itemLevel: 30, enhancementLevel: 10, enhancementBonus: { configRef: 'preview:enhancement-v1', level: 10, attackPower: '60' }, rolledAffixes: ['attackPower', 'strength', 'agility', 'intelligence', 'maxHp', 'maxMp', 'armor', 'crit', 'physicalCrit', 'magicalCrit', 'haste', 'mastery', 'hit', 'armorPenetration', 'attackSpeed', 'resistance'].map((stat, i) => ({ stat, value: i + 1 })), durability: { ...starter.durability, current: 0, max: 120 }, setRef: { id: 'preview:rift-set-v1', version: 1 } },
+      { ...starter, id: 'preview:ring', templateRef: { id: 'preview:ring-v1', version: 1 }, slotKind: 'ring', quality: 'blue', itemLevel: 30, enhancementLevel: 0, enhancementBonus: undefined, rolledAffixes: [{ stat: 'strength', value: 12 }], durability: { wearEnabled: false, current: null, max: null, policyRef: 'no-wear-v1' } },
+    ].map((item, index) => ({ ...item, version: 1, sourceKey: journalId, sourceOrdinal: index + 5,
+      sourceLocator: { kind: 'grant', grantId: 'isolated-preview-ui-equipment' }, holderCharacterId: characterId,
+      location: { kind: 'container', containerId: bag.id }, binding, lifecycle: 'active' }));
+    equipment.forEach((item, index) => {
+      tx.set(item.id, item);
+      slots[[0, 4, 7][index]] = { kind: 'equipment', itemId: item.id, sortHeader: { itemLevel: item.itemLevel, quality: item.quality, slotKind: item.slotKind } };
+    });
+    tx.set(journalId, { schemaVersion: 2, id: journalId, accountId: character.accountId, characterId, command: 'isolated-preview.seed', changes: { outputs: [...Object.values(slots).filter(s => s.kind === 'stack').map((s, ordinal) => ({ ...s, ordinal })), ...equipment.map(item => ({ ...item, ordinal: item.sourceOrdinal }))] } });
     tx.set(bag.id, { ...bag, slots, version: bag.version + 1 });
     const account = await tx.get(character.accountId), wallet = await tx.get(account.walletId);
     tx.set(wallet.id, { ...wallet, gold: '10000', points: '0' });
   });
   const service = new InventoryService({ store, clock, identity, catalog });
+  const equipment = new EquipmentService({ store, clock, identity });
   const bank = new BankService({ store, clock, identity, catalog, expansionConfig: BANK_TEST_CONFIG });
   return {
-    bootstrap: { previewInstanceId: globalThis.crypto.randomUUID(), identity: { sessionId: session.sessionId, sessionEpoch: session.sessionEpoch, characterId }, templateLabels: { 'item:hp-potion-small-v1': '生命药水', 'item:mp-potion-small-v1': '法力药水', 'preview:ore': '矿石' }, assignableTemplates: ['item:hp-potion-small-v1', 'item:mp-potion-small-v1'] },
+    bootstrap: { previewInstanceId: globalThis.crypto.randomUUID(), identity: { sessionId: session.sessionId, sessionEpoch: session.sessionEpoch, characterId }, templateLabels: { 'item:hp-potion-small-v1': '生命药水', 'item:mp-potion-small-v1': '法力药水', 'preview:ore': '矿石', 'preview:plain-blades-v1': '新兵冷钢双刀', 'preview:rift-blades-v1': '被遗忘的远古守望者·裂隙余烬冷钢双刀', 'preview:ring-v1': '秘银指环', 'preview:rift-set-v1': '裂隙守望者' }, assignableTemplates: ['item:hp-potion-small-v1', 'item:mp-potion-small-v1'] },
     async rpc(value) {
+      if (value?.query === 'equipment.get') return equipment.query(value);
       if (value?.query === 'inventory.expansionQuote') return bank.query(value);
       if (value?.command === 'inventory.expand') return bank.execute(value);
       return value && Object.hasOwn(value, 'query') ? service.query(value) : service.execute(value);

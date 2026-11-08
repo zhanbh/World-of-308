@@ -4,10 +4,12 @@ import type { InventoryIdentity } from './InventoryCoordinator';
 /** Explicit browser-only opt-in; production login supplies its own coordinator/transport. */
 export async function connectInventoryPreview(): Promise<{ coordinator: InventoryCoordinator; labels: Record<string, string>; assignable: Set<string> }> {
     if (typeof window === 'undefined' || !['localhost', '127.0.0.1'].includes(window.location.hostname) || new URLSearchParams(window.location.search).get('inventoryPreview') !== '1') throw new Error('LOCAL_PREVIEW_NOT_ENABLED');
+    const port = Number(new URLSearchParams(window.location.search).get('inventoryPort') ?? 8788);
+    if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('INVALID_PREVIEW_PORT');
     const post = async (path: string, text: string): Promise<string> => {
         const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), 8000);
         try {
-            const response = await fetch(`http://127.0.0.1:8788${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: text, signal: controller.signal });
+            const response = await fetch('http://127.0.0.1:' + port + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: text, signal: controller.signal });
             if (!response.ok) throw new Error('PREVIEW_UNAVAILABLE');
             return await response.text();
         } finally { clearTimeout(timeout); }

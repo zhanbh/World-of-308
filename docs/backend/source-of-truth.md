@@ -25,10 +25,12 @@
 | 事务预算 | [强化与终局预算](enhancement-terminal-budget-v1.md) | 工作表/持有合同/SDK验证；当前含汇总终局R44/W33，不用历史79代替 |
 | 身份/适配 | [身份合同](identity-adapter-proposal-v1.md)、[平台基线](platform-adapter-baseline-v1.md) | 实测前不得宣称可信链、真实事务或费用通过 |
 | UI功能边界与审阅 | [UI纠偏合同](../design/ui-review-authoritative-delta-v1.md)、[状态覆盖](../design/ui-state-coverage-v1.md)、[UI审阅记录](../reviews/ui-design-review-v1.md) | PNG/HTML仅表现参考；尺寸、拖动、长卡片与手机触达仍缺实机证据待验收 |
-| UI与美术规范 (候选方案) | [风格方案(候选)](../design/ui-art-style-standardization-v1.md)、[UI规格](../design/ui-layout-specification-v1.md)、[图标规范](../art/item-icons-specification-v1.md)、[审阅证据](../reviews/ui-design-review-v1.md) | 候选UI色盘、切片、图标尺寸及动效；资源清单为计划产物，触控与性能须先完成真机小样验证再冻结 |
+| UI与美术规范 (小样已获人工确认，平台门禁另验) | [风格方案](../design/ui-art-style-standardization-v1.md)、[UI规格](../design/ui-layout-specification-v1.md)、[图标规范](../art/item-icons-specification-v1.md)、[审阅证据](../reviews/ui-design-review-v1.md)、[小样验收](../reviews/ui-slice-kit-runtime-verification.md) | 2026-11-08用户确认交互小样通过，当前展示与交互作为推广基线；设备/采样原始记录及真实城镇/战斗门禁分别跟踪，其他候选动效与工具保持探索状态 |
 | 发布/保留/恢复 | [发布基线](release-and-validation-baseline-v1.md)、[保留合同](retention-and-replay-proposal-v1.md) | 真实配置表、版本兼容、账单/备份门禁；不自动TTL权威来源 |
 
 ## 本轮修订与准入
+
+2026-11-09，已验收小样的首个正式落地点为背包与装备只读详情；沿既有 ST04/ST05 和 equipment.get，不扩充业务规则。读模型边界、并发读取与真实服务试玩证据见[背包 UI 落地记录](../reviews/inventory-ui-style-verification.md)。小样场景源码仍归档在独立分支。
 
 FR01/FR02/FR03原发现见[最终复核](../reviews/eng-review-final-recheck-2026-10-22.md)。本轮已修正文并补静态反例，见[一致性闭环](../reviews/design-source-consistency-2026-10-22.md)。旧评审“尚未批准”及预算数字是历史状态，不再作为活跃要求。
 

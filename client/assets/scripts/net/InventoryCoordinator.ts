@@ -1,5 +1,5 @@
 import { decodeAssetResponse, encodeAssetRequest, parseAssetCommand } from '../../../../shared/src/protocol/asset-v2.ts';
-import type { AssetCommand, AssetQuery, AssetQueryResponse, AssetResponse, ContainerView } from '../../../../shared/src/protocol/asset-v2.ts';
+import type { AssetCommand, AssetQuery, AssetQueryResponse, AssetResponse, ContainerView, EquipmentView } from '../../../../shared/src/protocol/asset-v2.ts';
 
 export interface InventoryTransport { send(jsonText: string): Promise<string> }
 /** Adapter must persist pending commands before transmitting them. */
@@ -62,6 +62,22 @@ export class InventoryCoordinator {
     const i = this.requireReady();
     await this.submit(parseAssetCommand({ protocolVersion: 2, command: 'quickslot.assign', operationId, sessionId: i.sessionId, sessionEpoch: i.sessionEpoch,
       expected: [{ kind: 'character', id: i.characterId, version: this.current.quickSlots!.version }], payload: { characterId: i.characterId, slotIndex, templateId } }) as Mutation);
+  }
+  /** Read-only detail. A response is usable only for the same accepted backpack generation. */
+  async inspectEquipment(itemId: string): Promise<EquipmentView | null> {
+    const identity = this.requireReady(), generation = this.generation, bag = this.current.backpack!;
+    const entry = bag.slots.find(s => s.entry.kind === 'equipment' && s.entry.itemId === itemId)?.entry;
+    if (!entry || entry.kind !== 'equipment') throw new Error('ITEM_NOT_IN_BACKPACK');
+    const response = await this.query('equipment.get', { characterId: identity.characterId, itemId });
+    if (generation !== this.generation || !['ready', 'empty'].includes(this.current.status)
+      || this.pending || this.current.backpack?.containerId !== bag.containerId || this.current.backpack.version !== bag.version) return null;
+    if ('error' in response) throw new Error(response.error.code);
+    const item = response.data;
+    if (item.itemId !== itemId || item.lifecycle !== 'active' || item.location.kind !== 'container' || item.location.containerId !== bag.containerId
+      || (item.binding.kind === 'character' && item.binding.characterId !== identity.characterId)
+      || item.itemLevel !== entry.sortHeader.itemLevel || item.quality !== entry.sortHeader.quality || item.slotKind !== entry.sortHeader.slotKind
+      || !response.versions.some(v => v.kind === 'equipment' && v.id === itemId && v.version === item.version)) throw new Error('EQUIPMENT_VIEW_MISMATCH');
+    return structuredClone(item);
   }
   /** Backpack unlock is available anywhere in town and never invents a bank context. */
   async expansionQuote(): Promise<InventoryExpansionQuote | null> {

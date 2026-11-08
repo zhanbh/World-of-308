@@ -439,24 +439,13 @@ export function createSandboxRankingCoordinator(): { coordinator: RankingCoordin
 }
 
 export function createSandboxInventoryCoordinator(): {
-  coordinator: InventoryCoordinator;
-  labels: Record<string, string>;
-  assignable: Set<string>;
+  coordinator: InventoryCoordinator; labels: Record<string, string>; assignable: Set<string>;
 } {
   const characterId = 'warrior-player-1';
   const identity = { sessionId: 'sandbox-inventory', sessionEpoch: 1, characterId };
-  const persistence = {
-    load: (_k: string) => null,
-    save: (_k: string, _v: string | null) => {},
-  };
-
+  const persistence = { load: (_key: string) => null, save: (_key: string, _value: string | null) => {} };
   const bag: ContainerView = {
-    containerId: 'sandbox-bag-1',
-    version: 1,
-    kind: 'backpack',
-    owner: { kind: 'character', characterId },
-    capacity: 20,
-    unlockStage: 0,
+    containerId: 'sandbox-bag-1', version: 1, kind: 'backpack', owner: { kind: 'character', characterId }, capacity: 20, unlockStage: 0,
     slots: [
       { index: 0, entry: { kind: 'stack', stackId: 'stk-1', templateRef: 'con-hp-potion', quantity: 15, binding: { kind: 'none' }, traceRef: 'tr-1' } },
       { index: 1, entry: { kind: 'stack', stackId: 'stk-2', templateRef: 'con-mp-potion', quantity: 10, binding: { kind: 'none' }, traceRef: 'tr-2' } },
@@ -464,95 +453,64 @@ export function createSandboxInventoryCoordinator(): {
       { index: 3, entry: { kind: 'stack', stackId: 'stk-3', templateRef: 'mat-carbon', quantity: 20, binding: { kind: 'none' }, traceRef: 'tr-3' } },
     ],
   };
-
-  const quickSlots = {
-    characterId,
-    version: 1,
-    slots: [
-      { slotIndex: 0, templateId: 'con-hp-potion', quantity: 15 },
-      { slotIndex: 1, templateId: 'con-mp-potion', quantity: 10 },
-      { slotIndex: 2, templateId: null, quantity: 0 },
-    ],
+  const weapon: EquipmentView = {
+    itemId: 'item-sandbox-weapon', version: 1, templateRef: 'wpn-epic-katana', slotKind: 'weapon', itemLevel: 30, quality: 'purple',
+    rolledAffixes: [{ statId: 'strength', value: '24' }, { statId: 'agility', value: '18' }], setRef: undefined,
+    enhancementLevel: 10, enhancementBonus: { configRef: 'sandbox:enhancement', level: 10, attackPower: '60' },
+    binding: { kind: 'character', characterId }, durability: { wearEnabled: true, current: 24, max: 120, policyRef: 'sandbox:wear' },
+    location: { kind: 'container', containerId: bag.containerId }, lifecycle: 'active', source: { kind: 'grant', grantId: 'sandbox:gear' },
   };
-
-  const transport = {
-    send: async (text: string): Promise<string> => {
-      const msg = JSON.parse(text);
-      if ('query' in msg) {
-        if (msg.query === 'inventory.get') {
-          return JSON.stringify({
-            requestId: msg.requestId,
-            serverTime: time(Date.now()),
-            versions: [
-              { kind: 'container', id: bag.containerId, version: bag.version },
-            ],
-            data: structuredClone(bag),
-          });
-        }
-        if (msg.query === 'quickslot.get') {
-          return JSON.stringify({
-            requestId: msg.requestId,
-            serverTime: time(Date.now()),
-            versions: [
-              { kind: 'character', id: characterId, version: quickSlots.version },
-              { kind: 'container', id: bag.containerId, version: bag.version },
-            ],
-            data: structuredClone(quickSlots),
-          });
-        }
-      }
+  const quick = { characterId, version: 1, slots: [0, 1, 2].map(slotIndex => ({
+    slotIndex, templateId: slotIndex === 0 ? 'con-hp-potion' : slotIndex === 1 ? 'con-mp-potion' : null,
+    quantity: slotIndex === 0 ? 15 : slotIndex === 1 ? 10 : 0,
+  })) };
+  let walletVersion = 1, gold = 10000n;
+  const receipts = new Map<string, { command: string; result: unknown }>();
+  const vector = () => [{ kind: 'character', id: characterId, version: quick.version }, { kind: 'container', id: bag.containerId, version: bag.version }];
+  const quoteRef = () => 'sandbox:expand:' + bag.version + ':' + walletVersion;
+  const transport = { send: async (text: string): Promise<string> => {
+    const msg = JSON.parse(text), now = time(Date.now());
+    const response = (data: unknown, versions = vector()) => JSON.stringify({ requestId: msg.requestId, serverTime: now, versions, data });
+    if (msg.query === 'inventory.get') return response(structuredClone(bag), [{ kind: 'container', id: bag.containerId, version: bag.version }]);
+    if (msg.query === 'quickslot.get') return response(structuredClone(quick));
+    if (msg.query === 'equipment.get' && msg.payload.itemId === weapon.itemId) return response(structuredClone(weapon), [{ kind: 'equipment', id: weapon.itemId, version: weapon.version }]);
+    if (msg.query === 'operation.get') {
+      const original = receipts.get(msg.payload.operationId);
+      return response(original ? { status: 'found', ...original } : { status: 'notFound' }, []);
+    }
+    if (msg.query === 'inventory.expansionQuote') return response({
+      containerId: bag.containerId, targetStage: bag.unlockStage! + 1, nextCapacity: bag.capacity + 20,
+      configRef: { id: 'sandbox:expansion', version: 1 }, quoteRef: quoteRef(),
+      costs: [{ currency: 'gold', amount: String(2000 * 2 ** bag.unlockStage!) }],
+    }, [...vector(), { kind: 'wallet', id: 'sandbox:wallet', version: walletVersion }]);
+    if (msg.command) {
+      const original = receipts.get(msg.operationId);
+      if (original) return JSON.stringify({ ...(original.result as object), replayed: true });
+      let code: string | null = null, data: unknown;
       if (msg.command === 'inventory.organize') {
-        bag.version++;
-        if (msg.payload?.direction === 'reverse') {
-          bag.slots.reverse();
-          bag.slots.forEach((s, idx) => { s.index = idx; });
-        } else {
-          bag.slots.sort((a, b) => a.entry.kind.localeCompare(b.entry.kind));
-          bag.slots.forEach((s, idx) => { s.index = idx; });
-        }
-        return JSON.stringify({
-          operationId: msg.operationId,
-          serverTime: time(Date.now()),
-          outcome: {
-            status: 'applied',
-            appliedAt: time(Date.now()),
-            resultVersions: [
-              { kind: 'container', id: bag.containerId, version: bag.version },
-              { kind: 'character', id: characterId, version: quickSlots.version },
-            ],
-          },
-        });
-      }
-      if (msg.command === 'quickslot.assign') {
-        const { slotIndex, templateId } = msg.payload ?? {};
-        if (typeof slotIndex === 'number' && quickSlots.slots[slotIndex]) {
-          quickSlots.slots[slotIndex].templateId = templateId ?? null;
-          quickSlots.slots[slotIndex].quantity = templateId ? 10 : 0;
-          quickSlots.version++;
-        }
-        return JSON.stringify({
-          operationId: msg.operationId,
-          serverTime: time(Date.now()),
-          outcome: {
-            status: 'applied',
-            appliedAt: time(Date.now()),
-            resultVersions: [
-              { kind: 'character', id: characterId, version: quickSlots.version },
-            ],
-          },
-        });
-      }
-      return JSON.stringify({ requestId: msg.requestId || msg.operationId, error: { code: 'UNSUPPORTED' } });
-    },
-  };
-
-  const coordinator = new InventoryCoordinator(transport, persistence);
-  coordinator.init(identity);
-  return {
-    coordinator,
-    labels: PROTOTYPE_LABELS,
-    assignable: new Set(['con-hp-potion', 'con-mp-potion']),
-  };
+        bag.slots.sort((a, b) => a.entry.kind.localeCompare(b.entry.kind));
+        if (msg.payload.direction === 'reverse') bag.slots.reverse();
+        bag.slots.forEach((slot, index) => { slot.index = index; }); ++bag.version;
+        data = { containerId: bag.containerId, direction: msg.payload.direction, mergedStacks: 0 };
+      } else if (msg.command === 'quickslot.assign') {
+        const slot = quick.slots[msg.payload.slotIndex]; slot.templateId = msg.payload.templateId;
+        slot.quantity = bag.slots.reduce((sum, s) => sum + (s.entry.kind === 'stack' && s.entry.templateRef === slot.templateId ? s.entry.quantity : 0), 0);
+        ++quick.version; data = { slotIndex: slot.slotIndex, templateId: slot.templateId };
+      } else if (msg.command === 'inventory.expand') {
+        const cost = BigInt(2000 * 2 ** bag.unlockStage!);
+        if (msg.payload.quoteRef !== quoteRef() || msg.payload.targetStage !== bag.unlockStage! + 1 || bag.capacity >= 100) code = 'QUOTE_CHANGED';
+        else if (gold < cost) code = 'INSUFFICIENT_GOLD';
+        else { gold -= cost; ++walletVersion; ++bag.version; bag.unlockStage!++; bag.capacity += 20;
+          data = { containerId: bag.containerId, targetStage: bag.unlockStage, capacity: bag.capacity }; }
+      } else code = 'UNSUPPORTED_COMMAND';
+      const result = { operationId: msg.operationId, serverTime: now, replayed: false,
+        outcome: code ? { status: 'rejected', code } : { status: 'committed', resultVersions: vector(), data } };
+      receipts.set(msg.operationId, { command: msg.command, result }); return JSON.stringify(result);
+    }
+    return JSON.stringify({ requestId: msg.requestId, serverTime: now, error: { code: 'NOT_FOUND_OR_FORBIDDEN' } });
+  } };
+  const coordinator = new InventoryCoordinator(transport, persistence); coordinator.init(identity);
+  return { coordinator, labels: PROTOTYPE_LABELS, assignable: new Set(['con-hp-potion', 'con-mp-potion']) };
 }
 
 export function createSandboxBankCoordinator(): {
