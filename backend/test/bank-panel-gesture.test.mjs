@@ -6,7 +6,8 @@ import { createRequire } from 'node:module';
 import { InventoryGesture } from '../../client/assets/scripts/ui/InventoryGesture.ts';
 const require = createRequire(import.meta.url);
 const { loadTypeScript } = require('../../tools/local-typescript.cjs');
-const { ts } = loadTypeScript(process.env.WORLD308_TYPESCRIPT);
+const tsPath = process.env.WORLD308_TYPESCRIPT || 'C:/ProgramData/cocos/editors/Creator/3.8.8/resources/app.asar.unpacked/node_modules/typescript';
+const { ts } = loadTypeScript(tsPath);
 // Execute the actual panel methods against the actual pure gesture. Rendering is
 // intentionally stubbed: these regressions concern pointer ownership and hit data.
 const source = readFileSync(new URL('../../client/assets/scripts/ui/BankPanel.ts', import.meta.url), 'utf8');

@@ -130,6 +130,8 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 2026-11-03 ST17-05接续：磨损—修理—再入本大闭环联合验收套件（`repair-joint-acceptance.test.mjs`）、真实战斗/死亡磨损至0、城镇门禁拦截 `WEAPON_BROKEN`、林纳克斯一键全修扣费修满、重新入本成功开启挑战全链路已合入主干，源码 `a4db9b5`；终局物理事务预算实测满足硬限制（R21 <= 25, W12 <= 15, calls 33 <= 40, writeBytes 97623 <= 256 KiB, viewBytes 75917 <= 128 KiB）；12写点故障注入100%原子回滚与重放幂等通过；换装/出售OCC并发竞争双序安全裁决通过。两轴独立评审均通过（Standards 0违规，Spec 0偏离）。详见[05证据](../../reviews/st17-05-verification.md)、[独立核验](../../reviews/st17-05-merge-verification.md)、[Standards独立评审](../../reviews/st17-standards-independent-review.md)及[Spec独立评审](../../reviews/st17-spec-independent-review.md)。ST17全部5项任务完整交付归档。
 
+2026-11-09 UI换肤：推进修理面板（`RepairPanel.ts`，ST17）换肤落地。接入 `panel_window_frame` 9-Patch 外框、`panel_well_inner` 凹槽视口底板、3态按钮切片（`button_normal/pressed/disabled`）及双模式 Tab 选中高亮；修复 `bank-panel-gesture.test.mjs` 工具链自动降级路径；证据见[修理 UI 落地记录](../../reviews/repair-ui-style-verification.md)。
+
 ## ST18 本地完成记录（2026-11-02）
 
 已按批准五项图完成强化全链路交付、合入主干 `feat-1.0.0` 并通过两轴独立评审。

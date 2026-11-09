@@ -171,7 +171,7 @@ function createPanel(coordinator, options = {}) {
   const exp = {};
   vm.runInNewContext(panelTranspiled, {
     exports: exp,
-    require: name => (name === 'cc' ? ccStub : { RepairCoordinator }),
+    require: name => (name === 'cc' ? ccStub : name.includes('UISkin') ? { skinSprite: () => ({}) } : { RepairCoordinator }),
     Date,
     setTimeout,
     structuredClone,

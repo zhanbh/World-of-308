@@ -1,5 +1,6 @@
 import { Node, Graphics, Color, UITransform, Label, Vec3, EventTouch, EventMouse, sys, game, Game } from 'cc';
 import type { RepairCoordinator, RepairState } from '../net/RepairCoordinator.ts';
+import { skinSprite } from './UISkin';
 
 export interface RepairPanelOptions {
   contextId?: string;
@@ -133,20 +134,22 @@ export class RepairPanel {
 
     // Background mask & styling
     const bg = this.root.addComponent(Graphics);
-    bg.fillColor = new Color(12, 19, 27, 250);
+    bg.fillColor = new Color(16, 24, 30, 255);
     bg.rect(-480, -270, 960, 540);
     bg.fill();
 
+    skinSprite(this.node(this.root, 'RepairWindowFrame', 0, 0, 912, 500), 'ui/slices/panel_window_frame', true);
+
     // Panel Header
-    this.label(this.root, '林纳克斯 · 装备修理', 0, 230, 24, 600);
-    this.button('✕ 关闭', 280, 230, () => this.close(), () => true, 90);
-    this.button('✕ 关闭', -400, 230, () => this.close(), () => true, 90);
+    this.label(this.root, '林纳克斯 · 装备修理', 0, 226, 24, 600);
+    this.button('✕ 关闭', 280, 226, () => this.close(), () => true, 90);
+    this.button('✕ 关闭', -400, 226, () => this.close(), () => true, 90);
 
     // Mode Toggle Tabs
     this.allWornTabNode = this.button(
       '全部穿戴 (一键全修)',
       -120,
-      190,
+      185,
       () => void this.switchMode('allWorn'),
       () => this.currentMode !== 'allWorn' && this.state.status !== 'submitting',
       190
@@ -154,22 +157,15 @@ export class RepairPanel {
     this.singleTabNode = this.button(
       '单件修理',
       100,
-      190,
+      185,
       () => void this.switchMode('single'),
       () => this.currentMode !== 'single' && this.state.status !== 'submitting',
       140
     );
 
     // Center Stage Card
-    this.cardNode = this.node(this.root, 'StageCard', 0, 20, 680, 270);
-    const cardBg = this.cardNode.addComponent(Graphics);
-    cardBg.fillColor = new Color(22, 32, 44, 230);
-    cardBg.roundRect(-340, -135, 680, 270, 8);
-    cardBg.fill();
-    cardBg.strokeColor = new Color(68, 88, 108);
-    cardBg.lineWidth = 2;
-    cardBg.roundRect(-340, -135, 680, 270, 8);
-    cardBg.stroke();
+    this.cardNode = this.node(this.root, 'StageCard', 0, 15, 680, 270);
+    skinSprite(this.cardNode, 'ui/slices/panel_well_inner', true);
 
     this.cardTitleLabel = this.label(this.cardNode, '当前穿戴装备耐久度明细 (7 槽位)', 0, 108, 18, 640);
     this.cardTitleLabel.color = new Color(210, 225, 240);
@@ -557,16 +553,22 @@ export class RepairPanel {
     // Update button states & colors
     for (const ctrl of this.controls) {
       const enabled = ctrl.canEnable();
-      const g = ctrl.node.getComponent(Graphics)!;
-      g.clear();
-      g.fillColor = enabled ? new Color(62, 78, 89) : new Color(31, 39, 46);
-      g.roundRect(-ctrl.width / 2, -16, ctrl.width, 32, 4);
-      g.fill();
+      skinSprite(ctrl.node, 'ui/slices/button_' + (enabled ? 'normal' : 'disabled'), true);
       const label = ctrl.node.getComponentInChildren(Label);
       if (label) {
-        label.color = enabled ? new Color(236, 229, 208) : new Color(119, 126, 130);
+        label.color = enabled ? new Color(226, 235, 239) : new Color(89, 110, 124);
       }
     }
+
+    // Update Mode Tab Styles
+    const isAllWornMode = this.currentMode === 'allWorn';
+    skinSprite(this.allWornTabNode, isAllWornMode ? 'ui/slices/button_pressed' : 'ui/slices/button_normal', true);
+    const allWornLabel = this.allWornTabNode.getComponentInChildren(Label);
+    if (allWornLabel) allWornLabel.color = isAllWornMode ? new Color(255, 255, 255) : new Color(180, 195, 204);
+
+    skinSprite(this.singleTabNode, !isAllWornMode ? 'ui/slices/button_pressed' : 'ui/slices/button_normal', true);
+    const singleLabel = this.singleTabNode.getComponentInChildren(Label);
+    if (singleLabel) singleLabel.color = !isAllWornMode ? new Color(255, 255, 255) : new Color(180, 195, 204);
   }
 
   private point(event: EventTouch | EventMouse): { x: number; y: number } {
@@ -647,10 +649,7 @@ export class RepairPanel {
     parent: Node = this.root
   ): Node {
     const n = this.node(parent, value, x, y, width, 32);
-    const g = n.addComponent(Graphics);
-    g.fillColor = new Color(62, 78, 89);
-    g.roundRect(-width / 2, -16, width, 32, 4);
-    g.fill();
+    skinSprite(n, 'ui/slices/button_normal', true);
     this.label(n, value, 0, 0, 15, width - 4);
 
     this.controls.push({ name: value, node: n, width, canEnable, action });
@@ -674,12 +673,14 @@ export class RepairPanel {
       this.cancel();
       touchId = e.getID();
       (e as any).propagationStopped = true;
+      if (canEnable()) skinSprite(n, 'ui/slices/button_pressed', true);
     });
 
     n.on(Node.EventType.TOUCH_CANCEL, (e: EventTouch) => {
       if (this.isMouseTouch(e)) return;
       touchId = null;
       (e as any).propagationStopped = true;
+      skinSprite(n, canEnable() ? 'ui/slices/button_normal' : 'ui/slices/button_disabled', true);
     });
 
     n.on(Node.EventType.TOUCH_END, (e: EventTouch) => {
@@ -689,6 +690,7 @@ export class RepairPanel {
       touchedUntil = Date.now() + 500;
       (e as any).propagationStopped = true;
       this.cancel();
+      skinSprite(n, canEnable() ? 'ui/slices/button_normal' : 'ui/slices/button_disabled', true);
       if (pressed && inside(e) && this.visible && canEnable()) action();
     });
 
@@ -696,6 +698,7 @@ export class RepairPanel {
       this.cancel();
       mousePressed = (e as any).getButton() === 0;
       (e as any).propagationStopped = true;
+      if (mousePressed && canEnable()) skinSprite(n, 'ui/slices/button_pressed', true);
     });
 
     n.on(Node.EventType.MOUSE_UP, (e: EventMouse) => {
@@ -703,6 +706,7 @@ export class RepairPanel {
       mousePressed = false;
       (e as any).propagationStopped = true;
       this.cancel();
+      skinSprite(n, canEnable() ? 'ui/slices/button_normal' : 'ui/slices/button_disabled', true);
       if (pressed && inside(e) && Date.now() >= touchedUntil && (e as any).getButton() === 0 && this.visible && canEnable()) {
         action();
       }
