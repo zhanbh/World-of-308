@@ -2,7 +2,7 @@ import { Node, Graphics, Color, UITransform, Label, Mask, Vec3, EventTouch, Even
 import type { InventoryCoordinator, InventoryCoordinatorState } from '../net/InventoryCoordinator';
 import { InventoryGesture } from './InventoryGesture';
 import { InventoryDetails } from './InventoryDetails';
-import { BAG_GRID, inventorySlotAt, inventoryScrollMax, slotCenter, QUALITY_STYLE, SLOT_ICONS, SLOT_NAMES } from './InventoryPresentation';
+import { BAG_GRID, inventorySlotAt, inventoryScrollMax, slotCenter, QUALITY_STYLE, SLOT_ICONS, SLOT_NAMES, itemIconForTemplate } from './InventoryPresentation';
 import { EquipmentCard } from './EquipmentCard';
 import { skinSprite } from './UISkin';
 
@@ -201,12 +201,7 @@ export class InventoryPanel {
         }
     }
     private iconForTemplate(id: string): string {
-        const known: Record<string, string> = {
-            'item:hp-potion-small-v1': 'consumable_hp_potion', 'item:mp-potion-small-v1': 'consumable_mp_potion',
-            'con-hp-potion': 'consumable_hp_potion', 'con-mp-potion': 'consumable_mp_potion',
-            'preview:ore': 'material_adamantite', 'mat-carbon': 'material_adamantite',
-        };
-        return this.options.templateIcon?.(id) ?? known[id] ?? 'item_unknown';
+        return itemIconForTemplate(id, this.options.templateIcon);
     }
     private ready(): boolean { return ['ready', 'empty'].includes(this.state.status); }
     private async run(action: () => Promise<void>, recovery = false): Promise<void> {

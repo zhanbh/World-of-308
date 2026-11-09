@@ -12,7 +12,20 @@ const { ts } = loadTypeScript(process.env.WORLD308_TYPESCRIPT);
 const source = readFileSync(new URL('../../client/assets/scripts/ui/BankPanel.ts', import.meta.url), 'utf8');
 const code = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
 const exported = {};
-vm.runInNewContext(code, { exports: exported, require: name => name === 'cc' ? {} : { InventoryGesture }, Date, setTimeout });
+const presSource = readFileSync(new URL('../../client/assets/scripts/ui/InventoryPresentation.ts', import.meta.url), 'utf8');
+const presCode = ts.transpileModule(presSource, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
+const presExports = {};
+vm.runInNewContext(presCode, { exports: presExports });
+
+const requireMock = name => {
+    if (name === 'cc') return {};
+    if (name.includes('InventoryPresentation')) return presExports;
+    if (name.includes('UISkin')) return { skinSprite: () => ({}) };
+    if (name.includes('EquipmentCard')) return { EquipmentCard: class { isOpen = false; open() {} close() {} dispose() {} update() {} } };
+    if (name.includes('InventoryDetails')) return { InventoryDetails: class { revision = 0; setScope() {} get() { return null; } ensure() {} } };
+    return { InventoryGesture };
+};
+vm.runInNewContext(code, { exports: exported, require: requireMock, Date, setTimeout });
 const { BankPanel } = exported;
 function panel() {
     const p = Object.create(BankPanel.prototype);
@@ -59,7 +72,7 @@ test('actual BankPanel secondary pointer cannot steal, end or scroll owner sourc
 const inventorySource = readFileSync(new URL('../../client/assets/scripts/ui/InventoryPanel.ts', import.meta.url), 'utf8');
 const inventoryCode = ts.transpileModule(inventorySource, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
 const inventoryExports = {};
-vm.runInNewContext(inventoryCode, { exports: inventoryExports, require: name => name === 'cc' ? {} : { InventoryGesture }, Date, setTimeout });
+vm.runInNewContext(inventoryCode, { exports: inventoryExports, require: requireMock, Date, setTimeout });
 test('ordinary InventoryPanel locked tap quotes gold expansion without a bank context', async () => {
     const p = Object.create(inventoryExports.InventoryPanel.prototype);
     const q = { containerId: 'bag', nextCapacity: 40, costs: [{ currency: 'gold', amount: '100' }] };

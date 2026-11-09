@@ -1,5 +1,5 @@
 import { decodeAssetResponse, encodeAssetRequest, parseAssetCommand } from '../../../../shared/src/protocol/asset-v2.ts';
-import type { AssetCommand, AssetQuery, AssetQueryResponse, AssetResponse, ContainerView } from '../../../../shared/src/protocol/asset-v2.ts';
+import type { AssetCommand, AssetQuery, AssetQueryResponse, AssetResponse, ContainerView, EquipmentView } from '../../../../shared/src/protocol/asset-v2.ts';
 import type { InventoryIdentity, InventoryPendingStore, InventoryTransport } from './InventoryCoordinator.ts';
 export type BankVaultKind = 'personalVault' | 'accountVault';
 type Data<K extends AssetQuery['query']> = Extract<AssetQueryResponse<K>, {
@@ -101,6 +101,29 @@ export class BankCoordinator {
         if (generation !== this.generation)
             return;
         await this.submit(parseAssetCommand({ protocolVersion: 2, command: 'inventory.transfer', operationId, sessionId: i.sessionId, sessionEpoch: i.sessionEpoch, expected, payload: { characterId: i.characterId, contextId: this.current.contextId!, sourceContainerId: from.containerId, targetContainerId: to.containerId, target, quantity } }) as Mutation);
+    }
+    /** Read-only equipment detail. Usable only while current bank snapshot remains valid. */
+    async inspectEquipment(itemId: string): Promise<EquipmentView | null> {
+        const i = this.ready();
+        const fromContainer = [this.current.backpack, this.current.vault].find(c =>
+            c?.slots.some(s => s.entry.kind === 'equipment' && s.entry.itemId === itemId)
+        );
+        if (!fromContainer) throw Error('ITEM_NOT_IN_BANK_OR_BACKPACK');
+        const entry = fromContainer.slots.find(s => s.entry.kind === 'equipment' && s.entry.itemId === itemId)?.entry;
+        if (!entry || entry.kind !== 'equipment') throw Error('ITEM_NOT_IN_BANK_OR_BACKPACK');
+        const generation = this.generation;
+        const response = await this.query('equipment.get', { characterId: i.characterId, itemId });
+        if (generation !== this.generation || this.current.status !== 'ready' || this.pending
+            || !this.current.backpack || !this.current.vault) return null;
+        if ('error' in response) throw Error(response.error.code);
+        const item = response.data;
+        if (item.itemId !== itemId || item.lifecycle !== 'active' || item.location.kind !== 'container'
+            || (item.location.containerId !== this.current.backpack.containerId && item.location.containerId !== this.current.vault.containerId)
+            || item.itemLevel !== entry.sortHeader.itemLevel || item.quality !== entry.sortHeader.quality || item.slotKind !== entry.sortHeader.slotKind
+            || !response.versions.some(v => v.kind === 'equipment' && v.id === itemId && v.version === item.version)) {
+            throw Error('EQUIPMENT_VIEW_MISMATCH');
+        }
+        return structuredClone(item);
     }
     async expansionQuote(container: 'backpack' | 'vault'): Promise<BankExpansionQuote | null> {
         const i = this.ready(), c = this.current[container]!;

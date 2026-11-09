@@ -582,6 +582,34 @@ export function createSandboxBankCoordinator(): {
           },
         });
       }
+      if ('query' in msg && msg.query === 'equipment.get') {
+        const itemId = msg.payload?.itemId;
+        if (itemId === 'item-sandbox-weapon') {
+          const item: EquipmentView = {
+            itemId: 'item-sandbox-weapon',
+            version: 1,
+            templateRef: 'wpn-epic-katana',
+            slotKind: 'weapon',
+            itemLevel: 30,
+            quality: 'purple',
+            rolledAffixes: [{ statId: 'attackPower', value: '88' }, { statId: 'physicalCrit', value: '35' }],
+            setRef: undefined,
+            enhancementLevel: 10,
+            enhancementBonus: { configRef: 'v1', level: 10, attackPower: '1250' },
+            binding: { kind: 'character', characterId },
+            durability: { wearEnabled: true, current: 28, max: 35, policyRef: 'default' },
+            location: { kind: 'container', containerId: bag.containerId },
+            lifecycle: 'active',
+            source: { kind: 'initialEquip', characterId },
+          };
+          return JSON.stringify({
+            requestId: msg.requestId,
+            serverTime: time(Date.now()),
+            versions: [{ kind: 'equipment', id: itemId, version: item.version }],
+            data: item,
+          });
+        }
+      }
       return JSON.stringify({ requestId: msg.requestId || msg.operationId, error: { code: 'UNSUPPORTED' } });
     },
   };

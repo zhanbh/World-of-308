@@ -14,6 +14,16 @@ export const QUALITY_STYLE = {
     blue: { label: '精良', color: '#29b6f6', border: 'rare' }, purple: { label: '稀有', color: '#ab47bc', border: 'unique' },
     orange: { label: '传说', color: '#ffa726', border: 'legendary' },
 };
+export const KNOWN_ITEM_ICONS: Record<string, string> = {
+    'item:hp-potion-small-v1': 'consumable_hp_potion', 'item:mp-potion-small-v1': 'consumable_mp_potion',
+    'con-hp-potion': 'consumable_hp_potion', 'con-mp-potion': 'consumable_mp_potion',
+    'potion': 'consumable_hp_potion', 'preview-hp': 'consumable_hp_potion', 'preview-vault-hp': 'consumable_hp_potion',
+    'preview:ore': 'material_adamantite', 'mat-carbon': 'material_adamantite', 'ore': 'material_adamantite',
+    'preview-bound': 'material_souvenir',
+};
+export function itemIconForTemplate(id: string, custom?: (id: string) => string | null): string {
+    return (custom && custom(id)) ?? KNOWN_ITEM_ICONS[id] ?? 'item_unknown';
+}
 export function slotCenter(index: number, scroll: number): { x: number; y: number } {
     return { x: BAG_GRID.left + BAG_GRID.cell / 2 + index % 5 * BAG_GRID.stride,
         y: BAG_GRID.top - BAG_GRID.cell / 2 - Math.floor(index / 5) * BAG_GRID.stride + scroll };

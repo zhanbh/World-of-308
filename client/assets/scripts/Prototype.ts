@@ -660,7 +660,7 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.KEY_K) { if (!this.enhancementKeyHeld) { this.enhancementKeyHeld = true; void this.toggleEnhancement(); } return; }
         if (e.keyCode === KeyCode.KEY_O) { if (!this.rankingKeyHeld) { this.rankingKeyHeld = true; void this.toggleRanking(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
-        if (e.keyCode === KeyCode.ESCAPE && this.bankPanel?.isOpen) { this.bankPanel.close(); return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.bankPanel?.isOpen) { if (!this.bankPanel.closeDetails()) this.bankPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.repairPanel?.isOpen) { this.repairPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.enhancementPanel?.isOpen) { this.enhancementPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.rankingPanel?.isOpen) { this.rankingPanel.close(); return; }

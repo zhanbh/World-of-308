@@ -80,6 +80,8 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 ## ST09 本地实施续接
 
+2026-11-09 UI换肤：用户授权推进金库/银行面板（`BankPanel.ts`，ST09）换肤。接入 56px 槽位、48px 原生透明图标、品质外框、9-Patch 切片底板与两级只读装备详情卡；手势指针所有权与弹窗尾部释放隔离回归通过；证据见[银行 UI 落地记录](../../reviews/bank-ui-style-verification.md)。
+
 2026-10-23，`feat-1.0.0`：用户确认的四项任务已完成本地能力验收，含实际Cocos银行、普通背包扩容、原结果恢复及独立评审修复。详见[任务入口](st09/README.md)及[试玩与验证](../../reviews/st09-local-verification.md)。正式价格/SDK/真机待验，不以本机通过标全平台Done。下一可玩检查节点仍是[城镇界面联调包](../../reviews/player-preview-milestones-v1.md)，ST05～08服务存在不代表面板已接入。
 
 ## ST10 本地实施续接
