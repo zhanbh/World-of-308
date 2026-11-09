@@ -176,6 +176,7 @@ function loadRankingPanelClass() {
     require: (id) => {
       if (id === 'cc') return ccStub;
       if (id.includes('RankingCoordinator')) return { RankingCoordinator };
+      if (id.includes('UISkin')) return { skinSprite: () => ({}) };
       throw new Error(`Unexpected import: ${id}`);
     },
     module: mod,
