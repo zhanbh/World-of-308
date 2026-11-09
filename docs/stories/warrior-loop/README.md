@@ -112,6 +112,8 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 2026-10-30更新：ST15已知最大结果存储压力域已整改，future/due/mixed均成功，最高R42/W33/78调用；最终全量7/7（shared230/backend694）、62实际写点故障及两轴复核通过。正式内容包络、SDK和真机仍GAP，不标可发布。当前证据见[存储整改](../../reviews/st15-storage-verification-2026-10-30.md)，上段为2026-10-29历史状态。
 
+2026-11-09 UI换肤：推进战斗 HUD 与地下城结算卡片（`Prototype.ts` 与 `LootVictoryPanel.ts`，ST15）换肤落地。接入玩家 180px 生命/法力双阶梯状态条、顶部场景切换与导航高对比胶囊、84px 金框普攻与晶蓝战士四技能触控按钮组；结算卡片接入 `panel_window_frame`、`panel_well_inner` 凹槽视口与 3D 翻牌切片；证据见[战斗 HUD 落地记录](../../reviews/combat-hud-ui-style-verification.md)。
+
 ## ST16 本地完成记录（2026-11-01）
 
 已按批准五项图完成恢复编排、未知原意图栅栏、dead/looting资格、Cocos生命周期及联合验收；最终源码8d73ca8，全七阶段7/7（shared230/backend730）、最终Creator离线构建通过，Standards/Spec各0可行动发现。见[本地交付与限制](../../reviews/st16-local-verification.md)及[执行状态](st16/execution.json)。04历史类型失败已保留并由05补齐seq，不能据旧汇报算通过。真实网络/微信设备、SDK及正式发布内容包络仍GAP；未push/Jira。ST17为下一业务故事，尚未自动实施。

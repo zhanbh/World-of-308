@@ -1111,9 +1111,22 @@ export class Prototype extends Component {
     private draw(dt: number): void {
         const ui = this.controls;
         ui.clear();
-        this.rect(ui, -265, 228, 100, 28, this.sceneMode === 'town' ? '#2e5d44' : '#5d382e');
+        const isTown = this.sceneMode === 'town';
+        ui.fillColor = isTown ? new Color(46, 93, 68, 240) : new Color(93, 56, 46, 240);
+        ui.roundRect(-265, 228, 100, 28, 4);
+        ui.fill();
+        ui.strokeColor = isTown ? new Color(90, 180, 130, 220) : new Color(200, 95, 75, 220);
+        ui.lineWidth = 1.5;
+        ui.roundRect(-265, 228, 100, 28, 4);
+        ui.stroke();
         for (const x of [-100, -30, 40, 110, 180]) {
-            this.rect(ui, x - 30, 228, 60, 28, '#283a42');
+            ui.fillColor = new Color(34, 48, 58, 235);
+            ui.roundRect(x - 30, 228, 60, 28, 4);
+            ui.fill();
+            ui.strokeColor = new Color(68, 88, 108, 180);
+            ui.lineWidth = 1.5;
+            ui.roundRect(x - 30, 228, 60, 28, 4);
+            ui.stroke();
         }
         const m = this.model;
         const g = this.world;
@@ -1207,54 +1220,117 @@ export class Prototype extends Component {
                 m.attackSpeedMultiplier === attackSpeedTuning.presets[index] ? '#376554' : '#293941');
         }
         this.sortActorsByDepth();
-        this.drawHealthBar(-330, 154, m.hp, 100, '#65d6b2');
+        this.drawPlayerHUD(-390, 150);
         this.rect(this.controls, 185, 154, 55, 28, this.dungeonKind === 'first' ? '#53757e' : '#293941');
         this.rect(this.controls, 245, 154, 55, 28, this.dungeonKind === 'workshop' ? '#53757e' : '#293941');
         this.rect(this.controls, 305, 154, 55, 28, this.dungeonKind === 'rift' ? '#53757e' : '#293941');
         this.rect(this.controls, 365, 154, 55, 28, this.roomCleared ? '#3e7855' : '#293941');
         this.textMode();
-        ui.fillColor = new Color(82, 111, 121, 155); ui.circle(-345, -150, 75); ui.fill();
-        ui.fillColor = new Color(176, 207, 202, 210); ui.circle(-345 + this.axis.x * 55, -150 + this.axis.y * 55, 27); ui.fill();
-        ui.fillColor = new Color(151, 81, 55, 210); ui.circle(345, -150, 61); ui.fill();
+
+        // Virtual Joystick
+        ui.fillColor = new Color(24, 36, 46, 175);
+        ui.circle(-345, -150, 75);
+        ui.fill();
+        ui.strokeColor = new Color(80, 110, 130, 220);
+        ui.lineWidth = 2;
+        ui.circle(-345, -150, 75);
+        ui.stroke();
+
+        ui.fillColor = new Color(140, 180, 195, 220);
+        ui.circle(-345 + this.axis.x * 55, -150 + this.axis.y * 55, 27);
+        ui.fill();
+        ui.strokeColor = new Color(210, 235, 240, 255);
+        ui.lineWidth = 2;
+        ui.circle(-345 + this.axis.x * 55, -150 + this.axis.y * 55, 27);
+        ui.stroke();
+
+        // Normal Attack Button
+        const isAttacking = this.attackIds.size > 0;
+        ui.fillColor = isAttacking ? new Color(180, 75, 45, 250) : new Color(140, 65, 45, 220);
+        ui.circle(345, -150, 61);
+        ui.fill();
+        ui.strokeColor = new Color(255, 215, 80, 240);
+        ui.lineWidth = 3;
+        ui.circle(345, -150, 61);
+        ui.stroke();
+        ui.strokeColor = new Color(255, 230, 120, 120);
+        ui.lineWidth = 1;
+        ui.circle(345, -150, 52);
+        ui.stroke();
+
+        // Four Skill Buttons
         const skillButtons: { id: WarriorSkillId; x: number }[] = [
             { id: 'cross', x: 150 }, { id: 'bengshan', x: 215 }, { id: 'badao', x: 280 }, { id: 'earth', x: 345 },
         ];
         for (const button of skillButtons) {
-            ui.fillColor = this.skills.ready(button.id) ? new Color(67, 151, 158, 230) : new Color(67, 91, 96, 210);
-            ui.circle(button.x, -65, 29); ui.fill();
+            const isReady = this.skills.ready(button.id);
+            ui.fillColor = isReady ? new Color(45, 120, 135, 240) : new Color(28, 40, 48, 210);
+            ui.circle(button.x, -65, 29);
+            ui.fill();
+            ui.strokeColor = isReady ? new Color(100, 210, 230, 240) : new Color(60, 78, 90, 160);
+            ui.lineWidth = isReady ? 2.5 : 1.5;
+            ui.circle(button.x, -65, 29);
+            ui.stroke();
+            if (isReady) {
+                ui.strokeColor = new Color(180, 240, 255, 100);
+                ui.lineWidth = 1;
+                ui.circle(button.x, -65, 24);
+                ui.stroke();
+            }
         }
+
+        // Supply and Trinket Buttons
         const supplyGeom = SUPPLY_BUTTON_LAYOUT;
         for (let i = 0; i < 3; i++) {
             const slot = this.supplyHUD.quickSlots[i];
             const pos = [supplyGeom.slot0, supplyGeom.slot1, supplyGeom.slot2][i];
-            let color = new Color(50, 60, 65, 200);
+            let color = new Color(28, 38, 46, 220);
+            let stroke = new Color(75, 88, 98, 200);
             if (slot.status === 'ready') {
-                color = slot.kind === 'hp' ? new Color(180, 50, 50, 230) : slot.kind === 'mp' ? new Color(50, 100, 200, 230) : new Color(60, 140, 100, 230);
+                color = slot.kind === 'hp' ? new Color(180, 50, 50, 240) : slot.kind === 'mp' ? new Color(50, 100, 200, 240) : new Color(60, 140, 100, 240);
+                stroke = slot.kind === 'hp' ? new Color(255, 120, 120, 240) : slot.kind === 'mp' ? new Color(120, 180, 255, 240) : new Color(120, 230, 160, 240);
             } else if (slot.status === 'cooldown') {
-                color = new Color(75, 75, 80, 210);
+                color = new Color(50, 55, 60, 210);
+                stroke = new Color(90, 95, 100, 180);
             } else if (slot.status === 'empty') {
-                color = new Color(90, 40, 40, 180);
+                color = new Color(60, 30, 30, 180);
+                stroke = new Color(120, 50, 50, 150);
             } else if (slot.status === 'submitting') {
                 color = new Color(200, 160, 40, 240);
+                stroke = new Color(255, 215, 80, 255);
             }
             ui.fillColor = color;
             ui.circle(pos.x, pos.y, pos.radius);
             ui.fill();
+            ui.strokeColor = stroke;
+            ui.lineWidth = 2;
+            ui.circle(pos.x, pos.y, pos.radius);
+            ui.stroke();
         }
+
         const tState = this.supplyHUD.trinket;
-        let tColor = new Color(50, 60, 65, 200);
+        let tColor = new Color(28, 38, 46, 220);
+        let tStroke = new Color(75, 88, 98, 200);
         if (tState.status === 'ready') {
-            tColor = new Color(140, 60, 180, 230);
+            tColor = new Color(140, 60, 180, 240);
+            tStroke = new Color(210, 130, 255, 240);
         } else if (tState.status === 'active') {
             tColor = new Color(210, 170, 50, 240);
+            tStroke = new Color(255, 225, 100, 255);
         } else if (tState.status === 'cooldown' || tState.status === 'waiting') {
-            tColor = new Color(75, 75, 80, 210);
+            tColor = new Color(50, 55, 60, 210);
+            tStroke = new Color(90, 95, 100, 180);
         } else if (tState.status === 'submitting') {
             tColor = new Color(200, 160, 40, 240);
+            tStroke = new Color(255, 215, 80, 255);
         }
         ui.fillColor = tColor;
         ui.circle(supplyGeom.trinket.x, supplyGeom.trinket.y, supplyGeom.trinket.radius);
         ui.fill();
+        ui.strokeColor = tStroke;
+        ui.lineWidth = 2;
+        ui.circle(supplyGeom.trinket.x, supplyGeom.trinket.y, supplyGeom.trinket.radius);
+        ui.stroke();
         this.drawDeathReviveHUD(dt);
     }
 
@@ -1856,6 +1932,38 @@ export class Prototype extends Component {
         const firstActorIndex = this.world.node.getSiblingIndex() + 1;
         actors.forEach((node, index) => node.setSiblingIndex(firstActorIndex + index));
         this.lastDepthOrder = actors;
+    }
+
+    private drawPlayerHUD(x: number, y: number): void {
+        const ui = this.controls;
+        const m = this.model;
+        // Outer panel well
+        ui.fillColor = new Color(16, 24, 32, 235);
+        ui.roundRect(x - 10, y - 16, 200, 42, 6);
+        ui.fill();
+        ui.strokeColor = new Color(68, 88, 108, 220);
+        ui.lineWidth = 1.5;
+        ui.roundRect(x - 10, y - 16, 200, 42, 6);
+        ui.stroke();
+
+        // HP Bar
+        ui.fillColor = new Color(28, 38, 46, 255);
+        ui.roundRect(x, y + 6, 180, 12, 3);
+        ui.fill();
+        const hpPercent = Math.max(0, Math.min(1, m.hp / 100));
+        const hpFillColor = hpPercent > 0.5 ? new Color(75, 214, 150) : hpPercent > 0.2 ? new Color(235, 170, 60) : new Color(235, 70, 70);
+        ui.fillColor = hpFillColor;
+        ui.roundRect(x + 1, y + 7, Math.max(2, 178 * hpPercent), 10, 2);
+        ui.fill();
+
+        // MP Bar
+        ui.fillColor = new Color(24, 34, 42, 255);
+        ui.roundRect(x, y - 8, 180, 10, 3);
+        ui.fill();
+        const mpPercent = Math.max(0, Math.min(1, this.skills.mana / this.skills.maxMana));
+        ui.fillColor = new Color(60, 150, 225);
+        ui.roundRect(x + 1, y - 7, Math.max(2, 178 * mpPercent), 8, 2);
+        ui.fill();
     }
 
     private drawHealthBar(x: number, y: number, hp: number, max: number, fill: string): void {
