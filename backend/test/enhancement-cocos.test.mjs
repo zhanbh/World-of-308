@@ -167,7 +167,7 @@ function createPanel(coordinator, options = {}) {
   const exp = {};
   vm.runInNewContext(panelTranspiled, {
     exports: exp,
-    require: name => (name === 'cc' ? ccStub : { EnhancementCoordinator }),
+    require: name => (name === 'cc' ? ccStub : name.includes('UISkin') ? { skinSprite: () => ({}) } : { EnhancementCoordinator }),
     Date,
     setTimeout,
     structuredClone,

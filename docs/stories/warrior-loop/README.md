@@ -142,6 +142,8 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 - **ST18-05（强化联合验收与两轴独立评审）**：端到端大闭环（低段强化、高段纪念品、失败损毁、返还合堆、满包邮件溢出、邮件领取、再次强化与丢包恢复）、最大终局物理预算实测（R26 / W11 / 37调用 / 29466写字节 / 16622最大文档字节）、11个物理写点逐一注入故障原子回滚、并发OCC竞争（脱装/出售/单修）已交付合入，源码 `5731b10`。两轴独立评审均通过（Standards 0违规，Spec 0偏离）。见[05验证记录](../../reviews/st18-05-verification.md)、[Standards独立评审](../../reviews/st18-standards-independent-review.md)、[Spec独立评审](../../reviews/st18-spec-independent-review.md)及[执行状态](st18/execution.json)。
 - 限制：正式概率与数值校准、微信真机环境与云端分布式SDK事务继续保留为GAP；ST17-03一键全修竞争待ST17-03交付后闭环；无Jira，未push。
 
+2026-11-09 UI换肤：推进强化面板（`EnhancementPanel.ts`，ST18）换肤落地。接入 `panel_window_frame` 9-Patch 外框、`panel_well_inner` 凹槽视口底板、3态按钮切片（`button_normal/pressed/disabled`）及纪念品启用按下态高亮；证据见[强化 UI 落地记录](../../reviews/enhancement-ui-style-verification.md)。
+
 
 ## ST19 本地实施记录（2026-11-02）
 

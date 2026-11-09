@@ -1,5 +1,6 @@
 import { Node, Graphics, Color, UITransform, Label, Vec3, EventTouch, EventMouse, sys, game, Game } from 'cc';
 import type { EnhancementCoordinator, EnhancementState } from '../net/EnhancementCoordinator.ts';
+import { skinSprite } from './UISkin';
 
 export interface EnhancementPanelOptions {
   contextId?: string;
@@ -93,25 +94,20 @@ export class EnhancementPanel {
 
     // Background mask & styling
     const bg = this.root.addComponent(Graphics);
-    bg.fillColor = new Color(12, 19, 27, 250);
+    bg.fillColor = new Color(16, 24, 30, 255);
     bg.rect(-480, -270, 960, 540);
     bg.fill();
 
+    skinSprite(this.node(this.root, 'EnhancementWindowFrame', 0, 0, 912, 500), 'ui/slices/panel_window_frame', true);
+
     // Panel Header
-    this.label(this.root, '玛丽 · 装备强化', 0, 230, 24, 600);
-    this.button('✕ 关闭', 280, 230, () => this.close(), () => true, 90);
-    this.button('✕ 关闭', -400, 230, () => this.close(), () => true, 90);
+    this.label(this.root, '玛丽 · 装备强化', 0, 226, 24, 600);
+    this.button('✕ 关闭', 280, 226, () => this.close(), () => true, 90);
+    this.button('✕ 关闭', -400, 226, () => this.close(), () => true, 90);
 
     // Center Stage Card
     const cardNode = this.node(this.root, 'StageCard', 0, 45, 620, 280);
-    const cardBg = cardNode.addComponent(Graphics);
-    cardBg.fillColor = new Color(22, 32, 44, 230);
-    cardBg.roundRect(-310, -140, 620, 280, 8);
-    cardBg.fill();
-    cardBg.strokeColor = new Color(68, 88, 108);
-    cardBg.lineWidth = 2;
-    cardBg.roundRect(-310, -140, 620, 280, 8);
-    cardBg.stroke();
+    skinSprite(cardNode, 'ui/slices/panel_well_inner', true);
 
     this.itemTitleLabel = this.label(cardNode, '请选择需要强化的武器或耳环', 0, 105, 20, 580);
     this.levelChangeLabel = this.label(cardNode, '', 0, 65, 22, 580);
@@ -436,15 +432,17 @@ export class EnhancementPanel {
     // Update button states & colors
     for (const ctrl of this.controls) {
       const enabled = ctrl.canEnable();
-      const g = ctrl.node.getComponent(Graphics)!;
-      g.clear();
-      g.fillColor = enabled ? new Color(62, 78, 89) : new Color(31, 39, 46);
-      g.roundRect(-ctrl.width / 2, -16, ctrl.width, 32, 4);
-      g.fill();
+      skinSprite(ctrl.node, 'ui/slices/button_' + (enabled ? 'normal' : 'disabled'), true);
       const label = ctrl.node.getComponentInChildren(Label);
       if (label) {
-        label.color = enabled ? new Color(236, 229, 208) : new Color(119, 126, 130);
+        label.color = enabled ? new Color(226, 235, 239) : new Color(89, 110, 124);
       }
+    }
+
+    if (this.mementoEnabled) {
+      skinSprite(this.mementoButtonNode, 'ui/slices/button_pressed', true);
+      const mementoLabel = this.mementoButtonNode.getComponentInChildren(Label);
+      if (mementoLabel) mementoLabel.color = new Color(255, 255, 255);
     }
   }
 
@@ -526,10 +524,7 @@ export class EnhancementPanel {
     parent: Node = this.root
   ): Node {
     const n = this.node(parent, value, x, y, width, 32);
-    const g = n.addComponent(Graphics);
-    g.fillColor = new Color(62, 78, 89);
-    g.roundRect(-width / 2, -16, width, 32, 4);
-    g.fill();
+    skinSprite(n, 'ui/slices/button_normal', true);
     this.label(n, value, 0, 0, 15, width - 4);
 
     this.controls.push({ name: value, node: n, width, canEnable, action });
@@ -553,12 +548,14 @@ export class EnhancementPanel {
       this.cancel();
       touchId = e.getID();
       (e as any).propagationStopped = true;
+      if (canEnable()) skinSprite(n, 'ui/slices/button_pressed', true);
     });
 
     n.on(Node.EventType.TOUCH_CANCEL, (e: EventTouch) => {
       if (this.isMouseTouch(e)) return;
       touchId = null;
       (e as any).propagationStopped = true;
+      skinSprite(n, canEnable() ? 'ui/slices/button_normal' : 'ui/slices/button_disabled', true);
     });
 
     n.on(Node.EventType.TOUCH_END, (e: EventTouch) => {
@@ -568,6 +565,7 @@ export class EnhancementPanel {
       touchedUntil = Date.now() + 500;
       (e as any).propagationStopped = true;
       this.cancel();
+      skinSprite(n, canEnable() ? 'ui/slices/button_normal' : 'ui/slices/button_disabled', true);
       if (pressed && inside(e) && this.visible && canEnable()) action();
     });
 
@@ -575,6 +573,7 @@ export class EnhancementPanel {
       this.cancel();
       mousePressed = (e as any).getButton() === 0;
       (e as any).propagationStopped = true;
+      if (mousePressed && canEnable()) skinSprite(n, 'ui/slices/button_pressed', true);
     });
 
     n.on(Node.EventType.MOUSE_UP, (e: EventMouse) => {
@@ -582,6 +581,7 @@ export class EnhancementPanel {
       mousePressed = false;
       (e as any).propagationStopped = true;
       this.cancel();
+      skinSprite(n, canEnable() ? 'ui/slices/button_normal' : 'ui/slices/button_disabled', true);
       if (pressed && inside(e) && Date.now() >= touchedUntil && (e as any).getButton() === 0 && this.visible && canEnable()) {
         action();
       }
