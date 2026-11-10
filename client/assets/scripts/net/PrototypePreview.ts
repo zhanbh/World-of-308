@@ -3,6 +3,7 @@ import { EnhancementCoordinator } from './EnhancementCoordinator.ts';
 import { RankingCoordinator, type RankingIdentity, type RankingItemView } from './RankingCoordinator.ts';
 import { InventoryCoordinator } from './InventoryCoordinator.ts';
 import { BankCoordinator } from './BankCoordinator.ts';
+import { ShopCoordinator } from './ShopCoordinator.ts';
 import type { EquipmentView, AssetQuery, AssetQueryResponse, ContainerView } from '../../../../shared/src/protocol/asset-v2.ts';
 import { time, type Time } from '../../../../shared/src/exact-values.ts';
 
@@ -620,6 +621,133 @@ export function createSandboxBankCoordinator(): {
     coordinator,
     contextId,
     labels: PROTOTYPE_LABELS,
+  };
+}
+
+export function createSandboxShopCoordinator(): { coordinator: ShopCoordinator; contextId: string; quoteRef: string } {
+  const contextId = 'sandbox-shop-context';
+  const quoteRef = 'quote_shop_v1';
+  const characterId = 'warrior-player-1';
+  const persistence = {
+    load: (_k: string) => null,
+    save: (_k: string, _v: string | null) => {},
+  };
+
+  const wallet = {
+    gold: '150000',
+    points: '50',
+    version: 1,
+  };
+
+  const transport = {
+    send: async (text: string): Promise<string> => {
+      const msg = JSON.parse(text);
+      if ('query' in msg && msg.query === 'account.get') {
+        return JSON.stringify({
+          requestId: msg.requestId,
+          serverTime: time(Date.now()),
+          versions: [{ kind: 'account', id: 'acc-sandbox-1', version: wallet.version }],
+          data: {
+            accountId: 'acc-sandbox-1',
+            wallet: { gold: wallet.gold, points: wallet.points },
+          },
+        });
+      }
+      if ('query' in msg && msg.query === 'character.get') {
+        return JSON.stringify({
+          requestId: msg.requestId,
+          serverTime: time(Date.now()),
+          versions: [{ kind: 'character', id: characterId, version: 1 }],
+          data: {
+            characterId,
+            level: 30,
+            gold: wallet.gold,
+          },
+        });
+      }
+      if ('query' in msg && msg.query === 'operation.get') {
+        return JSON.stringify({
+          requestId: msg.requestId,
+          serverTime: time(Date.now()),
+          versions: [],
+          data: { status: 'notFound' },
+        });
+      }
+      if (msg.command === 'shop.buy') {
+        const { offerId, quantity } = msg.payload;
+        if (offerId === 'offer_points_scroll') {
+          const cost = 10 * quantity;
+          wallet.points = String(Math.max(0, Number(wallet.points) - cost));
+        } else {
+          const unit = (offerId.includes('sword') || offerId.includes('armor')) ? 100 : 50;
+          const cost = unit * quantity;
+          wallet.gold = String(Math.max(0, Number(wallet.gold) - cost));
+        }
+        wallet.version++;
+        return JSON.stringify({
+          operationId: msg.operationId,
+          outcome: {
+            status: 'committed',
+            resultVersions: [
+              { kind: 'character', id: characterId, version: 2 },
+              { kind: 'container', id: 'bag-1', version: 2 },
+              { kind: 'wallet', id: 'wal-1', version: wallet.version },
+            ],
+          },
+        });
+      }
+      if (msg.command === 'shop.sell') {
+        const { quantity } = msg.payload;
+        const gain = 100 * (quantity || 1);
+        wallet.gold = String(Number(wallet.gold) + gain);
+        wallet.version++;
+        return JSON.stringify({
+          operationId: msg.operationId,
+          outcome: {
+            status: 'committed',
+            resultVersions: [
+              { kind: 'character', id: characterId, version: 2 },
+              { kind: 'container', id: 'bag-1', version: 2 },
+              { kind: 'wallet', id: 'wal-1', version: wallet.version },
+            ],
+          },
+        });
+      }
+      if (msg.command === 'wallet.exchange') {
+        const { fromCurrency, exchangeUnits } = msg.payload;
+        if (fromCurrency === 'gold') {
+          wallet.gold = String(Math.max(0, Number(wallet.gold) - exchangeUnits * 10000));
+          wallet.points = String(Number(wallet.points) + exchangeUnits);
+        } else {
+          wallet.points = String(Math.max(0, Number(wallet.points) - exchangeUnits));
+          wallet.gold = String(Number(wallet.gold) + exchangeUnits * 10000);
+        }
+        wallet.version++;
+        return JSON.stringify({
+          operationId: msg.operationId,
+          outcome: {
+            status: 'committed',
+            resultVersions: [
+              { kind: 'character', id: characterId, version: 2 },
+              { kind: 'wallet', id: 'wal-1', version: wallet.version },
+            ],
+          },
+        });
+      }
+      return JSON.stringify({ status: 'ok' });
+    },
+  };
+
+  const coordinator = new ShopCoordinator(transport, persistence);
+  coordinator.init({
+    sessionId: 'sandbox-shop-session',
+    sessionEpoch: 1,
+    characterId,
+  });
+  return {
+    coordinator,
+    contextId,
+    quoteRef,
   };
 }
 

@@ -168,6 +168,9 @@ export class ShopCoordinator {
   ): Promise<void> {
     const identity = this.requireReady();
     if (!this.current.contextId) throw new Error('CONTEXT_REQUIRED');
+    const normalizedTarget = target.kind === 'equipment'
+      ? { kind: 'equipment' as const, itemId: target.itemId }
+      : { kind: 'stack' as const, stackId: target.stackId };
     const command: ShopMutation = {
       protocolVersion: 2,
       command: 'shop.sell',
@@ -180,7 +183,7 @@ export class ShopCoordinator {
       payload: {
         characterId: identity.characterId,
         contextId: this.current.contextId,
-        target,
+        target: normalizedTarget,
         quantity,
         quoteRef,
       },

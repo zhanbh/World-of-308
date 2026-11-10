@@ -76,6 +76,8 @@ ST05已获任务图及实施授权，当前工作分支 `feat/st05-equipment`，
 
 ## ST06 本地实施续接
 
+2026-11-10 UI换肤：正式实现杂货商店与货币兑换面板（`ShopPanel.ts`，ST06）并接入城镇场景（`Prototype.ts`）。接入 912×500 9-Patch 外框 `panel_window_frame`、`panel_well_inner` 凹槽切片、56px/44px `slot_grid_base` 槽位基底、品质外边框、原生 48px 图标、3态按钮切片（`button_normal/pressed/disabled`）、商人货架药剂/白装购买调量、背包非穿戴非绑定物品固定回收估值、法定 10000:1 金币/点券平价双向兑换、未知网络结果自愈恢复；交付 [`backend/test/shop-cocos.test.mjs`](../../backend/test/shop-cocos.test.mjs) 8 组自动化用例 100% 通过；详见[杂货商店 UI 样式落地记录](../../reviews/shop-ui-style-verification.md)。
+
 ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接续 `feat/st05-equipment`；商店药剂与白装购买、满包整笔拒绝（`BAG_FULL`）零扣款、报价变化校验（`QUOTE_CHANGED`）、穿戴中与商城绑定道具禁售、强化不涨价固定回收、双向法定比率（`10000 gold ⇄ 1 points`）整数兑换与纯模型 `ShopCoordinator` 已全部实现并通过本地验证；验收状态与双轴独立评审见[ST06交付记录](../../reviews/st06-06-local-verification-2026-10-23.md)、[Standards 独立复核](../../reviews/st06-standards-independent-review-2026-10-23.md)、[Spec 独立评审](../../reviews/st06-spec-independent-review-2026-10-23.md)与[任务入口](st06/README.md)。
 
 ## ST09 本地实施续接

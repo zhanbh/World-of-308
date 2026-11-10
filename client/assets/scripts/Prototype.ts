@@ -20,7 +20,9 @@ import type { RankingCoordinator, RankingIdentity } from './net/RankingCoordinat
 import { InventoryPanel } from './ui/InventoryPanel';
 import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
-import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator, createSandboxInventoryCoordinator, createSandboxBankCoordinator } from './net/PrototypePreview';
+import { ShopPanel } from './ui/ShopPanel';
+import type { ShopCoordinator } from './net/ShopCoordinator';
+import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator, createSandboxInventoryCoordinator, createSandboxBankCoordinator, createSandboxShopCoordinator } from './net/PrototypePreview';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
 import type {CombatLifecycleAdapter} from './net/CombatLifecycleAdapter';
 import { MovementCoordinator } from './net/MovementCoordinator';
@@ -103,9 +105,13 @@ export class Prototype extends Component {
     private rankingKeyHeld = false;
     private rankingHadStats = false;
     private rankingIdentity: RankingIdentity | null = null;
+    private shopPanel: ShopPanel | null = null;
+    private shopCoordinator: ShopCoordinator | null = null;
+    private shopKeyHeld = false;
     private brokenEquipmentNotice!: Label;
     private sceneMode: 'town' | 'dungeon' = 'town';
     private linusLabel!: Label;
+    private shopLabel!: Label;
     private maryLabel!: Label;
     private bankNpcLabel!: Label;
     private portalLabel!: Label;
@@ -149,9 +155,12 @@ export class Prototype extends Component {
             this.text('修理 M', 40, 242, 13, 60),
             this.text('强化 K', 110, 242, 13, 60),
             this.text('排行 O', 180, 242, 13, 60),
+            this.text('商店 P', 250, 242, 13, 60),
         ];
         this.linusLabel = this.text('铁匠·林纳克斯\n[修理 M]', -150, 72, 12, 120);
         this.linusLabel.color = new Color(255, 215, 130);
+        this.shopLabel = this.text('商人·德利拉\n[商店 P]', -80, 72, 12, 120);
+        this.shopLabel.color = new Color(255, 220, 100);
         this.maryLabel = this.text('炉火·玛丽\n[强化 K]', -10, 72, 12, 120);
         this.maryLabel.color = new Color(255, 160, 210);
         this.bankNpcLabel = this.text('行长·金库\n[银行 N]', 120, 72, 12, 120);
@@ -162,7 +171,7 @@ export class Prototype extends Component {
         this.brokenEquipmentNotice.color = new Color(255, 90, 90);
         this.inventoryNotice = this.text('', 0, 150, 17, 800);
         this.challengeNotice = this.text('全业务闭环：微风小镇安全区与三大地下城实机联动', -60, 126, 14, 680);
-        this.text('WASD移动 · 空格普攻 · E/F/Q/G技能 · B背包 · N银行 · M修理 · K强化 · O排行', -60, 212, 13, 680);
+        this.text('WASD移动 · 空格普攻 · E/F/Q/G技能 · B背包 · N银行 · M修理 · K强化 · O排行 · P商店', -50, 212, 12, 700);
         this.healthStatus = this.text('', -130, 178, 17, 660);
         this.healthStatus.horizontalAlign = Label.HorizontalAlign.LEFT;
         this.healthStatus.overflow = Label.Overflow.SHRINK;
@@ -297,6 +306,7 @@ export class Prototype extends Component {
         this.repairPanel?.dispose();
         this.enhancementPanel?.dispose();
         this.rankingPanel?.dispose();
+        this.shopPanel?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
         this.lootPanel?.dispose();
@@ -414,6 +424,33 @@ export class Prototype extends Component {
         if (this.repairPanel?.isOpen) this.repairPanel.close();
         if (this.enhancementPanel?.isOpen) this.enhancementPanel.close();
         if (this.rankingPanel?.isOpen) this.rankingPanel.close();
+        if (this.shopPanel?.isOpen) this.shopPanel.close();
+    }
+
+    private async toggleShop(): Promise<void> {
+        if (this.shopPanel?.isOpen) { this.shopPanel.close(); return; }
+        this.closeAllPanels();
+        if (!this.shopPanel) {
+            const sandbox = createSandboxShopCoordinator();
+            this.attachShop(sandbox.coordinator, sandbox.contextId, sandbox.quoteRef);
+            this.inventoryNotice.string = '本地沙盒商店模式';
+        }
+        await this.shopPanel?.open();
+    }
+
+    public attachShop(coordinator: ShopCoordinator, contextId: string, quoteRef: string): void {
+        this.shopPanel?.dispose();
+        this.shopCoordinator = coordinator;
+        this.shopPanel = new ShopPanel(this.node, coordinator, {
+            contextId,
+            quoteRef,
+            onVisibility: visible => {
+                if (visible) this.clearInput();
+            },
+            onSuccess: (_type, msg) => {
+                this.inventoryNotice.string = msg;
+            },
+        });
     }
 
     private async toggleBank(): Promise<void> {
@@ -547,8 +584,9 @@ export class Prototype extends Component {
             if (p.x >= 10   && p.x <= 70)   { void this.toggleRepair(); return; }
             if (p.x >= 80   && p.x <= 140)  { void this.toggleEnhancement(); return; }
             if (p.x >= 150  && p.x <= 210)  { void this.toggleRanking(); return; }
+            if (p.x >= 220  && p.x <= 280)  { void this.toggleShop(); return; }
         }
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen) return;
         if(this.challengeCoordinator){this.authorityTouch(p.x,p.y,id,e);return;}
         if (this.deathReviveHUD.isVisible) {
             const hit = this.deathReviveHUD.hitTest(p.x, p.y);
@@ -561,6 +599,7 @@ export class Prototype extends Component {
         }
         if (this.sceneMode === 'town') {
             if (Math.hypot(p.x - (-150), p.y - 20) < 45) { void this.toggleRepair(); return; }
+            if (Math.hypot(p.x - (-80), p.y - 20) < 45)  { void this.toggleShop(); return; }
             if (Math.hypot(p.x - (-10), p.y - 20) < 45)  { void this.toggleEnhancement(); return; }
             if (Math.hypot(p.x - 120, p.y - 20) < 45)   { void this.toggleBank(); return; }
             if (p.x >= 175 && Math.abs(p.y - 20) < 50)   { this.enterDungeon(); return; }
@@ -659,15 +698,17 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.KEY_M) { if (!this.repairKeyHeld) { this.repairKeyHeld = true; void this.toggleRepair(); } return; }
         if (e.keyCode === KeyCode.KEY_K) { if (!this.enhancementKeyHeld) { this.enhancementKeyHeld = true; void this.toggleEnhancement(); } return; }
         if (e.keyCode === KeyCode.KEY_O) { if (!this.rankingKeyHeld) { this.rankingKeyHeld = true; void this.toggleRanking(); } return; }
+        if (e.keyCode === KeyCode.KEY_P) { if (!this.shopKeyHeld) { this.shopKeyHeld = true; void this.toggleShop(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankPanel?.isOpen) { if (!this.bankPanel.closeDetails()) this.bankPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.repairPanel?.isOpen) { this.repairPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.enhancementPanel?.isOpen) { this.enhancementPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.rankingPanel?.isOpen) { this.rankingPanel.close(); return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.shopPanel?.isOpen) { this.shopPanel.close(); return; }
         if (e.keyCode === KeyCode.KEY_B) { if (!this.inventoryKeyHeld) { this.inventoryKeyHeld = true; void this.toggleInventory(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { if (!this.inventoryPanel.closeDetails()) this.inventoryPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen) return;
         if (this.encounter.state === 'ready') {
             this.encounter.start();
         }
@@ -705,6 +746,7 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.KEY_M) this.repairKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_K) this.enhancementKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_O) this.rankingKeyHeld = false;
+        if (e.keyCode === KeyCode.KEY_P) this.shopKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_B) this.inventoryKeyHeld = false;
         this.keys.delete(e.keyCode);
         if (e.keyCode === KeyCode.SPACE && this.attackIds.size === 0) this.model.release();
@@ -749,12 +791,13 @@ export class Prototype extends Component {
         this.bankPanel?.update();
         this.repairPanel?.update();
         this.enhancementPanel?.update();
+        this.shopPanel?.update();
         this.checkBrokenEquipment();
         if(this.challengeCoordinator){this.updateAuthority(dt);return;}
         this.frames++; this.fpsTime += dt;
         if (this.fpsTime >= 0.5) { this.fps = Math.round(this.frames / this.fpsTime); this.frames = this.fpsTime = 0; }
         const has = (a: KeyCode, b: KeyCode) => Number(this.keys.has(a) || this.keys.has(b));
-        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen;
+        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen;
         const x = inventoryBlocked ? 0 : this.horizontalInput();
         const y = inventoryBlocked ? 0 : this.stickId !== null ? this.axis.y : has(KeyCode.KEY_W, KeyCode.ARROW_UP) - has(KeyCode.KEY_S, KeyCode.ARROW_DOWN);
         this.accumulator += Math.min(dt, 0.1);
@@ -1017,6 +1060,18 @@ export class Prototype extends Component {
         g.moveTo(-160, 6); g.lineTo(-140, 6); g.stroke();
         g.fillColor = new Color(255, 140, 30, 220); g.circle(-130, 8, 7 + 2 * Math.sin(time * 6)); g.fill();
         g.fillColor = new Color(255, 230, 70, 240); g.circle(-130, 8, 4 + 1.5 * Math.sin(time * 8)); g.fill();
+
+        // Merchant Delilah Stall (-80)
+        for (let c = 0; c < 4; c++) {
+            g.fillColor = c % 2 === 0 ? new Color(220, 80, 50) : new Color(250, 240, 220);
+            g.rect(-96 + c * 8, 16, 8, 12); g.fill();
+        }
+        g.strokeColor = new Color(70, 45, 30); g.lineWidth = 1; g.rect(-96, 16, 32, 12); g.stroke();
+        g.fillColor = new Color(85, 55, 35); g.roundRect(-98, -12, 36, 18, 2); g.fill();
+        g.strokeColor = new Color(170, 130, 80); g.lineWidth = 1; g.roundRect(-98, -12, 36, 18, 2); g.stroke();
+        g.fillColor = new Color(240, 70, 70, 230); g.circle(-90, 8, 3.5); g.fill();
+        g.fillColor = new Color(70, 150, 255, 230); g.circle(-80, 8, 3.5); g.fill();
+        g.fillColor = new Color(190, 80, 255, 230); g.circle(-70, 8, 3.5); g.fill();
 
         g.fillColor = new Color(90, 35, 130); g.roundRect(-35, 16, 50, 14, 2); g.fill();
         g.strokeColor = new Color(255, 215, 100); g.lineWidth = 1.2;
