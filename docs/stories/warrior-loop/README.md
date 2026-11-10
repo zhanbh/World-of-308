@@ -92,6 +92,8 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 ## ST10 本地实施续接
 
+2026-11-10 UI换肤：正式实现地下城入口选择面板（`DungeonSelectPanel.ts`，ST10）并接入城镇场景（`Prototype.ts`）。接入 912×500 9-Patch 外框 `panel_window_frame`、`panel_well_inner` 凹槽切片、3 张地下城选择卡片（幽暗密林深处、格兰之森工坊、裂隙深处）、3 级难度切换（普通/冒险/勇士）、权威 `dungeon.entry` 选项响应、疲劳消耗展示（8点/次）与准入硬门禁守门（0体力拦截、未装备主手武器拦截、0耐久完全破损拦截）、推荐物攻与魔物情报展示、`challenge.start` 锁定疲劳快照开启挑战、网络未决自愈恢复重试；交付 [`backend/test/dungeon-select-cocos.test.mjs`](../../backend/test/dungeon-select-cocos.test.mjs) 11 组自动化用例 100% 通过；详见[地下城入口选择 UI 样式落地记录](../../reviews/dungeon-select-ui-style-verification.md)。
+
 2026-10-24，用户已确认五项任务图并授权本地实施，integration为`feat-1.0.0`。见[ST10入口](st10/README.md)、[Accepted规格与依赖](st10/plan-check.json)、[当前执行状态](st10/execution.json)。2026-10-25，01～05按frontier实施并独立合入，评审修复后两轴复查通过；见[本地交付与限制](../../reviews/st10-local-verification.md)。来源卡proposed保留为历史快照，执行状态以Accepted任务与sidecar为准。无Jira；ST09历史构建与本轮被拒绝的重构建分别记录，不挪用为ST10构建通过。
 
 ## ST11 本地实施续接

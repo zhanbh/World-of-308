@@ -5,6 +5,7 @@ import { InventoryCoordinator } from './InventoryCoordinator.ts';
 import { BankCoordinator } from './BankCoordinator.ts';
 import { ShopCoordinator } from './ShopCoordinator.ts';
 import { MailCoordinator } from './MailCoordinator.ts';
+import { ChallengeEntryCoordinator, type EntryPendingStore } from './ChallengeEntryCoordinator.ts';
 import type { EquipmentView, AssetQuery, AssetQueryResponse, ContainerView } from '../../../../shared/src/protocol/asset-v2.ts';
 import { time, type Time } from '../../../../shared/src/exact-values.ts';
 
@@ -983,4 +984,115 @@ export function createSandboxMailCoordinator(): { coordinator: MailCoordinator; 
 
   return { coordinator, contextId };
 }
+
+export interface SandboxChallengeEntryOptions {
+  getStamina?: () => number;
+  hasWeapon?: () => boolean;
+  isWeaponBroken?: () => boolean;
+}
+
+export function createSandboxChallengeEntryCoordinator(options?: SandboxChallengeEntryOptions): {
+  coordinator: ChallengeEntryCoordinator;
+  contextId: string;
+} {
+  const contextId = 'sandbox-challenge-context';
+  const characterId = 'warrior-player-1';
+  let charVersion = 1;
+  const storage = new Map<string, string>();
+  const persistence: EntryPendingStore = {
+    load: (k: string) => storage.get(k) ?? null,
+    save: (k: string, v: string | null) => {
+      if (v === null) storage.delete(k);
+      else storage.set(k, v);
+    },
+  };
+
+  const transport = {
+    send: async (text: string): Promise<string> => {
+      const msg = JSON.parse(text);
+      if ('query' in msg && msg.query === 'dungeon.entry') {
+        const stamina = options?.getStamina ? options.getStamina() : 308;
+        const weaponOk = options?.hasWeapon ? options.hasWeapon() : true;
+        const weaponBroken = options?.isWeaponBroken ? options.isWeaponBroken() : false;
+
+        let canEnter = true;
+        let reason: string | null = null;
+        if (!weaponOk) {
+          canEnter = false;
+          reason = 'WEAPON_REQUIRED';
+        } else if (weaponBroken) {
+          canEnter = false;
+          reason = 'WEAPON_BROKEN';
+        } else if (stamina < 1) {
+          canEnter = false;
+          reason = 'STAMINA_NOT_ENOUGH';
+        }
+
+        const dungeonId = msg.payload.dungeonId;
+        const entryContext = `ctx-${dungeonId}-${Date.now()}`;
+
+        return JSON.stringify({
+          requestId: msg.requestId,
+          serverTime: time(Date.now()),
+          versions: [{ kind: 'container', id: characterId, version: charVersion }],
+          data: {
+            dungeonId,
+            entryContext,
+            locationRevision: 1,
+            options: [
+              { difficultyId: 'normal', unlocked: true, canEnter, reason },
+              { difficultyId: 'adventure', unlocked: true, canEnter, reason },
+              { difficultyId: 'warrior', unlocked: true, canEnter, reason },
+            ],
+          },
+        });
+      }
+
+      if ('command' in msg && msg.command === 'challenge.start') {
+        const dungeonId = msg.payload.dungeonId;
+        const difficultyId = msg.payload.difficultyId;
+        const stamina = options?.getStamina ? options.getStamina() : 308;
+        const monsterLevel = difficultyId === 'warrior' ? 15 : (difficultyId === 'adventure' ? 10 : 5);
+
+        return JSON.stringify({
+          protocolVersion: 2,
+          operationId: msg.operationId,
+          serverTime: time(Date.now()),
+          replayed: false,
+          command: 'challenge.start',
+          outcome: {
+            status: 'committed',
+            resultVersions: [{ kind: 'container', id: characterId, version: ++charVersion }],
+            data: {
+              challengeId: `ch-${dungeonId}-${Date.now()}`,
+              configRef: `cfg-${dungeonId}`,
+              playerLevel: 1,
+              staminaSnapshot: stamina > 0 ? stamina : 1,
+              monsterLevel,
+              monsterStatsRef: `stats-${dungeonId}-${difficultyId}`,
+              equipmentSourceRef: `drops-${dungeonId}-${difficultyId}`,
+              equipmentVersion: 1,
+              equipmentAttributes: [],
+              acceptedSeq: 1,
+              acceptedTick: 0,
+            },
+          },
+        });
+      }
+
+      return JSON.stringify({ status: 'ok' });
+    },
+  };
+
+  const coordinator = new ChallengeEntryCoordinator(transport, persistence);
+  coordinator.init({
+    sessionId: 'sandbox-challenge-session',
+    sessionEpoch: 1,
+    characterId,
+    rolePlayEpoch: 1,
+  });
+
+  return { coordinator, contextId };
+}
+
 

@@ -24,7 +24,9 @@ import { ShopPanel } from './ui/ShopPanel';
 import type { ShopCoordinator } from './net/ShopCoordinator';
 import { MailPanel } from './ui/MailPanel';
 import type { MailCoordinator } from './net/MailCoordinator';
-import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator, createSandboxInventoryCoordinator, createSandboxBankCoordinator, createSandboxShopCoordinator, createSandboxMailCoordinator } from './net/PrototypePreview';
+import { DungeonSelectPanel, type DifficultyKind } from './ui/DungeonSelectPanel';
+import type { ChallengeEntryCoordinator } from './net/ChallengeEntryCoordinator';
+import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator, createSandboxInventoryCoordinator, createSandboxBankCoordinator, createSandboxShopCoordinator, createSandboxMailCoordinator, createSandboxChallengeEntryCoordinator } from './net/PrototypePreview';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
 import type {CombatLifecycleAdapter} from './net/CombatLifecycleAdapter';
 import { MovementCoordinator } from './net/MovementCoordinator';
@@ -113,6 +115,8 @@ export class Prototype extends Component {
     private mailPanel: MailPanel | null = null;
     private mailCoordinator: MailCoordinator | null = null;
     private mailKeyHeld = false;
+    private dungeonSelectPanel: DungeonSelectPanel | null = null;
+    private challengeEntryCoordinator: ChallengeEntryCoordinator | null = null;
     private brokenEquipmentNotice!: Label;
     private sceneMode: 'town' | 'dungeon' = 'town';
     private linusLabel!: Label;
@@ -265,7 +269,8 @@ export class Prototype extends Component {
         if (this.roundLabel) this.roundLabel.node.active = true;
     }
 
-    private enterDungeon(): void {
+    private enterDungeon(dungeon?: DungeonKind, _difficulty?: string): void {
+        if (dungeon) this.dungeonKind = dungeon;
         this.sceneMode = 'dungeon';
         this.roomNo = 0;
         this.model.x = -140;
@@ -292,7 +297,7 @@ export class Prototype extends Component {
     private toggleSceneMode(): void {
         this.closeAllPanels();
         if (this.sceneMode === 'town') {
-            this.enterDungeon();
+            void this.openDungeonSelect();
         } else {
             this.returnToTown();
         }
@@ -319,6 +324,7 @@ export class Prototype extends Component {
         this.rankingPanel?.dispose();
         this.shopPanel?.dispose();
         this.mailPanel?.dispose();
+        this.dungeonSelectPanel?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
         this.lootPanel?.dispose();
@@ -438,6 +444,54 @@ export class Prototype extends Component {
         if (this.rankingPanel?.isOpen) this.rankingPanel.close();
         if (this.shopPanel?.isOpen) this.shopPanel.close();
         if (this.mailPanel?.isOpen) this.mailPanel.close();
+        if (this.dungeonSelectPanel?.isOpen) this.dungeonSelectPanel.close();
+    }
+
+    private stamina = 308;
+
+    private getCharacterWeaponStatus(): { hasWeapon: boolean; isWeaponBroken: boolean } {
+        const coord = this.repairCoordinator?.state;
+        if (coord?.view) {
+            const items = 'items' in coord.view ? coord.view.items : [coord.view.item];
+            const weapon = items.find(i => i.slotKind === 'weapon');
+            if (weapon) {
+                const broken = (weapon.durability?.current ?? 1) <= 0;
+                return { hasWeapon: true, isWeaponBroken: broken };
+            }
+        }
+        return { hasWeapon: true, isWeaponBroken: false };
+    }
+
+    public async openDungeonSelect(dungeonId: DungeonKind = this.dungeonKind): Promise<void> {
+        if (this.dungeonSelectPanel?.isOpen) { this.dungeonSelectPanel.close(); return; }
+        this.closeAllPanels();
+        if (!this.dungeonSelectPanel) {
+            const sandbox = createSandboxChallengeEntryCoordinator({
+                getStamina: () => this.stamina,
+                hasWeapon: () => this.getCharacterWeaponStatus().hasWeapon,
+                isWeaponBroken: () => this.getCharacterWeaponStatus().isWeaponBroken,
+            });
+            this.attachDungeonSelect(sandbox.coordinator, sandbox.contextId);
+            this.inventoryNotice.string = '地下城传送门已开启';
+        }
+        await this.dungeonSelectPanel?.open(dungeonId);
+    }
+
+    public attachDungeonSelect(coordinator: ChallengeEntryCoordinator, _contextId: string): void {
+        this.dungeonSelectPanel?.dispose();
+        this.challengeEntryCoordinator = coordinator;
+        this.dungeonSelectPanel = new DungeonSelectPanel(this.node, coordinator, {
+            getStamina: () => this.stamina,
+            hasWeapon: () => this.getCharacterWeaponStatus().hasWeapon,
+            isWeaponBroken: () => this.getCharacterWeaponStatus().isWeaponBroken,
+            onVisibility: visible => {
+                if (visible) this.clearInput();
+            },
+            onStart: (dungeonId, difficultyId) => {
+                this.stamina = Math.max(0, this.stamina - 8);
+                this.enterDungeon(dungeonId, difficultyId);
+            },
+        });
     }
 
     private async toggleMail(): Promise<void> {
@@ -625,7 +679,7 @@ export class Prototype extends Component {
             if (p.x >= 220  && p.x <= 280)  { void this.toggleShop(); return; }
             if (p.x >= 290  && p.x <= 350)  { void this.toggleMail(); return; }
         }
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen || this.dungeonSelectPanel?.isOpen) return;
         if(this.challengeCoordinator){this.authorityTouch(p.x,p.y,id,e);return;}
         if (this.deathReviveHUD.isVisible) {
             const hit = this.deathReviveHUD.hitTest(p.x, p.y);
@@ -642,7 +696,7 @@ export class Prototype extends Component {
             if (Math.hypot(p.x - (-10), p.y - 20) < 45)  { void this.toggleEnhancement(); return; }
             if (Math.hypot(p.x - 50, p.y - 20) < 45)    { void this.toggleMail(); return; }
             if (Math.hypot(p.x - 120, p.y - 20) < 45)   { void this.toggleBank(); return; }
-            if (p.x >= 175 && Math.abs(p.y - 20) < 50)   { this.enterDungeon(); return; }
+            if (p.x >= 175 && Math.abs(p.y - 20) < 50)   { void this.openDungeonSelect(); return; }
             if (this.stickId === null && Math.hypot(p.x + 345, p.y + 150) < 95) {
                 this.stickId = id;
                 this.touchMove(e);
@@ -747,10 +801,11 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.ESCAPE && this.rankingPanel?.isOpen) { this.rankingPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.shopPanel?.isOpen) { this.shopPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.mailPanel?.isOpen) { this.mailPanel.close(); return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.dungeonSelectPanel?.isOpen) { this.dungeonSelectPanel.close(); return; }
         if (e.keyCode === KeyCode.KEY_B) { if (!this.inventoryKeyHeld) { this.inventoryKeyHeld = true; void this.toggleInventory(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { if (!this.inventoryPanel.closeDetails()) this.inventoryPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen || this.dungeonSelectPanel?.isOpen) return;
         if (this.encounter.state === 'ready') {
             this.encounter.start();
         }
