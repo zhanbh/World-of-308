@@ -4,6 +4,7 @@ import { RankingCoordinator, type RankingIdentity, type RankingItemView } from '
 import { InventoryCoordinator } from './InventoryCoordinator.ts';
 import { BankCoordinator } from './BankCoordinator.ts';
 import { ShopCoordinator } from './ShopCoordinator.ts';
+import { MailCoordinator } from './MailCoordinator.ts';
 import type { EquipmentView, AssetQuery, AssetQueryResponse, ContainerView } from '../../../../shared/src/protocol/asset-v2.ts';
 import { time, type Time } from '../../../../shared/src/exact-values.ts';
 
@@ -749,5 +750,237 @@ export function createSandboxShopCoordinator(): { coordinator: ShopCoordinator; 
     contextId,
     quoteRef,
   };
+}
+
+export function createSandboxMailCoordinator(): { coordinator: MailCoordinator; contextId: string } {
+  const contextId = 'sandbox-mail-context';
+  const characterId = 'warrior-player-1';
+  const persistence = {
+    load: (_k: string) => null,
+    save: (_k: string, _v: string | null) => {},
+  };
+
+  let charVersion = 1;
+  let bagVersion = 1;
+
+  const now = Date.now();
+  const mockMails = [
+    {
+      mailId: 'mail-welcome-01',
+      characterId,
+      createdAt: now - 3600000,
+      expiresAt: now + 29 * 24 * 3600 * 1000,
+      read: false,
+      attachments: [
+        {
+          attachmentId: 'att-welcome-hp',
+          kind: 'stack' as const,
+          templateRef: 'con-hp-potion',
+          quantityGranted: 10,
+          quantityClaimed: 0,
+          binding: { kind: 'none' as const },
+        },
+      ],
+    },
+    {
+      mailId: 'mail-arena-01',
+      characterId,
+      createdAt: now - 86400000,
+      expiresAt: now + 27 * 24 * 3600 * 1000,
+      read: true,
+      attachments: [
+        {
+          attachmentId: 'att-arena-sword',
+          kind: 'equipment' as const,
+          templateRef: 'wpn-epic-katana',
+          quantityGranted: 1,
+          quantityClaimed: 0,
+          binding: { kind: 'character' as const, characterId },
+        },
+      ],
+    },
+    {
+      mailId: 'mail-notice-01',
+      characterId,
+      createdAt: now - 172800000,
+      expiresAt: now + 25 * 24 * 3600 * 1000,
+      read: true,
+      attachments: [],
+    },
+  ];
+
+  const mockRewards = [
+    {
+      grantId: 'grant-boss-ring-01',
+      itemId: 'acc-epic-earring',
+      characterId,
+      createdAt: now - 7200000,
+      state: 'pending' as const,
+    },
+    {
+      grantId: 'grant-boss-dagger-01',
+      itemId: 'wpn-epic-katana',
+      characterId,
+      createdAt: now - 14400000,
+      state: 'delivered' as const,
+    },
+  ];
+
+  const transport = {
+    send: async (text: string): Promise<string> => {
+      const msg = JSON.parse(text);
+      if ('query' in msg && msg.query === 'mail.list') {
+        return JSON.stringify({
+          requestId: msg.requestId,
+          serverTime: time(Date.now()),
+          versions: [{ kind: 'character', id: characterId, version: charVersion }],
+          data: {
+            entries: mockMails,
+            nextCursor: null,
+          },
+        });
+      }
+      if ('query' in msg && msg.query === 'reward.list') {
+        return JSON.stringify({
+          requestId: msg.requestId,
+          serverTime: time(Date.now()),
+          versions: [{ kind: 'character', id: characterId, version: charVersion }],
+          data: {
+            entries: mockRewards,
+            nextCursor: null,
+          },
+        });
+      }
+      if ('query' in msg && msg.query === 'delivery.summary') {
+        const unreadCount = mockMails.filter(m => !m.read).length;
+        const pendingCount = mockRewards.filter(r => r.state === 'pending').length;
+        return JSON.stringify({
+          requestId: msg.requestId,
+          serverTime: time(Date.now()),
+          versions: [],
+          data: {
+            unreadMailCount: unreadCount,
+            pendingCount,
+            asOf: time(Date.now()),
+          },
+        });
+      }
+      if ('command' in msg && msg.command === 'mail.markRead') {
+        const mail = mockMails.find(m => m.mailId === msg.payload.mailId);
+        if (mail) mail.read = true;
+        return JSON.stringify({
+          operationId: msg.operationId,
+          serverTime: time(Date.now()),
+          replayed: false,
+          outcome: {
+            status: 'committed',
+            resultVersions: [{ kind: 'character', id: characterId, version: ++charVersion }],
+            data: { mailId: msg.payload.mailId, read: true },
+          },
+        });
+      }
+      if ('command' in msg && msg.command === 'mail.delete') {
+        const idx = mockMails.findIndex(m => m.mailId === msg.payload.mailId);
+        if (idx >= 0) mockMails.splice(idx, 1);
+        return JSON.stringify({
+          operationId: msg.operationId,
+          serverTime: time(Date.now()),
+          replayed: false,
+          outcome: {
+            status: 'committed',
+            resultVersions: [{ kind: 'character', id: characterId, version: ++charVersion }],
+            data: { mailId: msg.payload.mailId, deleted: true },
+          },
+        });
+      }
+      if ('command' in msg && msg.command === 'mail.claimAttachment') {
+        const mail = mockMails.find(m => m.mailId === msg.payload.mailId);
+        const attach = mail?.attachments.find(a => a.attachmentId === msg.payload.attachmentId);
+        let delivered = 0;
+        if (attach) {
+          delivered = attach.quantityGranted - attach.quantityClaimed;
+          attach.quantityClaimed = attach.quantityGranted;
+        }
+        return JSON.stringify({
+          operationId: msg.operationId,
+          serverTime: time(Date.now()),
+          replayed: false,
+          outcome: {
+            status: 'committed',
+            resultVersions: [
+              { kind: 'character', id: characterId, version: ++charVersion },
+              { kind: 'container', id: characterId, version: ++bagVersion },
+            ],
+            data: { mailId: msg.payload.mailId, attachmentId: msg.payload.attachmentId, deliveredQuantity: delivered },
+          },
+        });
+      }
+      if ('command' in msg && msg.command === 'reward.claim') {
+        const rew = mockRewards.find(r => r.grantId === msg.payload.grantId);
+        if (rew) rew.state = 'delivered';
+        return JSON.stringify({
+          operationId: msg.operationId,
+          serverTime: time(Date.now()),
+          replayed: false,
+          outcome: {
+            status: 'committed',
+            resultVersions: [
+              { kind: 'character', id: characterId, version: ++charVersion },
+              { kind: 'container', id: characterId, version: ++bagVersion },
+            ],
+            data: { grantId: msg.payload.grantId, itemId: rew?.itemId ?? 'acc-epic-earring', state: 'delivered' },
+          },
+        });
+      }
+      if ('command' in msg && msg.command === 'mail.claimAvailable') {
+        let total = 0;
+        const items = [];
+        for (const mail of mockMails) {
+          for (const attach of mail.attachments) {
+            if (attach.quantityClaimed < attach.quantityGranted) {
+              const qty = attach.quantityGranted - attach.quantityClaimed;
+              attach.quantityClaimed = attach.quantityGranted;
+              total += qty;
+              items.push({
+                childOperationId: `child-${Date.now()}-${items.length}`,
+                mailId: mail.mailId,
+                attachmentId: attach.attachmentId,
+                status: 'committed' as const,
+                deliveredQuantity: qty,
+              });
+            }
+          }
+        }
+        return JSON.stringify({
+          operationId: msg.operationId,
+          serverTime: time(Date.now()),
+          replayed: false,
+          outcome: {
+            status: 'committed',
+            resultVersions: [
+              { kind: 'character', id: characterId, version: ++charVersion },
+              { kind: 'container', id: characterId, version: ++bagVersion },
+            ],
+            data: {
+              batchIntentId: msg.payload.batchIntentId,
+              state: 'completed',
+              items,
+              nextCursor: null,
+            },
+          },
+        });
+      }
+      return JSON.stringify({ status: 'ok' });
+    },
+  };
+
+  const coordinator = new MailCoordinator(transport, persistence);
+  coordinator.init({
+    sessionId: 'sandbox-mail-session',
+    sessionEpoch: 1,
+    characterId,
+  });
+
+  return { coordinator, contextId };
 }
 

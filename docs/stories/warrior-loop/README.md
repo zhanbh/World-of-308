@@ -80,6 +80,10 @@ ST05已获任务图及实施授权，当前工作分支 `feat/st05-equipment`，
 
 ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接续 `feat/st05-equipment`；商店药剂与白装购买、满包整笔拒绝（`BAG_FULL`）零扣款、报价变化校验（`QUOTE_CHANGED`）、穿戴中与商城绑定道具禁售、强化不涨价固定回收、双向法定比率（`10000 gold ⇄ 1 points`）整数兑换与纯模型 `ShopCoordinator` 已全部实现并通过本地验证；验收状态与双轴独立评审见[ST06交付记录](../../reviews/st06-06-local-verification-2026-10-23.md)、[Standards 独立复核](../../reviews/st06-standards-independent-review-2026-10-23.md)、[Spec 独立评审](../../reviews/st06-spec-independent-review-2026-10-23.md)与[任务入口](st06/README.md)。
 
+## ST07 / ST08 本地实施续接
+
+2026-11-10 UI换肤：正式实现旅店信箱与永久待领面板（`MailPanel.ts`，ST07/ST08）并接入城镇场景（`Prototype.ts`）。接入 912×500 9-Patch 外框 `panel_window_frame`、`panel_well_inner` 凹槽切片、56px `slot_grid_base` 槽位基底、品质外边框、原生 48px 图标、3态按钮切片（`button_normal/pressed/disabled`）、双标签页模式（系统信件收件箱 / 永久待领奖励暂存）、查阅自动标已读、未领附件防删保护、一键批量可恢复领取（`mail.claimAvailable`）、满包自动转入永久待领提取入包、未知网络状态自愈恢复；交付 [`backend/test/mail-cocos.test.mjs`](../../backend/test/mail-cocos.test.mjs) 9 组自动化用例 100% 通过；详见[旅店信箱 UI 样式落地记录](../../reviews/mail-ui-style-verification.md)。
+
 ## ST09 本地实施续接
 
 2026-11-09 UI换肤：用户授权推进金库/银行面板（`BankPanel.ts`，ST09）换肤。接入 56px 槽位、48px 原生透明图标、品质外框、9-Patch 切片底板与两级只读装备详情卡；手势指针所有权与弹窗尾部释放隔离回归通过；证据见[银行 UI 落地记录](../../reviews/bank-ui-style-verification.md)。

@@ -22,7 +22,9 @@ import { connectInventoryPreview } from './net/InventoryPreview';
 import type { InventoryCoordinator } from './net/InventoryCoordinator';
 import { ShopPanel } from './ui/ShopPanel';
 import type { ShopCoordinator } from './net/ShopCoordinator';
-import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator, createSandboxInventoryCoordinator, createSandboxBankCoordinator, createSandboxShopCoordinator } from './net/PrototypePreview';
+import { MailPanel } from './ui/MailPanel';
+import type { MailCoordinator } from './net/MailCoordinator';
+import { createSandboxRepairCoordinator, createSandboxEnhancementCoordinator, createSandboxRankingCoordinator, createSandboxInventoryCoordinator, createSandboxBankCoordinator, createSandboxShopCoordinator, createSandboxMailCoordinator } from './net/PrototypePreview';
 import { buildEncounterRoomSpawnsForDungeon, type DungeonKind } from '../../../shared/src/encounter-layout.ts';
 import type {CombatLifecycleAdapter} from './net/CombatLifecycleAdapter';
 import { MovementCoordinator } from './net/MovementCoordinator';
@@ -108,10 +110,14 @@ export class Prototype extends Component {
     private shopPanel: ShopPanel | null = null;
     private shopCoordinator: ShopCoordinator | null = null;
     private shopKeyHeld = false;
+    private mailPanel: MailPanel | null = null;
+    private mailCoordinator: MailCoordinator | null = null;
+    private mailKeyHeld = false;
     private brokenEquipmentNotice!: Label;
     private sceneMode: 'town' | 'dungeon' = 'town';
     private linusLabel!: Label;
     private shopLabel!: Label;
+    private mailboxLabel!: Label;
     private maryLabel!: Label;
     private bankNpcLabel!: Label;
     private portalLabel!: Label;
@@ -156,6 +162,7 @@ export class Prototype extends Component {
             this.text('强化 K', 110, 242, 13, 60),
             this.text('排行 O', 180, 242, 13, 60),
             this.text('商店 P', 250, 242, 13, 60),
+            this.text('信箱 I', 320, 242, 13, 60),
         ];
         this.linusLabel = this.text('铁匠·林纳克斯\n[修理 M]', -150, 72, 12, 120);
         this.linusLabel.color = new Color(255, 215, 130);
@@ -163,6 +170,8 @@ export class Prototype extends Component {
         this.shopLabel.color = new Color(255, 220, 100);
         this.maryLabel = this.text('炉火·玛丽\n[强化 K]', -10, 72, 12, 120);
         this.maryLabel.color = new Color(255, 160, 210);
+        this.mailboxLabel = this.text('旅店·信箱\n[邮箱 I]', 50, 72, 12, 120);
+        this.mailboxLabel.color = new Color(130, 220, 255);
         this.bankNpcLabel = this.text('行长·金库\n[银行 N]', 120, 72, 12, 120);
         this.bankNpcLabel.color = new Color(140, 230, 255);
         this.portalLabel = this.text('格兰之森\n[传送门 ▶]', 198, 72, 12, 120);
@@ -171,7 +180,7 @@ export class Prototype extends Component {
         this.brokenEquipmentNotice.color = new Color(255, 90, 90);
         this.inventoryNotice = this.text('', 0, 150, 17, 800);
         this.challengeNotice = this.text('全业务闭环：微风小镇安全区与三大地下城实机联动', -60, 126, 14, 680);
-        this.text('WASD移动 · 空格普攻 · E/F/Q/G技能 · B背包 · N银行 · M修理 · K强化 · O排行 · P商店', -50, 212, 12, 700);
+        this.text('WASD移动 · 空格普攻 · E/F/Q/G技能 · B背包 · N银行 · M修理 · K强化 · O排行 · P商店 · I信箱', -50, 212, 12, 740);
         this.healthStatus = this.text('', -130, 178, 17, 660);
         this.healthStatus.horizontalAlign = Label.HorizontalAlign.LEFT;
         this.healthStatus.overflow = Label.Overflow.SHRINK;
@@ -246,7 +255,9 @@ export class Prototype extends Component {
 
     private updateTownNPCVisibility(visible: boolean): void {
         if (this.linusLabel) this.linusLabel.node.active = visible;
+        if (this.shopLabel) this.shopLabel.node.active = visible;
         if (this.maryLabel) this.maryLabel.node.active = visible;
+        if (this.mailboxLabel) this.mailboxLabel.node.active = visible;
         if (this.bankNpcLabel) this.bankNpcLabel.node.active = visible;
         if (this.portalLabel) this.portalLabel.node.active = visible;
         if (this.modeLabels) this.modeLabels.forEach(l => l.node.active = !visible);
@@ -307,6 +318,7 @@ export class Prototype extends Component {
         this.enhancementPanel?.dispose();
         this.rankingPanel?.dispose();
         this.shopPanel?.dispose();
+        this.mailPanel?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
         this.lootPanel?.dispose();
@@ -425,6 +437,32 @@ export class Prototype extends Component {
         if (this.enhancementPanel?.isOpen) this.enhancementPanel.close();
         if (this.rankingPanel?.isOpen) this.rankingPanel.close();
         if (this.shopPanel?.isOpen) this.shopPanel.close();
+        if (this.mailPanel?.isOpen) this.mailPanel.close();
+    }
+
+    private async toggleMail(): Promise<void> {
+        if (this.mailPanel?.isOpen) { this.mailPanel.close(); return; }
+        this.closeAllPanels();
+        if (!this.mailPanel) {
+            const sandbox = createSandboxMailCoordinator();
+            this.attachMail(sandbox.coordinator, sandbox.contextId);
+            this.inventoryNotice.string = '本地沙盒邮箱模式';
+        }
+        await this.mailPanel?.open();
+    }
+
+    public attachMail(coordinator: MailCoordinator, contextId: string): void {
+        this.mailPanel?.dispose();
+        this.mailCoordinator = coordinator;
+        this.mailPanel = new MailPanel(this.node, coordinator, {
+            contextId,
+            onVisibility: visible => {
+                if (visible) this.clearInput();
+            },
+            onSuccess: (_type, msg) => {
+                this.inventoryNotice.string = msg;
+            },
+        });
     }
 
     private async toggleShop(): Promise<void> {
@@ -585,8 +623,9 @@ export class Prototype extends Component {
             if (p.x >= 80   && p.x <= 140)  { void this.toggleEnhancement(); return; }
             if (p.x >= 150  && p.x <= 210)  { void this.toggleRanking(); return; }
             if (p.x >= 220  && p.x <= 280)  { void this.toggleShop(); return; }
+            if (p.x >= 290  && p.x <= 350)  { void this.toggleMail(); return; }
         }
-        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.bankPanel?.isOpen || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen) return;
         if(this.challengeCoordinator){this.authorityTouch(p.x,p.y,id,e);return;}
         if (this.deathReviveHUD.isVisible) {
             const hit = this.deathReviveHUD.hitTest(p.x, p.y);
@@ -601,6 +640,7 @@ export class Prototype extends Component {
             if (Math.hypot(p.x - (-150), p.y - 20) < 45) { void this.toggleRepair(); return; }
             if (Math.hypot(p.x - (-80), p.y - 20) < 45)  { void this.toggleShop(); return; }
             if (Math.hypot(p.x - (-10), p.y - 20) < 45)  { void this.toggleEnhancement(); return; }
+            if (Math.hypot(p.x - 50, p.y - 20) < 45)    { void this.toggleMail(); return; }
             if (Math.hypot(p.x - 120, p.y - 20) < 45)   { void this.toggleBank(); return; }
             if (p.x >= 175 && Math.abs(p.y - 20) < 50)   { this.enterDungeon(); return; }
             if (this.stickId === null && Math.hypot(p.x + 345, p.y + 150) < 95) {
@@ -653,7 +693,7 @@ export class Prototype extends Component {
 
     private touchMove(e: EventTouch): void {
         if (this.deathReviveHUD.isVisible) return;
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen) return;
         if (e.getID() !== this.stickId) return;
         const p = this.point(e);
         const x = (p.x + 345) / 68;
@@ -664,7 +704,7 @@ export class Prototype extends Component {
 
     private touchEnd(e: EventTouch): void {
         if (this.deathReviveHUD.isVisible) return;
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen) return;
         const id = e.getID();
         if (id === null) return;
         if (e.getID() === this.stickId) {
@@ -699,16 +739,18 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.KEY_K) { if (!this.enhancementKeyHeld) { this.enhancementKeyHeld = true; void this.toggleEnhancement(); } return; }
         if (e.keyCode === KeyCode.KEY_O) { if (!this.rankingKeyHeld) { this.rankingKeyHeld = true; void this.toggleRanking(); } return; }
         if (e.keyCode === KeyCode.KEY_P) { if (!this.shopKeyHeld) { this.shopKeyHeld = true; void this.toggleShop(); } return; }
+        if (e.keyCode === KeyCode.KEY_I) { if (!this.mailKeyHeld) { this.mailKeyHeld = true; void this.toggleMail(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.bankPanel?.isOpen) { if (!this.bankPanel.closeDetails()) this.bankPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.repairPanel?.isOpen) { this.repairPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.enhancementPanel?.isOpen) { this.enhancementPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.rankingPanel?.isOpen) { this.rankingPanel.close(); return; }
         if (e.keyCode === KeyCode.ESCAPE && this.shopPanel?.isOpen) { this.shopPanel.close(); return; }
+        if (e.keyCode === KeyCode.ESCAPE && this.mailPanel?.isOpen) { this.mailPanel.close(); return; }
         if (e.keyCode === KeyCode.KEY_B) { if (!this.inventoryKeyHeld) { this.inventoryKeyHeld = true; void this.toggleInventory(); } return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; return; }
         if (e.keyCode === KeyCode.ESCAPE && this.inventoryPanel?.isOpen) { if (!this.inventoryPanel.closeDetails()) this.inventoryPanel.close(); return; }
-        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen) return;
+        if (this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen) return;
         if (this.encounter.state === 'ready') {
             this.encounter.start();
         }
@@ -747,6 +789,7 @@ export class Prototype extends Component {
         if (e.keyCode === KeyCode.KEY_K) this.enhancementKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_O) this.rankingKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_P) this.shopKeyHeld = false;
+        if (e.keyCode === KeyCode.KEY_I) this.mailKeyHeld = false;
         if (e.keyCode === KeyCode.KEY_B) this.inventoryKeyHeld = false;
         this.keys.delete(e.keyCode);
         if (e.keyCode === KeyCode.SPACE && this.attackIds.size === 0) this.model.release();
@@ -757,7 +800,7 @@ export class Prototype extends Component {
     public retryCombat():void {void this.lifecycle?.retry();}
     public reenterGame():void {this.lifecycle?.reenter();}
     private onShowAuthority():void {void this.lifecycle?.show();}
-    private onHideInput(): void { void this.lifecycle?.hide(); this.bankKeyHeld = false; if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; } this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.repairKeyHeld = false; this.enhancementKeyHeld = false; this.rankingKeyHeld = false; this.clearInput(); }
+    private onHideInput(): void { void this.lifecycle?.hide(); this.bankKeyHeld = false; if (this.bankConnecting) { ++this.bankGeneration; this.bankConnecting = false; } this.inventoryKeyHeld = false; if (this.inventoryConnecting) { ++this.inventoryConnectGeneration; this.inventoryConnecting = false; this.inventoryNotice.string = ''; } this.repairKeyHeld = false; this.enhancementKeyHeld = false; this.rankingKeyHeld = false; this.shopKeyHeld = false; this.mailKeyHeld = false; this.clearInput(); }
 
     private clearInput(): void {
         this.keys.clear(); this.attackIds.clear(); this.stickId = null;
@@ -792,12 +835,13 @@ export class Prototype extends Component {
         this.repairPanel?.update();
         this.enhancementPanel?.update();
         this.shopPanel?.update();
+        this.mailPanel?.update();
         this.checkBrokenEquipment();
         if(this.challengeCoordinator){this.updateAuthority(dt);return;}
         this.frames++; this.fpsTime += dt;
         if (this.fpsTime >= 0.5) { this.fps = Math.round(this.frames / this.fpsTime); this.frames = this.fpsTime = 0; }
         const has = (a: KeyCode, b: KeyCode) => Number(this.keys.has(a) || this.keys.has(b));
-        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen;
+        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen;
         const x = inventoryBlocked ? 0 : this.horizontalInput();
         const y = inventoryBlocked ? 0 : this.stickId !== null ? this.axis.y : has(KeyCode.KEY_W, KeyCode.ARROW_UP) - has(KeyCode.KEY_S, KeyCode.ARROW_DOWN);
         this.accumulator += Math.min(dt, 0.1);
@@ -1091,6 +1135,14 @@ export class Prototype extends Component {
             g.fillColor = new Color(220, 140, 255, Math.round(sa));
             g.circle(sx, sy, 1.8); g.fill();
         }
+
+        // Hotel Mailbox (50)
+        g.fillColor = new Color(70, 45, 30); g.rect(47, -12, 6, 18); g.fill();
+        g.fillColor = new Color(175, 45, 45); g.roundRect(40, 6, 20, 24, 3); g.fill();
+        g.strokeColor = new Color(240, 180, 60); g.lineWidth = 1; g.roundRect(40, 6, 20, 24, 3); g.stroke();
+        g.fillColor = new Color(40, 20, 20); g.rect(44, 20, 12, 3); g.fill();
+        g.fillColor = new Color(255, 215, 60); g.circle(50, 13, 2.5); g.fill();
+        g.fillColor = new Color(240, 70, 60); g.rect(60, 18, 5, 4); g.fill();
 
         g.fillColor = new Color(75, 50, 35); g.roundRect(100, -8, 40, 22, 2); g.fill();
         g.strokeColor = new Color(190, 150, 90); g.lineWidth = 1; g.roundRect(100, -8, 40, 22, 2); g.stroke();
