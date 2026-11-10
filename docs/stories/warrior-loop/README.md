@@ -108,7 +108,9 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 
 ## ST13 本地实施续接
 
-2026-10-27～2026-10-28：用户已确认五项任务图并授权本地实施，integration为`feat-1.0.0`。ST13-01～ST13-05全部5项单据均已独立实现并合入主干（战斗血蓝药、主动饰品生效与换装等待、混合补给同刻生命周期、Cocos战斗补给HUD及联合预算评审）。连同怪物技能节奏放宽（telegraph延长至1.2s~1.4s、后摇恢复与冷却、普通怪伤害降至10）以及战士崩山击/拔刀斩/大崩霸体状态，全部通过7/7全量门禁（616项后台测试、纯模型及UI模型回归），并已推送至远端。见[ST13入口](st13/README.md)、[执行记录](st13/execution.json)、[联合验收记录](../../reviews/st13-joint-acceptance.md)。
+2026-11-10 UI换肤：正式实现战斗内 HUD 视觉切片升级，包含玩家状态栏（`PlayerStatusHUD.ts`，`bar_fill_hp/mp` 与 `panel_well_inner` 凹槽）、补给与饰品 4 槽位（`CombatSupplyHUD.ts`，56px `slot_grid_base`、品质外框、冷却倒计时遮罩与生效中金框）、死亡复活弹窗（`DeathRevivePanel.ts`，9-Patch 外框、倒计时进度条、3态按钮、金光复活光环与全屏渐隐黑幕）；交付 [`backend/test/combat-hud-cocos.test.mjs`](../../backend/test/combat-hud-cocos.test.mjs) 12 组自动化用例 100% 通过；详见[战斗 HUD 样式落地记录](../../reviews/combat-hud-ui-style-verification.md)。
+
+2026-10-27～2026-10-28：用户已确认五项任务图并授权本地实施，integration为`feat-1.0.0`。见[ST13入口](st13/README.md)。
 
 ## ST14 本地实施续接
 

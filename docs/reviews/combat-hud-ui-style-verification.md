@@ -1,52 +1,50 @@
-# 战斗 HUD 与地下城结算卡片 UI 样式切片落地验证记录
+# 战斗内 HUD（补给栏、复活弹窗、血条）UI 样式切片落地验证记录
 
-2026-11-09。分支 `feat/combat-hud-ui-style`，基线 `feat-1.0.0` / `8de0aae`。接续战斗 HUD、多指操作热区规范及 ST15 通关战利品结算能力，遵循本地文档管理与离线交付约束，不创建或同步 Jira 单据，不在会话窗口内嵌图片展示。
+2026-11-10。分支 `feat/combat-hud-slices`，基线 `feat-1.0.0` / `3dcd6e9`。接续 ST13 战斗补给、ST14 死亡复活与 HUD 视觉规范，遵循本地文档管理与离线交付约束，不创建或同步 Jira 单据，不在会话窗口内嵌图片展示。
 
 ---
 
-## 一、本轮交付范围与设计规范对齐
+## 一、本轮交付范围与切片改造
 
-1. **玩家状态栏（Top-Left Player HUD）**：
-   - 居左上方构建 200×42 深色内嵌视口底衬与 1.5px 边框；
-   - 生命值条（HP Bar）扩展至 180×12，具备三级健康度阶梯色彩反馈（>50% 翡翠绿，20%~50% 琥珀黄，<20% 警戒红）；
-   - 法力值条（MP Bar）构建 180×10 法力晶蓝刻度条，实时跟随技能消耗与恢复动态缩放；
-   - 彻底解耦玩家主界面血条与敌怪头顶简易指示血条（`drawHealthBar`）。
+1. **玩家左上角状态栏 (`PlayerStatusHUD.ts`)**：
+   - 移除原有临时矢量框与硬编码圆角矩形；
+   - 采用 214×54 的 `ui/slices/panel_well_inner` 凹槽切片底板；
+   - HP/MP 进度条升级为 `ui/slices/bar_track_bg` 标准轨道背景；
+   - HP 填充使用 `ui/slices/bar_fill_hp`，MP 填充使用 `ui/slices/bar_fill_mp`；
+   - 增加高对比度等宽文字叠加（`HP 100 / 100`，`MP 100 / 100`）及战士等级与职业徽章（`Lv.1 狂战士`）。
 
-2. **顶部导航胶囊栏（Header Navigation Pills）**：
-   - 模式切换按钮接入圆角边框与城镇安全区（绿）/地下城冒险区（红）场景状态色；
-   - 背包、银行、修理、强化、排行 5 处系统快捷入口胶囊升级为深岩底衬与高对比度边框。
+2. **战斗补给与饰品 4 槽位 HUD (`CombatSupplyHUD.ts`)**：
+   - 彻底废除 `ui.circle` 临时矢量画线，升级为 56×56 标准槽位组件；
+   - 4 个槽位（药剂0/1/2与饰品T）统一挂载 56×56 `ui/slices/slot_grid_base` 底模；
+   - 品质外框动态自适应：普通药水挂载 `slot_border_rough`，高级/强效药水挂载 `slot_border_fine`，饰品挂载 `slot_border_epic`；
+   - 饰品生效中动态激活金色光效边框 `ui/slices/slot_border_legendary` 并实时倒计时；
+   - 冷却状态下覆盖半透明暗色遮罩并精准显示毫秒级倒计时（如 `3.0s`），耗尽显示红色 `0` 警示；
+   - 底部保留快捷键与键位提示（`1 药`、`2 药`、`3 药`、`饰品 T`），触控热区与几何尺寸与 `SUPPLY_BUTTON_LAYOUT` 1:1 严丝合缝。
 
-3. **战斗多指触控操作组（Combat HUD Action Buttons）**：
-   - **虚拟摇杆**：底盘加固 2px 环形边界（`#506e82`），轴向摇杆旋钮应用高对比度双层边缘（`#8cb4c3` / `#d2ebf0`）；
-   - **普通攻击按钮**：匹配 84px 规范圆域，采用 3px 金色英雄外框（`#ffd750`）与内圈光晕，按下态即时高亮；
-   - **四大战士技能按键**（十字斩、崩山击、拔刀斩、大崩）：应用 2.5px 晶蓝就绪光圈（`#64d2e6`）与内发光环；冷却中自动降级为暗岩沉陷态与细边框；
-   - **药品快捷位与主动饰品按键**：按类别映射专属品质边框与底衬（生命药鲜红、法力药深蓝、增益药翠绿、主动饰品紫晶/生效金色）。
+3. **死亡复活与放弃退出弹窗 (`DeathRevivePanel.ts`)**：
+   - 抽取独立组件封装 `DeathReviveHUDModel` 视图逻辑；
+   - 弹窗外框采用 340×230 的 9-Patch `ui/slices/panel_window_frame`，内嵌 `ui/slices/panel_well_inner` 凹槽；
+   - 10秒倒计时进度条采用 `ui/slices/bar_track_bg` 轨道底与 `ui/slices/bar_fill_exp` / `bar_fill_hp`（剩余3秒内变红预警）；
+   - “立即复活”与“放弃退出”按钮采用 3 态标准切片（`button_normal`、`button_pressed`、`button_disabled`），纹章不足时优雅呈现灰色禁用态与说明；
+   - 原地金光复活光环与战败全屏渐隐黑幕平滑过渡，热区映射 `hitTest` 完美兼容。
 
-4. **地下城通关战利品结算面板（`LootVictoryPanel.ts`）**：
-   - 剔除临时矢量代码，主胜利卡片升级为 330×240 的 `ui/slices/panel_window_frame` 9-Patch 外框；
-   - 内部嵌套 314×224 的 `ui/slices/panel_well_inner` 凹槽视口切片；
-   - 通关翻牌装备卡接入 `ui/slices/button_pressed` 底板，翻牌时保持三维透视翻折动效（`flipProgress`）；
-   - 离开副本按钮、拾取提示胶囊、网络重试胶囊均升级为 `ui/slices/button_normal` 规范切片；
-   - 拾取（-285, 95）、离开（250, -100）、重试（0, 105）三大触控判定区与热区几何严格保持 100% 契合。
+4. **单测套件交付**：
+   - 交付 [`backend/test/combat-hud-cocos.test.mjs`](file:///D:/IdeaProjects/World-of-308/backend/test/combat-hud-cocos.test.mjs)，包含 12 组自动化用例，完整覆盖状态栏布局与文字、补给槽底板/品质边框/倒计时遮罩、饰品激活金框、复活弹窗层级、倒计时换肤、按钮状态机、复活光环/全屏黑幕渲染、坐标热区命中与安全销毁。
 
 ---
 
 ## 二、实际验证记录与证据
 
 1. **类型检查门禁**：
-   - `client/tsconfig.json`：Cocos 客户端代码（包含 `Prototype.ts`、`LootVictoryPanel.ts` 等）编译通过，0 错误；
-   - `backend/tsconfig.json`：后端与协议层编译通过，0 错误；
-   - `tools/tsconfig.models.json`：纯模型层编译通过，0 错误。
+   - `client/tsconfig.json`：0 错误；
+   - `backend/tsconfig.json`：0 错误；
+   - `tools/tsconfig.models.json`：0 错误。
 
 2. **单元与交互测试**：
-   - 新增 [`backend/test/loot-victory-cocos.test.mjs`](file:///D:/IdeaProjects/World-of-308/backend/test/loot-victory-cocos.test.mjs) 4 组用例全部通过（100% 通过）：
-     - 视图层级结构、节点树与默认状态初始化；
-     - 拾取、离开、重试三区 `hitTest` 坐标命中与边缘判定；
-     - 胜利卡片唤出、翻牌进度缩放与路径文本渲染；
-     - 网络异常或 unknown 状态下重试胶囊展示与自愈。
-   - 回归 [`backend/test/loot-victory-client.test.mjs`](file:///D:/IdeaProjects/World-of-308/backend/test/loot-victory-client.test.mjs) 6 组用例全部通过。
-   - 回归全量表现层专项套件（银行/背包/修理/强化/排行/结算共 8 个测试文件、55 项测试全部通过）。
+   - 运行 [`backend/test/combat-hud-cocos.test.mjs`](file:///D:/IdeaProjects/World-of-308/backend/test/combat-hud-cocos.test.mjs) 12 组用例 100% 全部通过；
+   - 回归全量 8 套 Cocos UI 单测（combat-hud、dungeon-select、mail、shop、repair、enhancement、ranking、loot-victory）共 68 组用例 100% 全部通过。
 
-3. **客户端模型回归**：
-   - `client/tools/check-ui-model.cjs`：UI 模型测试 100% 通过；
-   - `client/tools/check-model.cjs`：动作与连段模型测试全部通过。
+3. **客户端模型与业务回归**：
+   - `client/tools/check-ui-model.cjs`：UI 模型测试 100% 通过（包含 `SupplyHUDModel` 与 `DeathReviveHUDModel` 验证）；
+   - `client/tools/check-model.cjs`：动作与连段模型测试全部通过；
+   - `backend/test/supply-hud-coordinator.test.mjs`：补给输入上报与协调器同步测试 100% 通过。

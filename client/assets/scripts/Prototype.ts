@@ -35,6 +35,9 @@ import type { LootSceneCoordinator } from './net/LootSceneCoordinator';
 import { LootVictoryPanel } from './ui/LootVictoryPanel';
 import { SupplyHUDModel, SUPPLY_BUTTON_LAYOUT } from './SupplyHUDModel';
 import { DeathReviveHUDModel, DEATH_REVIVE_LAYOUT } from './DeathReviveHUDModel';
+import { DeathRevivePanel } from './ui/DeathRevivePanel';
+import { CombatSupplyHUD } from './ui/CombatSupplyHUD';
+import { PlayerStatusHUD } from './ui/PlayerStatusHUD';
 
 const { ccclass } = _decorator;
 const stages = ['交叉斩', '反手上挑', '下劈收势'];
@@ -58,6 +61,9 @@ export class Prototype extends Component {
     private supplyHUD = new SupplyHUDModel();
     private supplyLabels: Label[] = [];
     private deathReviveHUD = new DeathReviveHUDModel();
+    private deathRevivePanel!: DeathRevivePanel;
+    private supplyHUDView!: CombatSupplyHUD;
+    private playerStatusHUD!: PlayerStatusHUD;
     private deathTitleLabel!: Label;
     private deathCountdownLabel!: Label;
     private deathEmblemLabel!: Label;
@@ -208,12 +214,16 @@ export class Prototype extends Component {
             { id: 'earth', x: 345, label: '大蹦 G' },
         ];
         for (const button of skillButtons) this.skillLabels[button.id] = this.text(button.label, button.x, -65, 11, 62);
+        this.deathRevivePanel = new DeathRevivePanel(this.node, this.deathReviveHUD);
+        this.supplyHUDView = new CombatSupplyHUD(this.node, this.supplyHUD);
+        this.playerStatusHUD = new PlayerStatusHUD(this.node, -390, 150);
         this.supplyLabels = [
             this.text('1 药', SUPPLY_BUTTON_LAYOUT.slot0.x, SUPPLY_BUTTON_LAYOUT.slot0.y, 11, 56),
             this.text('2 药', SUPPLY_BUTTON_LAYOUT.slot1.x, SUPPLY_BUTTON_LAYOUT.slot1.y, 11, 56),
             this.text('3 药', SUPPLY_BUTTON_LAYOUT.slot2.x, SUPPLY_BUTTON_LAYOUT.slot2.y, 11, 56),
             this.text('饰品 T', SUPPLY_BUTTON_LAYOUT.trinket.x, SUPPLY_BUTTON_LAYOUT.trinket.y, 11, 56),
         ];
+        this.supplyLabels.forEach(l => l.node.active = false);
         this.deathTitleLabel = this.text('角色阵亡', 0, 72, 20, 300);
         this.deathTitleLabel.color = new Color(255, 210, 75);
         this.deathTitleLabel.node.active = false;
@@ -267,6 +277,8 @@ export class Prototype extends Component {
         if (this.modeLabels) this.modeLabels.forEach(l => l.node.active = !visible);
         if (this.sceneSwitchLabel) this.sceneSwitchLabel.string = visible ? '▶ 进入地下城' : '◀ 返回城镇';
         if (this.roundLabel) this.roundLabel.node.active = true;
+        if (this.supplyHUDView) this.supplyHUDView.setVisible(!visible);
+        if (this.playerStatusHUD) this.playerStatusHUD.setVisible(!visible);
     }
 
     private enterDungeon(dungeon?: DungeonKind, _difficulty?: string): void {
@@ -325,6 +337,9 @@ export class Prototype extends Component {
         this.shopPanel?.dispose();
         this.mailPanel?.dispose();
         this.dungeonSelectPanel?.dispose();
+        this.deathRevivePanel?.dispose();
+        this.supplyHUDView?.dispose();
+        this.playerStatusHUD?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
         this.lootPanel?.dispose();
@@ -978,7 +993,10 @@ export class Prototype extends Component {
         if (fadeOutComplete) {
             this.handleFadeOutComplete();
         }
+        this.deathRevivePanel.update(dt, this.model.x, this.model.y);
         if (this.sceneMode === 'town') {
+            this.supplyHUDView?.setVisible(false);
+            this.playerStatusHUD?.setVisible(false);
             this.roundLabel.string = '微风小镇安全区 · 走进NPC即可办理业务 · 走向右侧传送门进入地下城';
             this.healthStatus.string = '战士生命 100/100   法力 100/100   [微风小镇安全区] 自由探索中';
             this.status.string = `${this.fps} FPS | 微风小镇安全区 | ${this.model.moving ? (this.model.running ? '奔跑' : '漫步') : '站街'} | 邻近NPC可按快捷键或点击交互`;
@@ -986,6 +1004,9 @@ export class Prototype extends Component {
             this.localElapsedTicks += dt * 100;
             return;
         }
+        this.supplyHUDView?.setVisible(true);
+        this.playerStatusHUD?.setVisible(true);
+        this.playerStatusHUD?.update(this.model.hp, 100, this.skills.mana, this.skills.maxMana);
         const round = this.encounter.state;
         const dName = this.dungeonKind === 'first' ? '首本牛头怪' : (this.dungeonKind === 'workshop' ? '失落工坊' : '裂隙遗址');
         this.roundLabel.string = this.deathReviveHUD.isVisible ? '' : (this.roomCleared
@@ -1382,7 +1403,6 @@ export class Prototype extends Component {
                 m.attackSpeedMultiplier === attackSpeedTuning.presets[index] ? '#376554' : '#293941');
         }
         this.sortActorsByDepth();
-        this.drawPlayerHUD(-390, 150);
         this.rect(this.controls, 185, 154, 55, 28, this.dungeonKind === 'first' ? '#53757e' : '#293941');
         this.rect(this.controls, 245, 154, 55, 28, this.dungeonKind === 'workshop' ? '#53757e' : '#293941');
         this.rect(this.controls, 305, 154, 55, 28, this.dungeonKind === 'rift' ? '#53757e' : '#293941');
@@ -1440,60 +1460,6 @@ export class Prototype extends Component {
                 ui.stroke();
             }
         }
-
-        // Supply and Trinket Buttons
-        const supplyGeom = SUPPLY_BUTTON_LAYOUT;
-        for (let i = 0; i < 3; i++) {
-            const slot = this.supplyHUD.quickSlots[i];
-            const pos = [supplyGeom.slot0, supplyGeom.slot1, supplyGeom.slot2][i];
-            let color = new Color(28, 38, 46, 220);
-            let stroke = new Color(75, 88, 98, 200);
-            if (slot.status === 'ready') {
-                color = slot.kind === 'hp' ? new Color(180, 50, 50, 240) : slot.kind === 'mp' ? new Color(50, 100, 200, 240) : new Color(60, 140, 100, 240);
-                stroke = slot.kind === 'hp' ? new Color(255, 120, 120, 240) : slot.kind === 'mp' ? new Color(120, 180, 255, 240) : new Color(120, 230, 160, 240);
-            } else if (slot.status === 'cooldown') {
-                color = new Color(50, 55, 60, 210);
-                stroke = new Color(90, 95, 100, 180);
-            } else if (slot.status === 'empty') {
-                color = new Color(60, 30, 30, 180);
-                stroke = new Color(120, 50, 50, 150);
-            } else if (slot.status === 'submitting') {
-                color = new Color(200, 160, 40, 240);
-                stroke = new Color(255, 215, 80, 255);
-            }
-            ui.fillColor = color;
-            ui.circle(pos.x, pos.y, pos.radius);
-            ui.fill();
-            ui.strokeColor = stroke;
-            ui.lineWidth = 2;
-            ui.circle(pos.x, pos.y, pos.radius);
-            ui.stroke();
-        }
-
-        const tState = this.supplyHUD.trinket;
-        let tColor = new Color(28, 38, 46, 220);
-        let tStroke = new Color(75, 88, 98, 200);
-        if (tState.status === 'ready') {
-            tColor = new Color(140, 60, 180, 240);
-            tStroke = new Color(210, 130, 255, 240);
-        } else if (tState.status === 'active') {
-            tColor = new Color(210, 170, 50, 240);
-            tStroke = new Color(255, 225, 100, 255);
-        } else if (tState.status === 'cooldown' || tState.status === 'waiting') {
-            tColor = new Color(50, 55, 60, 210);
-            tStroke = new Color(90, 95, 100, 180);
-        } else if (tState.status === 'submitting') {
-            tColor = new Color(200, 160, 40, 240);
-            tStroke = new Color(255, 215, 80, 255);
-        }
-        ui.fillColor = tColor;
-        ui.circle(supplyGeom.trinket.x, supplyGeom.trinket.y, supplyGeom.trinket.radius);
-        ui.fill();
-        ui.strokeColor = tStroke;
-        ui.lineWidth = 2;
-        ui.circle(supplyGeom.trinket.x, supplyGeom.trinket.y, supplyGeom.trinket.radius);
-        ui.stroke();
-        this.drawDeathReviveHUD(dt);
     }
 
     private restartEncounter(): void {
@@ -1611,94 +1577,12 @@ export class Prototype extends Component {
         this.restartEncounter();
     }
 
-    private drawDeathReviveHUD(dt: number): void {
-        const ui = this.controls;
-        if (this.deathReviveHUD.isVisible) {
-            ui.fillColor = new Color(0, 0, 0, 160);
-            ui.rect(-480, -270, 960, 540);
-            ui.fill();
-
-            const p = DEATH_REVIVE_LAYOUT.panel;
-            ui.fillColor = new Color(24, 34, 40, 240);
-            ui.rect(p.x - p.width / 2, p.y - p.height / 2, p.width, p.height);
-            ui.fill();
-            ui.strokeColor = new Color(70, 95, 110, 255);
-            ui.lineWidth = 2.0;
-            ui.rect(p.x - p.width / 2, p.y - p.height / 2, p.width, p.height);
-            ui.stroke();
-
-            const pb = DEATH_REVIVE_LAYOUT.progressBar;
-            ui.fillColor = new Color(15, 22, 26, 230);
-            ui.rect(pb.x - pb.width / 2, pb.y - pb.height / 2, pb.width, pb.height);
-            ui.fill();
-
-            const fillWidth = Math.max(0, pb.width * this.deathReviveHUD.progress);
-            const barColor = this.deathReviveHUD.remainingSec > 3
-                ? new Color(60, 180, 120, 230)
-                : new Color(230, 80, 60, 240);
-            ui.fillColor = barColor;
-            ui.rect(pb.x - pb.width / 2, pb.y - pb.height / 2, fillWidth, pb.height);
-            ui.fill();
-
-            const rb = DEATH_REVIVE_LAYOUT.reviveButton;
-            let rbColor = new Color(45, 115, 85, 230);
-            if (this.deathReviveHUD.reviveButtonState === 'disabled') {
-                rbColor = new Color(55, 65, 70, 200);
-            } else if (this.deathReviveHUD.reviveButtonState === 'submitting') {
-                rbColor = new Color(170, 130, 40, 230);
-            }
-            ui.fillColor = rbColor;
-            ui.rect(rb.x - rb.width / 2, rb.y - rb.height / 2, rb.width, rb.height);
-            ui.fill();
-            ui.strokeColor = this.deathReviveHUD.reviveButtonState === 'ready' ? new Color(90, 200, 150, 230) : new Color(75, 85, 90, 180);
-            ui.lineWidth = 1.5;
-            ui.rect(rb.x - rb.width / 2, rb.y - rb.height / 2, rb.width, rb.height);
-            ui.stroke();
-
-            const lb = DEATH_REVIVE_LAYOUT.leaveButton;
-            let lbColor = new Color(125, 50, 50, 230);
-            if (this.deathReviveHUD.leaveButtonState === 'submitting') {
-                lbColor = new Color(170, 130, 40, 230);
-            }
-            ui.fillColor = lbColor;
-            ui.rect(lb.x - lb.width / 2, lb.y - lb.height / 2, lb.width, lb.height);
-            ui.fill();
-            ui.strokeColor = new Color(190, 80, 80, 230);
-            ui.lineWidth = 1.5;
-            ui.rect(lb.x - lb.width / 2, lb.y - lb.height / 2, lb.width, lb.height);
-            ui.stroke();
-        }
-
-        if (this.deathReviveHUD.fadeOut.active) {
-            ui.fillColor = new Color(0, 0, 0, Math.round(this.deathReviveHUD.fadeOut.alpha * 255));
-            ui.rect(-480, -270, 960, 540);
-            ui.fill();
-        }
+    private drawDeathReviveHUD(_dt: number): void {
+        // Skinned by DeathRevivePanel using 9-patch frame and slices.
     }
 
     private updateDeathReviveLabels(): void {
-        const visible = this.deathReviveHUD.isVisible;
-        this.deathTitleLabel.node.active = visible;
-        this.deathCountdownLabel.node.active = visible;
-        this.deathEmblemLabel.node.active = visible;
-        this.deathLimitLabel.node.active = visible;
-        this.deathReviveBtnLabel.node.active = visible;
-        this.deathLeaveBtnLabel.node.active = visible;
-        this.deathPromptLabel.node.active = visible && !!this.deathReviveHUD.promptMessage;
-
-        if (!visible) return;
-
-        this.deathCountdownLabel.string = this.deathReviveHUD.countdownLabel;
-        this.deathEmblemLabel.string = this.deathReviveHUD.emblemLabel;
-        this.deathLimitLabel.string = this.deathReviveHUD.limitLabel;
-        this.deathReviveBtnLabel.string = this.deathReviveHUD.reviveButtonLabel;
-        this.deathReviveBtnLabel.color = this.deathReviveHUD.reviveButtonState === 'disabled'
-            ? new Color(130, 140, 145)
-            : new Color(255, 255, 255);
-        this.deathLeaveBtnLabel.string = this.deathReviveHUD.leaveButtonLabel;
-        if (this.deathReviveHUD.promptMessage) {
-            this.deathPromptLabel.string = this.deathReviveHUD.promptMessage;
-        }
+        // Managed by DeathRevivePanel.
     }
 
     private resolveMeleeHit(): void {
@@ -2096,36 +1980,8 @@ export class Prototype extends Component {
         this.lastDepthOrder = actors;
     }
 
-    private drawPlayerHUD(x: number, y: number): void {
-        const ui = this.controls;
-        const m = this.model;
-        // Outer panel well
-        ui.fillColor = new Color(16, 24, 32, 235);
-        ui.roundRect(x - 10, y - 16, 200, 42, 6);
-        ui.fill();
-        ui.strokeColor = new Color(68, 88, 108, 220);
-        ui.lineWidth = 1.5;
-        ui.roundRect(x - 10, y - 16, 200, 42, 6);
-        ui.stroke();
-
-        // HP Bar
-        ui.fillColor = new Color(28, 38, 46, 255);
-        ui.roundRect(x, y + 6, 180, 12, 3);
-        ui.fill();
-        const hpPercent = Math.max(0, Math.min(1, m.hp / 100));
-        const hpFillColor = hpPercent > 0.5 ? new Color(75, 214, 150) : hpPercent > 0.2 ? new Color(235, 170, 60) : new Color(235, 70, 70);
-        ui.fillColor = hpFillColor;
-        ui.roundRect(x + 1, y + 7, Math.max(2, 178 * hpPercent), 10, 2);
-        ui.fill();
-
-        // MP Bar
-        ui.fillColor = new Color(24, 34, 42, 255);
-        ui.roundRect(x, y - 8, 180, 10, 3);
-        ui.fill();
-        const mpPercent = Math.max(0, Math.min(1, this.skills.mana / this.skills.maxMana));
-        ui.fillColor = new Color(60, 150, 225);
-        ui.roundRect(x + 1, y - 7, Math.max(2, 178 * mpPercent), 8, 2);
-        ui.fill();
+    private drawPlayerHUD(_x: number, _y: number): void {
+        // Skinned by PlayerStatusHUD using 9-patch bar_fill_hp/mp slices and inner well.
     }
 
     private drawHealthBar(x: number, y: number, hp: number, max: number, fill: string): void {
