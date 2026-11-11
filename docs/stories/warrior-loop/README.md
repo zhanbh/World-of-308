@@ -176,3 +176,7 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 - **ST20-05（换装/强化即时刷新联合验收、物理预算与两轴评审）**：真实换装（ST05）与强化（ST18）到排行榜投影即时刷新端到端大闭环；15 秒新鲜期内本人名次即时计算反映升降（3040 分即时登顶 #1，卸装即时跌落 #3，重新穿装同分较晚达成排 #2 验证三元组同分裁决）；物理预算实测达标（`rankCaches` 文档 12,604 B $\le$ 16 KiB，条目实体 335 B $\le$ 16 KiB，单页网络传输 12,532 B $\le$ 64 KiB）；防击穿并发验证（10 并发安全回退旧缓存）、租约超时接管、容量熔断与存储故障资产零污染；并发换装与排行查询 OCC 安全竞争已交付合入，源码 `ad8939c`；全套定向测试 33/33 通过，两项 TS 检查 Exit Code 0，纯模型与 UI 模型门禁 100% SUCCESS，两轴独立评审通过（Standards 0 违规，Spec 0 偏离）。见[05记录](../../reviews/st20-05-verification.md)、[05合入核验](../../reviews/st20-05-merge-verification.md)、[Standards独立评审](../../reviews/st20-standards-independent-review.md)及[Spec独立评审](../../reviews/st20-spec-independent-review.md)。ST20 全部 5 项子任务完整交付合入。
 
 2026-11-09 UI换肤：推进排行榜面板（`RankingPanel.ts`，ST20）换肤落地。接入 `panel_window_frame` 9-Patch 外框、`panel_well_inner` 凹槽榜单卡片与个人排名横幅、3态按钮切片（`button_normal/pressed/disabled`）及三大榜单 Tab 选中下凹高亮；证据见[排行榜 UI 落地记录](../../reviews/ranking-ui-style-verification.md)。
+
+## 微信小游戏（wechatgame）全量 UI 切片离线构建核验（2026-11-11）
+
+2026-11-11，基于 `feat-1.0.0` / `6cef789` 对完成全部 9-Patch 换肤后的完整客户端执行微信小游戏（`wechatgame`）离线 CLI 构建与包体预算校验。主包 `1,779,899` 字节（约 1.70 MiB，低于 4 MiB 上限），总体积 `14,547,149` 字节（`internal` / `main` / `resources` 三分包就绪），全套 12 个 UI 面板与 HUD 组件、`ui/slices/`（32 项）及 `icons/`（98 项）均成功打包合入，三层 TS、纯模型与 89 项 Cocos UI 用例全部通过。详见[微信小游戏切片版构建核验](../../reviews/wechat-build-verification-2026-11-11.md)。真机微信开发者工具预览、设备运行性能与 E02 微信云端接入继续保持为后续待验门禁。
