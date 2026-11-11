@@ -24,6 +24,35 @@ export const KNOWN_ITEM_ICONS: Record<string, string> = {
 export function itemIconForTemplate(id: string, custom?: (id: string) => string | null): string {
     return (custom && custom(id)) ?? KNOWN_ITEM_ICONS[id] ?? 'item_unknown';
 }
+
+const DROP_PATTERN_ICONS: ReadonlyArray<[RegExp, string]> = [
+    [/hp|blood|heal/, 'consumable_hp_potion'],
+    [/mp|mana/, 'consumable_mp_potion'],
+    [/sword|blade|weapon/, 'weapon_dual_blades'],
+    [/shoulder/, 'armor_shoulders'],
+    [/chest|armor|plate/, 'armor_chest'],
+    [/belt|waist/, 'armor_belt'],
+    [/pant|leg|greave/, 'armor_pants'],
+    [/boot|shoe/, 'armor_boots'],
+    [/necklace|amulet/, 'jewelry_necklace'],
+    [/bracelet|wrist/, 'jewelry_bracelet'],
+    [/ring/, 'jewelry_ring'],
+    [/earring/, 'special_earring'],
+    [/stone|magic/, 'special_stone'],
+    [/book|scroll|sub/, 'special_book'],
+    [/trinket|souvenir|emblem|medal/, 'material_souvenir'],
+    [/ore|adamantite|carbon|mat|crystal/, 'material_adamantite'],
+];
+
+/** Resolves a ground drop template identifier to its 48px icon stem. */
+export function dropIconForTemplate(id: string, kind?: 'stack' | 'equipment'): string {
+    if (KNOWN_ITEM_ICONS[id]) return KNOWN_ITEM_ICONS[id];
+    const lower = id.toLowerCase();
+    for (const [pattern, stem] of DROP_PATTERN_ICONS) {
+        if (pattern.test(lower)) return stem;
+    }
+    return kind === 'equipment' ? 'weapon_dual_blades' : 'material_adamantite';
+}
 export function slotCenter(index: number, scroll: number): { x: number; y: number } {
     return { x: BAG_GRID.left + BAG_GRID.cell / 2 + index % 5 * BAG_GRID.stride,
         y: BAG_GRID.top - BAG_GRID.cell / 2 - Math.floor(index / 5) * BAG_GRID.stride + scroll };

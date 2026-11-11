@@ -38,6 +38,7 @@ import { DeathReviveHUDModel, DEATH_REVIVE_LAYOUT } from './DeathReviveHUDModel'
 import { DeathRevivePanel } from './ui/DeathRevivePanel';
 import { CombatSupplyHUD } from './ui/CombatSupplyHUD';
 import { PlayerStatusHUD } from './ui/PlayerStatusHUD';
+import { TownNPCHUD } from './ui/TownNPCHUD';
 
 const { ccclass } = _decorator;
 const stages = ['交叉斩', '反手上挑', '下劈收势'];
@@ -125,12 +126,7 @@ export class Prototype extends Component {
     private challengeEntryCoordinator: ChallengeEntryCoordinator | null = null;
     private brokenEquipmentNotice!: Label;
     private sceneMode: 'town' | 'dungeon' = 'town';
-    private linusLabel!: Label;
-    private shopLabel!: Label;
-    private mailboxLabel!: Label;
-    private maryLabel!: Label;
-    private bankNpcLabel!: Label;
-    private portalLabel!: Label;
+    private townNPCHUD!: TownNPCHUD;
     private sceneSwitchLabel!: Label;
     private titleLabel!: Label;
     private hudLabels: Label[] = [];
@@ -174,18 +170,7 @@ export class Prototype extends Component {
             this.text('商店 P', 250, 242, 13, 60),
             this.text('信箱 I', 320, 242, 13, 60),
         ];
-        this.linusLabel = this.text('铁匠·林纳克斯\n[修理 M]', -150, 72, 12, 120);
-        this.linusLabel.color = new Color(255, 215, 130);
-        this.shopLabel = this.text('商人·德利拉\n[商店 P]', -80, 72, 12, 120);
-        this.shopLabel.color = new Color(255, 220, 100);
-        this.maryLabel = this.text('炉火·玛丽\n[强化 K]', -10, 72, 12, 120);
-        this.maryLabel.color = new Color(255, 160, 210);
-        this.mailboxLabel = this.text('旅店·信箱\n[邮箱 I]', 50, 72, 12, 120);
-        this.mailboxLabel.color = new Color(130, 220, 255);
-        this.bankNpcLabel = this.text('行长·金库\n[银行 N]', 120, 72, 12, 120);
-        this.bankNpcLabel.color = new Color(140, 230, 255);
-        this.portalLabel = this.text('格兰之森\n[传送门 ▶]', 198, 72, 12, 120);
-        this.portalLabel.color = new Color(210, 170, 255);
+        this.townNPCHUD = new TownNPCHUD(this.node);
         this.brokenEquipmentNotice = this.text('', 0, 102, 14, 800);
         this.brokenEquipmentNotice.color = new Color(255, 90, 90);
         this.inventoryNotice = this.text('', 0, 150, 17, 800);
@@ -268,15 +253,16 @@ export class Prototype extends Component {
     }
 
     private updateTownNPCVisibility(visible: boolean): void {
-        if (this.linusLabel) this.linusLabel.node.active = visible;
-        if (this.shopLabel) this.shopLabel.node.active = visible;
-        if (this.maryLabel) this.maryLabel.node.active = visible;
-        if (this.mailboxLabel) this.mailboxLabel.node.active = visible;
-        if (this.bankNpcLabel) this.bankNpcLabel.node.active = visible;
-        if (this.portalLabel) this.portalLabel.node.active = visible;
+        if (this.townNPCHUD) {
+            this.townNPCHUD.setVisible(visible);
+            if (visible) this.townNPCHUD.update(0, this.model.x, this.model.y);
+        }
         if (this.modeLabels) this.modeLabels.forEach(l => l.node.active = !visible);
         if (this.sceneSwitchLabel) this.sceneSwitchLabel.string = visible ? '▶ 进入地下城' : '◀ 返回城镇';
-        if (this.roundLabel) this.roundLabel.node.active = true;
+        if (this.roundLabel) {
+            this.roundLabel.node.active = true;
+            this.roundLabel.node.setPosition(0, visible ? -104 : 75);
+        }
         if (this.supplyHUDView) this.supplyHUDView.setVisible(!visible);
         if (this.playerStatusHUD) this.playerStatusHUD.setVisible(!visible);
     }
@@ -340,6 +326,7 @@ export class Prototype extends Component {
         this.deathRevivePanel?.dispose();
         this.supplyHUDView?.dispose();
         this.playerStatusHUD?.dispose();
+        this.townNPCHUD?.dispose();
         this.inventoryPanel?.dispose();
         this.warriorSprite.dispose();
         this.lootPanel?.dispose();
@@ -706,12 +693,13 @@ export class Prototype extends Component {
             return;
         }
         if (this.sceneMode === 'town') {
-            if (Math.hypot(p.x - (-150), p.y - 20) < 45) { void this.toggleRepair(); return; }
-            if (Math.hypot(p.x - (-80), p.y - 20) < 45)  { void this.toggleShop(); return; }
-            if (Math.hypot(p.x - (-10), p.y - 20) < 45)  { void this.toggleEnhancement(); return; }
-            if (Math.hypot(p.x - 50, p.y - 20) < 45)    { void this.toggleMail(); return; }
-            if (Math.hypot(p.x - 120, p.y - 20) < 45)   { void this.toggleBank(); return; }
-            if (p.x >= 175 && Math.abs(p.y - 20) < 50)   { void this.openDungeonSelect(); return; }
+            const npcHit = this.townNPCHUD?.hitTest(p.x, p.y);
+            if (npcHit === 'repair') { void this.toggleRepair(); return; }
+            if (npcHit === 'shop') { void this.toggleShop(); return; }
+            if (npcHit === 'enhancement') { void this.toggleEnhancement(); return; }
+            if (npcHit === 'mail') { void this.toggleMail(); return; }
+            if (npcHit === 'bank') { void this.toggleBank(); return; }
+            if (npcHit === 'portal') { void this.openDungeonSelect(); return; }
             if (this.stickId === null && Math.hypot(p.x + 345, p.y + 150) < 95) {
                 this.stickId = id;
                 this.touchMove(e);
@@ -911,7 +899,7 @@ export class Prototype extends Component {
         this.frames++; this.fpsTime += dt;
         if (this.fpsTime >= 0.5) { this.fps = Math.round(this.frames / this.fpsTime); this.frames = this.fpsTime = 0; }
         const has = (a: KeyCode, b: KeyCode) => Number(this.keys.has(a) || this.keys.has(b));
-        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen;
+        const inventoryBlocked = this.inventoryPanel?.isOpen || this.inventoryConnecting || this.bankPanel?.isOpen || this.bankConnecting || this.repairPanel?.isOpen || this.enhancementPanel?.isOpen || this.rankingPanel?.isOpen || this.shopPanel?.isOpen || this.mailPanel?.isOpen || this.dungeonSelectPanel?.isOpen;
         const x = inventoryBlocked ? 0 : this.horizontalInput();
         const y = inventoryBlocked ? 0 : this.stickId !== null ? this.axis.y : has(KeyCode.KEY_W, KeyCode.ARROW_UP) - has(KeyCode.KEY_S, KeyCode.ARROW_DOWN);
         this.accumulator += Math.min(dt, 0.1);
@@ -1270,25 +1258,8 @@ export class Prototype extends Component {
 
         const px = this.model.x;
         const py = this.model.y;
-        const npcs = [
-            { x: -150, color: new Color(255, 200, 110) },
-            { x: -10,  color: new Color(255, 150, 200) },
-            { x: 120,  color: new Color(130, 225, 255) },
-            { x: 198,  color: new Color(200, 160, 255) },
-        ];
-        for (const npc of npcs) {
-            const dist = Math.hypot(px - npc.x, py - 10);
-            if (dist < 48) {
-                const auraBounce = 0.7 + 0.3 * Math.sin(time * 5);
-                g.fillColor = new Color(npc.color.r, npc.color.g, npc.color.b, Math.round(55 * auraBounce));
-                g.ellipse(npc.x, -14, 28, 10); g.fill();
-                g.strokeColor = new Color(npc.color.r, npc.color.g, npc.color.b, Math.round(180 * auraBounce));
-                g.lineWidth = 1.2; g.ellipse(npc.x, -14, 28, 10); g.stroke();
-                const bounceY = Math.sin(time * 6) * 3;
-                g.fillColor = new Color(npc.color.r, npc.color.g, npc.color.b, 230);
-                g.moveTo(npc.x - 5, 50 + bounceY); g.lineTo(npc.x + 5, 50 + bounceY); g.lineTo(npc.x, 45 + bounceY); g.close(); g.fill();
-            }
-        }
+        this.townNPCHUD?.update(time, px, py);
+        this.townNPCHUD?.drawTownAvatars(g, time, px, py);
     }
 
     private draw(dt: number): void {

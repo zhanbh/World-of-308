@@ -1,12 +1,41 @@
 import { Node, Graphics, Color, Label, UITransform } from 'cc';
 import type { LootSceneCoordinator } from '../net/LootSceneCoordinator';
 import { skinSprite } from './UISkin';
+import { QUALITY_STYLE, dropIconForTemplate } from './InventoryPresentation';
+
+interface DropSlotVisual {
+  root: Node;
+  base: Node;
+  icon: Node;
+  border: Node;
+  lastIconKey: string;
+  lastBorderKey: string;
+}
+
+const PILLAR_HEIGHT: Record<keyof typeof QUALITY_STYLE, number> = {
+  white: 36,
+  green: 44,
+  blue: 54,
+  purple: 66,
+  orange: 80,
+};
+
+const PILLAR_WIDTH: Record<keyof typeof QUALITY_STYLE, number> = {
+  white: 8,
+  green: 10,
+  blue: 12,
+  purple: 16,
+  orange: 20,
+};
 
 export class LootVictoryPanel {
   private readonly root: Node;
   private readonly drops: Graphics;
+  private readonly dropSlotsRoot: Node;
+  private readonly dropSlots: DropSlotVisual[] = [];
   private readonly fade: Graphics;
   private readonly names: Label[] = [];
+  private animTick = 0;
 
   // Victory Card Container & Subnodes
   private readonly victoryCard: Node;
@@ -31,6 +60,7 @@ export class LootVictoryPanel {
     parent.addChild(this.root);
 
     this.drops = this.graphics('GroundDropPillars');
+    this.dropSlotsRoot = this.node(this.root, 'GroundDropSlots', 0, 0, 960, 540);
 
     // Victory Card hierarchy (centered at 250, -5, size 330×240)
     this.victoryCard = this.node(this.root, 'VictoryCard', 250, -5, 330, 240);
@@ -111,10 +141,24 @@ export class LootVictoryPanel {
     return l;
   }
 
+  private ensureDropSlot(index: number): DropSlotVisual {
+    const existing = this.dropSlots[index];
+    if (existing) return existing;
+    const root = this.node(this.dropSlotsRoot, `DropSlot_${index}`, 0, 0, 28, 28);
+    const base = this.node(root, 'Base', 0, 0, 28, 28);
+    skinSprite(base, 'ui/slices/slot_grid_base', true);
+    const icon = this.node(root, 'Icon', 0, 0, 22, 22);
+    const border = this.node(root, 'Border', 0, 0, 28, 28);
+    const slot: DropSlotVisual = { root, base, icon, border, lastIconKey: '', lastBorderKey: '' };
+    this.dropSlots.push(slot);
+    return slot;
+  }
+
   update(scene: LootSceneCoordinator): void {
     const m = scene.hud;
     const g = this.drops;
     g.clear();
+    this.animTick = (this.animTick + 0.1) % (Math.PI * 20);
 
     while (this.names.length < m.drops.length) {
       this.names.push(this.label(this.root, '', 0, 0, 12, 180));
@@ -126,28 +170,70 @@ export class LootVictoryPanel {
       if (!d) return;
       const x = (d.x / 1000) * 2;
       const y = (d.y / 1000) * 2;
-      l.string = d.name;
-      l.node.setPosition(x, y + 36 + i * 15);
-      l.color = new Color().fromHEX(d.color);
+      const quality = (d.quality && d.quality in QUALITY_STYLE ? d.quality : 'white') as keyof typeof QUALITY_STYLE;
+      const style = QUALITY_STYLE[quality];
+      const color = new Color().fromHEX(d.color || style.color);
+      const pillarH = PILLAR_HEIGHT[quality];
+      const pillarW = PILLAR_WIDTH[quality];
+      const bob = Math.sin(this.animTick + i * 1.15) * 3;
 
-      const color = new Color().fromHEX(d.color);
-      g.fillColor = new Color(color.r, color.g, color.b, d.near ? 140 : 70);
-      g.rect(x - 5, y + 5, 10, 30);
+      l.string = d.name;
+      l.node.setPosition(x, y + Math.max(48, pillarH * 0.72) + i * 15);
+      l.color = color;
+
+      // Outer & inner tiered quality light pillar
+      g.fillColor = new Color(color.r, color.g, color.b, d.near ? 95 : 45);
+      g.rect(x - pillarW / 2, y + 2, pillarW, pillarH);
       g.fill();
-      g.fillColor = color;
-      g.moveTo(x, y + 18);
-      g.lineTo(x + 7, y + 10);
-      g.lineTo(x, y + 2);
-      g.lineTo(x - 7, y + 10);
-      g.close();
+
+      const coreW = Math.max(4, pillarW * 0.55);
+      g.fillColor = new Color(color.r, color.g, color.b, d.near ? 175 : 105);
+      g.rect(x - coreW / 2, y + 2, coreW, pillarH * 0.85);
+      g.fill();
+
+      // Rising glint sparks inside pillar
+      for (let s = 0; s < 2; s++) {
+        const sparkT = (this.animTick * 0.25 + i * 0.37 + s * 0.5) % 1;
+        const sx = x + Math.sin(this.animTick + i + s * 2.4) * (pillarW * 0.4);
+        const sy = y + 4 + sparkT * (pillarH - 8);
+        g.fillColor = new Color(255, 250, 220, Math.round(210 * (1 - sparkT)));
+        g.rect(sx - 1.5, sy, 3, 3);
+        g.fill();
+      }
+
+      // Ground halo / pickup indicator
+      g.fillColor = new Color(color.r, color.g, color.b, d.near ? 75 : 35);
+      g.ellipse(x, y, d.near ? 18 : 11, d.near ? 7 : 4);
       g.fill();
       if (d.near) {
         g.strokeColor = color;
         g.lineWidth = 2;
-        g.ellipse(x, y, 16, 6);
+        g.ellipse(x, y, 20 + Math.sin(this.animTick * 1.5) * 2, 7.5);
         g.stroke();
       }
+
+      // Floating item icon slot
+      const slot = this.ensureDropSlot(i);
+      slot.root.active = true;
+      slot.root.setPosition(x, y + 26 + bob);
+      const scale = d.near ? 1.12 : 1;
+      slot.root.setScale(scale, scale, 1);
+
+      const iconPath = `icons/${dropIconForTemplate(d.templateId ?? d.name, d.kind)}_48`;
+      if (slot.lastIconKey !== iconPath) {
+        slot.lastIconKey = iconPath;
+        skinSprite(slot.icon, iconPath, false);
+      }
+      const borderPath = `ui/slices/slot_border_${style.border}`;
+      if (slot.lastBorderKey !== borderPath) {
+        slot.lastBorderKey = borderPath;
+        skinSprite(slot.border, borderPath, true);
+      }
     });
+
+    for (let i = m.drops.length; i < this.dropSlots.length; i++) {
+      this.dropSlots[i].root.active = false;
+    }
 
     const v = m.victory;
     this.victoryCard.active = !!v;

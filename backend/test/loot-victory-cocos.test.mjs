@@ -116,22 +116,43 @@ const panelTranspiled = ts.transpileModule(panelSource, {
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
 }).outputText;
 
+const presSource = readFileSync(new URL('../../client/assets/scripts/ui/InventoryPresentation.ts', import.meta.url), 'utf8');
+const presTranspiled = ts.transpileModule(presSource, {
+  compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
+}).outputText;
+const presExports = {};
+vm.runInNewContext(presTranspiled, {
+  exports: presExports,
+  require: name => (name === 'cc' ? ccStub : {}),
+});
+
 function createPanel() {
   const exp = {};
+  const skinCalls = [];
   vm.runInNewContext(panelTranspiled, {
     exports: exp,
-    require: name => (
-      name === 'cc' ? ccStub :
-      name.includes('UISkin') ? { skinSprite: () => ({}) } :
-      {}
-    ),
+    require: name => {
+      if (name === 'cc') return ccStub;
+      if (name.includes('UISkin')) {
+        return {
+          skinSprite: (node, path, sliced = false) => {
+            node._skin = path;
+            node._skinSliced = !!sliced;
+            skinCalls.push({ node, path, sliced: !!sliced });
+            return {};
+          },
+        };
+      }
+      if (name.includes('InventoryPresentation')) return presExports;
+      return {};
+    },
     Date,
     Math,
     JSON,
   });
   const rootParent = new Node('SceneRoot');
   const panel = new exp.LootVictoryPanel(rootParent);
-  return { panel, rootParent };
+  return { panel, rootParent, skinCalls };
 }
 
 test('LootVictoryPanel initializes with correct hierarchy and default states', () => {
@@ -232,4 +253,63 @@ test('LootVictoryPanel update displays retry pill on failure or unknown state', 
   mockScene.movement.state.status = 'active';
   panel.update(mockScene);
   assert.equal(retryPill.active, false);
+});
+
+test('LootVictoryPanel renders pooled 48px icon slots with tiered quality borders and hides collected drops', () => {
+  const { panel, rootParent, skinCalls } = createPanel();
+  const root = rootParent.children[0];
+  const slotsRoot = root.children.find(c => c.name === 'GroundDropSlots');
+  assert.ok(slotsRoot);
+
+  const mockScene = {
+    hud: {
+      drops: [
+        { dropId: 1, x: -60000, y: 10000, name: 'Minor HP Potion ×2', color: '#b0bec5', near: true, templateId: 'item_hp_potion', quality: 'white', kind: 'stack' },
+        { dropId: 2, x: 40000, y: 15000, name: 'Shadow Plate ×1', color: '#ab47bc', near: false, templateId: 'armor_chest_10', quality: 'purple', kind: 'equipment' },
+        { dropId: 3, x: 90000, y: 5000, name: 'Twilight Blade ×1', color: '#ff9800', near: false, templateId: 'sword_of_dawn', quality: 'orange', kind: 'equipment' },
+      ],
+      victory: null,
+      flipProgress: 0,
+      nearest: { dropId: 1 },
+      notice: '',
+      fadeAlpha: 0,
+    },
+    terminal: { state: { status: 'active' } },
+    movement: { state: { status: 'active' } },
+    drops: { state: { status: 'active' } },
+    busy: false,
+  };
+
+  panel.update(mockScene);
+  assert.equal(slotsRoot.children.length, 3);
+
+  const s0 = slotsRoot.children[0];
+  assert.equal(s0.active, true);
+  assert.equal(s0.position.x, -120);
+  assert.ok(s0.scale.x > 1, 'nearest drop icon slot should subtly scale up');
+  assert.equal(s0.children.find(c => c.name === 'Base')._skin, 'ui/slices/slot_grid_base');
+  assert.equal(s0.children.find(c => c.name === 'Icon')._skin, 'icons/consumable_hp_potion_48');
+  assert.equal(s0.children.find(c => c.name === 'Border')._skin, 'ui/slices/slot_border_rough');
+
+  const s1 = slotsRoot.children[1];
+  assert.equal(s1.active, true);
+  assert.equal(s1.scale.x, 1);
+  assert.equal(s1.children.find(c => c.name === 'Icon')._skin, 'icons/armor_chest_48');
+  assert.equal(s1.children.find(c => c.name === 'Border')._skin, 'ui/slices/slot_border_unique');
+
+  const s2 = slotsRoot.children[2];
+  assert.equal(s2.children.find(c => c.name === 'Icon')._skin, 'icons/weapon_dual_blades_48');
+  assert.equal(s2.children.find(c => c.name === 'Border')._skin, 'ui/slices/slot_border_' + presExports.QUALITY_STYLE.orange.border);
+
+  // Re-updating unchanged items must reuse cached skins instead of re-invoking skinSprite
+  const callsAfterFirst = skinCalls.length;
+  panel.update(mockScene);
+  assert.equal(skinCalls.length, callsAfterFirst);
+
+  // Picking up 2 drops deactivates pooled slots instead of destroying nodes
+  mockScene.hud.drops = [mockScene.hud.drops[1]];
+  panel.update(mockScene);
+  assert.equal(slotsRoot.children[0].active, true);
+  assert.equal(slotsRoot.children[1].active, false);
+  assert.equal(slotsRoot.children[2].active, false);
 });

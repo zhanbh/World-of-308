@@ -1,8 +1,13 @@
 import type {DropCoordinator} from './net/DropCoordinator.ts';
 import type {ClearReceipt} from '../../../shared/src/protocol/scene-v2.ts';
 export const LOOT_COLORS={white:'#e8e6da',green:'#68da8b',blue:'#72b7ff',purple:'#c18aff',orange:'#ffa454'} as const;
+export type LootQuality = keyof typeof LOOT_COLORS;
+export interface GroundDropHUDItem {
+ dropId:string;x:number;y:number;name:string;color:string;near:boolean;
+ templateId:string;quality:LootQuality;kind:'stack'|'equipment';
+}
 export class LootVictoryHUDModel {
- drops:{dropId:string;x:number;y:number;name:string;color:string;near:boolean}[]=[];
+ drops:GroundDropHUDItem[]=[];
  victory:{title:string;elapsed:string;kills:number;gold:string;xp:number;equipment:string;routeMessage:string}|null=null;
  notice='';
  flipProgress=0;
@@ -12,7 +17,7 @@ export class LootVictoryHUDModel {
  private code:string|null=null;
  private fade=false;
  sync(drop:DropCoordinator['state'],receipt:ClearReceipt|null,confirmed:{x:string;y:string}|null){
-  this.drops=(drop.view?.data.drops??[]).filter(d=>!d.collected).map(d=>({dropId:d.dropId,x:d.x,y:d.y,name:`${d.templateId} ×${d.quantity}`,color:LOOT_COLORS[d.quality],near:confirmed!==null&&(BigInt(confirmed.x)-BigInt(d.x))**2n+(BigInt(confirmed.y)-BigInt(d.y))**2n<=32000n**2n}));
+  this.drops=(drop.view?.data.drops??[]).filter(d=>!d.collected).map(d=>({dropId:d.dropId,x:d.x,y:d.y,name:`${d.templateId} ×${d.quantity}`,color:LOOT_COLORS[d.quality],near:confirmed!==null&&(BigInt(confirmed.x)-BigInt(d.x))**2n+(BigInt(confirmed.y)-BigInt(d.y))**2n<=32000n**2n,templateId:d.templateId,quality:d.quality,kind:d.kind}));
   if(drop.code==='BAG_FULL'&&this.code!=='BAG_FULL'){this.notice='背包已满';this.noticeRemaining=2;}
   this.code=drop.code;
   if(receipt){if(this.source!==receipt.sourceKey){this.source=receipt.sourceKey;this.flipProgress=0;}

@@ -180,3 +180,7 @@ ST06已获任务图及实施授权，当前工作分支 `feat/st06-shop`，接�
 ## 微信小游戏（wechatgame）全量 UI 切片离线构建核验（2026-11-11）
 
 2026-11-11，基于 `feat-1.0.0` / `6cef789` 对完成全部 9-Patch 换肤后的完整客户端执行微信小游戏（`wechatgame`）离线 CLI 构建与包体预算校验。主包 `1,779,899` 字节（约 1.70 MiB，低于 4 MiB 上限），总体积 `14,547,149` 字节（`internal` / `main` / `resources` 三分包就绪），全套 12 个 UI 面板与 HUD 组件、`ui/slices/`（32 项）及 `icons/`（98 项）均成功打包合入，三层 TS、纯模型与 89 项 Cocos UI 用例全部通过。详见[微信小游戏切片版构建核验](../../reviews/wechat-build-verification-2026-11-11.md)。真机微信开发者工具预览、设备运行性能与 E02 微信云端接入继续保持为后续待验门禁。
+
+## 路径 2 收尾：城镇 NPC 动态像素与地面掉落图标化（2026-11-11）
+
+2026-11-11，完成路径 2 两项前端表现收尾并合并至 `feat-1.0.0`：（1）地面掉落物接入 `dropIconForTemplate` 与 `QUALITY_STYLE`（[LootVictoryPanel.ts](../../../client/assets/scripts/ui/LootVictoryPanel.ts) / [LootVictoryHUDModel.ts](../../../client/assets/scripts/LootVictoryHUDModel.ts) / [InventoryPresentation.ts](../../../client/assets/scripts/ui/InventoryPresentation.ts)），升级为对象池 `48px` 图标槽位、分层品质光柱、升腾星火与拾取光环；（2）新增 [TownNPCHUD.ts](../../../client/assets/scripts/ui/TownNPCHUD.ts) 并集成至 [Prototype.ts](../../../client/assets/scripts/Prototype.ts)，修复城镇 NPC 名牌及触控点击 `2x` Canvas 对齐偏差，为 6 位 NPC/传送门补全待机像素动画、`48px` 服务徽章与近距交互胶囊。三层 TypeScript、`check-model` / `check-ui-model` / `check-types`、100 项 Cocos UI 用例（含新增 `town-npc-cocos.test.mjs`）、232 项 `shared` 测试与微信小游戏离线构建（`mainBytes = 1,779,899`，`totalBytes = 14,556,105`）均全绿通过；详见[路径 2 收尾核验](../../reviews/town-npc-and-loot-visuals-verification.md)。真机微信开发者工具预览与 E02 云端接入保持待验。
